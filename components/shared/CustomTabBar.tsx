@@ -25,8 +25,8 @@ const TABS: Tab[] = [
   { name: 'Explore', routeName: '/Explore', iconName: 'compass' },
   // Đổi routeName thành một hằng số hành động thay vì đường dẫn
   { name: 'Add', routeName: 'ACTION_ADD', iconName: 'plus' },
-  { name: 'Chat', routeName: '/chat', iconName: 'message-circle' },
-  { name: 'Profile', routeName: '/profile', iconName: 'user' },
+  { name: 'Chat', routeName: '/Chat', iconName: 'message-circle' },
+  { name: 'Profile', routeName: '/Profile', iconName: 'user' },
 ];
 
 // ─── Constants ───────────────────────────────────────────────────────────────
