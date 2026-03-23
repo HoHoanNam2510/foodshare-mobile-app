@@ -1,14 +1,25 @@
 // app/(tabs)/_layout.tsx
 import { Slot, useRouter, useSegments } from 'expo-router';
+import React, { useState } from 'react'; // Bổ sung import React và useState
 import { View } from 'react-native';
 import CustomTabBar from '../../components/shared/CustomTabBar';
+import SelectPostTypeModal from '../../components/shared/SelectPostTypeModal'; // Import component Popup vừa tạo
 
 export default function TabLayout() {
   const router = useRouter();
   const segments = useSegments();
 
+  // 1. Khởi tạo state để kiểm soát việc ẩn/hiện popup
+  const [isModalVisible, setModalVisible] = useState(false);
+
   const handleTabPress = (routeName: string) => {
-    router.push(routeName as any);
+    // Bắt tín hiệu hành động mở Modal
+    if (routeName === 'ACTION_ADD') {
+      setModalVisible(true);
+    } else {
+      // Các tab khác thì điều hướng bình thường
+      router.push(routeName as any);
+    }
   };
 
   // Do thư mục hiện tại là (tabs), URL (segments) sẽ có mảng dạng ['(tabs)', 'explore']
@@ -30,6 +41,12 @@ export default function TabLayout() {
 
       {/* Thanh Tab Bar tuỳ chỉnh luôn nằm ở dưới cùng */}
       <CustomTabBar onTabPress={handleTabPress} activeIndex={activeIndex} />
+
+      {/* 3. Render Modal nằm đè lên trên tất cả */}
+      <SelectPostTypeModal
+        visible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+      />
     </View>
   );
 }

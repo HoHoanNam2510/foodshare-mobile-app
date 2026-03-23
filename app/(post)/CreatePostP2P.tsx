@@ -10,6 +10,7 @@ import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
   Alert,
@@ -88,6 +89,8 @@ const Required = () => <Text className="text-secondary font-body"> *</Text>;
 // Main Screen
 // ─────────────────────────────────────────────
 export default function CreatePostP2P() {
+  const router = useRouter();
+
   // ── Form state ──
   const [form, setForm] = useState<FormState>({
     title: '',
@@ -214,6 +217,7 @@ export default function CreatePostP2P() {
               elevation: 2,
             }}
             activeOpacity={0.7}
+            onPress={() => router.back()}
           >
             <Feather name="x" size={20} color="#191c1c" />
           </TouchableOpacity>

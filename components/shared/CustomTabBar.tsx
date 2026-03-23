@@ -23,7 +23,8 @@ interface CustomTabBarProps {
 const TABS: Tab[] = [
   { name: 'Home', routeName: '/', iconName: 'home' },
   { name: 'Explore', routeName: '/explore', iconName: 'compass' },
-  { name: 'CreatePostP2P', routeName: '/CreatePostP2P', iconName: 'plus' }, // central FAB
+  // Đổi routeName thành một hằng số hành động thay vì đường dẫn
+  { name: 'Add', routeName: 'ACTION_ADD', iconName: 'plus' },
   { name: 'Chat', routeName: '/chat', iconName: 'message-circle' },
   { name: 'Profile', routeName: '/profile', iconName: 'user' },
 ];
