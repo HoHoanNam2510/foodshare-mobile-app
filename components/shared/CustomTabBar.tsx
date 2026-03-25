@@ -31,7 +31,7 @@ const TABS: Tab[] = [
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const PRIMARY_GREEN = '#72B866';
+const PRIMARY_GREEN = '#296c24';
 const MUTED_GRAY = '#9CA3AF'; // text-text-muted
 const WHITE = '#FFFFFF';
 
