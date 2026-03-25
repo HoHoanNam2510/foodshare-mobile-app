@@ -45,7 +45,8 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <View className="flex-1 bg-surface">
+      {/* ── BỔ SUNG: Đổi bg-surface thành bg-neutral-DEFAULT (hoặc bg-neutral) ── */}
+      <View className="flex-1 bg-neutral">
         {/* Slot này sẽ render ra (tabs) hoặc (post) tùy vào URL hiện tại */}
         <Slot />
       </View>

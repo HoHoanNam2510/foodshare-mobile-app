@@ -33,7 +33,8 @@ export default function TabLayout() {
   else if (currentSegment === 'profile') activeIndex = 4;
 
   return (
-    <View className="flex-1 bg-surface">
+    // FIX TÀNG HÌNH NỀN: Đổi bg-surface thành bg-neutral-DEFAULT
+    <View className="flex-1 bg-neutral-DEFAULT">
       {/* Slot chứa nội dung các màn hình con nằm trong thư mục (tabs) */}
       <View className="flex-1">
         <Slot />

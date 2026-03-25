@@ -29,11 +29,12 @@ const TABS: Tab[] = [
   { name: 'Profile', routeName: '/Profile', iconName: 'user' },
 ];
 
-// ─── Constants ───────────────────────────────────────────────────────────────
+// ─── Constants (Đã cập nhật theo 13-Step Tonal Scale) ────────────────────────
 
-const PRIMARY_GREEN = '#296c24';
-const MUTED_GRAY = '#9CA3AF'; // text-text-muted
-const WHITE = '#FFFFFF';
+const PRIMARY_T40 = '#296C24';
+const NEUTRAL_T50 = '#757777'; // Muted text
+const NEUTRAL_T100 = '#FFFFFF'; // Lowest surface
+const NEUTRAL_T10 = '#191C1C'; // Ambient shadow
 
 const FAB_OUTER = 64; // white ring diameter
 const FAB_INNER = 52; // green circle diameter
@@ -77,14 +78,15 @@ export default function CustomTabBar({
     >
       {/* ── Main Bar ──────────────────────────────────────────────────── */}
       <View
-        className="bg-surface-lowest flex-row items-center justify-around"
+        // FIX: Update class bg-surface-lowest -> bg-neutral-T100
+        className="bg-neutral-T100 flex-row items-center justify-around"
         style={{
           borderRadius: 20,
           marginHorizontal: 12,
           paddingBottom: bottomPad,
           paddingTop: 10,
-          // Elevation / shadow
-          shadowColor: '#000',
+          // Elevation / shadow (Cập nhật màu bóng đổ Ambient)
+          shadowColor: NEUTRAL_T10,
           shadowOffset: { width: 0, height: -2 },
           shadowOpacity: 0.08,
           shadowRadius: 12,
@@ -119,7 +121,7 @@ export default function CustomTabBar({
                     width: 28,
                     height: 3,
                     borderRadius: 2,
-                    backgroundColor: PRIMARY_GREEN,
+                    backgroundColor: PRIMARY_T40,
                   }}
                 />
               ) : null}
@@ -127,14 +129,14 @@ export default function CustomTabBar({
               <Feather
                 name={tab.iconName}
                 size={22}
-                color={isActive ? PRIMARY_GREEN : MUTED_GRAY}
+                color={isActive ? PRIMARY_T40 : NEUTRAL_T50}
               />
               <Text
                 className="font-sans"
                 style={{
                   fontSize: 10,
                   fontWeight: '500',
-                  color: isActive ? PRIMARY_GREEN : MUTED_GRAY,
+                  color: isActive ? PRIMARY_T40 : NEUTRAL_T50,
                 }}
               >
                 {tab.name}
@@ -167,20 +169,20 @@ export default function CustomTabBar({
             width: FAB_OUTER,
             height: FAB_OUTER,
             borderRadius: FAB_OUTER / 2,
-            backgroundColor: WHITE,
+            backgroundColor: NEUTRAL_T100,
             justifyContent: 'center',
             alignItems: 'center',
             // Thick white ring via shadow-less border
             borderWidth: 4,
-            borderColor: WHITE,
+            borderColor: NEUTRAL_T100,
             // Lift the FAB so its centre sits at the bar's top edge
             marginTop: -(FAB_OUTER / 2 - FAB_RISE / 2),
             // Drop shadow
-            shadowColor: PRIMARY_GREEN,
+            shadowColor: NEUTRAL_T10,
             shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.35,
+            shadowOpacity: 0.15,
             shadowRadius: 10,
-            elevation: 16,
+            elevation: 8,
           }}
         >
           {/* Inner green circle */}
@@ -189,12 +191,17 @@ export default function CustomTabBar({
               width: FAB_INNER,
               height: FAB_INNER,
               borderRadius: FAB_INNER / 2,
-              backgroundColor: PRIMARY_GREEN,
+              backgroundColor: PRIMARY_T40,
               justifyContent: 'center',
               alignItems: 'center',
             }}
           >
-            <Feather name="plus" size={26} color={WHITE} strokeWidth={2.5} />
+            <Feather
+              name="plus"
+              size={26}
+              color={NEUTRAL_T100}
+              strokeWidth={2.5}
+            />
           </View>
         </TouchableOpacity>
       </View>

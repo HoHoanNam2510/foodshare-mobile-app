@@ -144,25 +144,32 @@ const MARKET_ITEMS = [
 
 /** ── Header ── */
 const Header = () => {
-  // Lấy chính xác khoảng cách an toàn của thiết bị (tai thỏ, dynamic island, status bar)
   const insets = useSafeAreaInsets();
 
   const content = (
     <View className="flex-row items-center justify-between px-6 pb-4">
       <TouchableOpacity className="w-9 h-9 items-center justify-center">
-        <Feather name="menu" size={22} color="#191c1c" />
+        <Feather name="menu" size={22} color="#191C1C" />
       </TouchableOpacity>
 
-      <Text
-        className="text-base font-sans tracking-tight text-primary-dark"
-        style={{ fontWeight: '700', letterSpacing: -0.3 }}
-      >
-        The Editorial Harvest
-      </Text>
+      {/* ── BỔ SUNG: Cụm Logo + Brand Name ── */}
+      <View className="flex-row items-center gap-2">
+        <Image
+          source={require('../../assets/images/logo.png')}
+          style={{ width: 36, height: 36 }}
+          resizeMode="contain"
+        />
+        <Text
+          className="text-lg font-sans tracking-tight text-primary-T40"
+          style={{ fontWeight: '800', letterSpacing: -0.3 }}
+        >
+          FoodShare
+        </Text>
+      </View>
 
       <View className="flex-row items-center gap-3">
         <TouchableOpacity className="w-9 h-9 items-center justify-center">
-          <Feather name="bell" size={20} color="#191c1c" />
+          <Feather name="bell" size={20} color="#191C1C" />
         </TouchableOpacity>
         <TouchableOpacity>
           <Image
@@ -174,15 +181,13 @@ const Header = () => {
     </View>
   );
 
-  // Fallback an toàn: Nếu expo-blur vẫn lỗi, bạn có thể comment đoạn if này lại
-  // và chỉ dùng return bên dưới để app không bị crash.
+  // Áp dụng "The Glass Rule" cho iOS (Backdrop blur)
   if (Platform.OS === 'ios') {
     return (
       <BlurView
-        intensity={70}
+        intensity={80}
         tint="light"
         className="absolute top-0 left-0 right-0 z-10"
-        // Cộng thêm paddingTop bằng đúng khoảng insets.top của thiết bị
         style={{ paddingTop: insets.top > 0 ? insets.top + 10 : 44 }}
       >
         {content}
@@ -190,10 +195,20 @@ const Header = () => {
     );
   }
 
+  // Fallback cho Android và Web
   return (
     <View
-      className="bg-surface/95 absolute top-0 left-0 right-0 z-10"
-      style={{ paddingTop: insets.top > 0 ? insets.top + 10 : 44 }}
+      // FIX LỖI TÀNG HÌNH: Đổi bg-neutral-DEFAULT/95 thành bg-neutral/95
+      className="bg-neutral/95 absolute top-0 left-0 right-0 z-10"
+      style={{
+        paddingTop: insets.top > 0 ? insets.top + 10 : 44,
+        // Thêm shadow siêu nhẹ để ngắt mạch rõ ràng với phần content cuộn phía dưới
+        shadowColor: '#191C1C',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.05,
+        shadowRadius: 12,
+        elevation: 4,
+      }}
     >
       {content}
     </View>
@@ -213,13 +228,13 @@ const FilterPills = () => {
         <TouchableOpacity
           key={f.id}
           className={`px-5 py-2 rounded-full ${
-            f.active ? 'bg-primary-dark' : 'bg-surface-lowest'
+            f.active ? 'bg-primary-T40' : 'bg-neutral-T100'
           }`}
           style={
             f.active
               ? {}
               : {
-                  shadowColor: '#191c1c',
+                  shadowColor: '#191C1C',
                   shadowOffset: { width: 0, height: 2 },
                   shadowOpacity: 0.04,
                   shadowRadius: 8,
@@ -229,7 +244,7 @@ const FilterPills = () => {
         >
           <Text
             className={`text-sm font-body ${
-              f.active ? 'text-white' : 'text-gray-500'
+              f.active ? 'text-neutral-T100' : 'text-neutral-T50'
             }`}
             style={{ fontWeight: f.active ? '600' : '400' }}
           >
@@ -259,21 +274,21 @@ const HeroBanner = () => {
         />
         <View className="p-6 justify-between" style={{ minHeight: 180 }}>
           <Text
-            className="text-xs font-body uppercase tracking-widest text-white/70"
+            className="text-xs font-body uppercase tracking-widest text-neutral-T100/70"
             style={{ letterSpacing: 2 }}
           >
             Community Movement
           </Text>
           <View className="mt-3">
             <Text
-              className="text-3xl font-sans text-white leading-tight"
+              className="text-3xl font-sans text-neutral-T100 leading-tight"
               style={{ fontWeight: '800', letterSpacing: -0.8, lineHeight: 36 }}
             >
               Zero Waste Week –{'\n'}Join the movement!
             </Text>
-            <TouchableOpacity className="mt-5 self-start bg-white rounded-full px-5 py-2.5 flex-row items-center gap-2">
+            <TouchableOpacity className="mt-5 self-start bg-neutral-T100 rounded-full px-5 py-2.5 flex-row items-center gap-2">
               <Text
-                className="text-primary-dark text-sm font-body"
+                className="text-primary-T40 text-sm font-body"
                 style={{ fontWeight: '700' }}
               >
                 Take Action →
@@ -292,13 +307,13 @@ const GuideSection = () => {
     <View className="mt-10">
       <View className="px-6 mb-1">
         <Text
-          className="text-xs font-body uppercase tracking-widest text-gray-400"
+          className="text-xs font-body uppercase tracking-widest text-neutral-T50"
           style={{ letterSpacing: 2 }}
         >
           The Basics
         </Text>
         <Text
-          className="text-2xl font-sans text-gray-900 mt-1"
+          className="text-2xl font-sans text-neutral-T10 mt-1"
           style={{ fontWeight: '800', letterSpacing: -0.5 }}
         >
           Get started
@@ -317,16 +332,17 @@ const GuideSection = () => {
         {GUIDE_CARDS.map((card) => (
           <TouchableOpacity
             key={card.id}
-            className="bg-primary/20 rounded-2xl p-4 justify-between"
+            // Đã fix lỗi màu nền tàng hình bằng mã sắc độ sáng T95
+            className="bg-primary-T95 rounded-2xl p-4 justify-between"
             style={{ width: 140, height: 120 }}
           >
             <MaterialCommunityIcons
               name={card.icon as any}
               size={26}
-              color="#296C24"
+              color="#296C24" // Màu tương đương với primary-T40
             />
             <Text
-              className="text-sm font-body text-primary-dark mt-2 leading-snug"
+              className="text-sm font-body text-primary-T40 mt-2 leading-snug"
               style={{ fontWeight: '600' }}
             >
               {card.label}
@@ -342,9 +358,9 @@ const GuideSection = () => {
 const P2PCard = ({ item }: { item: (typeof P2P_ITEMS)[0] }) => {
   return (
     <View
-      className="bg-surface-lowest rounded-3xl overflow-hidden flex-1"
+      className="bg-neutral-T100 rounded-3xl overflow-hidden flex-1"
       style={{
-        shadowColor: '#191c1c',
+        shadowColor: '#191C1C',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.05,
         shadowRadius: 24,
@@ -363,15 +379,15 @@ const P2PCard = ({ item }: { item: (typeof P2P_ITEMS)[0] }) => {
           <View
             className={`absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full ${
               item.badgeType === 'expiring'
-                ? 'bg-secondary'
-                : 'bg-surface-lowest'
+                ? 'bg-secondary-DEFAULT'
+                : 'bg-neutral-T100'
             }`}
           >
             <Text
               className={`text-xs font-body ${
                 item.badgeType === 'expiring'
-                  ? 'text-white'
-                  : 'text-primary-dark'
+                  ? 'text-neutral-T100'
+                  : 'text-primary-T40'
               }`}
               style={{ fontWeight: '700', letterSpacing: 0.5 }}
             >
@@ -384,7 +400,7 @@ const P2PCard = ({ item }: { item: (typeof P2P_ITEMS)[0] }) => {
       {/* Content */}
       <View className="px-3 pt-2.5 pb-3">
         <Text
-          className="text-sm font-sans text-gray-900 leading-snug"
+          className="text-sm font-sans text-neutral-T10 leading-snug"
           style={{ fontWeight: '700' }}
           numberOfLines={1}
         >
@@ -395,7 +411,10 @@ const P2PCard = ({ item }: { item: (typeof P2P_ITEMS)[0] }) => {
             source={{ uri: item.avatar }}
             className="w-4 h-4 rounded-full"
           />
-          <Text className="text-xs font-body text-gray-400" numberOfLines={1}>
+          <Text
+            className="text-xs font-body text-neutral-T50"
+            numberOfLines={1}
+          >
             {item.user} · {item.distance}
           </Text>
         </View>
@@ -415,14 +434,14 @@ const FreshlyShared = () => {
     <View className="mt-10 px-6">
       <View className="flex-row items-center justify-between mb-5">
         <Text
-          className="text-2xl font-sans text-gray-900"
+          className="text-2xl font-sans text-neutral-T10"
           style={{ fontWeight: '800', letterSpacing: -0.5 }}
         >
           Freshly Shared
         </Text>
         <TouchableOpacity className="flex-row items-center gap-1">
           <Text
-            className="text-sm font-body text-primary-dark"
+            className="text-sm font-body text-primary-T40"
             style={{ fontWeight: '600' }}
           >
             See all
@@ -452,21 +471,21 @@ const MarketTeaser = () => {
     <View className="mt-10">
       <View className="px-6 mb-1">
         <Text
-          className="text-xs font-body uppercase tracking-widest text-gray-400"
+          className="text-xs font-body uppercase tracking-widest text-neutral-T50"
           style={{ letterSpacing: 2 }}
         >
           From Shops
         </Text>
         <View className="flex-row items-end justify-between mt-1">
           <Text
-            className="text-2xl font-sans text-gray-900"
+            className="text-2xl font-sans text-neutral-T10"
             style={{ fontWeight: '800', letterSpacing: -0.5 }}
           >
             Surprise Bags{'\n'}around you
           </Text>
           <TouchableOpacity className="flex-row items-center gap-1 mb-1">
             <Text
-              className="text-sm font-body text-primary-dark"
+              className="text-sm font-body text-primary-T40"
               style={{ fontWeight: '600' }}
             >
               See all
@@ -482,16 +501,17 @@ const MarketTeaser = () => {
         contentContainerStyle={{
           paddingHorizontal: 24,
           paddingTop: 16,
+          paddingBottom: 24, // BỔ SUNG: Chừa khoảng trống phía dưới cho bóng đổ (Shadow)
           gap: 14,
         }}
       >
         {MARKET_ITEMS.map((item) => (
           <TouchableOpacity
             key={item.id}
-            className="bg-surface-lowest rounded-3xl overflow-hidden"
+            className="bg-neutral-T100 rounded-3xl overflow-hidden"
             style={{
               width: 190,
-              shadowColor: '#191c1c',
+              shadowColor: '#191C1C',
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.05,
               shadowRadius: 24,
@@ -506,23 +526,23 @@ const MarketTeaser = () => {
                 className="rounded-3xl"
               />
               {/* Price pill overlapping image */}
-              <View className="absolute bottom-3 left-3 bg-primary-dark rounded-full px-3 py-1">
+              <View className="absolute bottom-3 left-3 bg-primary-T40 rounded-full px-3 py-1">
                 <Text
-                  className="text-white text-sm font-body"
+                  className="text-neutral-T100 text-sm font-body"
                   style={{ fontWeight: '700' }}
                 >
                   {item.price}
                 </Text>
               </View>
               {/* Bag icon */}
-              <View className="absolute top-3 right-3 bg-surface-lowest/90 w-7 h-7 rounded-full items-center justify-center">
+              <View className="absolute top-3 right-3 bg-neutral-T100/90 w-7 h-7 rounded-full items-center justify-center">
                 <Ionicons name="bag-outline" size={14} color="#296C24" />
               </View>
             </View>
 
             <View className="px-3.5 pt-2.5 pb-3.5">
               <Text
-                className="text-sm font-sans text-gray-900"
+                className="text-sm font-sans text-neutral-T10"
                 style={{ fontWeight: '700' }}
                 numberOfLines={1}
               >
@@ -530,7 +550,7 @@ const MarketTeaser = () => {
               </Text>
               <View className="flex-row items-center justify-between mt-1">
                 <Text
-                  className="text-xs font-body text-gray-400"
+                  className="text-xs font-body text-neutral-T50"
                   numberOfLines={1}
                 >
                   {item.subtitle}
@@ -538,7 +558,7 @@ const MarketTeaser = () => {
                 <View className="flex-row items-center gap-0.5">
                   <Ionicons name="star" size={11} color="#EC8632" />
                   <Text
-                    className="text-xs font-body text-gray-500"
+                    className="text-xs font-body text-neutral-T40"
                     style={{ fontWeight: '600' }}
                   >
                     {item.rating}
@@ -558,36 +578,36 @@ const ImpactBanner = () => {
   return (
     <View className="mx-6 mt-10 mb-12">
       <View
-        className="bg-primary-dark rounded-3xl items-center py-10 px-6 overflow-hidden"
+        className="bg-primary-T40 rounded-3xl items-center py-10 px-6 overflow-hidden"
         style={{ position: 'relative' }}
       >
         {/* Decorative circle blobs */}
         <View
-          className="absolute -top-10 -right-10 bg-primary/40 rounded-full"
+          className="absolute -top-10 -right-10 bg-primary-DEFAULT/40 rounded-full"
           style={{ width: 160, height: 160 }}
         />
         <View
-          className="absolute -bottom-8 -left-8 bg-primary/30 rounded-full"
+          className="absolute -bottom-8 -left-8 bg-primary-DEFAULT/30 rounded-full"
           style={{ width: 130, height: 130 }}
         />
 
-        <View className="bg-primary rounded-full w-12 h-12 items-center justify-center mb-5">
+        <View className="bg-primary-DEFAULT rounded-full w-12 h-12 items-center justify-center mb-5">
           <Ionicons name="flash" size={22} color="#ffffff" />
         </View>
 
         <Text
-          className="text-5xl font-sans text-white text-center"
+          className="text-5xl font-sans text-neutral-T100 text-center"
           style={{ fontWeight: '900', letterSpacing: -1.5 }}
         >
           2,412 lbs
         </Text>
-        <Text className="text-base font-body text-white/70 text-center mt-2">
+        <Text className="text-base font-body text-neutral-T100/70 text-center mt-2">
           Food saved in North Chicago this week
         </Text>
 
-        <TouchableOpacity className="mt-6 border border-white/30 rounded-full px-6 py-2.5">
+        <TouchableOpacity className="mt-6 border border-neutral-T100/30 rounded-full px-6 py-2.5">
           <Text
-            className="text-white text-sm font-body"
+            className="text-neutral-T100 text-sm font-body"
             style={{ fontWeight: '600' }}
           >
             See your impact stats
@@ -605,8 +625,7 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
 
   return (
-    // Bỏ SafeAreaView, dùng View thường chiếm toàn bộ màn hình
-    <View className="flex-1 bg-surface">
+    <View className="flex-1 bg-neutral-DEFAULT">
       <StatusBar
         barStyle="dark-content"
         backgroundColor="transparent"
@@ -619,7 +638,6 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingBottom: 40,
-          // Tính toán khoảng cách đẩy ScrollView xuống để không bị Header đè lên
           paddingTop: insets.top + 70,
         }}
         className="flex-1"
