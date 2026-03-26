@@ -11,44 +11,50 @@
 
 ---
 
-## 2. UI/UX Design System (The Editorial Harvest)
+## 2. UI/UX Design System (The Flat Editorial)
 
 ### 2.1. Overview & Creative North Star
 
-**Creative North Star: "The Living Magazine"**
-This system rejects rigid grids and 1px borders. Instead, we use asymmetric compositions, generous padding (referencing `16` and `20` spacing tokens), and overlapping elements to guide the eye naturally through the content.
+**Creative North Star: "The Flat Graphic Poster"**
+This design system removes all artificial depth. It rejects the illusion of three-dimensionality—NO drop shadows, NO bevels, NO blurs. It relies entirely on **hierarchy through scale, stark color contrast, and bold typography**. The aesthetic is digital-native: crisp edges, solid blocks of color, and geometric purity. Every element exists because it is necessary, creating visual interest through pure form rather than decoration.
 
-### 2.2. Colors & Tonal Layering
+### 2.2. Colors & Flat Structure
 
-The palette is rooted in earth tones, utilizing a 13-step tonal scale (T0 to T100) for maximum flexibility.
+We utilize the strict 13-step tonal scale (T0 to T100). High contrast is essential.
 
-**Color Tokens (The 13-Step Scale):**
+- **Background & Canvas:** `neutral-DEFAULT` (#F8F9F8) or `neutral-T100` (Pure White).
+- **Primary Actions:** `primary-T40` (#296C24) - Sharp, solid green.
+- **Accents:** `secondary-T40` (Orange) and `tertiary-T40` (Pink) used for badges and highlights.
+- **Borders & Lines:** Instead of shadows, we now embrace thick borders (`border-2`, `border-4`) using `neutral-T20` or `primary-T40` to define inputs and active states.
 
-- **Primary (The Stem):** Base `DEFAULT` (#72B866). Used for brand presence and primary actions. Darker tones (`T30`, `T40`) for text/active states; lighter tones (`T80`, `T90`) for subtle backgrounds.
-- **Secondary (The Zest):** Base `DEFAULT` (#EC8632). Used sparingly to highlight urgency or key accents.
-- **Tertiary (The Bloom):** Base `DEFAULT` (#EF86B5). Used for special badges or gamification elements.
-- **Neutral (The Soil):** Base `DEFAULT` (#F8F9F8). Defines the canvas.
+### 2.3. Typography as Interface
 
-**Surface Hierarchy (Using Neutral Scale):**
+Typography bears the load of the visual hierarchy. Text size and weight must be distinct and bold.
 
-- **Highest Elevation (Cards/Modals):** `neutral-T100` (#FFFFFF).
-- **Base Canvas (Background):** `neutral-DEFAULT` or `neutral-T95`.
-- **Containers/Inputs:** `neutral-T90`.
-- **Text:** `neutral-T10` for high emphasis, `neutral-T40` for muted/secondary text.
+- **Display & Headlines:** `font-sans` (Epilogue). Use `ExtraBold` (800) or `Bold` (700) with tight letter-spacing (`tracking-tight` or `tracking-tighter`).
+- **Titles & Body:** `font-body` (Be Vietnam Pro). Regular (400) for readable body text, SemiBold (600) for internal card titles.
+- **Labels/Buttons:** `font-label`. Always uppercase (`uppercase tracking-wider`) to simulate solid geometric blocks of text.
 
-**The "No-Line" Rule:**
-Sectioning must NEVER be achieved through 1px solid borders. Use background color shifts (e.g., `bg-neutral-T100` on `bg-neutral-T95`) and whitespace to create groupings.
+### 2.4. Elevation & Zero Depth
 
-### 2.3. Typography
+- **Zero Artificial Depth:** The Z-axis does not exist. Everything is on the same plane.
+- **SHADOWS ARE STRICTLY FORBIDDEN.** Do not use `shadow`, `elevation`, or `backdrop-blur`.
+- **Interaction Feedback:** Rely on immediate visual feedback through scale transformations (`active:scale-95`), thick solid borders, or full color inversions (e.g., an outline button becoming solid on press).
 
-- **Display & Headlines:** `font-sans` (Epilogue). Use large scales with tight tracking.
-- **Titles & Body:** `font-body` (Be Vietnam Pro). The workhorse for long-form content.
-- **Labels:** `font-label` (Plus Jakarta Sans). Used for metadata (uppercase, small).
+### 2.5. Components
 
-### 2.4. Elevation & Depth
+- **Buttons:** - _Primary:_ Solid `bg-primary-T40`, `text-neutral-T100`. Flat, no shadow. Height `h-14`.
+  - _Outline:_ `border-2` or `border-4` solid color. Transparent bg.
+- **Cards (Color Blocks):** Solid background (`bg-neutral-T100` or tinted like `bg-primary-T95`). **0px shadow**. Use sharp, consistent rounded corners (`rounded-xl` or `rounded-2xl`, smaller than the previous design). Generous padding (`p-6`).
+- **Inputs:** `bg-neutral-T95` background. No border default. On focus: add a hard, thick border `border-2 border-primary-T40` with NO glow.
 
-- **Tonal Layering:** Stack container tokens instead of using harsh shadows.
-- **Ambient Shadows:** Where a floating effect is vital, use a diffused shadow (blur `24px`, low opacity) tinted with `neutral-T10`, never pure black.
+### 2.6. Do's and Don'ts
+
+- **DO** use large, bold typography to anchor sections.
+- **DO** use solid color blocks (Primary, Secondary, Neutral) to divide screen sections instead of thin lines.
+- **DO** use geometric purity. Stick to sharp rectangles and consistent, moderate corner radii (`rounded-xl`).
+- **DON'T** use `elevation`, `shadow`, or `blur` effects anywhere in the app.
+- **DON'T** use gradients on buttons or text.
 
 ---
 

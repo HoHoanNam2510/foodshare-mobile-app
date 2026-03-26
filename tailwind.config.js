@@ -5,6 +5,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // HỆ MÀU 13 SẮC ĐỘ (T0-T100) - The Editorial Harvest
         primary: {
           DEFAULT: '#72B866',
           T0: '#000000',
@@ -70,6 +71,7 @@ module.exports = {
         },
       },
       fontFamily: {
+        // Giữ nguyên Epilogue & Be Vietnam Pro vì phù hợp xuất sắc với Flat Design
         sans: ['Epilogue', 'sans-serif'],
         'sans-regular': ['Epilogue-Regular', 'sans-serif'],
         'sans-extrabold': ['Epilogue-ExtraBold', 'sans-serif'],
@@ -79,15 +81,22 @@ module.exports = {
         label: ['"Plus Jakarta Sans"', '"Be Vietnam Pro"', 'sans-serif'],
       },
       borderRadius: {
-        md: '1.5rem',
-        lg: '2rem',
-        xl: '3rem',
+        // CẬP NHẬT FLAT DESIGN: Bo góc nhỏ lại, vuông vức và hình học hơn
+        sm: '0.25rem', // 4px
+        md: '0.5rem', // 8px - Dùng cho Input, Label nhỏ
+        lg: '0.75rem', // 12px - Dùng cho Button
+        xl: '1rem', // 16px - Dùng cho Card tiêu chuẩn
+        '2xl': '1.5rem', // 24px - Dùng cho Hero Banner
       },
       spacing: {
         3: '1rem',
         6: '2rem',
         8: '2.75rem',
         10: '3.5rem',
+      },
+      boxShadow: {
+        // FLAT DESIGN: Tiêu diệt toàn bộ shadow
+        none: 'none',
       },
     },
   },

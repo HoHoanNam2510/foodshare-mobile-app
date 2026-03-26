@@ -6,6 +6,18 @@ import { useEffect } from 'react';
 import { View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+// Import thư viện cấu hình Reanimated
+import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from 'react-native-reanimated';
+
+// Tắt chế độ cảnh báo Strict Mode
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false, // <-- Dòng này sẽ làm warning biến mất vĩnh viễn
+});
+
 // Import các định dạng của Epilogue
 import {
   Epilogue_400Regular,
@@ -45,9 +57,7 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      {/* ── BỔ SUNG: Đổi bg-surface thành bg-neutral-DEFAULT (hoặc bg-neutral) ── */}
       <View className="flex-1 bg-neutral">
-        {/* Slot này sẽ render ra (tabs) hoặc (post) tùy vào URL hiện tại */}
         <Slot />
       </View>
     </SafeAreaProvider>
