@@ -29,7 +29,6 @@ const TABS: Tab[] = [
 
 // ─── Constants (Đã cập nhật sắc độ theo Tonal Scale mới) ─────────────────────
 const PRIMARY_T40 = '#296C24';
-const NEUTRAL_T10 = '#191C1C';
 const NEUTRAL_T50 = '#757777';
 const NEUTRAL_T100 = '#FFFFFF';
 

@@ -17,11 +17,15 @@ export default function SelectPostTypeModal({
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
-  const handleSelect = (route: string) => {
+  const handleSelect = (postType: 'FREE_FOOD' | 'SURPRISE_BAG') => {
     onClose(); // Đóng modal trước khi chuyển trang
     // Dùng setTimeout nhỏ để modal đóng mượt mà trước khi router push màn hình mới
     setTimeout(() => {
-      router.push(route as any);
+      // ── 3. ĐIỀU HƯỚNG SANG MÀN HÌNH HỢP NHẤT CreatePost VÀ TRUYỀN TYPE PROP ──
+      router.push({
+        pathname: '/(post)/CreatePost' as any,
+        params: { type: postType }, // Truyền prop type để CreatePost nhận biết
+      });
     }, 150);
   };
 
@@ -32,73 +36,65 @@ export default function SelectPostTypeModal({
       animationType="slide"
       onRequestClose={onClose}
     >
-      {/* Lớp overlay đen mờ bao phủ toàn màn hình. Bấm vào đây để đóng modal */}
-      <Pressable className="flex-1 bg-black/40 justify-end" onPress={onClose}>
-        {/* Ngăn chặn sự kiện onPress lan truyền khi bấm vào phần nội dung trắng */}
+      <Pressable
+        className="flex-1 bg-neutral-T10/70 justify-end"
+        onPress={onClose}
+      >
         <Pressable onPress={(e) => e.stopPropagation()}>
           <View
-            className="bg-surface-lowest rounded-t-3xl px-6 pt-3"
+            // FLAT DESIGN: Nền trắng tuyệt đối, góc bo xl cứng, không shadow, viền t-2 bao phủ
+            className="bg-neutral-T100 rounded-t-3xl px-6 pt-4 border-t-2 border-neutral-T90 shadow-none"
             style={{ paddingBottom: Math.max(insets.bottom, 24) + 16 }}
           >
-            {/* Thanh drag handle nhỏ ở trên cùng (chỉ để trang trí cho giống Bottom Sheet) */}
-            <View className="w-12 h-1.5 bg-gray-300 rounded-full self-center mb-6" />
+            {/* Thanh drag handle (vuông vức hơn) */}
+            <View className="w-12 h-1.5 bg-neutral-T80 rounded-md self-center mb-8" />
 
-            {/* Option 1: P2P Free Food */}
+            {/* ── Option 1: P2P Free Food ── */}
             <TouchableOpacity
-              activeOpacity={0.7}
-              className="flex-row items-center gap-4 py-4"
-              onPress={() => handleSelect('/(post)/CreatePostP2P')}
+              activeOpacity={0.9}
+              className="flex-row items-center gap-4 py-4 px-4 mb-4 bg-neutral-T100 border-2 border-neutral-T90 rounded-2xl active:scale-95 transition-transform"
+              // Truyền type 'FREE_FOOD' cho logic P2P
+              onPress={() => handleSelect('FREE_FOOD')}
             >
-              <View className="w-14 h-14 rounded-full bg-primary items-center justify-center">
+              <View className="w-14 h-14 rounded-xl bg-primary-T40 items-center justify-center border-2 border-primary-T30">
                 <Feather name="heart" size={24} color="#FFFFFF" />
               </View>
               <View className="flex-1">
-                <Text className="text-xl font-sans text-text font-bold mb-1">
+                <Text
+                  className="text-lg font-sans text-neutral-T10 leading-tight mb-0.5"
+                  style={{ fontWeight: '800' }}
+                >
                   Free food
                 </Text>
-                <Text className="text-sm font-body text-text-muted">
-                  Give away free food/non-food
+                <Text className="text-sm font-body text-neutral-T50">
+                  Give away free food
                 </Text>
               </View>
-              <Feather
-                name="chevron-right"
-                size={20}
-                className="text-text-muted"
-              />
+              <Feather name="arrow-right" size={20} color="#191C1C" />
             </TouchableOpacity>
 
-            {/* Option 2: B2C Surprise Bag */}
+            {/* ── Option 2: B2C Surprise Bag ── */}
             <TouchableOpacity
-              activeOpacity={0.7}
-              className="flex-row items-center gap-4 py-4 mt-2"
-              onPress={() => handleSelect('/(post)/CreatePostB2C')}
+              activeOpacity={0.9}
+              className="flex-row items-center gap-4 py-4 px-4 mb-2 bg-neutral-T100 border-2 border-neutral-T90 rounded-2xl active:scale-95 transition-transform"
+              // Truyền type 'SURPRISE_BAG' cho logic B2C
+              onPress={() => handleSelect('SURPRISE_BAG')}
             >
-              <View className="w-14 h-14 rounded-full bg-secondary items-center justify-center">
+              <View className="w-14 h-14 rounded-xl bg-secondary-T40 items-center justify-center border-2 border-secondary-T30">
                 <Feather name="shopping-bag" size={24} color="#FFFFFF" />
               </View>
               <View className="flex-1">
-                <Text className="text-xl font-sans text-text font-bold mb-1">
+                <Text
+                  className="text-lg font-sans text-neutral-T10 leading-tight mb-0.5"
+                  style={{ fontWeight: '800' }}
+                >
                   Surprise bag
                 </Text>
-                <Text className="text-sm font-body text-text-muted">
+                <Text className="text-sm font-body text-neutral-T50">
                   Sell surplus food bags
                 </Text>
               </View>
-              <Feather
-                name="chevron-right"
-                size={20}
-                className="text-text-muted"
-              />
-            </TouchableOpacity>
-
-            {/* Footer / Help link */}
-            <TouchableOpacity
-              activeOpacity={0.7}
-              className="mt-8 items-center py-4 bg-surface rounded-2xl"
-            >
-              <Text className="text-sm font-body text-text font-semibold">
-                🙋‍♀️ Help! What can I add?
-              </Text>
+              <Feather name="arrow-right" size={20} color="#191C1C" />
             </TouchableOpacity>
           </View>
         </Pressable>
