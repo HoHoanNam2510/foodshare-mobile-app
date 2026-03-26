@@ -41,7 +41,7 @@ export default function CreatePost() {
               <MaterialIcons name="arrow-back" size={24} color="#191C1C" />
             </TouchableOpacity>
             {/* Đổi tiêu đề động dựa trên loại bài đăng */}
-            <Text className="font-headline font-extrabold tracking-tighter uppercase text-primary text-xl">
+            <Text className="font-headline font-extrabold tracking-tighter uppercase text-primary-T40 text-xl">
               {isB2C ? 'SHARE SURPRISE BAG' : 'SHARE MEAL'}
             </Text>
           </View>
@@ -268,7 +268,10 @@ export default function CreatePost() {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity className="flex-1 bg-primary-T40 border-2 border-primary-T40 rounded-xl p-4 items-center justify-center flex-row gap-2 active:scale-95 transition-transform">
+          <TouchableOpacity
+            className="flex-1 bg-primary-T40 border-2 border-primary-T40 rounded-xl p-4 items-center justify-center flex-row gap-2 active:scale-95 transition-transform"
+            onPress={() => router.push('/(post)/PostList')}
+          >
             <Text className="font-label font-black text-sm uppercase text-neutral-T100 text-center">
               PUBLISH MEAL
             </Text>
