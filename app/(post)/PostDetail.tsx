@@ -36,18 +36,23 @@ export default function PostDetailScreen() {
   const isB2C = MOCK_ITEM.type === 'B2C';
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-DEFAULT" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-neutral" edges={['top']}>
       {/* ─── Top Navigation Bar ─── */}
-      <View className="flex-row items-center justify-between w-full h-16 px-4 bg-neutral-DEFAULT border-b-2 border-neutral-T80 z-50">
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="active:scale-95 transition-transform p-2 rounded-lg"
-        >
-          <MaterialIcons name="arrow-back" size={28} color="#191C1C" />
-        </TouchableOpacity>
-        <Text className="font-headline font-extrabold tracking-tighter uppercase text-xl text-primary-T40">
-          SAVOR SHARE
-        </Text>
+      <View className="flex-row items-center justify-between w-full h-16 px-4 bg-neutral border-b-2 border-neutral-T80 z-50">
+        {/* Nhóm Nút Back và Tiêu đề căn trái */}
+        <View className="flex-row items-center gap-3">
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="active:scale-95 transition-transform p-2 rounded-lg"
+          >
+            <MaterialIcons name="arrow-back" size={28} color="#191C1C" />
+          </TouchableOpacity>
+          <Text className="font-headline font-extrabold tracking-tighter uppercase text-xl text-primary-T40">
+            SAVOR SHARE
+          </Text>
+        </View>
+
+        {/* Nút Options (ba chấm) ở bên phải */}
         <TouchableOpacity className="active:scale-95 transition-transform p-2 rounded-lg">
           <MaterialIcons name="more-vert" size={28} color="#191C1C" />
         </TouchableOpacity>
@@ -224,7 +229,7 @@ export default function PostDetailScreen() {
 
       {/* ─── Fixed Bottom Action Bar ─── */}
       <View
-        className="absolute bottom-0 left-0 w-full bg-neutral-DEFAULT border-t-2 border-neutral-T80 z-50"
+        className="absolute bottom-0 left-0 w-full bg-neutral border-t-2 border-neutral-T80 z-50"
         style={{
           paddingBottom: Math.max(insets.bottom, 16),
           paddingTop: 16,

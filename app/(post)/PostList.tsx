@@ -54,7 +54,7 @@ export default function PostList() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-DEFAULT" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-neutral" edges={['top']}>
       {/* ─── TopAppBar (Header phẳng, viền đáy dày) ─── */}
       <View className="bg-neutral-T100 flex-row justify-between items-center w-full px-4 h-16 border-b-2 border-neutral-T80 z-50">
         <View className="flex-row items-center gap-3">
