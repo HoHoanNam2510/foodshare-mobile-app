@@ -20,21 +20,20 @@ interface CustomTabBarProps {
 
 // ─── Tab Config (Giữ nguyên) ─────────────────────────────────────────────────
 const TABS: Tab[] = [
-  { name: 'Home', routeName: '/', iconName: 'home' },
-  { name: 'Explore', routeName: '/Explore', iconName: 'compass' },
-  { name: 'Add', routeName: 'ACTION_ADD', iconName: 'plus' }, // Tab đặc biệt để mở Modal
-  { name: 'Chat', routeName: '/Chat', iconName: 'message-circle' },
-  { name: 'Profile', routeName: '/Profile', iconName: 'user' },
+  { name: 'Home', routeName: '/home', iconName: 'home' },
+  { name: 'Explore', routeName: '/explore', iconName: 'compass' },
+  { name: 'Add', routeName: 'ACTION_ADD', iconName: 'plus' },
+  { name: 'Chat', routeName: '/chat', iconName: 'message-circle' },
+  { name: 'Profile', routeName: '/profile', iconName: 'user' },
 ];
 
-// ─── Constants (Đã cập nhật sắc độ theo Tonal Scale mới) ─────────────────────
+// ─── Constants ───────────────────────────────────────────────────────────────
 const PRIMARY_T40 = '#296C24';
 const NEUTRAL_T50 = '#757777';
 const NEUTRAL_T100 = '#FFFFFF';
 
-// Sizing cho Floating Action Button (index 2)
-const FAB_SIZE = 60; // Kích thước nút Add (vuông)
-const FAB_RISE = 20; // Số px nút Add nổi lên trên thanh bar top
+const FAB_SIZE = 56;
+const FAB_RISE = 18;
 
 // ─── Component ───────────────────────────────────────────────────────────────
 export default function CustomTabBar({
@@ -52,14 +51,9 @@ export default function CustomTabBar({
     onTabPress?.(routeName, index);
   };
 
-  // Bottom padding: tôn trọng safe area nhưng đảm bảo ít nhất là 8 px
   const bottomPad = Math.max(insets.bottom, 8);
 
   return (
-    /**
-     * Outer wrapper: absolute nằm dưới đáy màn hình.
-     * Chứa cả thanh bar và nút bấm Add nổi lên.
-     */
     <View
       pointerEvents="box-none"
       style={{
@@ -67,26 +61,20 @@ export default function CustomTabBar({
         left: 0,
         right: 0,
         bottom: 0,
-        // Nới rộng container lên trên để chứa phần nút Add nổi lên
         paddingTop: FAB_RISE,
       }}
     >
-      {/* ── Main Bar ──────────────────────────────────────────────────── */}
+      {/* ── Main Bar ── */}
       <View
-        // FLAT DESIGN: Cập nhật màu sắc và bo góc cứng cáp xl/2xl
-        className="bg-neutral-T100 flex-row items-center justify-around border-2 border-neutral-T90 rounded-2xl"
+        className="bg-neutral-T100 flex-row items-center justify-around rounded-2xl shadow-md"
         style={{
-          marginHorizontal: 12,
+          marginHorizontal: 16,
           paddingBottom: bottomPad,
           paddingTop: 10,
-          // FLAT RULE: Tiêu diệt toàn bộ shadow/elevation
-          shadowColor: 'transparent',
-          elevation: 0,
         }}
       >
         {TABS.map((tab, index) => {
           if (index === 2) {
-            // Chừa chỗ cho nút Add ở giữa để các Tab siblings cách đều nhau
             return <View key="fab-placeholder" style={{ width: FAB_SIZE }} />;
           }
 
@@ -96,9 +84,8 @@ export default function CustomTabBar({
             <TouchableOpacity
               key={tab.routeName}
               onPress={() => handlePress(index, tab.routeName)}
-              activeOpacity={0.8}
-              // FLAT DESIGN: Phản hồi tức thì Snappy
-              className="flex-col items-center active:scale-95 transition-transform"
+              activeOpacity={0.7}
+              className="flex-col items-center active:opacity-70"
               style={{ gap: 4, minWidth: 48 }}
               accessibilityRole="button"
               accessibilityLabel={tab.name}
@@ -110,11 +97,10 @@ export default function CustomTabBar({
                 color={isActive ? PRIMARY_T40 : NEUTRAL_T50}
               />
               <Text
-                // FLAT DESIGN: Chuyển sang in hoa (font-label, uppercase tracking-wider)
-                className="font-label uppercase tracking-wider text-neutral-T10"
+                className="font-body"
                 style={{
-                  fontSize: 9, // Font-size nhỏ hơn cho chữ in hoa
-                  fontWeight: '700',
+                  fontSize: 10,
+                  fontWeight: isActive ? '600' : '400',
                   color: isActive ? PRIMARY_T40 : NEUTRAL_T50,
                 }}
               >
@@ -125,17 +111,15 @@ export default function CustomTabBar({
         })}
       </View>
 
-      {/* ── Floating Action Button (index 2) - Nút Add nổi lên ─────────── */}
-      {/* Căn giữa tuyệt đối; nằm trên thanh bar top FAB_RISE px */}
+      {/* ── Floating Action Button ── */}
       <View
         pointerEvents="box-none"
         style={{
           position: 'absolute',
-          top: 10, // padding-top of the bar
+          top: 10,
           left: 0,
           right: 0,
           alignItems: 'center',
-          // Không intercept touches bên ngoài nút
         }}
       >
         <TouchableOpacity
@@ -143,21 +127,18 @@ export default function CustomTabBar({
           activeOpacity={0.9}
           accessibilityRole="button"
           accessibilityLabel="Add"
-          // FLAT DESIGN: Zero Shadows, Geometric Radius xl/2xl, Utility Colors
-          className="bg-primary-T40 border-4 border-neutral-T100 items-center justify-center rounded-2xl shadow-none active:scale-90 transition-transform"
+          className="bg-primary-T40 items-center justify-center rounded-full shadow active:scale-[0.95]"
           style={{
             width: FAB_SIZE,
             height: FAB_SIZE,
-            // Nâng nút Add lên để tâm của nó nằm ở top edge của bar
             marginTop: -(FAB_SIZE / 2 - FAB_RISE / 2),
-            // FLAT RULE: Tiêu diệt shadow
-            shadowColor: 'transparent',
-            elevation: 0,
+            borderWidth: 4,
+            borderColor: NEUTRAL_T100,
           }}
         >
           <Feather
             name="plus"
-            size={26}
+            size={24}
             color={NEUTRAL_T100}
             strokeWidth={2.5}
           />

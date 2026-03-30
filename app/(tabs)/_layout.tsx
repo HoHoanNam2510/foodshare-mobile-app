@@ -28,7 +28,6 @@ export default function TabLayout() {
 
   let activeIndex = 0;
   if (currentSegment === 'explore') activeIndex = 1;
-  // Bỏ logic check CreatePostP2P ở đây vì khi bấm nút Add, nó sẽ văng ra khỏi (tabs)
   else if (currentSegment === 'chat') activeIndex = 3;
   else if (currentSegment === 'profile') activeIndex = 4;
 

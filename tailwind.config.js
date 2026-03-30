@@ -71,7 +71,7 @@ module.exports = {
         },
       },
       fontFamily: {
-        // Giữ nguyên Epilogue & Be Vietnam Pro vì phù hợp xuất sắc với Flat Design
+        // Epilogue cho headings, Be Vietnam Pro cho body, Plus Jakarta Sans cho labels
         sans: ['Epilogue', 'sans-serif'],
         'sans-regular': ['Epilogue-Regular', 'sans-serif'],
         'sans-extrabold': ['Epilogue-ExtraBold', 'sans-serif'],
@@ -81,12 +81,13 @@ module.exports = {
         label: ['"Plus Jakarta Sans"', '"Be Vietnam Pro"', 'sans-serif'],
       },
       borderRadius: {
-        // CẬP NHẬT FLAT DESIGN: Bo góc nhỏ lại, vuông vức và hình học hơn
-        sm: '0.25rem', // 4px
-        md: '0.5rem', // 8px - Dùng cho Input, Label nhỏ
-        lg: '0.75rem', // 12px - Dùng cho Button
-        xl: '1rem', // 16px - Dùng cho Card tiêu chuẩn
-        '2xl': '1.5rem', // 24px - Dùng cho Hero Banner
+        // SOFT ELEVATION: Bo góc mềm mại, thân thiện hơn
+        sm: '0.375rem', // 6px  - Tags, small badges
+        md: '0.5rem', // 8px  - Inputs, small buttons
+        lg: '0.75rem', // 12px - Standard buttons
+        xl: '1rem', // 16px - Cards, containers
+        '2xl': '1.25rem', // 20px - Large cards, sections
+        '3xl': '1.5rem', // 24px - Modals, hero banners
       },
       spacing: {
         3: '1rem',
@@ -95,8 +96,12 @@ module.exports = {
         10: '3.5rem',
       },
       boxShadow: {
-        // FLAT DESIGN: Tiêu diệt toàn bộ shadow
+        // SOFT ELEVATION: Hệ thống shadow mềm, khuếch tán tạo chiều sâu nhẹ nhàng
         none: 'none',
+        sm: '0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06)',
+        DEFAULT: '0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06)',
+        md: '0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)',
+        lg: '0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06)',
       },
     },
   },

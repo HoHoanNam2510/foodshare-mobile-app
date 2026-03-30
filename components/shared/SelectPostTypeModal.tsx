@@ -23,7 +23,7 @@ export default function SelectPostTypeModal({
     setTimeout(() => {
       // ── 3. ĐIỀU HƯỚNG SANG MÀN HÌNH HỢP NHẤT CreatePost VÀ TRUYỀN TYPE PROP ──
       router.push({
-        pathname: '/(post)/CreatePost' as any,
+        pathname: '/(post)/create-post' as any,
         params: { type: postType }, // Truyền prop type để CreatePost nhận biết
       });
     }, 150);

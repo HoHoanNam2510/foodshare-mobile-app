@@ -270,7 +270,7 @@ export default function CreatePost() {
 
           <TouchableOpacity
             className="flex-1 bg-primary-T40 border-2 border-primary-T40 rounded-xl p-4 items-center justify-center flex-row gap-2 active:scale-95 transition-transform"
-            onPress={() => router.push('/(post)/PostList')}
+            onPress={() => router.push('/(post)/post-list' as any)}
           >
             <Text className="font-label font-black text-sm uppercase text-neutral-T100 text-center">
               PUBLISH MEAL

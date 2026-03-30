@@ -123,7 +123,7 @@ export default function PostList() {
                 activeOpacity={0.9}
                 onPress={() =>
                   router.push({
-                    pathname: '/(post)/PostDetail',
+                    pathname: '/(post)/post-detail' as any,
                     params: { id: post.id },
                   })
                 }

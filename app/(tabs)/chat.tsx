@@ -95,7 +95,7 @@ export default function ChatListScreen() {
             activeOpacity={0.6}
             onPress={() =>
               router.push({
-                pathname: '/(post)/ChatDetail' as any,
+                pathname: '/(post)/chat-detail' as any,
                 params: { id: chat.id, name: chat.name },
               })
             }

@@ -13,7 +13,7 @@ export default function Explore() {
 
       <View className="w-full gap-4">
         {/* Nút test Form Tạo Bài Đăng */}
-        <Link href={'/(post)/CreatePost'} asChild>
+        <Link href={'/(post)/create-post' as any} asChild>
           <TouchableOpacity
             activeOpacity={0.8}
             className="w-full bg-primary-light py-4 rounded-2xl items-center"
