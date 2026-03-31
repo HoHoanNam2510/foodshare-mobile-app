@@ -65,72 +65,73 @@ export default function MarketTeaser() {
         </View>
       </View>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingHorizontal: 20,
-          paddingTop: 14,
-          paddingBottom: 4,
-        }}
-      >
-        {MARKET_ITEMS.map((item, index) => (
-          <TouchableOpacity
-            key={item.id}
-            activeOpacity={0.9}
-            className={`bg-neutral-T100 rounded-2xl overflow-hidden shadow-sm active:opacity-90 ${
-              index < MARKET_ITEMS.length - 1 ? 'mr-3' : ''
-            }`}
-            style={{ width: 190 }}
-          >
-            <View className="relative">
-              <Image
-                source={{ uri: item.image }}
-                style={{ width: 190, height: 150 }}
-                className="rounded-t-2xl"
-                resizeMode="cover"
-              />
-              <View className="absolute bottom-3 left-3 bg-primary-T40 rounded-full px-2.5 py-1">
-                <Text
-                  className="text-neutral-T100 text-xs font-body"
-                  style={{ fontWeight: '600' }}
-                >
-                  {item.price}
-                </Text>
-              </View>
-              <TouchableOpacity className="absolute top-3 right-3 bg-neutral-T100/90 w-8 h-8 rounded-full items-center justify-center">
-                <Ionicons name="bag-outline" size={16} color="#191C1C" />
-              </TouchableOpacity>
-            </View>
-            <View className="px-3.5 pt-3 pb-3.5">
-              <Text
-                className="text-[15px] font-body text-neutral-T10"
-                style={{ fontWeight: '600' }}
-                numberOfLines={1}
-              >
-                {item.name}
-              </Text>
-              <View className="flex-row items-center justify-between mt-1.5">
-                <Text
-                  className="text-xs font-body text-neutral-T50 flex-1 mr-2"
-                  numberOfLines={1}
-                >
-                  {item.subtitle}
-                </Text>
-                <View className="flex-row items-center gap-0.5">
-                  <Ionicons name="star" size={12} color="#EC8632" />
+      <View className="mx-5 overflow-hidden">
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingTop: 14,
+            paddingBottom: 4,
+          }}
+        >
+          {MARKET_ITEMS.map((item, index) => (
+            <TouchableOpacity
+              key={item.id}
+              activeOpacity={0.9}
+              className={`bg-neutral-T100 rounded-2xl overflow-hidden shadow-sm active:opacity-90 ${
+                index < MARKET_ITEMS.length - 1 ? 'mr-3' : ''
+              }`}
+              style={{ width: 190 }}
+            >
+              <View className="relative">
+                <Image
+                  source={{ uri: item.image }}
+                  style={{ width: 190, height: 150 }}
+                  className="rounded-t-2xl"
+                  resizeMode="cover"
+                />
+                <View className="absolute bottom-3 left-3 bg-primary-T40 rounded-full px-2.5 py-1">
                   <Text
-                    className="text-xs font-body text-neutral-T10"
+                    className="text-neutral-T100 text-xs font-body"
                     style={{ fontWeight: '600' }}
                   >
-                    {item.rating}
+                    {item.price}
                   </Text>
                 </View>
+                <TouchableOpacity className="absolute top-3 right-3 bg-neutral-T100/90 w-8 h-8 rounded-full items-center justify-center">
+                  <Ionicons name="bag-outline" size={16} color="#191C1C" />
+                </TouchableOpacity>
               </View>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+              <View className="px-3.5 pt-3 pb-3.5">
+                <Text
+                  className="text-[15px] font-body text-neutral-T10"
+                  style={{ fontWeight: '600' }}
+                  numberOfLines={1}
+                >
+                  {item.name}
+                </Text>
+                <View className="flex-row items-center justify-between mt-1.5">
+                  <Text
+                    className="text-xs font-body text-neutral-T50 flex-1 mr-2"
+                    numberOfLines={1}
+                  >
+                    {item.subtitle}
+                  </Text>
+                  <View className="flex-row items-center gap-0.5">
+                    <Ionicons name="star" size={12} color="#EC8632" />
+                    <Text
+                      className="text-xs font-body text-neutral-T10"
+                      style={{ fontWeight: '600' }}
+                    >
+                      {item.rating}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
     </View>
   );
 }

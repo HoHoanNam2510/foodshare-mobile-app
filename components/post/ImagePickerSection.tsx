@@ -1,7 +1,14 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import React from 'react';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 const IMAGE_COMPRESSION_QUALITY = 0.8;
 
@@ -17,17 +24,28 @@ export default function ImagePickerSection({
   maxImages = 10,
 }: ImagePickerSectionProps) {
   const handleAddPhoto = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') return;
+    try {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permission needed',
+          'Please grant photo library access in Settings to add photos.'
+        );
+        return;
+      }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: IMAGE_COMPRESSION_QUALITY,
-    });
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: false,
+        quality: IMAGE_COMPRESSION_QUALITY,
+      });
 
-    if (!result.canceled && result.assets[0]) {
-      onImagesChange([...images, result.assets[0].uri]);
+      if (!result.canceled && result.assets[0]) {
+        onImagesChange([...images, result.assets[0].uri]);
+      }
+    } catch (error) {
+      console.error('ImagePicker error:', error);
     }
   };
 
@@ -66,7 +84,11 @@ export default function ImagePickerSection({
             key={`${uri}-${index}`}
             className="w-28 h-28 rounded-2xl overflow-hidden shadow-sm"
           >
-            <Image source={{ uri }} className="w-full h-full" resizeMode="cover" />
+            <Image
+              source={{ uri }}
+              className="w-full h-full"
+              resizeMode="cover"
+            />
             {index === 0 && (
               <View className="absolute top-2 left-2 bg-primary-T40 px-2 py-0.5 rounded-full">
                 <Text className="font-label font-bold text-[10px] text-neutral-T100 uppercase tracking-wider">
