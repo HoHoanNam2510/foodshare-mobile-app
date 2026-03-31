@@ -492,3 +492,101 @@ Logout (future) → xóa SecureStore → useProtectedRoute tự redirect về Lo
 | SecureStore keys     | `auth_token` (JWT string), `auth_user` (JSON string)                       |
 | Route guard pattern  | `useProtectedRoute()` hook trong RootLayout, check `segments[0]`           |
 | Splash screen delay  | Hide chỉ khi `fontsLoaded && isHydrated`                                   |
+
+---
+
+## 8. Fix: Mobile ↔ Backend Connectivity + Error Handling
+
+**Input:**
+
+- Sau khi hoàn thành auth flow (Section 7), đăng ký thành công nhưng đăng nhập bị timeout 15s.
+- Khi fix xong timeout, login trả về status 400 nhưng app chỉ hiện generic error "Request failed with status code 400" thay vì message thật từ backend.
+
+### 8.1 Tạo `.env` cho mobile app
+
+**Vấn đề:** Không có file `.env` → fallback `http://localhost:5000` → trên điện thoại thật, `localhost` trỏ về chính device, không phải máy tính chạy backend → timeout.
+
+**Fix:** Tạo `.env` với IP LAN của máy tính:
+
+```bash
+# .env
+EXPO_PUBLIC_API_URL=http://<LAN_IP>:5000
+```
+
+**Lưu ý chọn IP theo môi trường:**
+
+| Môi trường               | URL                              |
+| ------------------------ | -------------------------------- |
+| Android Emulator         | `http://10.0.2.2:5000`           |
+| iOS Simulator            | `http://localhost:5000`           |
+| Physical device (cùng WiFi) | `http://<LAN IP máy tính>:5000` |
+
+Thêm `.env` vào `.gitignore` (trước đó chỉ ignore `.env*.local`).
+
+### 8.2 Backend bind `0.0.0.0`
+
+**Vấn đề:** `httpServer.listen(PORT)` mặc định bind `127.0.0.1` → chỉ nhận kết nối từ chính máy đó → device trong LAN bị từ chối.
+
+**Fix** (`src/server.ts`):
+
+```typescript
+const PORT = Number(process.env.PORT) || 5000; // Number() fix TS overload error
+
+httpServer.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server đang chạy tại http://0.0.0.0:${PORT}`);
+});
+```
+
+- `'0.0.0.0'` cho phép nhận kết nối từ mọi network interface (LAN, localhost).
+- `Number(process.env.PORT)` fix lỗi TypeScript "No overload matches this call" — `process.env.PORT` là `string`, `listen()` cần `number`.
+
+### 8.3 Fix Axios error extraction
+
+**Vấn đề:** Khi backend trả 400/401/403/404, axios throw `AxiosError` với `message: "Request failed with status code 400"`. Code cũ không extract `error.response.data.message` → user chỉ thấy generic error, không biết lý do thật (ví dụ "Mật khẩu không chính xác", "Tài khoản không tồn tại").
+
+**Fix** (`lib/authApi.ts`):
+
+```typescript
+import { AxiosError } from 'axios';
+
+function extractErrorMessage(error: unknown, fallback: string): never {
+  if (error instanceof AxiosError && error.response?.data?.message) {
+    throw new Error(error.response.data.message);
+  }
+  if (error instanceof Error) {
+    throw error;
+  }
+  throw new Error(fallback);
+}
+
+export async function loginApi(payload: LoginPayload): Promise<AuthResponse> {
+  try {
+    const { data } = await api.post<AuthResponse>('/auth/login', payload);
+    return data;
+  } catch (error) {
+    extractErrorMessage(error, 'Đăng nhập thất bại');
+  }
+}
+```
+
+Giờ Alert hiện đúng message từ backend (ví dụ "Mật khẩu không chính xác") thay vì "Request failed with status code 401".
+
+### Files thay đổi
+
+| Repo | File | Thay đổi |
+|------|------|----------|
+| mobile | `.env` (NEW) | `EXPO_PUBLIC_API_URL` với LAN IP |
+| mobile | `.gitignore` | Thêm `.env` vào ignore |
+| mobile | `lib/authApi.ts` | Thêm `extractErrorMessage()`, wrap API calls trong try-catch |
+| backend | `src/server.ts` | `Number(PORT)`, bind `'0.0.0.0'` |
+
+### Bài học / Pattern ghi nhớ
+
+| Vấn đề | Pattern tránh | Pattern đúng |
+|---------|---------------|--------------|
+| Mobile → backend trên device thật | `localhost` hoặc `10.0.2.2` | LAN IP của máy tính (cùng WiFi) |
+| Backend chỉ nhận localhost | `listen(PORT)` | `listen(PORT, '0.0.0.0')` |
+| Axios error message | `error.message` (generic) | `error.response.data.message` (backend message) |
+| `process.env.PORT` type | `process.env.PORT \|\| 5000` (string \| number) | `Number(process.env.PORT) \|\| 5000` (always number) |
+| Expo env var prefix | `NEXT_PUBLIC_*` | `EXPO_PUBLIC_*` |
+| Expo physical device | `--tunnel` (ngrok, unreliable) | `--lan` (cùng WiFi, stable) |
