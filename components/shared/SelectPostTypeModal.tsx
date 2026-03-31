@@ -42,8 +42,7 @@ export default function SelectPostTypeModal({
       >
         <Pressable onPress={(e) => e.stopPropagation()}>
           <View
-            // FLAT DESIGN: Nền trắng tuyệt đối, góc bo xl cứng, không shadow, viền t-2 bao phủ
-            className="bg-neutral-T100 rounded-t-3xl px-6 pt-4 border-t-2 border-neutral-T90 shadow-none"
+              className="bg-neutral-T100 rounded-t-3xl px-6 pt-4 border-t border-neutral-T90 shadow-lg"
             style={{ paddingBottom: Math.max(insets.bottom, 24) + 16 }}
           >
             {/* Thanh drag handle (vuông vức hơn) */}
@@ -52,11 +51,11 @@ export default function SelectPostTypeModal({
             {/* ── Option 1: P2P Free Food ── */}
             <TouchableOpacity
               activeOpacity={0.9}
-              className="flex-row items-center gap-4 py-4 px-4 mb-4 bg-neutral-T100 border-2 border-neutral-T90 rounded-2xl active:scale-95 transition-transform"
+              className="flex-row items-center gap-4 py-4 px-4 mb-4 bg-neutral-T100 border border-neutral-T90 rounded-2xl shadow-sm active:opacity-80"
               // Truyền type 'FREE_FOOD' cho logic P2P
               onPress={() => handleSelect('FREE_FOOD')}
             >
-              <View className="w-14 h-14 rounded-xl bg-primary-T40 items-center justify-center border-2 border-primary-T30">
+              <View className="w-14 h-14 rounded-xl bg-primary-T40 items-center justify-center">
                 <Feather name="heart" size={24} color="#FFFFFF" />
               </View>
               <View className="flex-1">
@@ -76,11 +75,11 @@ export default function SelectPostTypeModal({
             {/* ── Option 2: B2C Surprise Bag ── */}
             <TouchableOpacity
               activeOpacity={0.9}
-              className="flex-row items-center gap-4 py-4 px-4 mb-2 bg-neutral-T100 border-2 border-neutral-T90 rounded-2xl active:scale-95 transition-transform"
+              className="flex-row items-center gap-4 py-4 px-4 mb-2 bg-neutral-T100 border border-neutral-T90 rounded-2xl shadow-sm active:opacity-80"
               // Truyền type 'SURPRISE_BAG' cho logic B2C
               onPress={() => handleSelect('SURPRISE_BAG')}
             >
-              <View className="w-14 h-14 rounded-xl bg-secondary-T40 items-center justify-center border-2 border-secondary-T30">
+              <View className="w-14 h-14 rounded-xl bg-secondary-T40 items-center justify-center">
                 <Feather name="shopping-bag" size={24} color="#FFFFFF" />
               </View>
               <View className="flex-1">
