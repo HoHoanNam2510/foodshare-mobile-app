@@ -1,10 +1,12 @@
 // app/_layout.tsx
 import { useFonts } from 'expo-font';
-import { Slot } from 'expo-router';
+import { Slot, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import { useAuthStore } from '@/stores/authStore';
 
 // Import thư viện cấu hình Reanimated
 import {
@@ -15,7 +17,7 @@ import {
 // Tắt chế độ cảnh báo Strict Mode
 configureReanimatedLogger({
   level: ReanimatedLogLevel.warn,
-  strict: false, // <-- Dòng này sẽ làm warning biến mất vĩnh viễn
+  strict: false,
 });
 
 // Import các định dạng của Epilogue
@@ -35,7 +37,28 @@ import './global.css';
 
 SplashScreen.preventAutoHideAsync();
 
+function useProtectedRoute() {
+  const { token, isHydrated } = useAuthStore();
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isHydrated) return;
+
+    const inAuthGroup = segments[0] === '(auth)';
+
+    if (!token && !inAuthGroup) {
+      router.replace('/(auth)/login' as never);
+    } else if (token && inAuthGroup) {
+      router.replace('/(tabs)/home' as never);
+    }
+  }, [token, isHydrated, segments]);
+}
+
 export default function RootLayout() {
+  const hydrate = useAuthStore((s) => s.hydrate);
+  const isHydrated = useAuthStore((s) => s.isHydrated);
+
   const [fontsLoaded, error] = useFonts({
     Epilogue: Epilogue_700Bold,
     'Be Vietnam Pro': BeVietnamPro_400Regular,
@@ -46,12 +69,18 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (fontsLoaded || error) {
+    hydrate();
+  }, []);
+
+  useEffect(() => {
+    if ((fontsLoaded || error) && isHydrated) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, error]);
+  }, [fontsLoaded, error, isHydrated]);
 
-  if (!fontsLoaded && !error) {
+  useProtectedRoute();
+
+  if (!fontsLoaded || !isHydrated) {
     return null;
   }
 
