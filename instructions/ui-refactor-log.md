@@ -515,10 +515,10 @@ EXPO_PUBLIC_API_URL=http://<LAN_IP>:5000
 
 **Lưu ý chọn IP theo môi trường:**
 
-| Môi trường               | URL                              |
-| ------------------------ | -------------------------------- |
-| Android Emulator         | `http://10.0.2.2:5000`           |
-| iOS Simulator            | `http://localhost:5000`           |
+| Môi trường                  | URL                             |
+| --------------------------- | ------------------------------- |
+| Android Emulator            | `http://10.0.2.2:5000`          |
+| iOS Simulator               | `http://localhost:5000`         |
 | Physical device (cùng WiFi) | `http://<LAN IP máy tính>:5000` |
 
 Thêm `.env` vào `.gitignore` (trước đó chỉ ignore `.env*.local`).
@@ -573,20 +573,20 @@ Giờ Alert hiện đúng message từ backend (ví dụ "Mật khẩu không ch
 
 ### Files thay đổi
 
-| Repo | File | Thay đổi |
-|------|------|----------|
-| mobile | `.env` (NEW) | `EXPO_PUBLIC_API_URL` với LAN IP |
-| mobile | `.gitignore` | Thêm `.env` vào ignore |
-| mobile | `lib/authApi.ts` | Thêm `extractErrorMessage()`, wrap API calls trong try-catch |
-| backend | `src/server.ts` | `Number(PORT)`, bind `'0.0.0.0'` |
+| Repo    | File             | Thay đổi                                                     |
+| ------- | ---------------- | ------------------------------------------------------------ |
+| mobile  | `.env` (NEW)     | `EXPO_PUBLIC_API_URL` với LAN IP                             |
+| mobile  | `.gitignore`     | Thêm `.env` vào ignore                                       |
+| mobile  | `lib/authApi.ts` | Thêm `extractErrorMessage()`, wrap API calls trong try-catch |
+| backend | `src/server.ts`  | `Number(PORT)`, bind `'0.0.0.0'`                             |
 
 ### Bài học / Pattern ghi nhớ
 
-| Vấn đề | Pattern tránh | Pattern đúng |
-|---------|---------------|--------------|
-| Mobile → backend trên device thật | `localhost` hoặc `10.0.2.2` | LAN IP của máy tính (cùng WiFi) |
-| Backend chỉ nhận localhost | `listen(PORT)` | `listen(PORT, '0.0.0.0')` |
-| Axios error message | `error.message` (generic) | `error.response.data.message` (backend message) |
-| `process.env.PORT` type | `process.env.PORT \|\| 5000` (string \| number) | `Number(process.env.PORT) \|\| 5000` (always number) |
-| Expo env var prefix | `NEXT_PUBLIC_*` | `EXPO_PUBLIC_*` |
-| Expo physical device | `--tunnel` (ngrok, unreliable) | `--lan` (cùng WiFi, stable) |
+| Vấn đề                            | Pattern tránh                                   | Pattern đúng                                         |
+| --------------------------------- | ----------------------------------------------- | ---------------------------------------------------- |
+| Mobile → backend trên device thật | `localhost` hoặc `10.0.2.2`                     | LAN IP của máy tính (cùng WiFi)                      |
+| Backend chỉ nhận localhost        | `listen(PORT)`                                  | `listen(PORT, '0.0.0.0')`                            |
+| Axios error message               | `error.message` (generic)                       | `error.response.data.message` (backend message)      |
+| `process.env.PORT` type           | `process.env.PORT \|\| 5000` (string \| number) | `Number(process.env.PORT) \|\| 5000` (always number) |
+| Expo env var prefix               | `NEXT_PUBLIC_*`                                 | `EXPO_PUBLIC_*`                                      |
+| Expo physical device              | `--tunnel` (ngrok, unreliable)                  | `--lan` (cùng WiFi, stable)                          |
