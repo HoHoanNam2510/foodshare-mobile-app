@@ -18,6 +18,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import ImagePickerSection from '@/components/post/ImagePickerSection';
 import { pickImage } from '@/lib/imagePicker';
 import { updateProfileApi } from '@/lib/profileApi';
+import { uploadImage } from '@/lib/uploadApi';
 import { useAuthStore } from '@/stores/authStore';
 
 export default function EditProfile() {
@@ -62,6 +63,9 @@ export default function EditProfile() {
     }
   };
 
+  const isLocalUri = (uri: string): boolean =>
+    uri.startsWith('file://') || uri.startsWith('content://');
+
   const handleSave = async (): Promise<void> => {
     if (!fullName.trim()) {
       Alert.alert('Validation', 'Full name is required');
@@ -70,12 +74,30 @@ export default function EditProfile() {
 
     setIsSaving(true);
     try {
+      // Upload avatar mới lên Cloudinary nếu là local URI
+      let avatarUrl = avatar || undefined;
+      if (avatar && isLocalUri(avatar)) {
+        const result = await uploadImage(avatar, 'avatars');
+        avatarUrl = result.url;
+      }
+
+      // Upload KYC documents mới lên Cloudinary (từng ảnh một, giữ nguyên URL cũ)
+      const uploadedKycDocs = await Promise.all(
+        kycDocuments.map(async (uri) => {
+          if (isLocalUri(uri)) {
+            const result = await uploadImage(uri, 'kyc');
+            return result.url;
+          }
+          return uri;
+        })
+      );
+
       const payload: Record<string, unknown> = {
         fullName: fullName.trim(),
         phoneNumber: phoneNumber.trim() || undefined,
         defaultAddress: defaultAddress.trim() || undefined,
-        avatar: avatar || undefined,
-        kycDocuments,
+        avatar: avatarUrl,
+        kycDocuments: uploadedKycDocs,
       };
 
       if (isStore) {

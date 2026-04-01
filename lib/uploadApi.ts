@@ -1,5 +1,4 @@
 import api from './axios';
-import * as FileSystem from 'expo-file-system';
 
 type UploadFolder = 'avatars' | 'posts' | 'kyc' | 'reports' | 'chat';
 
@@ -29,14 +28,9 @@ interface MultiUploadResponse {
  */
 export async function uploadImage(
   uri: string,
-  folder: UploadFolder = 'posts',
+  folder: UploadFolder = 'posts'
 ): Promise<UploadResult> {
   const formData = new FormData();
-
-  const fileInfo = await FileSystem.getInfoAsync(uri);
-  if (!fileInfo.exists) {
-    throw new Error('File không tồn tại');
-  }
 
   const fileName = uri.split('/').pop() || 'image.jpg';
   const match = /\.(\w+)$/.exec(fileName);
@@ -53,8 +47,8 @@ export async function uploadImage(
     formData,
     {
       headers: { 'Content-Type': 'multipart/form-data' },
-      timeout: 30000,
-    },
+      timeout: 120000,
+    }
   );
 
   return data.data;
@@ -69,7 +63,7 @@ export async function uploadImage(
  */
 export async function uploadMultipleImages(
   uris: string[],
-  folder: UploadFolder = 'posts',
+  folder: UploadFolder = 'posts'
 ): Promise<UploadResult[]> {
   const formData = new FormData();
 
@@ -91,7 +85,7 @@ export async function uploadMultipleImages(
     {
       headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 60000,
-    },
+    }
   );
 
   return data.data;

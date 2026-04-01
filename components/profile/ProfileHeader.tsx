@@ -11,22 +11,22 @@ export default function ProfileHeader({ onSettingsPress }: ProfileHeaderProps) {
   const router = useRouter();
 
   return (
-    <View className="flex-row items-center justify-between h-16 px-6 bg-neutral-T100 shadow-sm">
+    <View className="flex-row items-center gap-4 px-6 h-16 bg-neutral-T100 shadow-sm">
       <TouchableOpacity
-        className="p-2 rounded-full active:opacity-70"
+        className="active:opacity-70 p-1"
         onPress={() => router.back()}
       >
-        <MaterialIcons name="arrow-back" size={24} color="#191C1C" />
+        <MaterialIcons name="arrow-back" size={24} color="#757777" />
       </TouchableOpacity>
-      <Text className="font-sans font-bold text-lg text-neutral-T10">
+      <Text className="font-sans font-bold text-lg text-primary-T40">
         Profile
       </Text>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         className="p-2 rounded-full active:opacity-70"
         onPress={onSettingsPress}
       >
         <MaterialIcons name="settings" size={24} color="#191C1C" />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 }
