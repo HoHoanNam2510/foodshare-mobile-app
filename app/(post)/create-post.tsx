@@ -133,20 +133,23 @@ export default function CreatePost() {
         >
           <Pressable onPress={(e) => e.stopPropagation()}>
             <View
-              className="bg-neutral-T100 rounded-t-3xl px-6 pt-4 pb-6 gap-4"
+              className="bg-neutral-T100 rounded-t-3xl px-6 pt-4 pb-6"
               style={{ paddingBottom: Math.max(insets.bottom, 24) + 8 }}
             >
               <View className="w-10 h-1 bg-neutral-T80 rounded-full self-center mb-2" />
-              <DateTimePicker
-                value={getPickerValue()}
-                mode={pickerMode}
-                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                onChange={handleDateChange}
-                style={{ width: '100%' }}
-              />
+              <View style={{ overflow: 'hidden', alignSelf: 'center' }}>
+                <DateTimePicker
+                  value={getPickerValue()}
+                  mode={pickerMode}
+                  display="spinner"
+                  onChange={handleDateChange}
+                  themeVariant="light"
+                  style={{ height: 216 }}
+                />
+              </View>
               {Platform.OS === 'ios' && (
                 <TouchableOpacity
-                  className="h-14 bg-primary-T40 rounded-xl items-center justify-center shadow-sm active:opacity-80"
+                  className="h-14 bg-primary-T40 rounded-xl items-center justify-center shadow-sm active:opacity-80 mt-4"
                   onPress={() => setActivePicker(null)}
                 >
                   <Text className="font-label font-semibold text-neutral-T100">
@@ -202,6 +205,14 @@ export default function CreatePost() {
 
           {/* ── Form fields ── */}
           <View className="gap-6 mb-8">
+            {/* Category */}
+            <View className="gap-2">
+              <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
+                Category
+              </Text>
+              <CategoryPicker selected={category} onSelect={setCategory} />
+            </View>
+
             {/* Meal title */}
             <View className="gap-2">
               <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
@@ -262,14 +273,6 @@ export default function CreatePost() {
                 </Text>
                 <QuantityStepper value={quantity} onChange={setQuantity} />
               </View>
-            </View>
-
-            {/* Category */}
-            <View className="gap-2">
-              <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
-                Category
-              </Text>
-              <CategoryPicker selected={category} onSelect={setCategory} />
             </View>
           </View>
 
