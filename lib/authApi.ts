@@ -51,3 +51,12 @@ export async function registerApi(
     extractErrorMessage(error, 'Đăng ký thất bại');
   }
 }
+
+export async function logoutApi(): Promise<AuthResponse> {
+  try {
+    const { data } = await api.post<AuthResponse>('/auth/logout');
+    return data;
+  } catch (error) {
+    extractErrorMessage(error, 'Đăng xuất thất bại');
+  }
+}

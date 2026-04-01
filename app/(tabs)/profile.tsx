@@ -10,6 +10,7 @@ import ProfileHeader from '@/components/profile/ProfileHeader';
 import RecentPosts from '@/components/profile/RecentPosts';
 import StoreDetailsCard from '@/components/profile/StoreDetailsCard';
 import VerificationCard from '@/components/profile/VerificationCard';
+import { useAuthStore } from '@/stores/authStore';
 
 // ─── MOCK DATA ───
 const MOCK_USER = {
@@ -95,6 +96,12 @@ const MOCK_LISTINGS = [
 
 // ─── MAIN COMPONENT ───
 export default function ProfileScreen() {
+  const logout = useAuthStore((s) => s.logout);
+
+  const handleLogout = async (): Promise<void> => {
+    await logout();
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-neutral-DEFAULT" edges={['top']}>
       <ProfileHeader />
@@ -142,7 +149,7 @@ export default function ProfileScreen() {
 
           <RecentPosts posts={MOCK_LISTINGS} onSeeAll={() => {}} />
 
-          <ProfileActions onEditProfile={() => {}} onLogOut={() => {}} />
+          <ProfileActions onEditProfile={() => {}} onLogOut={handleLogout} />
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -1,7 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import { create } from 'zustand';
 
-import { loginApi, registerApi } from '@/lib/authApi';
+import { loginApi, logoutApi, registerApi } from '@/lib/authApi';
 
 interface User {
   _id: string;
@@ -92,6 +92,11 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   logout: async () => {
+    try {
+      await logoutApi();
+    } catch {
+      // Vẫn cho phép logout ở client ngay cả khi gọi server thất bại
+    }
     await SecureStore.deleteItemAsync('auth_token');
     await SecureStore.deleteItemAsync('auth_user');
     set({ user: null, token: null });
