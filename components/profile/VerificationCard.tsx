@@ -2,11 +2,14 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
 
+import SectionIncompleteBadge from '@/components/profile/SectionIncompleteBadge';
+
 type KycStatus = 'PENDING' | 'VERIFIED' | 'REJECTED';
 
 interface VerificationCardProps {
   kycStatus: KycStatus;
   kycDocuments: string[];
+  isIncomplete?: boolean;
 }
 
 const getKycBadgeClass = (status: KycStatus) => {
@@ -25,11 +28,15 @@ const getKycBadgeClass = (status: KycStatus) => {
 export default function VerificationCard({
   kycStatus,
   kycDocuments,
+  isIncomplete,
 }: VerificationCardProps) {
   const badgeStyle = getKycBadgeClass(kycStatus);
 
   return (
     <View className="bg-neutral-T100 rounded-2xl shadow-sm p-6 gap-5">
+      {isIncomplete && (
+        <SectionIncompleteBadge message="No KYC documents uploaded yet" />
+      )}
       {/* Section header */}
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-3">
@@ -52,7 +59,9 @@ export default function VerificationCard({
           </View>
         ) : (
           <View className={`${badgeStyle.container} rounded-full px-3 py-1`}>
-            <Text className={`font-label text-[11px] font-bold ${badgeStyle.text}`}>
+            <Text
+              className={`font-label text-[11px] font-bold ${badgeStyle.text}`}
+            >
               {kycStatus}
             </Text>
           </View>

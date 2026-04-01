@@ -2,14 +2,17 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, Text, View } from 'react-native';
 
+import SectionIncompleteBadge from '@/components/profile/SectionIncompleteBadge';
+
 interface IdentityCardProps {
-  avatar: string;
+  avatar?: string;
   fullName: string;
   role: string;
   createdAt: string;
   status: string;
   greenPoints: number;
   averageRating: number;
+  isIncomplete?: boolean;
 }
 
 export default function IdentityCard({
@@ -20,20 +23,28 @@ export default function IdentityCard({
   status,
   greenPoints,
   averageRating,
+  isIncomplete,
 }: IdentityCardProps) {
   const year = new Date(createdAt).getFullYear();
 
   return (
     <View className="bg-neutral-T100 rounded-2xl shadow-sm p-6 gap-4">
+      {isIncomplete && (
+        <SectionIncompleteBadge message="Missing avatar — tap Edit to add" />
+      )}
       <View className="flex-row items-center gap-6">
         {/* Avatar */}
         <View className="relative">
-          <View className="w-24 h-24 rounded-full overflow-hidden border border-neutral-T80">
-            <Image
-              source={{ uri: avatar }}
-              className="w-full h-full"
-              resizeMode="cover"
-            />
+          <View className="w-24 h-24 rounded-full overflow-hidden border border-neutral-T80 bg-neutral-T95 items-center justify-center">
+            {avatar ? (
+              <Image
+                source={{ uri: avatar }}
+                className="w-full h-full"
+                resizeMode="cover"
+              />
+            ) : (
+              <MaterialIcons name="person" size={40} color="#757777" />
+            )}
           </View>
           {/* Role badge */}
           <View className="absolute -bottom-1 -right-1 bg-secondary-T90 px-3 py-1 rounded-full border border-neutral-T100">

@@ -1,6 +1,7 @@
 // app/(tabs)/profile.tsx
-import React from 'react';
-import { ScrollView, View } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
+import React, { useCallback } from 'react';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import ContactCard from '@/components/profile/ContactCard';
@@ -12,37 +13,7 @@ import StoreDetailsCard from '@/components/profile/StoreDetailsCard';
 import VerificationCard from '@/components/profile/VerificationCard';
 import { useAuthStore } from '@/stores/authStore';
 
-// ─── MOCK DATA ───
-const MOCK_USER = {
-  fullName: 'Alex Rivera',
-  email: 'alex.rivera@sourdough.co',
-  phoneNumber: '+44 20 7123 4567',
-  defaultAddress: '78 Baker St, London',
-  role: 'STORE', // 'USER' | 'STORE' | 'ADMIN'
-  authProvider: 'GOOGLE',
-  isProfileCompleted: true,
-  status: 'ACTIVE', // 'ACTIVE' | 'BANNED'
-  createdAt: '2021-06-15T00:00:00.000Z',
-  avatar:
-    'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400&q=80',
-  location: { type: 'Point', coordinates: [-0.1568, 51.5229] },
-  storeInfo: {
-    businessName: 'Sourdough & Co.',
-    openHours: '09:00',
-    closeHours: '21:00',
-    description:
-      'Artisanal bakery specializing in slow-fermented breads and organic pastries. Everything is made fresh daily using traditional techniques and locally sourced ingredients.',
-    businessAddress: '78 Baker St, London',
-  },
-  kycStatus: 'VERIFIED' as const, // 'PENDING' | 'VERIFIED' | 'REJECTED'
-  kycDocuments: [
-    'https://images.unsplash.com/photo-1621972750749-0fbb1abb7736?w=200&q=80',
-    'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=200&q=80',
-  ],
-  greenPoints: 1240,
-  averageRating: 4.9,
-};
-
+// ─── MOCK LISTINGS (sẽ được thay thế khi có API posts) ───
 const MOCK_LISTINGS = [
   {
     id: '1',
@@ -81,7 +52,7 @@ const MOCK_LISTINGS = [
     title: 'Seeded Baguette',
     status: 'HIDDEN',
     image:
-      'https://images.unsplash.com/photo-1549931319-a545dcf3bc7c?w=400&q=80',
+      'https://feastingisfun.com/wp-content/uploads/2017/08/B95BD866-9ACF-4CE6-AF76-9D1375912546-825x510.jpeg',
     price: '£2.50',
   },
   {
@@ -96,11 +67,43 @@ const MOCK_LISTINGS = [
 
 // ─── MAIN COMPONENT ───
 export default function ProfileScreen() {
+  const router = useRouter();
+  const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
+  const fetchProfile = useAuthStore((s) => s.fetchProfile);
+
+  // Fetch fresh profile data khi tab được focus
+  useFocusEffect(
+    useCallback(() => {
+      fetchProfile();
+    }, [fetchProfile])
+  );
 
   const handleLogout = async (): Promise<void> => {
     await logout();
   };
+
+  if (!user) {
+    return (
+      <SafeAreaView className="flex-1 bg-neutral-DEFAULT items-center justify-center">
+        <ActivityIndicator size="large" color="#72B866" />
+        <Text className="font-body text-sm text-neutral-T50 mt-3">
+          Loading profile...
+        </Text>
+      </SafeAreaView>
+    );
+  }
+
+  // ─── Incomplete checks ───
+  const isIdentityIncomplete = !user.avatar;
+  const isContactIncomplete = !user.phoneNumber || !user.defaultAddress;
+  const isStoreIncomplete =
+    user.role === 'STORE' &&
+    (!user.storeInfo?.businessName ||
+      !user.storeInfo?.openHours ||
+      !user.storeInfo?.description);
+  const isVerificationIncomplete =
+    !user.kycDocuments || user.kycDocuments.length === 0;
 
   return (
     <SafeAreaView className="flex-1 bg-neutral-DEFAULT" edges={['top']}>
@@ -117,39 +120,47 @@ export default function ProfileScreen() {
       >
         <View className="gap-4">
           <IdentityCard
-            avatar={MOCK_USER.avatar}
-            fullName={MOCK_USER.fullName}
-            role={MOCK_USER.role}
-            createdAt={MOCK_USER.createdAt}
-            status={MOCK_USER.status}
-            greenPoints={MOCK_USER.greenPoints}
-            averageRating={MOCK_USER.averageRating}
+            avatar={user.avatar}
+            fullName={user.fullName}
+            role={user.role}
+            createdAt={user.createdAt}
+            status={user.status}
+            greenPoints={user.greenPoints}
+            averageRating={user.averageRating}
+            isIncomplete={isIdentityIncomplete}
           />
 
-          {MOCK_USER.role === 'STORE' && MOCK_USER.storeInfo && (
+          {user.role === 'STORE' && (
             <StoreDetailsCard
-              businessName={MOCK_USER.storeInfo.businessName}
-              openHours={MOCK_USER.storeInfo.openHours}
-              closeHours={MOCK_USER.storeInfo.closeHours}
-              description={MOCK_USER.storeInfo.description}
-              businessAddress={MOCK_USER.storeInfo.businessAddress}
+              businessName={user.storeInfo?.businessName}
+              openHours={user.storeInfo?.openHours}
+              closeHours={user.storeInfo?.closeHours}
+              description={user.storeInfo?.description}
+              businessAddress={user.storeInfo?.businessAddress}
+              isIncomplete={isStoreIncomplete}
             />
           )}
 
           <ContactCard
-            email={MOCK_USER.email}
-            phoneNumber={MOCK_USER.phoneNumber}
-            defaultAddress={MOCK_USER.defaultAddress}
+            email={user.email}
+            phoneNumber={user.phoneNumber}
+            defaultAddress={user.defaultAddress}
+            location={user.location}
+            isIncomplete={isContactIncomplete}
           />
 
           <VerificationCard
-            kycStatus={MOCK_USER.kycStatus}
-            kycDocuments={MOCK_USER.kycDocuments}
+            kycStatus={user.kycStatus}
+            kycDocuments={user.kycDocuments ?? []}
+            isIncomplete={isVerificationIncomplete}
           />
 
           <RecentPosts posts={MOCK_LISTINGS} onSeeAll={() => {}} />
 
-          <ProfileActions onEditProfile={() => {}} onLogOut={handleLogout} />
+          <ProfileActions
+            onEditProfile={() => router.push('/(post)/edit-profile')}
+            onLogOut={handleLogout}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>

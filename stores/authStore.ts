@@ -2,6 +2,15 @@ import * as SecureStore from 'expo-secure-store';
 import { create } from 'zustand';
 
 import { loginApi, logoutApi, registerApi } from '@/lib/authApi';
+import { getMeApi } from '@/lib/profileApi';
+
+interface StoreInfo {
+  businessName?: string;
+  openHours?: string;
+  closeHours?: string;
+  description?: string;
+  businessAddress?: string;
+}
 
 interface User {
   _id: string;
@@ -9,10 +18,22 @@ interface User {
   fullName: string;
   phoneNumber?: string;
   avatar?: string;
+  defaultAddress?: string;
   role: 'USER' | 'STORE' | 'ADMIN';
+  authProvider: 'LOCAL' | 'GOOGLE';
   isProfileCompleted: boolean;
+  location?: {
+    type: 'Point';
+    coordinates: [number, number];
+  };
+  kycStatus: 'PENDING' | 'VERIFIED' | 'REJECTED';
+  kycDocuments: string[];
+  storeInfo?: StoreInfo;
   greenPoints: number;
   averageRating: number;
+  status: 'ACTIVE' | 'BANNED';
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface AuthState {
@@ -30,6 +51,8 @@ interface AuthState {
     password: string
   ) => Promise<void>;
   logout: () => Promise<void>;
+  fetchProfile: () => Promise<void>;
+  setUser: (user: User) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -100,5 +123,23 @@ export const useAuthStore = create<AuthState>((set) => ({
     await SecureStore.deleteItemAsync('auth_token');
     await SecureStore.deleteItemAsync('auth_user');
     set({ user: null, token: null });
+  },
+
+  fetchProfile: async () => {
+    try {
+      const res = await getMeApi();
+      if (res.success && res.data) {
+        const user = res.data as unknown as User;
+        await SecureStore.setItemAsync('auth_user', JSON.stringify(user));
+        set({ user });
+      }
+    } catch {
+      // Giữ nguyên user cũ nếu fetch thất bại
+    }
+  },
+
+  setUser: (user: User) => {
+    set({ user });
+    SecureStore.setItemAsync('auth_user', JSON.stringify(user));
   },
 }));

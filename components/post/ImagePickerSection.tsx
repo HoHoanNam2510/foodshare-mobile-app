@@ -1,16 +1,8 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
 import React from 'react';
-import {
-  Alert,
-  Image,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
-const IMAGE_COMPRESSION_QUALITY = 0.8;
+import { pickImage } from '@/lib/imagePicker';
 
 interface ImagePickerSectionProps {
   images: string[];
@@ -24,28 +16,9 @@ export default function ImagePickerSection({
   maxImages = 10,
 }: ImagePickerSectionProps) {
   const handleAddPhoto = async () => {
-    try {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert(
-          'Permission needed',
-          'Please grant photo library access in Settings to add photos.'
-        );
-        return;
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        allowsEditing: false,
-        quality: IMAGE_COMPRESSION_QUALITY,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        onImagesChange([...images, result.assets[0].uri]);
-      }
-    } catch (error) {
-      console.error('ImagePicker error:', error);
+    const uri = await pickImage();
+    if (uri) {
+      onImagesChange([...images, uri]);
     }
   };
 
