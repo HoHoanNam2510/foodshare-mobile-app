@@ -22,6 +22,10 @@ interface AuthResponse {
   onboardingRequired?: boolean;
 }
 
+interface GoogleLoginPayload {
+  idToken: string;
+}
+
 function extractErrorMessage(error: unknown, fallback: string): never {
   if (error instanceof AxiosError && error.response?.data?.message) {
     throw new Error(error.response.data.message);
@@ -58,5 +62,19 @@ export async function logoutApi(): Promise<AuthResponse> {
     return data;
   } catch (error) {
     extractErrorMessage(error, 'Đăng xuất thất bại');
+  }
+}
+
+export async function googleLoginApi(
+  payload: GoogleLoginPayload
+): Promise<AuthResponse> {
+  try {
+    const { data } = await api.post<AuthResponse>(
+      '/auth/google-login',
+      payload
+    );
+    return data;
+  } catch (error) {
+    extractErrorMessage(error, 'Đăng nhập Google thất bại');
   }
 }

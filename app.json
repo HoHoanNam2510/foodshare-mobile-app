@@ -1,5 +1,6 @@
 {
   "expo": {
+    "owner": "nam1756",
     "name": "foodshare-mobile-app",
     "slug": "foodshare-mobile-app",
     "version": "1.0.0",
@@ -9,7 +10,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hohoannam2510.foodsharemobileapp"
     },
     "android": {
       "adaptiveIcon": {
@@ -47,7 +49,8 @@
           "photosPermission": "Ứng dụng cần truy cập thư viện ảnh để bạn có thể thêm ảnh vào bài đăng."
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,

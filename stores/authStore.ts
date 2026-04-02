@@ -1,7 +1,12 @@
 import * as SecureStore from 'expo-secure-store';
 import { create } from 'zustand';
 
-import { loginApi, logoutApi, registerApi } from '@/lib/authApi';
+import {
+  googleLoginApi,
+  loginApi,
+  logoutApi,
+  registerApi,
+} from '@/lib/authApi';
 import { getMeApi } from '@/lib/profileApi';
 
 interface StoreInfo {
@@ -44,6 +49,7 @@ interface AuthState {
 
   hydrate: () => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
+  googleLogin: (idToken: string) => Promise<void>;
   register: (
     fullName: string,
     email: string,
@@ -90,6 +96,28 @@ export const useAuthStore = create<AuthState>((set) => ({
       } else {
         set({ isLoading: false });
         throw new Error(res.message || 'Đăng nhập thất bại');
+      }
+    } catch (error) {
+      set({ isLoading: false });
+      throw error;
+    }
+  },
+
+  googleLogin: async (idToken) => {
+    set({ isLoading: true });
+    try {
+      const res = await googleLoginApi({ idToken });
+      if (res.success && res.token && res.data) {
+        await SecureStore.setItemAsync('auth_token', res.token);
+        await SecureStore.setItemAsync('auth_user', JSON.stringify(res.data));
+        set({
+          token: res.token,
+          user: res.data as unknown as User,
+          isLoading: false,
+        });
+      } else {
+        set({ isLoading: false });
+        throw new Error(res.message || 'Đăng nhập Google thất bại');
       }
     } catch (error) {
       set({ isLoading: false });

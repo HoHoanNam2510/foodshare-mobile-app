@@ -1,7 +1,10 @@
 import { Feather } from '@expo/vector-icons';
+import * as AuthSession from 'expo-auth-session';
+import Constants from 'expo-constants';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -18,13 +21,107 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/stores/authStore';
 
+WebBrowser.maybeCompleteAuthSession();
+
+const isExpoGo = Constants.appOwnership === 'expo';
+
+const GOOGLE_DISCOVERY: AuthSession.DiscoveryDocument = {
+  authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
+  tokenEndpoint: 'https://oauth2.googleapis.com/token',
+};
+
+// Reverse Google client ID → URL scheme
+// "123-abc.apps.googleusercontent.com" → "com.googleusercontent.apps.123-abc"
+function reverseClientId(clientId: string): string {
+  return clientId.split('.').reverse().join('.');
+}
+
+// Pick client ID theo platform + môi trường
+function getGoogleClientId(): string {
+  if (Platform.OS === 'ios') {
+    return isExpoGo
+      ? (process.env.EXPO_PUBLIC_GOOGLE_EXPO_GO_IOS_CLIENT_ID ?? '')
+      : (process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? '');
+  }
+  if (Platform.OS === 'android') {
+    return process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID ?? '';
+  }
+  return process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? '';
+}
+
+// iOS: dùng reversed client ID scheme (ASWebAuthenticationSession tự bắt)
+// Android/Web: dùng scheme mặc định
+function getGoogleRedirectUri(clientId: string): string {
+  if (Platform.OS === 'ios' && clientId) {
+    return `${reverseClientId(clientId)}:/oauthredirect`;
+  }
+  return AuthSession.makeRedirectUri();
+}
+
 export default function LoginScreen() {
   const router = useRouter();
-  const { login, isLoading } = useAuthStore();
+  const { login, googleLogin, isLoading } = useAuthStore();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+  const googleClientId = getGoogleClientId();
+  const googleRedirectUri = getGoogleRedirectUri(googleClientId);
+
+  // Auth code flow + PKCE (không cần proxy, không cần client secret)
+  const [request, response, promptAsync] = AuthSession.useAuthRequest(
+    {
+      clientId: googleClientId,
+      redirectUri: googleRedirectUri,
+      responseType: AuthSession.ResponseType.Code,
+      scopes: ['openid', 'email', 'profile'],
+      usePKCE: true,
+    },
+    GOOGLE_DISCOVERY
+  );
+
+  useEffect(() => {
+    if (
+      response?.type === 'success' &&
+      response.params.code &&
+      request?.codeVerifier
+    ) {
+      exchangeGoogleCode(response.params.code, request.codeVerifier);
+    }
+  }, [response]);
+
+  // Đổi auth code → id_token rồi gửi lên backend
+  const exchangeGoogleCode = async (code: string, codeVerifier: string) => {
+    setIsGoogleLoading(true);
+    try {
+      const tokenResult = await AuthSession.exchangeCodeAsync(
+        {
+          clientId: googleClientId,
+          code,
+          redirectUri: googleRedirectUri,
+          extraParams: { code_verifier: codeVerifier },
+        },
+        GOOGLE_DISCOVERY
+      );
+
+      if (!tokenResult.idToken) {
+        throw new Error('Không nhận được ID token từ Google');
+      }
+
+      await googleLogin(tokenResult.idToken);
+      router.replace('/(tabs)/home' as never);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Google login failed. Please try again.';
+      Alert.alert('Google login failed', message);
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -92,18 +189,26 @@ export default function LoginScreen() {
               {/* Google sign-in */}
               <TouchableOpacity
                 activeOpacity={0.8}
+                disabled={isGoogleLoading}
+                onPress={() => promptAsync()}
                 className="flex-row items-center justify-center bg-neutral-T100 h-14 rounded-xl mb-6 shadow-sm"
               >
-                <Image
-                  source={{
-                    uri: 'https://img.icons8.com/color/48/google-logo.png',
-                  }}
-                  style={{ width: 24, height: 24 }}
-                  className="mr-3"
-                />
-                <Text className="font-body font-semibold text-base text-neutral-T10">
-                  Continue with Google
-                </Text>
+                {isGoogleLoading ? (
+                  <ActivityIndicator color="#296C24" />
+                ) : (
+                  <>
+                    <Image
+                      source={{
+                        uri: 'https://img.icons8.com/color/48/google-logo.png',
+                      }}
+                      style={{ width: 24, height: 24 }}
+                      className="mr-3"
+                    />
+                    <Text className="font-body font-semibold text-base text-neutral-T10">
+                      Continue with Google
+                    </Text>
+                  </>
+                )}
               </TouchableOpacity>
 
               {/* Divider */}
