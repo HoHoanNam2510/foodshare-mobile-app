@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Modal,
   Pressable,
   Text,
@@ -9,36 +10,39 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const PASSCODE_LENGTH = 4;
+const PASSCODE_LENGTH = 6;
 
 interface PasscodeModalProps {
   visible: boolean;
   onCancel: () => void;
   onVerify: (passcode: string) => void;
+  onResend?: () => Promise<void>;
   isLoading?: boolean;
+  deliveryMethod?: 'email' | 'SMS' | null;
 }
 
 export default function PasscodeModal({
   visible,
   onCancel,
   onVerify,
+  onResend,
   isLoading = false,
+  deliveryMethod = null,
 }: PasscodeModalProps) {
   const insets = useSafeAreaInsets();
   const [digits, setDigits] = useState(Array(PASSCODE_LENGTH).fill(''));
+  const [isResending, setIsResending] = useState(false);
 
-  const ref0 = useRef<TextInput>(null);
-  const ref1 = useRef<TextInput>(null);
-  const ref2 = useRef<TextInput>(null);
-  const ref3 = useRef<TextInput>(null);
-  const refs = [ref0, ref1, ref2, ref3];
+  const refs = Array.from({ length: PASSCODE_LENGTH }, () =>
+    useRef<TextInput>(null)
+  );
 
   const handleChange = (text: string, index: number) => {
     const char = text.slice(-1);
     const newDigits = [...digits];
     newDigits[index] = char;
     setDigits(newDigits);
-    if (char && index < 3) {
+    if (char && index < PASSCODE_LENGTH - 1) {
       refs[index + 1].current?.focus();
     }
   };
@@ -51,7 +55,7 @@ export default function PasscodeModal({
 
   const handleVerify = () => {
     const passcode = digits.join('');
-    if (passcode.length === 4) {
+    if (passcode.length === PASSCODE_LENGTH) {
       onVerify(passcode);
     }
   };
@@ -60,6 +64,25 @@ export default function PasscodeModal({
     setDigits(Array(PASSCODE_LENGTH).fill(''));
     onCancel();
   };
+
+  const handleResend = async () => {
+    if (!onResend || isResending) return;
+    setIsResending(true);
+    try {
+      await onResend();
+      setDigits(Array(PASSCODE_LENGTH).fill(''));
+      refs[0].current?.focus();
+    } finally {
+      setIsResending(false);
+    }
+  };
+
+  const deliveryHint =
+    deliveryMethod === 'email'
+      ? 'We sent a 6-digit code to your email.'
+      : deliveryMethod === 'SMS'
+        ? 'We sent a 6-digit code via SMS to your phone.'
+        : 'Please enter your secret pin to confirm and publish this meal listing.';
 
   return (
     <Modal
@@ -83,17 +106,16 @@ export default function PasscodeModal({
                 Confirm listing
               </Text>
               <Text className="font-body text-sm text-neutral-T50 text-center leading-relaxed">
-                Please enter your secret pin to confirm and publish this meal
-                listing.
+                {deliveryHint}
               </Text>
             </View>
 
-            <View className="flex-row justify-center gap-4">
+            <View className="flex-row justify-center gap-3">
               {digits.map((digit, index) => (
                 <TextInput
                   key={index}
                   ref={refs[index]}
-                  className="w-14 h-16 text-center text-2xl font-sans font-bold bg-neutral-T95 rounded-xl border border-neutral-T90 text-neutral-T10"
+                  className="w-12 h-14 text-center text-2xl font-sans font-bold bg-neutral-T95 rounded-xl border border-neutral-T90 text-neutral-T10"
                   maxLength={1}
                   keyboardType="numeric"
                   secureTextEntry
@@ -105,6 +127,22 @@ export default function PasscodeModal({
                 />
               ))}
             </View>
+
+            {onResend && (
+              <TouchableOpacity
+                className="items-center py-1"
+                onPress={handleResend}
+                disabled={isResending}
+              >
+                {isResending ? (
+                  <ActivityIndicator size="small" color="#296C24" />
+                ) : (
+                  <Text className="font-label text-sm font-semibold text-primary-T40">
+                    Resend code
+                  </Text>
+                )}
+              </TouchableOpacity>
+            )}
 
             <View className="flex-row gap-3">
               <TouchableOpacity

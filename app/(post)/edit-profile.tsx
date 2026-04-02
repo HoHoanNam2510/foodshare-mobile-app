@@ -160,16 +160,16 @@ export default function EditProfile() {
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
-            paddingBottom: 120,
+            paddingBottom: 24,
             paddingHorizontal: 24,
             paddingTop: 24,
           }}
           className="flex-1"
           keyboardShouldPersistTaps="handled"
         >
-          <View className="gap-6">
+          <View className="gap-5">
             {/* ─── Avatar ─── */}
-            <View className="items-center gap-3">
+            <View className="items-center gap-2">
               <TouchableOpacity
                 onPress={handlePickAvatar}
                 className="active:opacity-80"

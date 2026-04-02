@@ -3,6 +3,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -22,6 +23,9 @@ import CategoryPicker from '@/components/post/CategoryPicker';
 import ImagePickerSection from '@/components/post/ImagePickerSection';
 import PasscodeModal from '@/components/post/PasscodeModal';
 import QuantityStepper from '@/components/post/QuantityStepper';
+import { createPostApi, sendPostPasscodeApi } from '@/lib/postApi';
+import { uploadMultipleImages } from '@/lib/uploadApi';
+import { useAuthStore } from '@/stores/authStore';
 
 type ActivePicker = 'pickupStart' | 'pickupEnd' | 'expiryDate' | null;
 type PickerMode = 'date' | 'time';
@@ -65,6 +69,11 @@ export default function CreatePost() {
   // ── Passcode / submit state ──
   const [showPasscode, setShowPasscode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSendingPasscode, setIsSendingPasscode] = useState(false);
+  const [deliveryMethod, setDeliveryMethod] = useState<'email' | 'SMS' | null>(
+    null
+  );
+  const user = useAuthStore((s) => s.user);
 
   // ── Helpers ──
   const formatTime = (d: Date) =>
@@ -98,18 +107,90 @@ export default function CreatePost() {
     else if (activePicker === 'expiryDate') setExpiryDate(selected);
   };
 
-  const handlePublish = () => {
-    if (!title.trim() || images.length === 0) return;
-    setShowPasscode(true);
+  const handleSendPasscode = async (): Promise<boolean> => {
+    try {
+      setIsSendingPasscode(true);
+      const res = await sendPostPasscodeApi();
+      if (res.success && res.data) {
+        setDeliveryMethod(res.data.deliveryMethod);
+        return true;
+      }
+      Alert.alert('Error', res.message || 'Failed to send passcode');
+      return false;
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Failed to send passcode';
+      Alert.alert('Error', message);
+      return false;
+    } finally {
+      setIsSendingPasscode(false);
+    }
   };
 
-  const handleVerify = async (_passcode: string) => {
+  const handlePublish = async () => {
+    if (!title.trim() || images.length === 0) {
+      Alert.alert(
+        'Missing fields',
+        'Please add a title and at least one photo.'
+      );
+      return;
+    }
+    const sent = await handleSendPasscode();
+    if (sent) {
+      setShowPasscode(true);
+    }
+  };
+
+  const handleResendPasscode = async () => {
+    await handleSendPasscode();
+  };
+
+  const handleVerify = async (passcode: string) => {
     setIsSubmitting(true);
     try {
-      // TODO: call POST /api/posts with form data
-      router.push('/(post)/post-list' as any);
+      // 1. Upload images to Cloudinary
+      const uploadResults = await uploadMultipleImages(images, 'posts');
+      const imageUrls = uploadResults.map((r) => r.url);
+
+      // 2. Build pickup time string
+      const pickupTimeStr = `${formatTime(pickupStart)} - ${formatTime(pickupEnd)}`;
+
+      // 3. Build location from user profile (fallback to HCM default)
+      const coords = user?.location?.coordinates || [106.660172, 10.762622];
+      const location = {
+        type: 'Point' as const,
+        coordinates: coords as [number, number],
+      };
+
+      // 4. Create post via API
+      const res = await createPostApi({
+        type: isB2C ? 'B2C_MYSTERY_BAG' : 'P2P_FREE',
+        category,
+        title: title.trim(),
+        description: description.trim() || undefined,
+        images: imageUrls,
+        totalQuantity: quantity,
+        price: isB2C ? parseFloat(price) || 0 : undefined,
+        expiryDate: expiryDate.toISOString(),
+        pickupTime: pickupTimeStr,
+        location,
+        passcode,
+      });
+
+      if (res.success) {
+        Alert.alert('Success', 'Your meal has been published!', [
+          {
+            text: 'OK',
+            onPress: () => router.push('/(post)/post-list' as never),
+          },
+        ]);
+      } else {
+        Alert.alert('Error', res.message || 'Failed to create post');
+      }
     } catch (err) {
-      console.error('Failed to publish post:', err);
+      const message =
+        err instanceof Error ? err.message : 'Failed to publish post';
+      Alert.alert('Publish failed', message);
     } finally {
       setIsSubmitting(false);
       setShowPasscode(false);
@@ -381,11 +462,20 @@ export default function CreatePost() {
           <TouchableOpacity
             className="flex-1 h-14 bg-primary-T40 rounded-xl items-center justify-center flex-row gap-2 shadow-sm active:opacity-80"
             onPress={handlePublish}
+            disabled={isSendingPasscode}
           >
-            <MaterialIcons name="check-circle" size={18} color="#FFFFFF" />
-            <Text className="font-label font-medium text-sm text-neutral-T100">
-              Publish meal
-            </Text>
+            {isSendingPasscode ? (
+              <Text className="font-label font-medium text-sm text-neutral-T100">
+                Sending code...
+              </Text>
+            ) : (
+              <>
+                <MaterialIcons name="check-circle" size={18} color="#FFFFFF" />
+                <Text className="font-label font-medium text-sm text-neutral-T100">
+                  Publish meal
+                </Text>
+              </>
+            )}
           </TouchableOpacity>
         </View>
       </View>
@@ -398,7 +488,9 @@ export default function CreatePost() {
         visible={showPasscode}
         onCancel={() => setShowPasscode(false)}
         onVerify={handleVerify}
+        onResend={handleResendPasscode}
         isLoading={isSubmitting}
+        deliveryMethod={deliveryMethod}
       />
     </SafeAreaView>
   );
