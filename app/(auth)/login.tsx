@@ -4,7 +4,7 @@ import Constants from 'expo-constants';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link, useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -82,18 +82,8 @@ export default function LoginScreen() {
     GOOGLE_DISCOVERY
   );
 
-  useEffect(() => {
-    if (
-      response?.type === 'success' &&
-      response.params.code &&
-      request?.codeVerifier
-    ) {
-      exchangeGoogleCode(response.params.code, request.codeVerifier);
-    }
-  }, [response]);
-
   // Đổi auth code → id_token rồi gửi lên backend
-  const exchangeGoogleCode = async (code: string, codeVerifier: string) => {
+  const exchangeGoogleCode = useCallback(async (code: string, codeVerifier: string) => {
     setIsGoogleLoading(true);
     try {
       const tokenResult = await AuthSession.exchangeCodeAsync(
@@ -121,7 +111,17 @@ export default function LoginScreen() {
     } finally {
       setIsGoogleLoading(false);
     }
-  };
+  }, [googleClientId, googleRedirectUri, googleLogin, router]);
+
+  useEffect(() => {
+    if (
+      response?.type === 'success' &&
+      response.params.code &&
+      request?.codeVerifier
+    ) {
+      exchangeGoogleCode(response.params.code, request.codeVerifier);
+    }
+  }, [response, request, exchangeGoogleCode]);
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -295,7 +295,7 @@ export default function LoginScreen() {
               {/* Register link */}
               <View className="flex-row justify-center mt-6 pb-8">
                 <Text className="font-body text-sm text-neutral-T50">
-                  Don't have an account?{' '}
+                  Don&apos;t have an account?{' '}
                 </Text>
                 <Link href="/(auth)/register" asChild>
                   <TouchableOpacity>

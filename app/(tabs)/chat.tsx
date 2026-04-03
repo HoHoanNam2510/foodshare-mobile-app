@@ -1,7 +1,7 @@
-// app/(tabs)/ChatList.tsx
+// app/(tabs)/chat.tsx  –  Messages · Soft Elevation Rebuild
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Image,
   ScrollView,
@@ -12,163 +12,356 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-// ─── MOCK DATA ───
+// ─── MOCK DATA ───────────────────────────────────────────────────────────────
+
+const ACTIVE_CONTACTS = [
+  {
+    id: 'a1',
+    name: 'You',
+    avatar: 'https://i.pravatar.cc/150?img=68',
+    isMe: true,
+  },
+  {
+    id: 'a2',
+    name: 'Martin',
+    avatar: 'https://i.pravatar.cc/150?img=11',
+    online: true,
+  },
+  {
+    id: 'a3',
+    name: 'Karen',
+    avatar: 'https://i.pravatar.cc/150?img=5',
+    online: true,
+  },
+  {
+    id: 'a4',
+    name: 'Andrew',
+    avatar: 'https://i.pravatar.cc/150?img=12',
+    online: false,
+  },
+  {
+    id: 'a5',
+    name: 'Maisy',
+    avatar: 'https://i.pravatar.cc/150?img=33',
+    online: true,
+  },
+  {
+    id: 'a6',
+    name: 'Lena',
+    avatar: 'https://i.pravatar.cc/150?img=45',
+    online: false,
+  },
+];
+
 const MOCK_CHATS = [
   {
     id: '1',
     name: 'Martin Randolph',
-    message: "You: What's man!",
+    message: "What's up man! Did you see the salad post?",
     time: '9:40 AM',
-    unread: true,
+    unread: 2,
     avatar: 'https://i.pravatar.cc/150?img=11',
+    online: true,
   },
   {
     id: '2',
     name: 'Andrew Parker',
-    message: 'You: Ok, thanks!',
+    message: 'You: Ok, thanks for the sourdough!',
     time: '9:25 AM',
-    unread: false,
+    unread: 0,
     avatar: 'https://i.pravatar.cc/150?img=12',
+    online: false,
   },
   {
     id: '3',
     name: 'Karen Castillo',
-    message: 'You: Ok, See you in To...',
+    message: 'You: Ok, See you in Town Square at 7...',
     time: 'Fri',
-    unread: false,
+    unread: 0,
     avatar: 'https://i.pravatar.cc/150?img=5',
+    online: true,
   },
   {
     id: '4',
     name: 'Maisy Humphrey',
-    message: 'Have a good day, Maisy!',
-    time: 'Fri',
-    unread: false,
+    message: 'Have a good day! 🌿',
+    time: 'Thu',
+    unread: 1,
     avatar: 'https://i.pravatar.cc/150?img=33',
+    online: false,
+  },
+  {
+    id: '5',
+    name: 'Noah Bennett',
+    message: 'You: The garden mix was perfect, merci!',
+    time: 'Wed',
+    unread: 0,
+    avatar: 'https://i.pravatar.cc/150?img=15',
+    online: false,
   },
 ];
 
-export default function ChatListScreen() {
-  const router = useRouter();
+// ─── SUB-COMPONENTS ───────────────────────────────────────────────────────────
+
+function ActiveAvatar({ item }: { item: (typeof ACTIVE_CONTACTS)[number] }) {
+  return (
+    <TouchableOpacity
+      activeOpacity={0.75}
+      className="items-center gap-1.5 mr-5"
+    >
+      <View className="relative">
+        {item.isMe ? (
+          <View className="relative">
+            <Image
+              source={{ uri: item.avatar }}
+              className="w-[52px] h-[52px] rounded-full"
+            />
+            <View className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-primary-T40 rounded-full items-center justify-center border-2 border-neutral-T100">
+              <Feather name="plus" size={10} color="white" />
+            </View>
+          </View>
+        ) : (
+          <View>
+            <View
+              className={`p-[2.5px] rounded-full ${item.online ? 'bg-primary-T40' : 'bg-neutral-T80'}`}
+            >
+              <Image
+                source={{ uri: item.avatar }}
+                className="w-[48px] h-[48px] rounded-full border-2 border-neutral-T100"
+              />
+            </View>
+            {item.online && (
+              <View className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-primary-T40 border-2 border-neutral-T100" />
+            )}
+          </View>
+        )}
+      </View>
+      <Text
+        className="font-body text-[11px] text-neutral-T50"
+        numberOfLines={1}
+      >
+        {item.name}
+      </Text>
+    </TouchableOpacity>
+  );
+}
+
+function ChatCard({
+  chat,
+  onPress,
+}: {
+  chat: (typeof MOCK_CHATS)[number];
+  onPress: () => void;
+}) {
+  const hasUnread = chat.unread > 0;
 
   return (
-    <SafeAreaView className="flex-1 bg-surface" edges={['top']}>
-      {/* ── Header ── */}
-      <View className="flex-row items-center justify-between px-6 py-4">
-        <View className="flex-row items-center gap-4">
-          <TouchableOpacity activeOpacity={0.7} className="p-1 -ml-1">
-            <Feather name="menu" size={24} color="#296C24" />
-          </TouchableOpacity>
-          <Text className="font-sans text-3xl font-bold text-primary-dark tracking-tight">
-            Messages
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={onPress}
+      className="mx-5 mb-3 bg-neutral-T100 rounded-2xl px-4 py-3.5 flex-row items-center shadow-sm active:opacity-80"
+    >
+      {/* Avatar + online dot */}
+      <View className="relative mr-3.5">
+        <Image
+          source={{ uri: chat.avatar }}
+          className="w-[54px] h-[54px] rounded-full"
+        />
+        {chat.online && (
+          <View className="absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full bg-primary-T40 border-2 border-neutral-T100" />
+        )}
+      </View>
+
+      {/* Text content */}
+      <View className="flex-1 justify-center">
+        <View className="flex-row justify-between items-baseline mb-1">
+          <Text
+            className="font-body text-[15px] text-neutral-T10 flex-1 mr-2"
+            style={{ fontWeight: hasUnread ? '700' : '400' }}
+            numberOfLines={1}
+          >
+            {chat.name}
+          </Text>
+          <Text
+            className={`font-label text-[11px] ${hasUnread ? 'text-primary-T40' : 'text-neutral-T50'}`}
+            style={{ fontWeight: hasUnread ? '600' : '400' }}
+          >
+            {chat.time}
           </Text>
         </View>
-        <TouchableOpacity activeOpacity={0.8}>
-          <Image
-            source={{ uri: 'https://i.pravatar.cc/150?img=68' }}
-            className="w-10 h-10 rounded-full"
-          />
-        </TouchableOpacity>
+
+        <View className="flex-row justify-between items-center">
+          <Text
+            className={`font-body text-[13px] flex-1 mr-2 ${hasUnread ? 'text-neutral-T30' : 'text-neutral-T50'}`}
+            style={{ fontWeight: hasUnread ? '500' : '400' }}
+            numberOfLines={1}
+          >
+            {chat.message}
+          </Text>
+
+          {hasUnread ? (
+            <View className="min-w-[20px] h-5 bg-primary-T40 rounded-full items-center justify-center px-1.5">
+              <Text
+                className="font-label text-[10px] text-neutral-T100"
+                style={{ fontWeight: '700' }}
+              >
+                {chat.unread}
+              </Text>
+            </View>
+          ) : (
+            <Feather name="check-circle" size={15} color="#AAABAB" />
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+}
+
+// ─── MAIN SCREEN ──────────────────────────────────────────────────────────────
+
+export default function ChatListScreen() {
+  const router = useRouter();
+  const [query, setQuery] = useState('');
+
+  const filtered = query.trim()
+    ? MOCK_CHATS.filter(
+        (c) =>
+          c.name.toLowerCase().includes(query.toLowerCase()) ||
+          c.message.toLowerCase().includes(query.toLowerCase())
+      )
+    : MOCK_CHATS;
+
+  return (
+    <SafeAreaView className="flex-1 bg-neutral" edges={['top']}>
+      {/* ── Header ── */}
+      <View className="flex-row items-center justify-between px-5 pt-3 pb-2">
+        <Text
+          className="font-sans text-[28px] text-neutral-T10"
+          style={{ fontWeight: '700', letterSpacing: -0.5 }}
+        >
+          Messages
+        </Text>
+        <View className="flex-row items-center gap-3">
+          <TouchableOpacity
+            activeOpacity={0.7}
+            className="w-9 h-9 bg-neutral-T95 rounded-full items-center justify-center active:opacity-70"
+          >
+            <Feather name="edit" size={17} color="#296C24" />
+          </TouchableOpacity>
+          <TouchableOpacity activeOpacity={0.8} className="active:opacity-70">
+            <Image
+              source={{ uri: 'https://i.pravatar.cc/150?img=68' }}
+              className="w-9 h-9 rounded-full"
+            />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* ── Search Bar ── */}
-      <View className="px-6 mb-2">
-        <View className="flex-row items-center bg-surface-container rounded-2xl px-4 py-3">
-          <Feather name="search" size={20} color="#9ea99d" />
+      <View className="px-5 mb-4">
+        <View className="flex-row items-center bg-neutral-T100 rounded-xl px-4 py-2 shadow-sm border border-neutral-T90">
+          <Feather name="search" size={18} color="#AAABAB" />
           <TextInput
-            placeholder="Search"
-            placeholderTextColor="#9ea99d"
-            className="flex-1 ml-3 font-body text-base text-text"
+            placeholder="Search messages…"
+            placeholderTextColor="#AAABAB"
+            value={query}
+            onChangeText={setQuery}
+            className="flex-1 ml-2.5 font-body text-[14px] text-neutral-T10"
           />
+          {query.length > 0 && (
+            <TouchableOpacity onPress={() => setQuery('')} activeOpacity={0.7}>
+              <Feather name="x" size={16} color="#AAABAB" />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 
-      {/* ── Chat List ── */}
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100, paddingTop: 8 }}
+        contentContainerStyle={{ paddingBottom: 100 }}
       >
-        {MOCK_CHATS.map((chat) => (
-          <TouchableOpacity
-            key={chat.id}
-            activeOpacity={0.6}
-            onPress={() =>
-              router.push({
-                pathname: '/(post)/chat-detail' as any,
-                params: { id: chat.id, name: chat.name },
-              })
-            }
-            // The No-Line Rule: Dùng padding rộng để phân cách tự nhiên
-            className="flex-row items-center px-6 py-3.5"
-          >
-            {/* Avatar */}
-            <Image
-              source={{ uri: chat.avatar }}
-              className="w-[60px] h-[60px] rounded-full mr-4"
-            />
-
-            {/* Content */}
-            <View className="flex-1 justify-center">
-              <View className="flex-row justify-between items-center mb-1">
-                <Text className="font-body text-[15px] font-bold text-text truncate">
-                  {chat.name}
-                </Text>
-
-                {/* Trạng thái tin nhắn: Dấu chấm xanh (Chưa đọc) hoặc Dấu tick (Đã đọc) */}
-                {chat.unread ? (
-                  <View className="w-2.5 h-2.5 rounded-full bg-primary-dark" />
-                ) : (
-                  <Feather name="check-circle" size={16} color="#c0c9b9" />
-                )}
-              </View>
-
-              <Text
-                className="font-body text-[13px] text-text-muted truncate"
-                numberOfLines={1}
+        {/* ── Active Now ── */}
+        {!query && (
+          <View className="mb-5">
+            <View className="flex-row justify-between items-center px-5 mb-3">
+              <Text className="font-body-semibold text-[13px] text-neutral-T50">
+                Active now
+              </Text>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                className="active:opacity-70"
               >
-                {chat.message} · {chat.time}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-
-        {/* ── Ad / Special Item (Như trong HTML template) ── */}
-        <TouchableOpacity
-          activeOpacity={0.8}
-          className="mx-6 mt-4 p-4 bg-surface-lowest rounded-2xl flex-row items-center gap-4"
-          style={{
-            shadowColor: '#191c1c',
-            shadowOpacity: 0.04,
-            shadowRadius: 12,
-            elevation: 2,
-          }}
-        >
-          <View className="w-12 h-12 bg-surface rounded-xl items-center justify-center">
-            <Feather name="grid" size={24} color="#296C24" />
-          </View>
-          <View className="flex-1">
-            <View className="flex-row items-center gap-2 mb-1">
-              <Text className="font-body text-[14px] font-bold text-text">
-                Editorial Harvest
-              </Text>
-              <View className="bg-surface-container px-1.5 py-0.5 rounded">
-                <Text className="font-body text-[10px] font-bold text-text-muted uppercase tracking-wider">
-                  Ad
+                <Text
+                  className="font-body text-[13px] text-primary-T40"
+                  style={{ fontWeight: '600' }}
+                >
+                  See all
                 </Text>
-              </View>
+              </TouchableOpacity>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingHorizontal: 20,
+                paddingVertical: 4,
+              }}
+            >
+              {ACTIVE_CONTACTS.map((contact) => (
+                <ActiveAvatar key={contact.id} item={contact} />
+              ))}
+            </ScrollView>
+          </View>
+        )}
+
+        {/* ── Section label ── */}
+        <View className="flex-row justify-between items-center px-5 mb-3">
+          <Text className="font-body-semibold text-[13px] text-neutral-T50">
+            {query ? `Results for "${query}"` : 'Recent'}
+          </Text>
+          {!query && (
+            <TouchableOpacity activeOpacity={0.7} className="active:opacity-70">
+              <Text
+                className="font-body text-[13px] text-primary-T40"
+                style={{ fontWeight: '600' }}
+              >
+                Filter
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {/* ── Chat Cards ── */}
+        {filtered.length > 0 ? (
+          filtered.map((chat) => (
+            <ChatCard
+              key={chat.id}
+              chat={chat}
+              onPress={() =>
+                router.push({
+                  pathname: '/(post)/chat-detail' as any,
+                  params: { id: chat.id, name: chat.name },
+                })
+              }
+            />
+          ))
+        ) : (
+          <View className="items-center mt-16 px-8">
+            <View className="w-16 h-16 bg-neutral-T95 rounded-full items-center justify-center mb-4">
+              <Feather name="message-circle" size={28} color="#AAABAB" />
             </View>
             <Text
-              className="font-body text-[12px] text-text-muted mb-1"
-              numberOfLines={1}
+              className="font-body text-[15px] text-neutral-T10 mb-1"
+              style={{ fontWeight: '700' }}
             >
-              Harvest the best of the season...
+              No conversations found
             </Text>
-            <Text className="font-body text-[12px] font-bold text-primary-dark">
-              Learn More
+            <Text className="font-body text-[13px] text-neutral-T50 text-center">
+              Try a different name or keyword.
             </Text>
           </View>
-        </TouchableOpacity>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

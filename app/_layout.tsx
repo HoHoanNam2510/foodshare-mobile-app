@@ -2,38 +2,32 @@
 import { useFonts } from 'expo-font';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import {
+  Epilogue_400Regular,
+  Epilogue_700Bold,
+  Epilogue_800ExtraBold,
+} from '@expo-google-fonts/epilogue';
+import {
+  BeVietnamPro_400Regular,
+  BeVietnamPro_600SemiBold,
+  BeVietnamPro_700Bold,
+} from '@expo-google-fonts/be-vietnam-pro';
+import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from 'react-native-reanimated';
 import { useEffect } from 'react';
 import { View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/stores/authStore';
-
-// Import thư viện cấu hình Reanimated
-import {
-  configureReanimatedLogger,
-  ReanimatedLogLevel,
-} from 'react-native-reanimated';
+import './global.css';
 
 // Tắt chế độ cảnh báo Strict Mode
 configureReanimatedLogger({
   level: ReanimatedLogLevel.warn,
   strict: false,
 });
-
-// Import các định dạng của Epilogue
-import {
-  Epilogue_400Regular,
-  Epilogue_700Bold,
-  Epilogue_800ExtraBold,
-} from '@expo-google-fonts/epilogue';
-
-// Import các định dạng của Be Vietnam Pro
-import {
-  BeVietnamPro_400Regular,
-  BeVietnamPro_600SemiBold,
-  BeVietnamPro_700Bold,
-} from '@expo-google-fonts/be-vietnam-pro';
-import './global.css';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -52,7 +46,7 @@ function useProtectedRoute() {
     } else if (token && inAuthGroup) {
       router.replace('/(tabs)/home' as never);
     }
-  }, [token, isHydrated, segments]);
+  }, [token, isHydrated, segments, router]);
 }
 
 export default function RootLayout() {
@@ -70,7 +64,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     hydrate();
-  }, []);
+  }, [hydrate]);
 
   useEffect(() => {
     if ((fontsLoaded || error) && isHydrated) {

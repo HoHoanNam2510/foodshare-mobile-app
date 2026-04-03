@@ -1,9 +1,11 @@
 import { Feather } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 /** ── Header ── */
 export default function Header() {
+  const router = useRouter();
   const insets = useSafeAreaInsets();
 
   return (
@@ -34,7 +36,10 @@ export default function Header() {
           <TouchableOpacity className="w-10 h-10 rounded-full bg-neutral-T95 items-center justify-center active:opacity-80">
             <Feather name="bell" size={19} color="#191C1C" />
           </TouchableOpacity>
-          <TouchableOpacity className="active:opacity-80">
+          <TouchableOpacity
+            className="active:opacity-80"
+            onPress={() => router.push('/profile')}
+          >
             <Image
               source={{ uri: 'https://i.pravatar.cc/60?img=33' }}
               className="w-10 h-10 rounded-full border border-neutral-T90"

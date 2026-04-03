@@ -32,10 +32,13 @@ export default function PasscodeModal({
   const insets = useSafeAreaInsets();
   const [digits, setDigits] = useState(Array(PASSCODE_LENGTH).fill(''));
   const [isResending, setIsResending] = useState(false);
-
-  const refs = Array.from({ length: PASSCODE_LENGTH }, () =>
-    useRef<TextInput>(null)
-  );
+  const ref0 = useRef<TextInput>(null);
+  const ref1 = useRef<TextInput>(null);
+  const ref2 = useRef<TextInput>(null);
+  const ref3 = useRef<TextInput>(null);
+  const ref4 = useRef<TextInput>(null);
+  const ref5 = useRef<TextInput>(null);
+  const refs = [ref0, ref1, ref2, ref3, ref4, ref5];
 
   const handleChange = (text: string, index: number) => {
     const char = text.slice(-1);
