@@ -23,9 +23,12 @@ import CategoryPicker from '@/components/post/CategoryPicker';
 import ImagePickerSection from '@/components/post/ImagePickerSection';
 import PasscodeModal from '@/components/post/PasscodeModal';
 import QuantityStepper from '@/components/post/QuantityStepper';
-import { createPostApi, sendPostPasscodeApi } from '@/lib/postApi';
+import {
+  ApiValidationError,
+  createPostApi,
+  sendPostPasscodeApi,
+} from '@/lib/postApi';
 import { uploadMultipleImages } from '@/lib/uploadApi';
-import { useAuthStore } from '@/stores/authStore';
 
 type ActivePicker = 'pickupStart' | 'pickupEnd' | 'expiryDate' | null;
 type PickerMode = 'date' | 'time';
@@ -73,7 +76,8 @@ export default function CreatePost() {
   const [deliveryMethod, setDeliveryMethod] = useState<'email' | 'SMS' | null>(
     null
   );
-  const user = useAuthStore((s) => s.user);
+  // ── Field-level errors ──
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // ── Helpers ──
   const formatTime = (d: Date) =>
@@ -102,9 +106,16 @@ export default function CreatePost() {
       setActivePicker(null);
     }
     if (!selected) return;
-    if (activePicker === 'pickupStart') setPickupStart(selected);
-    else if (activePicker === 'pickupEnd') setPickupEnd(selected);
-    else if (activePicker === 'expiryDate') setExpiryDate(selected);
+    if (activePicker === 'pickupStart') {
+      setPickupStart(selected);
+      if (fieldErrors.pickupTime) setFieldErrors((e) => { const { pickupTime: _, ...rest } = e; return rest; });
+    } else if (activePicker === 'pickupEnd') {
+      setPickupEnd(selected);
+      if (fieldErrors.pickupTime) setFieldErrors((e) => { const { pickupTime: _, ...rest } = e; return rest; });
+    } else if (activePicker === 'expiryDate') {
+      setExpiryDate(selected);
+      if (fieldErrors.expiryDate) setFieldErrors((e) => { const { expiryDate: _, ...rest } = e; return rest; });
+    }
   };
 
   const handleSendPasscode = async (): Promise<boolean> => {
@@ -127,14 +138,35 @@ export default function CreatePost() {
     }
   };
 
-  const handlePublish = async () => {
-    if (!title.trim() || images.length === 0) {
-      Alert.alert(
-        'Missing fields',
-        'Please add a title and at least one photo.'
-      );
-      return;
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
+
+    if (images.length === 0) {
+      errors.images = 'Please add at least one photo';
     }
+    if (!title.trim()) {
+      errors.title = 'Meal title is required';
+    }
+    if (isB2C && (!price || parseFloat(price) <= 0)) {
+      errors.price = 'Price must be greater than 0';
+    }
+    if (quantity < 1) {
+      errors.quantity = 'At least 1 serving is required';
+    }
+    if (pickupStart >= pickupEnd) {
+      errors.pickupTime = 'End time must be after start time';
+    }
+    if (expiryDate <= new Date()) {
+      errors.expiryDate = 'Expiry date must be in the future';
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handlePublish = async () => {
+    if (!validateForm()) return;
+
     const sent = await handleSendPasscode();
     if (sent) {
       setShowPasscode(true);
@@ -155,14 +187,7 @@ export default function CreatePost() {
       // 2. Build pickup time string
       const pickupTimeStr = `${formatTime(pickupStart)} - ${formatTime(pickupEnd)}`;
 
-      // 3. Build location from user profile (fallback to HCM default)
-      const coords = user?.location?.coordinates || [106.660172, 10.762622];
-      const location = {
-        type: 'Point' as const,
-        coordinates: coords as [number, number],
-      };
-
-      // 4. Create post via API
+      // 3. Create post via API (location tạm thời không bắt buộc — map chưa tích hợp)
       const res = await createPostApi({
         type: isB2C ? 'B2C_MYSTERY_BAG' : 'P2P_FREE',
         category,
@@ -173,7 +198,6 @@ export default function CreatePost() {
         price: isB2C ? parseFloat(price) || 0 : undefined,
         expiryDate: expiryDate.toISOString(),
         pickupTime: pickupTimeStr,
-        location,
         passcode,
       });
 
@@ -188,9 +212,19 @@ export default function CreatePost() {
         Alert.alert('Error', res.message || 'Failed to create post');
       }
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'Failed to publish post';
-      Alert.alert('Publish failed', message);
+      if (err instanceof ApiValidationError) {
+        // Map server field errors to fieldErrors state
+        const errors: Record<string, string> = {};
+        for (const fe of err.fieldErrors) {
+          errors[fe.path] = fe.message;
+        }
+        setFieldErrors(errors);
+        Alert.alert('Validation error', 'Please check the highlighted fields.');
+      } else {
+        const message =
+          err instanceof Error ? err.message : 'Failed to publish post';
+        Alert.alert('Publish failed', message);
+      }
     } finally {
       setIsSubmitting(false);
       setShowPasscode(false);
@@ -281,7 +315,18 @@ export default function CreatePost() {
         >
           {/* ── Photos ── */}
           <View className="mb-8">
-            <ImagePickerSection images={images} onImagesChange={setImages} />
+            <ImagePickerSection
+              images={images}
+              onImagesChange={(imgs) => {
+                setImages(imgs);
+                if (fieldErrors.images) setFieldErrors((e) => { const { images: _, ...rest } = e; return rest; });
+              }}
+            />
+            {fieldErrors.images && (
+              <Text className="text-xs text-red-500 font-label mt-1 ml-1">
+                {fieldErrors.images}
+              </Text>
+            )}
           </View>
 
           {/* ── Form fields ── */}
@@ -300,12 +345,20 @@ export default function CreatePost() {
                 Meal title
               </Text>
               <TextInput
-                className="w-full h-14 px-4 rounded-xl bg-neutral-T95 border border-neutral-T90 font-body text-base text-neutral-T10"
+                className={`w-full h-14 px-4 rounded-xl bg-neutral-T95 border font-body text-base text-neutral-T10 ${fieldErrors.title ? 'border-red-500' : 'border-neutral-T90'}`}
                 placeholder="e.g. Homemade Vegetarian Lasagna"
                 placeholderTextColor="#AAABAB"
                 value={title}
-                onChangeText={setTitle}
+                onChangeText={(t) => {
+                  setTitle(t);
+                  if (fieldErrors.title) setFieldErrors((e) => { const { title: _, ...rest } = e; return rest; });
+                }}
               />
+              {fieldErrors.title && (
+                <Text className="text-xs text-red-500 font-label ml-1">
+                  {fieldErrors.title}
+                </Text>
+              )}
             </View>
 
             {/* Description */}
@@ -338,14 +391,22 @@ export default function CreatePost() {
                       $
                     </Text>
                     <TextInput
-                      className="w-full h-14 pl-8 pr-4 rounded-xl bg-neutral-T95 border border-neutral-T90 font-body text-base text-neutral-T10"
+                      className={`w-full h-14 pl-8 pr-4 rounded-xl bg-neutral-T95 border font-body text-base text-neutral-T10 ${fieldErrors.price ? 'border-red-500' : 'border-neutral-T90'}`}
                       placeholder="0.00"
                       placeholderTextColor="#AAABAB"
                       keyboardType="decimal-pad"
                       value={price}
-                      onChangeText={setPrice}
+                      onChangeText={(p) => {
+                        setPrice(p);
+                        if (fieldErrors.price) setFieldErrors((e) => { const { price: _, ...rest } = e; return rest; });
+                      }}
                     />
                   </View>
+                  {fieldErrors.price && (
+                    <Text className="text-xs text-red-500 font-label ml-1">
+                      {fieldErrors.price}
+                    </Text>
+                  )}
                 </View>
               )}
               <View className="flex-1 gap-2">
@@ -358,9 +419,9 @@ export default function CreatePost() {
           </View>
 
           {/* ── Pickup window ── */}
-          <View className="bg-neutral-T95 rounded-2xl p-6 gap-4 mb-6">
+          <View className={`rounded-2xl p-6 gap-4 mb-6 ${fieldErrors.pickupTime ? 'bg-red-50 border border-red-500' : 'bg-neutral-T95'}`}>
             <View className="flex-row items-center gap-2">
-              <MaterialIcons name="schedule" size={20} color="#296C24" />
+              <MaterialIcons name="schedule" size={20} color={fieldErrors.pickupTime ? '#EF4444' : '#296C24'} />
               <Text className="font-sans font-bold text-base text-neutral-T10">
                 Pickup window
               </Text>
@@ -395,6 +456,11 @@ export default function CreatePost() {
                 </TouchableOpacity>
               </View>
             </View>
+            {fieldErrors.pickupTime && (
+              <Text className="text-xs text-red-500 font-label ml-1">
+                {fieldErrors.pickupTime}
+              </Text>
+            )}
           </View>
 
           {/* ── Expiry date ── */}
@@ -403,7 +469,7 @@ export default function CreatePost() {
               Expiry date
             </Text>
             <TouchableOpacity
-              className="h-14 px-4 rounded-xl bg-neutral-T95 border border-neutral-T90 flex-row items-center justify-between active:opacity-80"
+              className={`h-14 px-4 rounded-xl bg-neutral-T95 border flex-row items-center justify-between active:opacity-80 ${fieldErrors.expiryDate ? 'border-red-500' : 'border-neutral-T90'}`}
               onPress={() => openPicker('expiryDate', 'date')}
             >
               <Text className="font-body text-base text-neutral-T10">
@@ -411,35 +477,14 @@ export default function CreatePost() {
               </Text>
               <MaterialIcons name="event" size={20} color="#AAABAB" />
             </TouchableOpacity>
+            {fieldErrors.expiryDate && (
+              <Text className="text-xs text-red-500 font-label ml-1">
+                {fieldErrors.expiryDate}
+              </Text>
+            )}
           </View>
 
-          {/* ── Location (placeholder) ── */}
-          <View className="bg-neutral-T100 rounded-2xl overflow-hidden shadow-sm border border-neutral-T90 mb-4">
-            <View className="h-32 bg-neutral-T95 items-center justify-center gap-1">
-              <MaterialIcons name="location-on" size={40} color="#76BC69" />
-              <Text className="font-label text-xs text-neutral-T70">
-                Map preview coming soon
-              </Text>
-            </View>
-            <View className="p-4 flex-row items-center justify-between">
-              <View className="flex-1 mr-3">
-                <Text className="font-sans font-bold text-sm text-neutral-T10">
-                  Pickup location
-                </Text>
-                <Text
-                  className="text-xs text-neutral-T50 font-body mt-0.5"
-                  numberOfLines={1}
-                >
-                  Tap to set your pickup address
-                </Text>
-              </View>
-              <TouchableOpacity className="px-4 py-2 rounded-lg bg-neutral-T95 active:opacity-80">
-                <Text className="font-label text-xs font-semibold text-primary-T40">
-                  Change
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+          {/* ── Location (tạm ẩn — map service chưa tích hợp) ── */}
         </ScrollView>
       </KeyboardAvoidingView>
 
