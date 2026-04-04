@@ -1,7 +1,9 @@
 import React, { useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   Text,
   TextInput,
@@ -94,6 +96,10 @@ export default function PasscodeModal({
       animationType="slide"
       onRequestClose={handleCancel}
     >
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
       <Pressable
         className="flex-1 justify-end"
         style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}
@@ -169,6 +175,7 @@ export default function PasscodeModal({
           </View>
         </Pressable>
       </Pressable>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

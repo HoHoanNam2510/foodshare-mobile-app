@@ -36,7 +36,7 @@ interface CreatePostPayload {
   totalQuantity: number;
   price?: number;
   expiryDate: string;
-  pickupTime: string;
+  pickupTime: { start: string; end: string };
   location?: {
     type: 'Point';
     coordinates: [number, number];

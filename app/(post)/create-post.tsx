@@ -184,10 +184,7 @@ export default function CreatePost() {
       const uploadResults = await uploadMultipleImages(images, 'posts');
       const imageUrls = uploadResults.map((r) => r.url);
 
-      // 2. Build pickup time string
-      const pickupTimeStr = `${formatTime(pickupStart)} - ${formatTime(pickupEnd)}`;
-
-      // 3. Create post via API (location tạm thời không bắt buộc — map chưa tích hợp)
+      // 2. Create post via API (location tạm thời không bắt buộc — map chưa tích hợp)
       const res = await createPostApi({
         type: isB2C ? 'B2C_MYSTERY_BAG' : 'P2P_FREE',
         category,
@@ -197,7 +194,10 @@ export default function CreatePost() {
         totalQuantity: quantity,
         price: isB2C ? parseFloat(price) || 0 : undefined,
         expiryDate: expiryDate.toISOString(),
-        pickupTime: pickupTimeStr,
+        pickupTime: {
+          start: pickupStart.toISOString(),
+          end: pickupEnd.toISOString(),
+        },
         passcode,
       });
 
