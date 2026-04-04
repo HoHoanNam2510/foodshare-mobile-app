@@ -259,7 +259,7 @@ export default function ChatListScreen() {
 
       {/* ── Search Bar ── */}
       <View className="px-5 mb-4">
-        <View className="flex-row items-center bg-neutral-T100 rounded-xl px-4 py-2 shadow-sm border border-neutral-T90">
+        <View className="flex-row items-center bg-neutral-T100 rounded-xl px-4 py-5 shadow-sm border border-neutral-T90">
           <Feather name="search" size={18} color="#AAABAB" />
           <TextInput
             placeholder="Search messages…"
@@ -340,7 +340,7 @@ export default function ChatListScreen() {
               chat={chat}
               onPress={() =>
                 router.push({
-                  pathname: '/(post)/chat-detail' as any,
+                  pathname: '/(chat)/chat-detail' as any,
                   params: { id: chat.id, name: chat.name },
                 })
               }
