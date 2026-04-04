@@ -1,48 +1,124 @@
-// app/(tabs)/Explore.tsx (hoặc app/explore.tsx tùy thư mục hiện tại của bạn)
-import { Link } from 'expo-router';
-import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Feather } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { Image, StatusBar, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function Explore() {
+import ExploreListView from '../../components/explore/ExploreListView';
+import ExploreMapView from '../../components/explore/ExploreMapView';
+import ViewToggle from '../../components/explore/ViewToggle';
+import { EXPLORE_POSTS } from '../../components/explore/mockData';
+import { ExploreFilter, ViewMode } from '../../components/explore/types';
+
+const HEADER_HEIGHT = 56;
+
+export default function ExploreScreen() {
+  const insets = useSafeAreaInsets();
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [activeFilter, setActiveFilter] = useState<ExploreFilter>('All');
+  const [searchText, setSearchText] = useState('');
+
+  const filteredPosts = EXPLORE_POSTS.filter((post) => {
+    const matchesSearch =
+      searchText.trim() === '' ||
+      post.title.toLowerCase().includes(searchText.toLowerCase());
+
+    const matchesFilter =
+      activeFilter === 'All' ||
+      (activeFilter === 'Free Food' && post.type === 'FREE') ||
+      (activeFilter === 'Surprise Bags' && post.type === 'MYSTERY_BAG') ||
+      activeFilter === 'Closest'; // would normally sort; show all
+
+    return matchesSearch && matchesFilter;
+  });
+
   return (
-    <SafeAreaView className="flex-1 bg-surface items-center justify-center px-6">
-      <Text className="font-sans text-3xl font-bold text-text mb-8">
-        Explore
-      </Text>
+    <View className="flex-1 bg-neutral">
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent
+      />
 
-      <View className="w-full gap-4">
-        {/* Nút test Form Tạo Bài Đăng */}
-        <Link href={'/(post)/create-post' as any} asChild>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            className="w-full bg-primary-light py-4 rounded-2xl items-center"
-          >
-            <Text className="font-body text-primary-dark font-bold text-base">
-              Test: Đi tới Form Create P2P
-            </Text>
+      {/* ── Fixed Header ── */}
+      <View
+        className="absolute top-0 left-0 right-0 z-50 bg-neutral-T100"
+        style={{
+          paddingTop: insets.top > 0 ? insets.top + 8 : 44,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.06,
+          shadowRadius: 4,
+          elevation: 3,
+        }}
+      >
+        <View
+          className="flex-row items-center justify-between px-5 pb-3"
+          style={{ height: HEADER_HEIGHT }}
+        >
+          {/* Left: search icon */}
+          <TouchableOpacity className="w-9 h-9 rounded-full bg-neutral-T95 items-center justify-center">
+            <Feather name="search" size={20} color="#191C1C" />
           </TouchableOpacity>
-        </Link>
 
-        {/* MỚI: Nút shortcut test UI Đăng nhập/Đăng ký */}
-        <Link href={'/(auth)/login'} asChild>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            className="w-full bg-secondary py-4 rounded-2xl items-center"
-            style={{
-              shadowColor: '#EC8632',
-              shadowOpacity: 0.3,
-              shadowRadius: 16,
-              shadowOffset: { width: 0, height: 6 },
-              elevation: 8,
-            }}
-          >
-            <Text className="font-body text-white font-bold text-base tracking-wide">
-              Test: Xem UI Login / Register
+          {/* Center: logo */}
+          <View className="flex-row items-center gap-2">
+            <Image
+              source={require('../../assets/images/logo.png')}
+              style={{ width: 32, height: 32 }}
+              resizeMode="contain"
+            />
+            <Text
+              className="text-lg font-sans text-primary-T40 tracking-tight"
+              style={{ fontWeight: '700' }}
+            >
+              Explore
             </Text>
-          </TouchableOpacity>
-        </Link>
+          </View>
+
+          {/* Right: avatar */}
+          <Image
+            source={{ uri: 'https://i.pravatar.cc/60?img=33' }}
+            className="w-9 h-9 rounded-full border border-neutral-T90"
+          />
+        </View>
       </View>
-    </SafeAreaView>
+
+      {/* ── Content ── */}
+      <View className="flex-1">
+        {viewMode === 'list' ? (
+          <ExploreListView
+            posts={filteredPosts}
+            activeFilter={activeFilter}
+            onFilterChange={setActiveFilter}
+            searchText={searchText}
+            onSearchChange={setSearchText}
+            headerHeight={HEADER_HEIGHT}
+          />
+        ) : (
+          <ExploreMapView
+            posts={filteredPosts}
+            activeFilter={activeFilter}
+            onFilterChange={setActiveFilter}
+            searchText={searchText}
+            onSearchChange={setSearchText}
+            headerHeight={HEADER_HEIGHT}
+          />
+        )}
+      </View>
+
+      {/* ── Floating View Toggle ── */}
+      <View
+        className="absolute items-center"
+        style={{
+          bottom: 72, // above CustomTabBar
+          left: 0,
+          right: 0,
+          zIndex: 40,
+        }}
+        pointerEvents="box-none"
+      >
+        <ViewToggle activeView={viewMode} onViewChange={setViewMode} />
+      </View>
+    </View>
   );
 }

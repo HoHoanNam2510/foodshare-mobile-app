@@ -1,0 +1,88 @@
+import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
+
+import { ExplorePost } from './types';
+
+interface MapPreviewCardProps {
+  post: ExplorePost;
+  onViewDetails?: () => void;
+}
+
+export default function MapPreviewCard({
+  post,
+  onViewDetails,
+}: MapPreviewCardProps) {
+  const isFree = post.type === 'FREE';
+
+  return (
+    <View
+      className="bg-neutral-T100 rounded-3xl p-3 flex-row gap-3"
+      style={{
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.12,
+        shadowRadius: 20,
+        elevation: 8,
+      }}
+    >
+      {/* Thumbnail */}
+      <View className="w-22 h-22 rounded-2xl overflow-hidden flex-shrink-0">
+        <Image
+          source={{ uri: post.imageUrl }}
+          style={{ width: 88, height: 88 }}
+          resizeMode="cover"
+        />
+      </View>
+
+      {/* Info */}
+      <View className="flex-1 justify-between py-0.5">
+        <View>
+          <View className="flex-row items-start justify-between">
+            <Text
+              className="text-secondary text-[10px] font-label uppercase tracking-widest"
+              style={{ fontWeight: '700' }}
+            >
+              {isFree ? 'Free Food' : 'Surprise Bag'}
+            </Text>
+            <Ionicons name="heart" size={16} color="#983F6A" />
+          </View>
+          <Text
+            className="text-neutral-T10 font-sans mt-0.5"
+            style={{ fontSize: 15, fontWeight: '700', lineHeight: 20 }}
+            numberOfLines={2}
+          >
+            {post.title}
+          </Text>
+          <View className="flex-row items-center gap-1 mt-1">
+            <Ionicons name="location-outline" size={12} color="#757777" />
+            <Text className="text-neutral-T50 text-xs font-label">
+              {post.distance} away
+            </Text>
+          </View>
+        </View>
+
+        <View className="flex-row items-center justify-between mt-2">
+          <Text
+            className={`font-sans ${isFree ? 'text-primary-T40' : 'text-secondary'}`}
+            style={{ fontSize: 16, fontWeight: '700' }}
+          >
+            {isFree ? 'FREE' : post.price}
+          </Text>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={onViewDetails}
+            className="bg-primary-T90 px-3 py-1.5 rounded-xl"
+          >
+            <Text
+              className="text-primary-T30 text-xs font-label"
+              style={{ fontWeight: '700' }}
+            >
+              View Details
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+}
