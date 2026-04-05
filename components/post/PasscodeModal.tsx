@@ -20,7 +20,7 @@ interface PasscodeModalProps {
   onVerify: (passcode: string) => void;
   onResend?: () => Promise<void>;
   isLoading?: boolean;
-  deliveryMethod?: 'email' | 'SMS' | null;
+  deliveryMethod?: 'email' | null;
 }
 
 export default function PasscodeModal({
@@ -85,9 +85,7 @@ export default function PasscodeModal({
   const deliveryHint =
     deliveryMethod === 'email'
       ? 'We sent a 6-digit code to your email.'
-      : deliveryMethod === 'SMS'
-        ? 'We sent a 6-digit code via SMS to your phone.'
-        : 'Please enter your secret pin to confirm and publish this meal listing.';
+      : 'Please enter your secret pin to confirm and publish this meal listing.';
 
   return (
     <Modal

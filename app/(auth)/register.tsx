@@ -16,17 +16,24 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import EmailVerifyModal from '@/components/auth/EmailVerifyModal';
+import { registerSendCodeApi } from '@/lib/authApi';
 import { useAuthStore } from '@/stores/authStore';
 
 export default function RegisterScreen() {
   const router = useRouter();
-  const { register, isLoading } = useAuthStore();
+  const { registerSendCode, registerVerify, isLoading } = useAuthStore();
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  // Email verification state
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
 
   const handleRegister = async () => {
     if (!fullName.trim() || !email.trim() || !password.trim()) {
@@ -38,15 +45,16 @@ export default function RegisterScreen() {
       return;
     }
     try {
-      await register(
+      // Bước 1: Gửi mã xác minh về email (CHƯA tạo account)
+      await registerSendCode(
         fullName.trim(),
         email.trim().toLowerCase(),
         phoneNumber.trim(),
         password
       );
-      Alert.alert('Success', 'Account created! Please log in.', [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
+
+      setRegisteredEmail(email.trim().toLowerCase());
+      setShowVerifyModal(true);
     } catch (error) {
       const message =
         error instanceof Error
@@ -54,6 +62,45 @@ export default function RegisterScreen() {
           : 'Registration failed. Please try again.';
       Alert.alert('Registration failed', message);
     }
+  };
+
+  const handleVerifyEmail = async (code: string) => {
+    setIsVerifying(true);
+    try {
+      // Bước 2: Xác minh mã → tạo account + auto-login
+      await registerVerify(registeredEmail, code);
+
+      setShowVerifyModal(false);
+      Alert.alert('Success', 'Email verified! Your account is ready.', [
+        { text: 'OK', onPress: () => router.replace('/(tabs)' as never) },
+      ]);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Verification failed';
+      Alert.alert('Error', message);
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    try {
+      // Gửi lại mã bằng cách gọi lại send-code với cùng thông tin
+      await registerSendCodeApi({
+        fullName: fullName.trim(),
+        email: registeredEmail,
+        phoneNumber: phoneNumber.trim() || undefined,
+        password,
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Failed to resend code';
+      Alert.alert('Error', message);
+    }
+  };
+
+  const handleCancelVerification = () => {
+    setShowVerifyModal(false);
   };
 
   return (
@@ -213,6 +260,16 @@ export default function RegisterScreen() {
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
+
+      {/* Email verification modal */}
+      <EmailVerifyModal
+        visible={showVerifyModal}
+        email={registeredEmail}
+        onCancel={handleCancelVerification}
+        onVerify={handleVerifyEmail}
+        onResend={handleResendVerification}
+        isLoading={isVerifying}
+      />
     </View>
   );
 }

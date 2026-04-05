@@ -5,7 +5,8 @@ import {
   googleLoginApi,
   loginApi,
   logoutApi,
-  registerApi,
+  registerSendCodeApi,
+  registerVerifyApi,
 } from '@/lib/authApi';
 import { getMeApi } from '@/lib/profileApi';
 
@@ -26,6 +27,7 @@ interface User {
   defaultAddress?: string;
   role: 'USER' | 'STORE' | 'ADMIN';
   authProvider: 'LOCAL' | 'GOOGLE';
+  isEmailVerified: boolean;
   isProfileCompleted: boolean;
   location?: {
     type: 'Point';
@@ -50,12 +52,13 @@ interface AuthState {
   hydrate: () => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   googleLogin: (idToken: string) => Promise<void>;
-  register: (
+  registerSendCode: (
     fullName: string,
     email: string,
     phoneNumber: string,
     password: string
   ) => Promise<void>;
+  registerVerify: (email: string, code: string) => Promise<void>;
   logout: () => Promise<void>;
   fetchProfile: () => Promise<void>;
   setUser: (user: User) => void;
@@ -125,20 +128,42 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  register: async (fullName, email, phoneNumber, password) => {
+  registerSendCode: async (fullName, email, phoneNumber, password) => {
     set({ isLoading: true });
     try {
-      const res = await registerApi({
+      const res = await registerSendCodeApi({
         fullName,
         email,
-        phoneNumber,
+        phoneNumber: phoneNumber || undefined,
         password,
       });
       if (!res.success) {
-        throw new Error(res.message || 'Đăng ký thất bại');
+        throw new Error(res.message || 'Gửi mã xác minh thất bại');
       }
     } finally {
       set({ isLoading: false });
+    }
+  },
+
+  registerVerify: async (email, code) => {
+    set({ isLoading: true });
+    try {
+      const res = await registerVerifyApi({ email, code });
+      if (res.success && res.token && res.data) {
+        await SecureStore.setItemAsync('auth_token', res.token);
+        await SecureStore.setItemAsync('auth_user', JSON.stringify(res.data));
+        set({
+          token: res.token,
+          user: res.data as unknown as User,
+          isLoading: false,
+        });
+      } else {
+        set({ isLoading: false });
+        throw new Error(res.message || 'Xác minh thất bại');
+      }
+    } catch (error) {
+      set({ isLoading: false });
+      throw error;
     }
   },
 

@@ -10,8 +10,13 @@ interface LoginPayload {
 interface RegisterPayload {
   fullName: string;
   email: string;
-  phoneNumber: string;
+  phoneNumber?: string;
   password: string;
+}
+
+interface RegisterVerifyPayload {
+  email: string;
+  code: string;
 }
 
 interface AuthResponse {
@@ -45,14 +50,31 @@ export async function loginApi(payload: LoginPayload): Promise<AuthResponse> {
   }
 }
 
-export async function registerApi(
+export async function registerSendCodeApi(
   payload: RegisterPayload
 ): Promise<AuthResponse> {
   try {
-    const { data } = await api.post<AuthResponse>('/auth/register', payload);
+    const { data } = await api.post<AuthResponse>(
+      '/auth/register/send-code',
+      payload
+    );
     return data;
   } catch (error) {
     extractErrorMessage(error, 'Đăng ký thất bại');
+  }
+}
+
+export async function registerVerifyApi(
+  payload: RegisterVerifyPayload
+): Promise<AuthResponse> {
+  try {
+    const { data } = await api.post<AuthResponse>(
+      '/auth/register/verify',
+      payload
+    );
+    return data;
+  } catch (error) {
+    extractErrorMessage(error, 'Xác minh mã thất bại');
   }
 }
 

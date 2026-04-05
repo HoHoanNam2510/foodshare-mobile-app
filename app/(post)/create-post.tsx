@@ -73,9 +73,7 @@ export default function CreatePost() {
   const [showPasscode, setShowPasscode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSendingPasscode, setIsSendingPasscode] = useState(false);
-  const [deliveryMethod, setDeliveryMethod] = useState<'email' | 'SMS' | null>(
-    null
-  );
+  const [deliveryMethod, setDeliveryMethod] = useState<'email' | null>(null);
   // ── Field-level errors ──
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 

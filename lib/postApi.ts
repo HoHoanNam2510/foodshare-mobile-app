@@ -23,7 +23,7 @@ interface SendPasscodeResponse {
   message: string;
   data?: {
     expiresInMinutes: number;
-    deliveryMethod: 'email' | 'SMS';
+    deliveryMethod: 'email';
   };
 }
 
