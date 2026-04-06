@@ -2,41 +2,43 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
 
-import SectionIncompleteBadge from '@/components/profile/SectionIncompleteBadge';
-
 type KycStatus = 'PENDING' | 'VERIFIED' | 'REJECTED';
 
 interface VerificationCardProps {
   kycStatus: KycStatus;
   kycDocuments: string[];
-  isIncomplete?: boolean;
 }
 
-const getKycBadgeClass = (status: KycStatus) => {
-  switch (status) {
-    case 'VERIFIED':
-      return { container: 'bg-primary-T95', text: 'text-primary-T40' };
-    case 'PENDING':
-      return { container: 'bg-secondary-T95', text: 'text-secondary-T40' };
-    case 'REJECTED':
-      return { container: null, text: 'text-error' };
-    default:
-      return { container: 'bg-neutral-T95', text: 'text-neutral-T50' };
-  }
+const KYC_BADGE: Record<
+  KycStatus,
+  { containerClass: string; textClass: string; label: string; bgStyle?: object }
+> = {
+  VERIFIED: {
+    containerClass: 'bg-primary-T95',
+    textClass: 'text-primary-T40',
+    label: 'Đã xác minh',
+  },
+  PENDING: {
+    containerClass: 'bg-secondary-T95',
+    textClass: 'text-secondary-T40',
+    label: 'Đang chờ duyệt',
+  },
+  REJECTED: {
+    containerClass: '',
+    textClass: 'text-error',
+    label: 'Bị từ chối',
+    bgStyle: { backgroundColor: 'rgba(186,26,26,0.1)' },
+  },
 };
 
 export default function VerificationCard({
   kycStatus,
   kycDocuments,
-  isIncomplete,
 }: VerificationCardProps) {
-  const badgeStyle = getKycBadgeClass(kycStatus);
+  const badge = KYC_BADGE[kycStatus];
 
   return (
     <View className="bg-neutral-T100 rounded-2xl shadow-sm p-6 gap-5">
-      {isIncomplete && (
-        <SectionIncompleteBadge message="No KYC documents uploaded yet" />
-      )}
       {/* Section header */}
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-3">
@@ -44,29 +46,44 @@ export default function VerificationCard({
             <MaterialIcons name="verified-user" size={20} color="#296C24" />
           </View>
           <Text className="font-sans font-bold text-lg text-neutral-T10">
-            Verification
+            Xác minh cửa hàng
           </Text>
         </View>
         {/* KYC status badge */}
-        {kycStatus === 'REJECTED' ? (
-          <View
-            className="rounded-full px-3 py-1"
-            style={{ backgroundColor: 'rgba(186,26,26,0.1)' }}
+        <View
+          className={`${badge.containerClass} rounded-full p-2`}
+          style={badge.bgStyle}
+        >
+          <Text
+            className={`font-label text-[11px] font-bold ${badge.textClass}`}
           >
-            <Text className="font-label text-[11px] font-bold text-error">
-              {kycStatus}
-            </Text>
-          </View>
-        ) : (
-          <View className={`${badgeStyle.container} rounded-full px-3 py-1`}>
-            <Text
-              className={`font-label text-[11px] font-bold ${badgeStyle.text}`}
-            >
-              {kycStatus}
-            </Text>
-          </View>
-        )}
+            {badge.label}
+          </Text>
+        </View>
       </View>
+
+      {/* Trạng thái PENDING: hiển thị thông báo chờ */}
+      {kycStatus === 'PENDING' && (
+        <View className="bg-secondary-T95 border border-secondary-T70 rounded-xl p-3 flex-row gap-2 items-start">
+          <MaterialIcons name="schedule" size={16} color="#6B5E00" />
+          <Text className="font-body text-xs text-secondary-T30 flex-1 leading-5">
+            Hồ sơ đã được gửi. Admin sẽ xét duyệt trong thời gian sớm nhất.
+          </Text>
+        </View>
+      )}
+
+      {/* Trạng thái REJECTED: hiển thị cảnh báo */}
+      {kycStatus === 'REJECTED' && (
+        <View
+          className="rounded-xl p-3 flex-row gap-2 items-start"
+          style={{ backgroundColor: 'rgba(186,26,26,0.08)' }}
+        >
+          <MaterialIcons name="error-outline" size={16} color="#ba1a1a" />
+          <Text className="font-body text-xs text-error flex-1 leading-5">
+            Hồ sơ bị từ chối. Vui lòng liên hệ Admin để biết thêm chi tiết.
+          </Text>
+        </View>
+      )}
 
       {/* KYC document images */}
       <ScrollView
@@ -83,14 +100,10 @@ export default function VerificationCard({
               source={{ uri: doc }}
               className="w-full h-full"
               resizeMode="cover"
-              style={{ opacity: 0.6 }}
+              style={{ opacity: 0.7 }}
             />
           </View>
         ))}
-        {/* Add document placeholder */}
-        <View className="w-32 h-20 rounded-xl bg-neutral-T95 items-center justify-center border border-dashed border-neutral-T80">
-          <MaterialIcons name="add" size={24} color="#757777" />
-        </View>
       </ScrollView>
     </View>
   );

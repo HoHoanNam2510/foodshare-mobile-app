@@ -4,16 +4,39 @@ import { Image, Text, View } from 'react-native';
 
 import SectionIncompleteBadge from '@/components/profile/SectionIncompleteBadge';
 
+type UserRole = 'USER' | 'STORE' | 'ADMIN';
+
 interface IdentityCardProps {
   avatar?: string;
   fullName: string;
-  role: string;
+  role: UserRole;
   createdAt: string;
   status: string;
   greenPoints: number;
   averageRating: number;
   isIncomplete?: boolean;
 }
+
+const ROLE_BADGE: Record<
+  UserRole,
+  { containerClass: string; textClass: string; label: string }
+> = {
+  USER: {
+    containerClass: 'bg-secondary-T90',
+    textClass: 'text-secondary-T10',
+    label: 'User',
+  },
+  STORE: {
+    containerClass: 'bg-primary-T90',
+    textClass: 'text-primary-T10',
+    label: 'Store',
+  },
+  ADMIN: {
+    containerClass: 'bg-neutral-T20',
+    textClass: 'text-neutral-T100',
+    label: 'Admin',
+  },
+};
 
 export default function IdentityCard({
   avatar,
@@ -47,9 +70,13 @@ export default function IdentityCard({
             )}
           </View>
           {/* Role badge */}
-          <View className="absolute -bottom-1 -right-1 bg-secondary-T90 px-3 py-1 rounded-full border border-neutral-T100">
-            <Text className="font-label text-[10px] font-bold text-secondary-T10">
-              {role}
+          <View
+            className={`absolute -bottom-1 -right-1 ${ROLE_BADGE[role].containerClass} px-3 py-1 rounded-full border border-neutral-T100`}
+          >
+            <Text
+              className={`font-label text-[10px] font-bold ${ROLE_BADGE[role].textClass}`}
+            >
+              {ROLE_BADGE[role].label}
             </Text>
           </View>
         </View>

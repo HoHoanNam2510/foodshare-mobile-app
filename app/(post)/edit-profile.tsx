@@ -15,7 +15,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import ImagePickerSection from '@/components/post/ImagePickerSection';
 import { pickImage } from '@/lib/imagePicker';
 import { updateProfileApi } from '@/lib/profileApi';
 import { uploadImage } from '@/lib/uploadApi';
@@ -33,10 +32,6 @@ export default function EditProfile() {
     user?.defaultAddress ?? ''
   );
   const [avatar, setAvatar] = useState(user?.avatar ?? '');
-  const [kycDocuments, setKycDocuments] = useState<string[]>(
-    user?.kycDocuments ?? []
-  );
-
   // Store info (chỉ hiện khi role = STORE)
   const [businessName, setBusinessName] = useState(
     user?.storeInfo?.businessName ?? ''
@@ -81,23 +76,11 @@ export default function EditProfile() {
         avatarUrl = result.url;
       }
 
-      // Upload KYC documents mới lên Cloudinary (từng ảnh một, giữ nguyên URL cũ)
-      const uploadedKycDocs = await Promise.all(
-        kycDocuments.map(async (uri) => {
-          if (isLocalUri(uri)) {
-            const result = await uploadImage(uri, 'kyc');
-            return result.url;
-          }
-          return uri;
-        })
-      );
-
       const payload: Record<string, unknown> = {
         fullName: fullName.trim(),
         phoneNumber: phoneNumber.trim() || undefined,
         defaultAddress: defaultAddress.trim() || undefined,
         avatar: avatarUrl,
-        kycDocuments: uploadedKycDocs,
       };
 
       if (isStore) {
@@ -272,14 +255,6 @@ export default function EditProfile() {
               </>
             )}
 
-            {/* ─── KYC Documents ─── */}
-            <SectionLabel icon="verified-user" label="KYC Documents" />
-
-            <ImagePickerSection
-              images={kycDocuments}
-              onImagesChange={setKycDocuments}
-              maxImages={5}
-            />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

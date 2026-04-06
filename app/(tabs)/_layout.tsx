@@ -1,15 +1,16 @@
 // app/(tabs)/_layout.tsx
 import { Slot, useRouter, useSegments } from 'expo-router';
-import React, { useState } from 'react'; // Bổ sung import React và useState
+import React, { useState } from 'react';
 import { View } from 'react-native';
 import CustomTabBar from '../../components/shared/CustomTabBar';
-import SelectPostTypeModal from '../../components/shared/SelectPostTypeModal'; // Import component Popup vừa tạo
+import SelectPostTypeModal from '../../components/shared/SelectPostTypeModal';
+import { useAuthStore } from '../../stores/authStore';
 
 export default function TabLayout() {
   const router = useRouter();
   const segments = useSegments();
+  const userRole = useAuthStore((s) => s.user?.role) ?? 'USER';
 
-  // 1. Khởi tạo state để kiểm soát việc ẩn/hiện popup
   const [isModalVisible, setModalVisible] = useState(false);
 
   const handleTabPress = (routeName: string) => {
@@ -46,6 +47,7 @@ export default function TabLayout() {
       <SelectPostTypeModal
         visible={isModalVisible}
         onClose={() => setModalVisible(false)}
+        userRole={userRole}
       />
     </View>
   );

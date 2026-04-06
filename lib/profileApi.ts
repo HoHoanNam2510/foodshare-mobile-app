@@ -42,6 +42,31 @@ export async function getMeApi(): Promise<ProfileResponse> {
   }
 }
 
+interface RegisterStorePayload {
+  storeInfo: {
+    businessName: string;
+    openHours: string;
+    closeHours: string;
+    description?: string;
+    businessAddress: string;
+  };
+  kycDocuments: string[];
+}
+
+export async function registerStoreApi(
+  payload: RegisterStorePayload
+): Promise<ProfileResponse> {
+  try {
+    const { data } = await api.post<ProfileResponse>(
+      '/auth/register-store',
+      payload
+    );
+    return data;
+  } catch (error) {
+    extractErrorMessage(error, 'Đăng ký cửa hàng thất bại');
+  }
+}
+
 export async function updateProfileApi(
   payload: UpdateProfilePayload
 ): Promise<ProfileResponse> {

@@ -1,7 +1,8 @@
 // app/(tabs)/profile.tsx
+import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
-import React, { useCallback } from 'react';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Modal, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import ContactCard from '@/components/profile/ContactCard';
@@ -72,12 +73,30 @@ export default function ProfileScreen() {
   const logout = useAuthStore((s) => s.logout);
   const fetchProfile = useAuthStore((s) => s.fetchProfile);
 
+  const [showRejectionModal, setShowRejectionModal] = useState(false);
+  // Track để chỉ show modal 1 lần mỗi session (không pop lại mỗi lần focus)
+  const rejectionShownRef = useRef(false);
+
   // Fetch fresh profile data khi tab được focus
   useFocusEffect(
     useCallback(() => {
       fetchProfile();
     }, [fetchProfile])
   );
+
+  // Hiển thị modal thông báo KYC bị từ chối (1 lần mỗi session)
+  useEffect(() => {
+    if (
+      !rejectionShownRef.current &&
+      user?.role === 'USER' &&
+      user?.kycStatus === 'REJECTED' &&
+      user?.kycDocuments &&
+      user.kycDocuments.length > 0
+    ) {
+      setShowRejectionModal(true);
+      rejectionShownRef.current = true;
+    }
+  }, [user?.kycStatus, user?.kycDocuments?.length]);
 
   const handleLogout = async (): Promise<void> => {
     await logout();
@@ -102,11 +121,62 @@ export default function ProfileScreen() {
     (!user.storeInfo?.businessName ||
       !user.storeInfo?.openHours ||
       !user.storeInfo?.description);
-  const isVerificationIncomplete =
-    !user.kycDocuments || user.kycDocuments.length === 0;
+  // Store registration: show button only for USER role (not yet a store)
+  const canRegisterStore = user.role === 'USER';
+  // Pending = USER đã nộp hồ sơ, đang chờ admin duyệt (không tính trạng thái đã bị từ chối)
+  const storeRegistrationPending =
+    user.role === 'USER' &&
+    user.kycStatus !== 'REJECTED' &&
+    user.kycDocuments &&
+    user.kycDocuments.length > 0;
+  // Chỉ hiển thị VerificationCard khi user là STORE, hoặc đã nộp hồ sơ đăng ký store
+  const showVerificationCard =
+    user.role === 'STORE' || (user.kycDocuments && user.kycDocuments.length > 0);
 
   return (
     <SafeAreaView className="flex-1 bg-neutral-DEFAULT" edges={['top']}>
+      {/* ── KYC Rejection Modal ── */}
+      <Modal
+        visible={showRejectionModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowRejectionModal(false)}
+      >
+        <Pressable
+          className="flex-1 items-center justify-center"
+          style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
+          onPress={() => setShowRejectionModal(false)}
+        >
+          <Pressable onPress={(e) => e.stopPropagation()}>
+            <View className="bg-neutral-T100 rounded-3xl mx-6 p-6 gap-4" style={{ maxWidth: 340 }}>
+              {/* Icon */}
+              <View className="w-14 h-14 rounded-2xl items-center justify-center self-center" style={{ backgroundColor: 'rgba(186,26,26,0.1)' }}>
+                <MaterialIcons name="gpp-bad" size={28} color="#ba1a1a" />
+              </View>
+              {/* Title */}
+              <View className="gap-1">
+                <Text className="font-sans font-bold text-lg text-neutral-T10 text-center">
+                  Đơn đăng ký bị từ chối
+                </Text>
+                <Text className="font-body text-sm text-neutral-T50 text-center leading-5">
+                  Hồ sơ đăng ký cửa hàng của bạn chưa được duyệt. Bạn có thể nhấn nút{' '}
+                  <Text className="font-semibold text-neutral-T30">Đăng ký cửa hàng</Text>
+                  {' '}để nộp lại đơn mới.
+                </Text>
+              </View>
+              {/* Action */}
+              <TouchableOpacity
+                className="h-12 rounded-xl items-center justify-center"
+                style={{ backgroundColor: 'rgba(186,26,26,0.1)' }}
+                onPress={() => setShowRejectionModal(false)}
+              >
+                <Text className="font-label font-semibold text-error">Đã hiểu</Text>
+              </TouchableOpacity>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
       <ProfileHeader />
 
       <ScrollView
@@ -149,17 +219,21 @@ export default function ProfileScreen() {
             isIncomplete={isContactIncomplete}
           />
 
-          <VerificationCard
-            kycStatus={user.kycStatus}
-            kycDocuments={user.kycDocuments ?? []}
-            isIncomplete={isVerificationIncomplete}
-          />
+          {showVerificationCard && (
+            <VerificationCard
+              kycStatus={user.kycStatus}
+              kycDocuments={user.kycDocuments ?? []}
+            />
+          )}
 
           <RecentPosts posts={MOCK_LISTINGS} onSeeAll={() => {}} />
 
           <ProfileActions
             onEditProfile={() => router.push('/(post)/edit-profile')}
+            onRegisterStore={() => router.push('/(post)/register-store')}
             onLogOut={handleLogout}
+            showRegisterStore={canRegisterStore}
+            storeRegistrationPending={storeRegistrationPending}
           />
         </View>
       </ScrollView>
