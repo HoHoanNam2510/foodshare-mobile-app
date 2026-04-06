@@ -5,14 +5,16 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IconMarker, PriceMarker } from './MapMarker';
 import MapPreviewCard from './MapPreviewCard';
 import SearchFilterBar from './SearchFilterBar';
-import { ExploreFilter, ExplorePost } from './types';
+import { ExplorePost, SortOption, TypeFilter } from './types';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface ExploreMapViewProps {
   posts: ExplorePost[];
-  activeFilter: ExploreFilter;
-  onFilterChange: (filter: ExploreFilter) => void;
+  activeFilter: TypeFilter;
+  onFilterChange: (filter: TypeFilter) => void;
+  sortOption: SortOption;
+  onSortChange: (sort: SortOption) => void;
   searchText: string;
   onSearchChange: (text: string) => void;
   headerHeight: number;
@@ -22,14 +24,16 @@ export default function ExploreMapView({
   posts,
   activeFilter,
   onFilterChange,
+  sortOption,
+  onSortChange,
   searchText,
   onSearchChange,
   headerHeight,
 }: ExploreMapViewProps) {
   const insets = useSafeAreaInsets();
-  const [selectedPostId, setSelectedPostId] = useState<string>(posts[0]?.id);
+  const [selectedPostId, setSelectedPostId] = useState<string>(posts[0]?._id);
 
-  const selectedPost = posts.find((p) => p.id === selectedPostId) ?? posts[0];
+  const selectedPost = posts.find((p) => p._id === selectedPostId) ?? posts[0];
 
   const handleMarkerPress = (postId: string) => {
     setSelectedPostId(postId);
@@ -159,6 +163,8 @@ export default function ExploreMapView({
         <SearchFilterBar
           activeFilter={activeFilter}
           onFilterChange={onFilterChange}
+          sortOption={sortOption}
+          onSortChange={onSortChange}
           searchText={searchText}
           onSearchChange={onSearchChange}
         />
@@ -169,23 +175,23 @@ export default function ExploreMapView({
         if (post.mapX == null || post.mapY == null) return null;
         const left = post.mapX * SCREEN_WIDTH;
         const top = post.mapY * SCREEN_HEIGHT;
-        const isActive = post.id === selectedPostId;
+        const isActive = post._id === selectedPostId;
 
         return (
           <View
-            key={post.id}
+            key={post._id}
             style={{ position: 'absolute', left, top, zIndex: 15 }}
           >
-            {post.type === 'MYSTERY_BAG' ? (
+            {post.type === 'B2C_MYSTERY_BAG' ? (
               <PriceMarker
-                price={post.price ?? ''}
+                price={post.price > 0 ? `$${post.price.toFixed(2)}` : ''}
                 isActive={isActive}
-                onPress={() => handleMarkerPress(post.id)}
+                onPress={() => handleMarkerPress(post._id)}
               />
             ) : (
               <IconMarker
                 isActive={isActive}
-                onPress={() => handleMarkerPress(post.id)}
+                onPress={() => handleMarkerPress(post._id)}
               />
             )}
           </View>

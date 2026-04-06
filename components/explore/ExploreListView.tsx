@@ -1,15 +1,18 @@
 import React from 'react';
-import { ScrollView, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import PostCard from './PostCard';
 import SearchFilterBar from './SearchFilterBar';
-import { ExploreFilter, ExplorePost } from './types';
+import { ExplorePost, SortOption, TypeFilter } from './types';
 
 interface ExploreListViewProps {
   posts: ExplorePost[];
-  activeFilter: ExploreFilter;
-  onFilterChange: (filter: ExploreFilter) => void;
+  loading: boolean;
+  activeFilter: TypeFilter;
+  onFilterChange: (filter: TypeFilter) => void;
+  sortOption: SortOption;
+  onSortChange: (sort: SortOption) => void;
   searchText: string;
   onSearchChange: (text: string) => void;
   headerHeight: number;
@@ -18,8 +21,11 @@ interface ExploreListViewProps {
 
 export default function ExploreListView({
   posts,
+  loading,
   activeFilter,
   onFilterChange,
+  sortOption,
+  onSortChange,
   searchText,
   onSearchChange,
   headerHeight,
@@ -33,7 +39,7 @@ export default function ExploreListView({
       contentContainerStyle={{
         paddingTop: headerHeight + insets.top + 16,
         paddingHorizontal: 16,
-        paddingBottom: 120, // space for toggle + tab bar
+        paddingBottom: 120,
         gap: 16,
       }}
     >
@@ -41,20 +47,43 @@ export default function ExploreListView({
       <SearchFilterBar
         activeFilter={activeFilter}
         onFilterChange={onFilterChange}
+        sortOption={sortOption}
+        onSortChange={onSortChange}
         searchText={searchText}
         onSearchChange={onSearchChange}
       />
 
+      {/* Loading state */}
+      {loading && (
+        <View className="items-center py-8">
+          <ActivityIndicator size="large" color="#4A7C59" />
+        </View>
+      )}
+
+      {/* Empty state */}
+      {!loading && posts.length === 0 && (
+        <View className="items-center py-12 gap-2">
+          <Text className="text-neutral-T50 font-sans text-base">
+            No available posts found
+          </Text>
+          <Text className="text-neutral-T70 font-label text-sm text-center">
+            Try adjusting your filters or check back later.
+          </Text>
+        </View>
+      )}
+
       {/* Post cards */}
-      <View className="gap-4">
-        {posts.map((post) => (
-          <PostCard
-            key={post.id}
-            post={post}
-            onPress={() => onPostPress?.(post)}
-          />
-        ))}
-      </View>
+      {!loading && posts.length > 0 && (
+        <View className="gap-4">
+          {posts.map((post) => (
+            <PostCard
+              key={post._id}
+              post={post}
+              onPress={() => onPostPress?.(post)}
+            />
+          ))}
+        </View>
+      )}
     </ScrollView>
   );
 }

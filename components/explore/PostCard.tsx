@@ -9,10 +9,43 @@ interface PostCardProps {
   onPress?: () => void;
 }
 
+function formatPickupTime(start: string, end: string): string {
+  const s = new Date(start);
+  const e = new Date(end);
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  const timeRange = `${pad(s.getHours())}:${pad(s.getMinutes())} – ${pad(e.getHours())}:${pad(e.getMinutes())}`;
+
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
+  if (s.toDateString() === tomorrow.toDateString()) return `Tomorrow, ${timeRange}`;
+  return timeRange;
+}
+
+function getUrgencyInfo(expiryDate: string): { label: string; isUrgent: boolean } | null {
+  const expiry = new Date(expiryDate);
+  const now = new Date();
+  const msPerDay = 24 * 60 * 60 * 1000;
+  const daysLeft = (expiry.getTime() - now.getTime()) / msPerDay;
+
+  if (daysLeft < 0) return { label: 'Expired', isUrgent: true };
+  if (expiry.toDateString() === now.toDateString()) return { label: 'Expiring Today', isUrgent: true };
+
+  const tomorrow = new Date(now);
+  tomorrow.setDate(now.getDate() + 1);
+  if (expiry.toDateString() === tomorrow.toDateString()) return { label: 'Expiring Tomorrow', isUrgent: true };
+
+  return null;
+}
+
 export default function PostCard({ post, onPress }: PostCardProps) {
-  const isFree = post.type === 'FREE';
-  const isUrgent =
-    !!post.urgencyLabel && post.urgencyLabel.includes('Expiring');
+  const isFree = post.type === 'P2P_FREE';
+  const imageUrl = post.images?.[0];
+  const urgency = getUrgencyInfo(post.expiryDate);
+  const pickupLabel = formatPickupTime(post.pickupTime.start, post.pickupTime.end);
+  const priceLabel = isFree ? 'FREE' : `$${post.price.toFixed(2)}`;
+  const tag = post.type === 'B2C_MYSTERY_BAG' ? 'Surprise Bag' : undefined;
 
   return (
     <TouchableOpacity
@@ -29,11 +62,17 @@ export default function PostCard({ post, onPress }: PostCardProps) {
     >
       {/* Image */}
       <View className="w-full aspect-video overflow-hidden">
-        <Image
-          source={{ uri: post.imageUrl }}
-          className="w-full h-full"
-          resizeMode="cover"
-        />
+        {imageUrl ? (
+          <Image
+            source={{ uri: imageUrl }}
+            className="w-full h-full"
+            resizeMode="cover"
+          />
+        ) : (
+          <View className="w-full h-full bg-neutral-T95 items-center justify-center">
+            <Feather name="image" size={32} color="#AAABAB" />
+          </View>
+        )}
 
         {/* Price / FREE badge – top left */}
         {isFree ? (
@@ -51,22 +90,22 @@ export default function PostCard({ post, onPress }: PostCardProps) {
               className="text-neutral-T100 text-xs font-label"
               style={{ fontWeight: '700' }}
             >
-              {post.price}
+              {priceLabel}
             </Text>
           </View>
         )}
 
         {/* "Surprise Bag" label – bottom right */}
-        {post.tag && (
+        {tag && (
           <View
             className="absolute bottom-3 right-3 px-3 py-1 rounded-full"
             style={{ backgroundColor: 'rgba(255,255,255,0.92)' }}
           >
             <Text
-              className="text-primary-T40 text-base font-label uppercase tracking-widest"
+              className="text-primary-T40 text-sm font-label uppercase tracking-widest"
               style={{ fontWeight: '700' }}
             >
-              {post.tag}
+              {tag}
             </Text>
           </View>
         )}
@@ -86,41 +125,43 @@ export default function PostCard({ post, onPress }: PostCardProps) {
         </View>
 
         <View className="flex-row items-center gap-4">
-          {/* Distance */}
-          <View className="flex-row items-center gap-1">
-            <Feather name="navigation" size={12} color="#757777" />
-            <Text className="text-neutral-T50 text-sm font-label">
-              {post.distance}
-            </Text>
-          </View>
-
-          {/* Pickup time or urgency */}
-          {post.pickupTime && (
+          {/* Distance (only in mock/map view) */}
+          {post.distance && (
             <View className="flex-row items-center gap-1">
-              <Feather name="clock" size={12} color="#983F6A" />
-              <Text
-                className="text-sm font-label"
-                style={{ color: '#983F6A', fontWeight: '600' }}
-              >
-                {post.pickupTime}
+              <Feather name="navigation" size={12} color="#757777" />
+              <Text className="text-neutral-T50 text-sm font-label">
+                {post.distance}
               </Text>
             </View>
           )}
-          {post.urgencyLabel && (
+
+          {/* Pickup time */}
+          <View className="flex-row items-center gap-1">
+            <Feather name="clock" size={12} color="#983F6A" />
+            <Text
+              className="text-sm font-label"
+              style={{ color: '#983F6A', fontWeight: '600' }}
+            >
+              {pickupLabel}
+            </Text>
+          </View>
+
+          {/* Urgency */}
+          {urgency && (
             <View className="flex-row items-center gap-1">
               <Ionicons
-                name={isUrgent ? 'warning-outline' : 'cube-outline'}
+                name="warning-outline"
                 size={12}
-                color={isUrgent ? '#ba1a1a' : '#757777'}
+                color={urgency.isUrgent ? '#ba1a1a' : '#757777'}
               />
               <Text
                 className="text-sm font-label"
                 style={{
-                  color: isUrgent ? '#ba1a1a' : '#757777',
-                  fontWeight: isUrgent ? '600' : '400',
+                  color: urgency.isUrgent ? '#ba1a1a' : '#757777',
+                  fontWeight: urgency.isUrgent ? '600' : '400',
                 }}
               >
-                {post.urgencyLabel}
+                {urgency.label}
               </Text>
             </View>
           )}

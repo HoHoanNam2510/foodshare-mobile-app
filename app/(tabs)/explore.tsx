@@ -1,5 +1,5 @@
 import { Feather } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Image, StatusBar, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -7,28 +7,43 @@ import ExploreListView from '../../components/explore/ExploreListView';
 import ExploreMapView from '../../components/explore/ExploreMapView';
 import ViewToggle from '../../components/explore/ViewToggle';
 import { EXPLORE_POSTS } from '../../components/explore/mockData';
-import { ExploreFilter, ViewMode } from '../../components/explore/types';
+import { ExplorePost, SortOption, TypeFilter, ViewMode } from '../../components/explore/types';
+import { fetchExplorePosts } from '../../lib/exploreApi';
 
 const HEADER_HEIGHT = 56;
 
 export default function ExploreScreen() {
   const insets = useSafeAreaInsets();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
-  const [activeFilter, setActiveFilter] = useState<ExploreFilter>('All');
+  const [activeFilter, setActiveFilter] = useState<TypeFilter>('All');
+  const [sortOption, setSortOption] = useState<SortOption>('newest');
   const [searchText, setSearchText] = useState('');
 
-  const filteredPosts = EXPLORE_POSTS.filter((post) => {
-    const matchesSearch =
-      searchText.trim() === '' ||
-      post.title.toLowerCase().includes(searchText.toLowerCase());
+  const [posts, setPosts] = useState<ExplorePost[]>([]);
+  const [loading, setLoading] = useState(false);
 
-    const matchesFilter =
-      activeFilter === 'All' ||
-      (activeFilter === 'Free Food' && post.type === 'FREE') ||
-      (activeFilter === 'Surprise Bags' && post.type === 'MYSTERY_BAG') ||
-      activeFilter === 'Closest'; // would normally sort; show all
+  const loadPosts = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await fetchExplorePosts(activeFilter, sortOption);
+      setPosts(data);
+    } catch {
+      setPosts([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [activeFilter, sortOption]);
 
-    return matchesSearch && matchesFilter;
+  // Fetch on mount and whenever filter/sort changes (list view only)
+  useEffect(() => {
+    if (viewMode === 'list') {
+      loadPosts();
+    }
+  }, [loadPosts, viewMode]);
+
+  const filteredPosts = posts.filter((post) => {
+    if (searchText.trim() === '') return true;
+    return post.title.toLowerCase().includes(searchText.toLowerCase());
   });
 
   return (
@@ -88,17 +103,23 @@ export default function ExploreScreen() {
         {viewMode === 'list' ? (
           <ExploreListView
             posts={filteredPosts}
+            loading={loading}
             activeFilter={activeFilter}
             onFilterChange={setActiveFilter}
+            sortOption={sortOption}
+            onSortChange={setSortOption}
             searchText={searchText}
             onSearchChange={setSearchText}
             headerHeight={HEADER_HEIGHT}
           />
         ) : (
+          // Map view stays static — uses mock data
           <ExploreMapView
-            posts={filteredPosts}
+            posts={EXPLORE_POSTS}
             activeFilter={activeFilter}
             onFilterChange={setActiveFilter}
+            sortOption={sortOption}
+            onSortChange={setSortOption}
             searchText={searchText}
             onSearchChange={setSearchText}
             headerHeight={HEADER_HEIGHT}
@@ -110,7 +131,7 @@ export default function ExploreScreen() {
       <View
         className="absolute items-center"
         style={{
-          bottom: 72, // above CustomTabBar
+          bottom: 72,
           left: 0,
           right: 0,
           zIndex: 40,

@@ -1,5 +1,5 @@
 import { Feather } from '@expo/vector-icons';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ScrollView,
   Text,
@@ -8,14 +8,22 @@ import {
   View,
 } from 'react-native';
 
-import { FILTER_OPTIONS } from './mockData';
-import { ExploreFilter } from './types';
+import { TYPE_FILTER_OPTIONS } from './mockData';
+import { SortOption, TypeFilter } from './types';
+
+const SORT_OPTIONS: { value: SortOption; label: string; icon: string }[] = [
+  { value: 'newest', label: 'Newest', icon: 'clock' },
+  { value: 'closest', label: 'Closest', icon: 'navigation' },
+  { value: 'expiring', label: 'Expiring Soonest', icon: 'alert-triangle' },
+];
 
 interface SearchFilterBarProps {
-  activeFilter: ExploreFilter;
-  onFilterChange: (filter: ExploreFilter) => void;
+  activeFilter: TypeFilter;
+  onFilterChange: (filter: TypeFilter) => void;
   searchText: string;
   onSearchChange: (text: string) => void;
+  sortOption: SortOption;
+  onSortChange: (sort: SortOption) => void;
 }
 
 export default function SearchFilterBar({
@@ -23,10 +31,17 @@ export default function SearchFilterBar({
   onFilterChange,
   searchText,
   onSearchChange,
+  sortOption,
+  onSortChange,
 }: SearchFilterBarProps) {
+  const [sortOpen, setSortOpen] = useState(false);
+
+  const activeSortLabel =
+    SORT_OPTIONS.find((o) => o.value === sortOption)?.label ?? 'Newest';
+
   return (
     <View className="gap-3">
-      {/* Search input */}
+      {/* ── Search input ── */}
       <View
         className="bg-neutral-T100 flex-row items-center px-3 py-5 rounded-xl gap-2"
         style={{
@@ -48,22 +63,22 @@ export default function SearchFilterBar({
         <Feather name="sliders" size={16} color="#757777" />
       </View>
 
-      {/* Filter pills */}
+      {/* ── Type filter pills ── */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ gap: 8, paddingRight: 4 }}
       >
-        {FILTER_OPTIONS.map((filter) => {
+        {TYPE_FILTER_OPTIONS.map((filter) => {
           const isActive = activeFilter === filter;
           return (
             <TouchableOpacity
               key={filter}
-              onPress={() => onFilterChange(filter as ExploreFilter)}
+              onPress={() => onFilterChange(filter)}
               activeOpacity={0.8}
-              className={`flex-row items-center gap-1 px-4 py-2 rounded-full ${
+              className={`px-4 py-2 rounded-full ${
                 isActive
-                  ? 'bg-primary-T70'
+                  ? 'bg-primary-T40'
                   : 'bg-neutral-T100 border border-neutral-T90'
               }`}
               style={
@@ -86,13 +101,84 @@ export default function SearchFilterBar({
               >
                 {filter}
               </Text>
-              {filter === 'Closest' && !isActive && (
-                <Feather name="chevron-down" size={12} color="#5C5F5E" />
-              )}
             </TouchableOpacity>
           );
         })}
       </ScrollView>
+
+      {/* ── Sort row ── */}
+      <View className="flex-row items-center gap-2">
+        <Text className="text-neutral-T50 text-sm font-label">Sort:</Text>
+
+        <TouchableOpacity
+          onPress={() => setSortOpen((prev) => !prev)}
+          activeOpacity={0.8}
+          className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary-T90 border border-secondary-T70"
+        >
+          <Text
+            className="text-secondary font-label text-sm"
+            style={{ fontWeight: '600' }}
+          >
+            {activeSortLabel}
+          </Text>
+          <Feather
+            name={sortOpen ? 'chevron-up' : 'chevron-down'}
+            size={13}
+            color="#983F6A"
+          />
+        </TouchableOpacity>
+      </View>
+
+      {/* ── Sort dropdown panel ── */}
+      {sortOpen && (
+        <View
+          className="bg-neutral-T100 rounded-2xl overflow-hidden border border-neutral-T90"
+          style={{
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.1,
+            shadowRadius: 12,
+            elevation: 6,
+          }}
+        >
+          {SORT_OPTIONS.map((option, index) => {
+            const isSelected = sortOption === option.value;
+            return (
+              <TouchableOpacity
+                key={option.value}
+                onPress={() => {
+                  onSortChange(option.value);
+                  setSortOpen(false);
+                }}
+                activeOpacity={0.7}
+                className={`flex-row items-center justify-between px-4 py-3 ${
+                  index < SORT_OPTIONS.length - 1 ? 'border-b border-neutral-T95' : ''
+                } ${isSelected ? 'bg-secondary-T95' : ''}`}
+              >
+                <View className="flex-row items-center gap-2">
+                  <Feather
+                    name={option.icon as any}
+                    size={15}
+                    color={isSelected ? '#983F6A' : '#757777'}
+                  />
+                  <Text
+                    className="font-label text-sm"
+                    style={{
+                      color: isSelected ? '#983F6A' : '#191C1C',
+                      fontWeight: isSelected ? '600' : '400',
+                    }}
+                  >
+                    {option.label}
+                  </Text>
+                </View>
+                {isSelected && (
+                  <Feather name="check" size={15} color="#983F6A" />
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
     </View>
   );
 }

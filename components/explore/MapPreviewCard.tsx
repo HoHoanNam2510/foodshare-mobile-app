@@ -13,7 +13,9 @@ export default function MapPreviewCard({
   post,
   onViewDetails,
 }: MapPreviewCardProps) {
-  const isFree = post.type === 'FREE';
+  const isFree = post.type === 'P2P_FREE';
+  const imageUrl = post.images?.[0];
+  const priceLabel = isFree ? 'FREE' : `$${post.price.toFixed(2)}`;
 
   return (
     <View
@@ -28,11 +30,18 @@ export default function MapPreviewCard({
     >
       {/* Thumbnail */}
       <View className="w-22 h-22 rounded-2xl overflow-hidden flex-shrink-0">
-        <Image
-          source={{ uri: post.imageUrl }}
-          style={{ width: 88, height: 88 }}
-          resizeMode="cover"
-        />
+        {imageUrl ? (
+          <Image
+            source={{ uri: imageUrl }}
+            style={{ width: 88, height: 88 }}
+            resizeMode="cover"
+          />
+        ) : (
+          <View
+            style={{ width: 88, height: 88, backgroundColor: '#F3F4F4' }}
+            className="items-center justify-center"
+          />
+        )}
       </View>
 
       {/* Info */}
@@ -54,12 +63,14 @@ export default function MapPreviewCard({
           >
             {post.title}
           </Text>
-          <View className="flex-row items-center gap-1 mt-1">
-            <Ionicons name="location-outline" size={12} color="#757777" />
-            <Text className="text-neutral-T50 text-xs font-label">
-              {post.distance} away
-            </Text>
-          </View>
+          {post.distance && (
+            <View className="flex-row items-center gap-1 mt-1">
+              <Ionicons name="location-outline" size={12} color="#757777" />
+              <Text className="text-neutral-T50 text-xs font-label">
+                {post.distance} away
+              </Text>
+            </View>
+          )}
         </View>
 
         <View className="flex-row items-center justify-between mt-2">
@@ -67,7 +78,7 @@ export default function MapPreviewCard({
             className={`font-sans ${isFree ? 'text-primary-T40' : 'text-secondary'}`}
             style={{ fontSize: 16, fontWeight: '700' }}
           >
-            {isFree ? 'FREE' : post.price}
+            {priceLabel}
           </Text>
           <TouchableOpacity
             activeOpacity={0.8}
