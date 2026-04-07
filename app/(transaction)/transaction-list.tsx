@@ -28,7 +28,7 @@ import {
 // ── Constants ────────────────────────────────────────────────────────────────
 
 const ACTIVE_STATUSES: TransactionStatus[] = ['PENDING', 'ACCEPTED', 'ESCROWED'];
-const HISTORY_STATUSES: TransactionStatus[] = ['COMPLETED', 'CANCELLED', 'REJECTED'];
+const HISTORY_STATUSES: TransactionStatus[] = ['COMPLETED', 'CANCELLED', 'REJECTED', 'REFUNDED', 'DISPUTED'];
 // Trạng thái donor hiển thị trong tab "Đang diễn ra" (đã xác nhận, chờ giao nhận)
 const DONOR_ACTIVE_STATUSES: TransactionStatus[] = ['ACCEPTED', 'ESCROWED'];
 
@@ -39,6 +39,8 @@ const STATUS_CONFIG: Record<TransactionStatus, { label: string; bg: string; text
   COMPLETED: { label: 'Hoàn thành',   bg: '#DCFCE7', text: '#15803D' },
   CANCELLED: { label: 'Đã hủy',       bg: '#F3F4F6', text: '#6B7280' },
   REJECTED:  { label: 'Từ chối',      bg: '#FEE2E2', text: '#DC2626' },
+  REFUNDED:  { label: 'Đã hoàn tiền', bg: '#FFF7ED', text: '#C2410C' },
+  DISPUTED:  { label: 'Đang khiếu nại', bg: '#FFF1F2', text: '#BE123C' },
 };
 
 type TabKey = 'active' | 'history' | 'incoming';

@@ -1,0 +1,255 @@
+import { MaterialIcons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import {
+  getTransactionByIdApi,
+  type ITransaction,
+  type TransactionStatus,
+} from '@/lib/transactionApi';
+
+// ── Status display config ───────────────────────────────────────────────────
+
+const RESULT_CONFIG: Record<
+  'success' | 'pending' | 'failed',
+  { icon: keyof typeof MaterialIcons.glyphMap; color: string; bg: string; title: string; subtitle: string }
+> = {
+  success: {
+    icon: 'check-circle',
+    color: '#296C24',
+    bg: '#E8F5E3',
+    title: 'Thanh toán thành công!',
+    subtitle: 'Đơn hàng của bạn đã được xác nhận. Hãy đến cửa hàng nhận hàng và quét mã QR.',
+  },
+  pending: {
+    icon: 'hourglass-top',
+    color: '#944A00',
+    bg: '#FFF7ED',
+    title: 'Đang xử lý...',
+    subtitle: 'Hệ thống đang xác nhận thanh toán. Vui lòng đợi trong giây lát.',
+  },
+  failed: {
+    icon: 'cancel',
+    color: '#BE123C',
+    bg: '#FFF1F2',
+    title: 'Thanh toán thất bại',
+    subtitle: 'Giao dịch không thành công. Bạn có thể thử lại hoặc chọn phương thức khác.',
+  },
+};
+
+// Map transaction status to result status
+function getResultStatus(txnStatus?: TransactionStatus): 'success' | 'pending' | 'failed' {
+  switch (txnStatus) {
+    case 'ESCROWED':
+    case 'COMPLETED':
+      return 'success';
+    case 'CANCELLED':
+    case 'REJECTED':
+    case 'REFUNDED':
+      return 'failed';
+    default:
+      return 'pending';
+  }
+}
+
+// ── Main Screen ─────────────────────────────────────────────────────────────
+
+export default function PaymentResultScreen() {
+  const router = useRouter();
+  const { transactionId, status: initialStatus } = useLocalSearchParams<{
+    transactionId: string;
+    status?: string;
+  }>();
+
+  const [transaction, setTransaction] = useState<ITransaction | null>(null);
+  const [resultStatus, setResultStatus] = useState<'success' | 'pending' | 'failed'>(
+    (initialStatus as any) ?? 'pending'
+  );
+  const [isPolling, setIsPolling] = useState(true);
+  const [pollCount, setPollCount] = useState(0);
+
+  const MAX_POLLS = 12; // Poll for ~1 minute (5s intervals)
+
+  const fetchTransaction = useCallback(async () => {
+    if (!transactionId) return;
+    try {
+      const res = await getTransactionByIdApi(transactionId);
+      setTransaction(res.data);
+      const status = getResultStatus(res.data.status);
+      setResultStatus(status);
+      // Stop polling if we got a final status
+      if (status !== 'pending') {
+        setIsPolling(false);
+      }
+    } catch {
+      // Silently fail — keep polling
+    }
+  }, [transactionId]);
+
+  // Poll for transaction status updates
+  useEffect(() => {
+    if (!transactionId) return;
+
+    // Initial fetch
+    fetchTransaction();
+
+    if (!isPolling) return;
+
+    const interval = setInterval(() => {
+      setPollCount((prev) => {
+        if (prev >= MAX_POLLS) {
+          clearInterval(interval);
+          setIsPolling(false);
+          return prev;
+        }
+        fetchTransaction();
+        return prev + 1;
+      });
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [transactionId, isPolling, fetchTransaction]);
+
+  const config = RESULT_CONFIG[resultStatus];
+
+  return (
+    <SafeAreaView className="flex-1 bg-neutral-DEFAULT" edges={['top']}>
+      <View className="flex-1 items-center justify-center px-8 gap-6">
+        {/* Status Icon */}
+        <View
+          className="w-24 h-24 rounded-full items-center justify-center"
+          style={{ backgroundColor: config.bg }}
+        >
+          {resultStatus === 'pending' && isPolling ? (
+            <ActivityIndicator size="large" color={config.color} />
+          ) : (
+            <MaterialIcons name={config.icon} size={48} color={config.color} />
+          )}
+        </View>
+
+        {/* Title + Subtitle */}
+        <View className="items-center gap-2">
+          <Text className="font-sans font-extrabold text-2xl text-neutral-T10 text-center">
+            {config.title}
+          </Text>
+          <Text className="font-body text-sm text-neutral-T50 text-center leading-5">
+            {config.subtitle}
+          </Text>
+        </View>
+
+        {/* Transaction Info */}
+        {transaction && (
+          <View className="w-full bg-neutral-T100 rounded-2xl p-5 gap-3" style={styles.card}>
+            <InfoRow label="Mã đơn hàng" value={`#${transaction._id.slice(-8)}`} />
+            {transaction.totalAmount != null && (
+              <InfoRow
+                label="Tổng tiền"
+                value={`${transaction.totalAmount.toLocaleString('vi-VN')}đ`}
+                bold
+              />
+            )}
+            <InfoRow label="Phương thức" value={transaction.paymentMethod} />
+            {transaction.verificationCode && resultStatus === 'success' && (
+              <>
+                <View className="h-px bg-neutral-T90 my-1" />
+                <View className="items-center gap-2 pt-1">
+                  <Text className="font-label text-xs text-neutral-T50 uppercase tracking-wider">
+                    Mã xác nhận nhận hàng
+                  </Text>
+                  <View className="bg-primary-T95 border border-primary-T70 rounded-xl px-6 py-3">
+                    <Text className="font-mono text-xl font-bold text-primary-T30 tracking-widest text-center">
+                      {transaction.verificationCode.slice(-8).toUpperCase()}
+                    </Text>
+                  </View>
+                  <Text className="font-body text-xs text-neutral-T50 text-center">
+                    Đưa mã này cho cửa hàng khi nhận hàng
+                  </Text>
+                </View>
+              </>
+            )}
+          </View>
+        )}
+
+        {/* Retry polling */}
+        {!isPolling && resultStatus === 'pending' && (
+          <TouchableOpacity
+            onPress={() => {
+              setPollCount(0);
+              setIsPolling(true);
+            }}
+            className="flex-row items-center gap-2"
+          >
+            <MaterialIcons name="refresh" size={18} color="#296C24" />
+            <Text className="font-label font-semibold text-sm text-primary-T40">
+              Kiểm tra lại
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* Bottom Actions */}
+      <View className="px-5 pb-6 gap-3">
+        <TouchableOpacity
+          className="w-full bg-primary-T40 rounded-2xl items-center justify-center py-4"
+          activeOpacity={0.85}
+          onPress={() => router.replace('/(transaction)/transaction-list' as any)}
+        >
+          <Text className="text-neutral-T100 font-sans font-bold text-base">
+            Xem giao dịch của tôi
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full items-center justify-center py-3"
+          activeOpacity={0.7}
+          onPress={() => router.replace('/(tabs)' as any)}
+        >
+          <Text className="font-label font-semibold text-sm text-neutral-T50">
+            Về trang chủ
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function InfoRow({
+  label,
+  value,
+  bold = false,
+}: {
+  label: string;
+  value: string;
+  bold?: boolean;
+}) {
+  return (
+    <View className="flex-row items-center justify-between">
+      <Text className="font-body text-sm text-neutral-T50">{label}</Text>
+      <Text
+        className={`font-${bold ? 'sans font-extrabold' : 'body'} text-sm text-neutral-T10`}
+      >
+        {value}
+      </Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  card: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+});

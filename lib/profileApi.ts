@@ -8,6 +8,16 @@ interface ProfileResponse {
   data?: Record<string, unknown>;
 }
 
+export interface PaymentInfoPayload {
+  momoPhone?: string;
+  // zalopayPhone?: string; // TODO: Re-enable when ZaloPay is ready
+  bankName?: string;
+  bankCode?: string;
+  bankAccountNumber?: string;
+  bankAccountName?: string;
+  preferredDisbursement?: 'MOMO' | /* 'ZALOPAY' | */ 'BANK'; // TODO: Re-add ZALOPAY when ready
+}
+
 interface UpdateProfilePayload {
   fullName?: string;
   phoneNumber?: string;
@@ -20,6 +30,7 @@ interface UpdateProfilePayload {
     description?: string;
     businessAddress?: string;
   };
+  paymentInfo?: PaymentInfoPayload;
   kycDocuments?: string[];
 }
 
@@ -51,6 +62,7 @@ interface RegisterStorePayload {
     businessAddress: string;
   };
   kycDocuments: string[];
+  paymentInfo?: PaymentInfoPayload;
 }
 
 export async function registerStoreApi(

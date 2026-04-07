@@ -18,7 +18,7 @@ import {
 } from 'react-native-safe-area-context';
 
 import { getPostByIdApi, type IPostDetail } from '@/lib/postApi';
-import { createOrderApi, createRequestApi } from '@/lib/transactionApi';
+import { createRequestApi } from '@/lib/transactionApi';
 import { useAuthStore } from '@/stores/authStore';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -96,60 +96,13 @@ export default function PostDetailScreen() {
     }
   };
 
-  const handleBuyNow = async () => {
+  const handleBuyNow = () => {
     if (!post) return;
-    // Payment method selection — simplified to MOMO for now
-    Alert.alert('Chọn phương thức thanh toán', '', [
-      {
-        text: 'MoMo',
-        onPress: async () => {
-          setIsSubmitting(true);
-          try {
-            await createOrderApi(post._id, 1, 'MOMO');
-            Alert.alert(
-              'Đặt hàng thành công',
-              'Đơn hàng đã được tạo. Tiến hành thanh toán trong phần giao dịch.',
-              [
-                {
-                  text: 'Xem giao dịch',
-                  onPress: () => router.push('/(transaction)/transaction-list' as any),
-                },
-                { text: 'OK', style: 'cancel' },
-              ]
-            );
-          } catch (e) {
-            Alert.alert('Lỗi', e instanceof Error ? e.message : 'Không thể đặt hàng.');
-          } finally {
-            setIsSubmitting(false);
-          }
-        },
-      },
-      {
-        text: 'ZaloPay',
-        onPress: async () => {
-          setIsSubmitting(true);
-          try {
-            await createOrderApi(post._id, 1, 'ZALOPAY');
-            Alert.alert(
-              'Đặt hàng thành công',
-              'Đơn hàng đã được tạo. Tiến hành thanh toán trong phần giao dịch.',
-              [
-                {
-                  text: 'Xem giao dịch',
-                  onPress: () => router.push('/(transaction)/transaction-list' as any),
-                },
-                { text: 'OK', style: 'cancel' },
-              ]
-            );
-          } catch (e) {
-            Alert.alert('Lỗi', e instanceof Error ? e.message : 'Không thể đặt hàng.');
-          } finally {
-            setIsSubmitting(false);
-          }
-        },
-      },
-      { text: 'Huỷ', style: 'cancel' },
-    ]);
+    // Navigate to dedicated payment screen with method selection + payment flow
+    router.push({
+      pathname: '/(transaction)/payment',
+      params: { postId: post._id, quantity: '1' },
+    } as any);
   };
 
   // ── Loading ──

@@ -10,6 +10,7 @@ export interface FormInputProps {
   multiline?: boolean;
   errorMessage?: string;
   editable?: boolean;
+  keyboardType?: 'default' | 'phone-pad' | 'email-address' | 'numeric';
 }
 
 export default function FormInput({
@@ -20,6 +21,7 @@ export default function FormInput({
   multiline = false,
   errorMessage,
   editable = true,
+  keyboardType = 'default',
 }: FormInputProps) {
   return (
     <View className="gap-1.5">
@@ -39,6 +41,7 @@ export default function FormInput({
         multiline={multiline}
         textAlignVertical={multiline ? 'top' : 'center'}
         editable={editable}
+        keyboardType={keyboardType}
       />
       {errorMessage ? (
         <Text className="font-body text-xs text-error ml-1">{errorMessage}</Text>

@@ -16,7 +16,11 @@ export type TransactionStatus =
   | 'REJECTED'
   | 'ESCROWED'
   | 'COMPLETED'
-  | 'CANCELLED';
+  | 'CANCELLED'
+  | 'REFUNDED'
+  | 'DISPUTED';
+
+export type PaymentMethod = 'FREE' | 'MOMO'; // TODO: Re-add | 'ZALOPAY' | 'VNPAY' when ready
 
 export interface ITransaction {
   _id: string;
@@ -26,9 +30,15 @@ export interface ITransaction {
   type: 'REQUEST' | 'ORDER';
   quantity: number;
   status: TransactionStatus;
-  paymentMethod: 'FREE' | 'MOMO' | 'ZALOPAY';
+  paymentMethod: PaymentMethod;
+  paymentTransId?: string;
+  totalAmount?: number;
   verificationCode?: string;
   expiredAt?: string;
+  pickupDeadline?: string;
+  refundReason?: string;
+  refundedAt?: string;
+  disputeReason?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -96,7 +106,7 @@ export async function createRequestApi(
 export async function createOrderApi(
   postId: string,
   quantity: number,
-  paymentMethod: 'MOMO' | 'ZALOPAY'
+  paymentMethod: 'MOMO' // TODO: Re-add | 'ZALOPAY' | 'VNPAY' when ready
 ): Promise<{ success: boolean; message: string; data: ITransaction }> {
   const { data } = await api.post('/transactions/orders', { postId, quantity, paymentMethod });
   return data;
@@ -135,5 +145,16 @@ export async function scanQrApi(verificationCode: string): Promise<{
   const { data } = await api.post('/transactions/scan', {
     qrCode: verificationCode,
   });
+  return data;
+}
+
+// ── PATCH /api/transactions/:id/dispute ───────────────────────────────────
+// Buyer khiếu nại đơn hàng B2C đang ESCROWED
+
+export async function fileDisputeApi(
+  transactionId: string,
+  reason: string
+): Promise<{ success: boolean; message: string; data: ITransaction }> {
+  const { data } = await api.patch(`/transactions/${transactionId}/dispute`, { reason });
   return data;
 }

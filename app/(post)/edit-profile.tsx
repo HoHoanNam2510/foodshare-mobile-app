@@ -47,6 +47,24 @@ export default function EditProfile() {
     user?.storeInfo?.businessAddress ?? ''
   );
 
+  // Payment info (chỉ hiện khi role = STORE)
+  const [momoPhone, setMomoPhone] = useState(
+    user?.paymentInfo?.momoPhone ?? ''
+  );
+  // TODO: Re-enable when ZaloPay is ready
+  // const [zalopayPhone, setZalopayPhone] = useState(
+  //   user?.paymentInfo?.zalopayPhone ?? ''
+  // );
+  const [bankName, setBankName] = useState(
+    user?.paymentInfo?.bankName ?? ''
+  );
+  const [bankAccountNumber, setBankAccountNumber] = useState(
+    user?.paymentInfo?.bankAccountNumber ?? ''
+  );
+  const [bankAccountName, setBankAccountName] = useState(
+    user?.paymentInfo?.bankAccountName ?? ''
+  );
+
   const [isSaving, setIsSaving] = useState(false);
 
   const isStore = user?.role === 'STORE';
@@ -90,6 +108,13 @@ export default function EditProfile() {
           closeHours: closeHours.trim() || undefined,
           description: storeDescription.trim() || undefined,
           businessAddress: businessAddress.trim() || undefined,
+        };
+        payload.paymentInfo = {
+          momoPhone: momoPhone.trim() || undefined,
+          // zalopayPhone: zalopayPhone.trim() || undefined, // TODO: Re-enable when ZaloPay is ready
+          bankName: bankName.trim() || undefined,
+          bankAccountNumber: bankAccountNumber.trim() || undefined,
+          bankAccountName: bankAccountName.trim() || undefined,
         };
       }
 
@@ -251,6 +276,44 @@ export default function EditProfile() {
                   value={businessAddress}
                   onChangeText={setBusinessAddress}
                   placeholder="Store address"
+                />
+
+                {/* ─── Payment Info ─── */}
+                <SectionLabel icon="account-balance" label="Payment info" />
+
+                <FormInput
+                  label="MoMo phone"
+                  value={momoPhone}
+                  onChangeText={setMomoPhone}
+                  placeholder="0912345678"
+                  keyboardType="phone-pad"
+                />
+                {/* TODO: Re-enable when ZaloPay is ready */}
+                {/* <FormInput
+                  label="ZaloPay phone"
+                  value={zalopayPhone}
+                  onChangeText={setZalopayPhone}
+                  placeholder="0912345678"
+                  keyboardType="phone-pad"
+                /> */}
+                <FormInput
+                  label="Bank name"
+                  value={bankName}
+                  onChangeText={setBankName}
+                  placeholder="e.g. Vietcombank, MB Bank..."
+                />
+                <FormInput
+                  label="Bank account number"
+                  value={bankAccountNumber}
+                  onChangeText={setBankAccountNumber}
+                  placeholder="Account number"
+                  keyboardType="numeric"
+                />
+                <FormInput
+                  label="Account holder name"
+                  value={bankAccountName}
+                  onChangeText={setBankAccountName}
+                  placeholder="e.g. NGUYEN VAN A"
                 />
               </>
             )}

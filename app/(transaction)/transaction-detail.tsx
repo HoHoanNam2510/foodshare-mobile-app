@@ -20,7 +20,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import QRCode from 'react-native-qrcode-svg';
 
-import { cancelRequestApi, getTransactionByIdApi, scanQrApi, type ITransaction, type TransactionStatus } from '@/lib/transactionApi';
+import { cancelRequestApi, fileDisputeApi, getTransactionByIdApi, scanQrApi, type ITransaction, type TransactionStatus } from '@/lib/transactionApi';
 import { useAuthStore } from '@/stores/authStore';
 
 // ── Status config ─────────────────────────────────────────────────────────────
@@ -32,6 +32,8 @@ const STATUS_CONFIG: Record<TransactionStatus, { label: string; bg: string; text
   COMPLETED: { label: 'Hoàn thành',   bg: '#DCFCE7', text: '#15803D', icon: 'verified' },
   CANCELLED: { label: 'Đã hủy',       bg: '#F3F4F6', text: '#6B7280', icon: 'cancel' },
   REJECTED:  { label: 'Đã từ chối',   bg: '#FEE2E2', text: '#DC2626', icon: 'block' },
+  REFUNDED:  { label: 'Đã hoàn tiền', bg: '#FFF7ED', text: '#C2410C', icon: 'replay' },
+  DISPUTED:  { label: 'Đang khiếu nại', bg: '#FFF1F2', text: '#BE123C', icon: 'report-problem' },
 };
 
 // ── Workflow steps ────────────────────────────────────────────────────────────
@@ -406,6 +408,10 @@ export default function TransactionDetailScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
+  const [showDisputeModal, setShowDisputeModal] = useState(false);
+  const [disputeReason, setDisputeReason] = useState('');
+  const [isDisputing, setIsDisputing] = useState(false);
+  const [disputeError, setDisputeError] = useState('');
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -589,6 +595,109 @@ export default function TransactionDetailScreen() {
             />
           )}
 
+          {/* ── B2C ESCROWED: Buyer verification + dispute ── */}
+          {tx.status === 'ESCROWED' && !isP2P && isReceiver && tx.verificationCode && (
+            <View style={styles.card} className="bg-neutral-T100 rounded-2xl p-5 gap-4">
+              <View className="gap-1">
+                <Text className="font-sans font-bold text-base text-neutral-T10">
+                  Mã xác nhận nhận hàng
+                </Text>
+                <Text className="font-body text-xs text-neutral-T50 leading-4">
+                  Đưa mã này cho cửa hàng khi đến nhận hàng.
+                </Text>
+              </View>
+              <View className="bg-primary-T95 border border-primary-T70 rounded-xl px-6 py-4 items-center">
+                <Text className="font-body font-bold text-xl text-primary-T30 tracking-widest text-center" selectable>
+                  {tx.verificationCode.slice(-8).toUpperCase()}
+                </Text>
+              </View>
+            </View>
+          )}
+
+          {tx.status === 'ESCROWED' && !isP2P && isDonor && (
+            <ReceiverScanSection
+              transactionId={tx._id}
+              onCompleted={load}
+            />
+          )}
+
+          {/* ── Dispute button for buyer on ESCROWED B2C orders ── */}
+          {tx.status === 'ESCROWED' && !isP2P && isReceiver && (
+            <View style={styles.card} className="bg-neutral-T100 rounded-2xl p-5 gap-3">
+              <View className="flex-row items-center gap-3">
+                <View className="w-10 h-10 rounded-xl bg-rose-50 items-center justify-center">
+                  <MaterialIcons name="report-problem" size={20} color="#BE123C" />
+                </View>
+                <View className="flex-1">
+                  <Text className="font-sans font-bold text-sm text-neutral-T10">Gặp vấn đề?</Text>
+                  <Text className="font-body text-xs text-neutral-T50 mt-0.5 leading-4">
+                    Nếu sản phẩm không đúng mô tả, bạn có thể gửi khiếu nại.
+                  </Text>
+                </View>
+              </View>
+              <TouchableOpacity
+                onPress={() => {
+                  setDisputeReason('');
+                  setDisputeError('');
+                  setShowDisputeModal(true);
+                }}
+                activeOpacity={0.8}
+                className="h-11 border border-rose-200 rounded-xl flex-row items-center justify-center gap-2"
+                style={{ backgroundColor: '#FFF1F2' }}
+              >
+                <MaterialIcons name="report-problem" size={16} color="#BE123C" />
+                <Text className="font-label font-semibold text-sm" style={{ color: '#BE123C' }}>
+                  Gửi khiếu nại
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* ── Disputed info ── */}
+          {tx.status === 'DISPUTED' && tx.disputeReason && (
+            <View style={styles.card} className="bg-neutral-T100 rounded-2xl p-5 gap-3">
+              <View className="flex-row items-center gap-3">
+                <View className="w-10 h-10 rounded-xl bg-rose-50 items-center justify-center">
+                  <MaterialIcons name="report-problem" size={20} color="#BE123C" />
+                </View>
+                <View className="flex-1">
+                  <Text className="font-sans font-bold text-sm text-neutral-T10">Đang khiếu nại</Text>
+                  <Text className="font-body text-xs text-neutral-T50 mt-0.5 leading-4">
+                    Admin đang xem xét khiếu nại của bạn.
+                  </Text>
+                </View>
+              </View>
+              <View className="bg-rose-50 rounded-xl p-4">
+                <Text className="font-label text-[10px] text-neutral-T50 uppercase tracking-wider mb-1">Lý do</Text>
+                <Text className="font-body text-sm text-neutral-T10">{tx.disputeReason}</Text>
+              </View>
+            </View>
+          )}
+
+          {/* ── Refund info ── */}
+          {tx.status === 'REFUNDED' && (
+            <View style={styles.card} className="bg-neutral-T100 rounded-2xl p-5 gap-3">
+              <View className="flex-row items-center gap-3">
+                <View className="w-10 h-10 rounded-xl bg-orange-50 items-center justify-center">
+                  <MaterialIcons name="replay" size={20} color="#C2410C" />
+                </View>
+                <View className="flex-1">
+                  <Text className="font-sans font-bold text-sm text-neutral-T10">Đã hoàn tiền</Text>
+                  {tx.refundReason && (
+                    <Text className="font-body text-xs text-neutral-T50 mt-0.5 leading-4">
+                      {tx.refundReason}
+                    </Text>
+                  )}
+                </View>
+              </View>
+              {tx.refundedAt && (
+                <Text className="font-body text-xs text-neutral-T50">
+                  Hoàn tiền lúc: {formatDate(tx.refundedAt)}
+                </Text>
+              )}
+            </View>
+          )}
+
           {/* PENDING state */}
           {tx.status === 'PENDING' && isReceiver && (
             <View style={styles.card} className="bg-neutral-T100 rounded-2xl p-5 gap-4">
@@ -639,6 +748,85 @@ export default function TransactionDetailScreen() {
           )}
         </View>
       </ScrollView>
+
+      {/* ── Dispute modal ── */}
+      <Modal
+        visible={showDisputeModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowDisputeModal(false)}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          className="flex-1 justify-end"
+        >
+          <View className="flex-1" style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}>
+            <TouchableOpacity className="flex-1" onPress={() => setShowDisputeModal(false)} />
+            <View style={styles.bottomSheet} className="bg-neutral-T100 rounded-t-3xl px-6 pt-5 pb-8 gap-5">
+              <View className="w-10 h-1 rounded-full bg-neutral-T80 self-center" />
+
+              <View className="gap-1">
+                <Text className="font-sans font-bold text-lg text-neutral-T10">
+                  Khiếu nại đơn hàng
+                </Text>
+                <Text className="font-body text-sm text-neutral-T50">
+                  Mô tả lý do khiếu nại (ít nhất 10 ký tự). Admin sẽ xem xét và xử lý.
+                </Text>
+              </View>
+
+              <View className="gap-2">
+                <TextInput
+                  value={disputeReason}
+                  onChangeText={(t) => { setDisputeReason(t); setDisputeError(''); }}
+                  placeholder="Nhập lý do khiếu nại..."
+                  placeholderTextColor="#AAABAB"
+                  multiline
+                  numberOfLines={4}
+                  textAlignVertical="top"
+                  className="bg-neutral-T95 rounded-xl px-4 py-3 font-body text-neutral-T10 border border-neutral-T90"
+                  style={[{ minHeight: 100 }, disputeError ? styles.inputError : undefined]}
+                />
+                {!!disputeError && (
+                  <Text className="font-body text-xs text-red-500">{disputeError}</Text>
+                )}
+              </View>
+
+              <TouchableOpacity
+                onPress={async () => {
+                  if (disputeReason.trim().length < 10) {
+                    setDisputeError('Lý do khiếu nại phải có ít nhất 10 ký tự');
+                    return;
+                  }
+                  setIsDisputing(true);
+                  try {
+                    await fileDisputeApi(tx._id, disputeReason.trim());
+                    setShowDisputeModal(false);
+                    Alert.alert('Đã gửi', 'Khiếu nại của bạn đã được gửi. Admin sẽ xem xét và xử lý.', [
+                      { text: 'OK', onPress: load },
+                    ]);
+                  } catch (e: any) {
+                    setDisputeError(e?.response?.data?.message ?? 'Không thể gửi khiếu nại');
+                  } finally {
+                    setIsDisputing(false);
+                  }
+                }}
+                disabled={isDisputing}
+                activeOpacity={0.85}
+                className="h-14 rounded-xl items-center justify-center"
+                style={{ backgroundColor: '#BE123C' }}
+              >
+                {isDisputing ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <Text className="font-label font-bold text-base text-neutral-T100">
+                    Gửi khiếu nại
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </SafeAreaView>
   );
 }

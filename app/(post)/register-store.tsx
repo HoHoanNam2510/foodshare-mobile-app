@@ -35,6 +35,13 @@ export default function RegisterStore() {
   // KYC documents
   const [kycDocuments, setKycDocuments] = useState<string[]>([]);
 
+  // Payment info (thông tin nhận tiền)
+  const [momoPhone, setMomoPhone] = useState('');
+  // const [zalopayPhone, setZalopayPhone] = useState(''); // TODO: Re-enable when ZaloPay is ready
+  const [bankName, setBankName] = useState('');
+  const [bankAccountNumber, setBankAccountNumber] = useState('');
+  const [bankAccountName, setBankAccountName] = useState('');
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isLocalUri = (uri: string): boolean =>
@@ -91,6 +98,14 @@ export default function RegisterStore() {
         })
       );
 
+      // Build paymentInfo — chỉ gửi nếu có ít nhất 1 trường
+      const paymentInfo: Record<string, string> = {};
+      if (momoPhone.trim()) paymentInfo.momoPhone = momoPhone.trim();
+      // if (zalopayPhone.trim()) paymentInfo.zalopayPhone = zalopayPhone.trim(); // TODO: Re-enable when ZaloPay is ready
+      if (bankName.trim()) paymentInfo.bankName = bankName.trim();
+      if (bankAccountNumber.trim()) paymentInfo.bankAccountNumber = bankAccountNumber.trim();
+      if (bankAccountName.trim()) paymentInfo.bankAccountName = bankAccountName.trim();
+
       const res = await registerStoreApi({
         storeInfo: {
           businessName: businessName.trim(),
@@ -100,6 +115,7 @@ export default function RegisterStore() {
           businessAddress: businessAddress.trim(),
         },
         kycDocuments: uploadedDocs,
+        ...(Object.keys(paymentInfo).length > 0 && { paymentInfo }),
       });
 
       if (res.success) {
@@ -217,6 +233,52 @@ export default function RegisterStore() {
               images={kycDocuments}
               onImagesChange={setKycDocuments}
               maxImages={5}
+            />
+
+            {/* Payment Info */}
+            <SectionLabel icon="account-balance" label="Thông tin nhận tiền" />
+
+            <Text className="font-body text-xs text-neutral-T50 -mt-2">
+              Cung cấp ít nhất 1 phương thức để nhận tiền từ đơn hàng túi mù
+            </Text>
+
+            <FormInput
+              label="SĐT MoMo"
+              value={momoPhone}
+              onChangeText={setMomoPhone}
+              placeholder="0912345678"
+              keyboardType="phone-pad"
+            />
+
+            {/* TODO: Re-enable when ZaloPay is ready */}
+            {/* <FormInput
+              label="SĐT ZaloPay"
+              value={zalopayPhone}
+              onChangeText={setZalopayPhone}
+              placeholder="0912345678"
+              keyboardType="phone-pad"
+            /> */}
+
+            <FormInput
+              label="Tên ngân hàng"
+              value={bankName}
+              onChangeText={setBankName}
+              placeholder="VD: Vietcombank, MB Bank..."
+            />
+
+            <FormInput
+              label="Số tài khoản"
+              value={bankAccountNumber}
+              onChangeText={setBankAccountNumber}
+              placeholder="Nhập số tài khoản ngân hàng"
+              keyboardType="numeric"
+            />
+
+            <FormInput
+              label="Tên chủ tài khoản"
+              value={bankAccountName}
+              onChangeText={setBankAccountName}
+              placeholder="VD: NGUYEN VAN A"
             />
 
             {/* Submit button */}

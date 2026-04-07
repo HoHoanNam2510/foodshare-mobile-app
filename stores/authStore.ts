@@ -18,6 +18,16 @@ interface StoreInfo {
   businessAddress?: string;
 }
 
+interface PaymentInfo {
+  momoPhone?: string;
+  // zalopayPhone?: string; // TODO: Re-enable when ZaloPay is ready
+  bankName?: string;
+  bankCode?: string;
+  bankAccountNumber?: string;
+  bankAccountName?: string;
+  preferredDisbursement?: 'MOMO' | /* 'ZALOPAY' | */ 'BANK'; // TODO: Re-add ZALOPAY when ready
+}
+
 interface User {
   _id: string;
   email: string;
@@ -36,6 +46,7 @@ interface User {
   kycStatus: 'PENDING' | 'VERIFIED' | 'REJECTED';
   kycDocuments: string[];
   storeInfo?: StoreInfo;
+  paymentInfo?: PaymentInfo;
   greenPoints: number;
   averageRating: number;
   status: 'ACTIVE' | 'BANNED';
