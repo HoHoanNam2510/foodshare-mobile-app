@@ -1,8 +1,10 @@
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  ActivityIndicator,
   Image,
+  RefreshControl,
   ScrollView,
   Text,
   TextInput,
@@ -10,6 +12,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import api from '@/lib/axios';
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
 
@@ -25,14 +29,14 @@ type PostStatus =
 type PostType = 'P2P_FREE' | 'B2C_MYSTERY_BAG';
 
 interface Post {
-  id: string;
+  _id: string;
   title: string;
-  image: string;
+  images: string[];
   type: PostType;
   status: PostStatus;
-  requests: number;
+  price: number;
   expiryDate: string | null;
-  createdAt: Date;
+  createdAt: string;
 }
 
 interface StatusConfig {
@@ -41,81 +45,6 @@ interface StatusConfig {
   textClass: string;
   dotColor: string;
 }
-
-// ─── MOCK DATA ────────────────────────────────────────────────────────────────
-
-const MOCK_POSTS: Post[] = [
-  {
-    id: '1',
-    title: 'Artisan Sourdough Loaves',
-    image: 'https://images.unsplash.com/photo-1587486913049-53fc88980cfc?w=800&q=80',
-    type: 'P2P_FREE',
-    status: 'AVAILABLE',
-    requests: 12,
-    expiryDate: '2026-04-05',
-    createdAt: new Date('2026-04-03T10:30:00'),
-  },
-  {
-    id: '2',
-    title: 'Fresh Produce Surprise Bag',
-    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80',
-    type: 'B2C_MYSTERY_BAG',
-    status: 'BOOKED',
-    requests: 5,
-    expiryDate: '2026-04-03',
-    createdAt: new Date('2026-04-02T15:00:00'),
-  },
-  {
-    id: '3',
-    title: 'Mediterranean Salad Box',
-    image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&q=80',
-    type: 'P2P_FREE',
-    status: 'DRAFT',
-    requests: 0,
-    expiryDate: null,
-    createdAt: new Date('2026-04-01T08:20:00'),
-  },
-  {
-    id: '4',
-    title: 'Homemade Banana Bread',
-    image: 'https://images.unsplash.com/photo-1585478259715-876acc5be8eb?w=800&q=80',
-    type: 'P2P_FREE',
-    status: 'PENDING_REVIEW',
-    requests: 0,
-    expiryDate: '2026-04-06',
-    createdAt: new Date('2026-04-03T09:00:00'),
-  },
-  {
-    id: '5',
-    title: 'Leftover Pasta Bake',
-    image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=800&q=80',
-    type: 'B2C_MYSTERY_BAG',
-    status: 'OUT_OF_STOCK',
-    requests: 8,
-    expiryDate: '2026-04-02',
-    createdAt: new Date('2026-03-30T17:45:00'),
-  },
-  {
-    id: '6',
-    title: 'Organic Veggie Bundle',
-    image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=800&q=80',
-    type: 'P2P_FREE',
-    status: 'HIDDEN',
-    requests: 2,
-    expiryDate: '2026-04-08',
-    createdAt: new Date('2026-03-28T12:10:00'),
-  },
-  {
-    id: '7',
-    title: 'Spicy Kimchi Jars',
-    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&q=80',
-    type: 'P2P_FREE',
-    status: 'REJECTED',
-    requests: 0,
-    expiryDate: null,
-    createdAt: new Date('2026-03-25T14:30:00'),
-  },
-];
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 
@@ -177,23 +106,20 @@ const STATUS_CONFIG: Record<PostStatus, StatusConfig> = {
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
-function formatDate(date: Date): string {
-  const dd = String(date.getDate()).padStart(2, '0');
-  const mm = String(date.getMonth() + 1).padStart(2, '0');
-  const yy = String(date.getFullYear()).slice(-2);
-  const hh = String(date.getHours()).padStart(2, '0');
-  const min = String(date.getMinutes()).padStart(2, '0');
-  const ss = String(date.getSeconds()).padStart(2, '0');
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yy = String(d.getFullYear()).slice(-2);
+  const hh = String(d.getHours()).padStart(2, '0');
+  const min = String(d.getMinutes()).padStart(2, '0');
+  const ss = String(d.getSeconds()).padStart(2, '0');
   return `${dd}/${mm}/${yy} - ${hh}:${min}:${ss}`;
 }
 
 // ─── SUB-COMPONENTS ───────────────────────────────────────────────────────────
 
-interface StatusBadgeProps {
-  status: PostStatus;
-}
-
-function StatusBadge({ status }: StatusBadgeProps) {
+function StatusBadge({ status }: { status: PostStatus }) {
   const config = STATUS_CONFIG[status];
   return (
     <View className={`flex-row items-center gap-1 px-2.5 py-1 rounded-full ${config.bgClass}`}>
@@ -214,6 +140,7 @@ interface PostCardProps {
 
 function PostCard({ post, onPress }: PostCardProps) {
   const isDimmed = post.status === 'HIDDEN' || post.status === 'REJECTED' || post.status === 'DRAFT';
+  const imageUrl = post.images?.[0];
 
   return (
     <TouchableOpacity
@@ -223,11 +150,17 @@ function PostCard({ post, onPress }: PostCardProps) {
     >
       {/* Image */}
       <View className="relative w-full h-44 bg-neutral-T90">
-        <Image
-          source={{ uri: post.image }}
-          className={`w-full h-full ${isDimmed ? 'opacity-50' : ''}`}
-          resizeMode="cover"
-        />
+        {imageUrl ? (
+          <Image
+            source={{ uri: imageUrl }}
+            className={`w-full h-full ${isDimmed ? 'opacity-50' : ''}`}
+            resizeMode="cover"
+          />
+        ) : (
+          <View className="w-full h-full bg-neutral-T95 items-center justify-center">
+            <Feather name="image" size={32} color="#AAABAB" />
+          </View>
+        )}
         {/* Type chip — top left */}
         <View className="absolute top-3 left-3 bg-neutral-T10/70 px-2.5 py-1 rounded-full">
           <Text className="font-label text-[10px] font-semibold text-neutral-T100 uppercase tracking-wide">
@@ -254,15 +187,17 @@ function PostCard({ post, onPress }: PostCardProps) {
         {/* Meta row */}
         <View className="flex-row items-center gap-4">
           <View className="flex-row items-center gap-1.5">
-            <Feather name="users" size={13} color="#AAABAB" />
+            <Feather name="tag" size={13} color="#AAABAB" />
             <Text className="font-body text-xs text-neutral-T50">
-              {post.requests} yêu cầu
+              {post.type === 'P2P_FREE' ? 'Miễn phí' : `${post.price.toLocaleString('vi-VN')}đ`}
             </Text>
           </View>
           {post.expiryDate && (
             <View className="flex-row items-center gap-1.5">
               <Feather name="clock" size={13} color="#AAABAB" />
-              <Text className="font-body text-xs text-neutral-T50">HSD: {post.expiryDate}</Text>
+              <Text className="font-body text-xs text-neutral-T50">
+                HSD: {new Date(post.expiryDate).toLocaleDateString('vi-VN')}
+              </Text>
             </View>
           )}
         </View>
@@ -283,12 +218,36 @@ function PostCard({ post, onPress }: PostCardProps) {
 
 export default function PostList() {
   const router = useRouter();
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<PostStatus | 'ALL'>('ALL');
   const [sortAsc, setSortAsc] = useState(false);
 
+  const load = useCallback(async (isRefresh = false) => {
+    if (isRefresh) setIsRefreshing(true);
+    else setIsLoading(true);
+    setError(null);
+    try {
+      const { data } = await api.get('/posts/me');
+      setPosts(data.data ?? []);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Không thể tải bài đăng.');
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
   const displayedPosts = useMemo(() => {
-    let result = MOCK_POSTS;
+    let result = posts;
 
     if (activeFilter !== 'ALL') {
       result = result.filter((p) => p.status === activeFilter);
@@ -299,14 +258,14 @@ export default function PostList() {
       result = result.filter((p) => p.title.toLowerCase().includes(q));
     }
 
-    result = [...result].sort((a, b) =>
-      sortAsc
-        ? a.createdAt.getTime() - b.createdAt.getTime()
-        : b.createdAt.getTime() - a.createdAt.getTime()
-    );
+    result = [...result].sort((a, b) => {
+      const at = new Date(a.createdAt).getTime();
+      const bt = new Date(b.createdAt).getTime();
+      return sortAsc ? at - bt : bt - at;
+    });
 
     return result;
-  }, [searchQuery, activeFilter, sortAsc]);
+  }, [posts, searchQuery, activeFilter, sortAsc]);
 
   return (
     <SafeAreaView className="flex-1 bg-neutral" edges={['top']}>
@@ -395,43 +354,70 @@ export default function PostList() {
         </ScrollView>
       </View>
 
-      {/* ── Result count ── */}
-      <View className="px-4 pt-4 pb-2">
-        <Text className="font-label text-xs text-neutral-T70">
-          {displayedPosts.length} bài đăng
-        </Text>
-      </View>
-
-      {/* ── List ── */}
-      <ScrollView
-        className="flex-1"
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 120, gap: 12 }}
-      >
-        {displayedPosts.length === 0 ? (
-          <View className="items-center justify-center py-20 gap-3">
-            <View className="w-16 h-16 rounded-full bg-neutral-T95 items-center justify-center">
-              <Feather name="inbox" size={28} color="#AAABAB" />
-            </View>
-            <Text className="font-body text-sm text-neutral-T50 text-center">
-              Không tìm thấy bài đăng nào
+      {/* ── Content ── */}
+      {isLoading ? (
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color="#296C24" />
+          <Text className="font-body text-sm text-neutral-T50 mt-3">Đang tải...</Text>
+        </View>
+      ) : error ? (
+        <View className="flex-1 items-center justify-center px-8 gap-4">
+          <Text className="font-body text-sm text-neutral-T50 text-center">{error}</Text>
+          <TouchableOpacity
+            onPress={() => load()}
+            className="px-6 py-3 bg-primary-T40 rounded-xl"
+            activeOpacity={0.85}
+          >
+            <Text className="font-label font-semibold text-neutral-T100">Thử lại</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <>
+          {/* Result count */}
+          <View className="px-4 pt-4 pb-2">
+            <Text className="font-label text-xs text-neutral-T70">
+              {displayedPosts.length} bài đăng
             </Text>
           </View>
-        ) : (
-          displayedPosts.map((post) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              onPress={() =>
-                router.push({
-                  pathname: '/(post)/post-detail' as any,
-                  params: { id: post.id },
-                })
-              }
-            />
-          ))
-        )}
-      </ScrollView>
+
+          <ScrollView
+            className="flex-1"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 120, gap: 12 }}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={() => load(true)}
+                tintColor="#296C24"
+              />
+            }
+          >
+            {displayedPosts.length === 0 ? (
+              <View className="items-center justify-center py-20 gap-3">
+                <View className="w-16 h-16 rounded-full bg-neutral-T95 items-center justify-center">
+                  <Feather name="inbox" size={28} color="#AAABAB" />
+                </View>
+                <Text className="font-body text-sm text-neutral-T50 text-center">
+                  Không tìm thấy bài đăng nào
+                </Text>
+              </View>
+            ) : (
+              displayedPosts.map((post) => (
+                <PostCard
+                  key={post._id}
+                  post={post}
+                  onPress={() =>
+                    router.push({
+                      pathname: '/(post)/post-detail' as any,
+                      params: { id: post._id },
+                    })
+                  }
+                />
+              ))
+            )}
+          </ScrollView>
+        </>
+      )}
     </SafeAreaView>
   );
 }

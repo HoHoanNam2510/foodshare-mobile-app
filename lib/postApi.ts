@@ -90,3 +90,37 @@ export async function createPostApi(
     extractErrorMessage(error, 'Tạo bài đăng thất bại');
   }
 }
+
+// ── Post detail ────────────────────────────────────────────────────────────
+
+export interface IPostDetail {
+  _id: string;
+  type: 'P2P_FREE' | 'B2C_MYSTERY_BAG';
+  category: string;
+  title: string;
+  description?: string;
+  images: string[];
+  totalQuantity: number;
+  remainingQuantity: number;
+  price: number;
+  expiryDate: string;
+  pickupTime: { start: string; end: string };
+  status: string;
+  createdAt: string;
+  ownerId: {
+    _id: string;
+    fullName: string;
+    avatar?: string;
+    averageRating?: number;
+    role: string;
+  };
+}
+
+export async function getPostByIdApi(postId: string): Promise<{ success: boolean; data: IPostDetail }> {
+  try {
+    const { data } = await api.get(`/posts/${postId}`);
+    return data;
+  } catch (error) {
+    extractErrorMessage(error, 'Không thể tải bài đăng');
+  }
+}

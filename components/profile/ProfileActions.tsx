@@ -5,6 +5,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 interface ProfileActionsProps {
   onEditProfile?: () => void;
   onRegisterStore?: () => void;
+  onViewTransactions?: () => void;
   onLogOut?: () => void;
   showRegisterStore?: boolean;
   storeRegistrationPending?: boolean;
@@ -13,6 +14,7 @@ interface ProfileActionsProps {
 export default function ProfileActions({
   onEditProfile,
   onRegisterStore,
+  onViewTransactions,
   onLogOut,
   showRegisterStore,
   storeRegistrationPending,
@@ -44,6 +46,18 @@ export default function ProfileActions({
           </Text>
         </TouchableOpacity>
       )}
+
+      {/* Transactions button */}
+      <TouchableOpacity
+        className="h-14 rounded-xl bg-neutral-T95 border border-neutral-T80 flex-row items-center justify-center gap-2 active:scale-[0.98]"
+        onPress={onViewTransactions}
+        activeOpacity={0.8}
+      >
+        <MaterialIcons name="receipt-long" size={20} color="#296C24" />
+        <Text className="font-label font-semibold text-primary-T40">
+          Giao dịch của tôi
+        </Text>
+      </TouchableOpacity>
 
       <View className="flex-row gap-3">
         <TouchableOpacity

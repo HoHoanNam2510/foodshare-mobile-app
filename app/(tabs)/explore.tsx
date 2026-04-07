@@ -1,4 +1,5 @@
 import { Feather } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Image, StatusBar, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,6 +15,7 @@ const HEADER_HEIGHT = 56;
 
 export default function ExploreScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [activeFilter, setActiveFilter] = useState<TypeFilter>('All');
   const [sortOption, setSortOption] = useState<SortOption>('newest');
@@ -111,6 +113,12 @@ export default function ExploreScreen() {
             searchText={searchText}
             onSearchChange={setSearchText}
             headerHeight={HEADER_HEIGHT}
+            onPostPress={(post) =>
+              router.push({
+                pathname: '/(post)/post-detail' as any,
+                params: { id: post._id },
+              })
+            }
           />
         ) : (
           // Map view stays static — uses mock data

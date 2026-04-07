@@ -2,7 +2,15 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Modal, Pressable, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Modal,
+  Pressable,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import ContactCard from '@/components/profile/ContactCard';
@@ -131,7 +139,8 @@ export default function ProfileScreen() {
     user.kycDocuments.length > 0;
   // Chỉ hiển thị VerificationCard khi user là STORE, hoặc đã nộp hồ sơ đăng ký store
   const showVerificationCard =
-    user.role === 'STORE' || (user.kycDocuments && user.kycDocuments.length > 0);
+    user.role === 'STORE' ||
+    (user.kycDocuments && user.kycDocuments.length > 0);
 
   return (
     <SafeAreaView className="flex-1 bg-neutral-DEFAULT" edges={['top']}>
@@ -148,9 +157,15 @@ export default function ProfileScreen() {
           onPress={() => setShowRejectionModal(false)}
         >
           <Pressable onPress={(e) => e.stopPropagation()}>
-            <View className="bg-neutral-T100 rounded-3xl mx-6 p-6 gap-4" style={{ maxWidth: 340 }}>
+            <View
+              className="bg-neutral-T100 rounded-3xl mx-6 p-6 gap-4"
+              style={{ maxWidth: 340 }}
+            >
               {/* Icon */}
-              <View className="w-14 h-14 rounded-2xl items-center justify-center self-center" style={{ backgroundColor: 'rgba(186,26,26,0.1)' }}>
+              <View
+                className="w-14 h-14 rounded-2xl items-center justify-center self-center"
+                style={{ backgroundColor: 'rgba(186,26,26,0.1)' }}
+              >
                 <MaterialIcons name="gpp-bad" size={28} color="#ba1a1a" />
               </View>
               {/* Title */}
@@ -159,9 +174,12 @@ export default function ProfileScreen() {
                   Đơn đăng ký bị từ chối
                 </Text>
                 <Text className="font-body text-sm text-neutral-T50 text-center leading-5">
-                  Hồ sơ đăng ký cửa hàng của bạn chưa được duyệt. Bạn có thể nhấn nút{' '}
-                  <Text className="font-semibold text-neutral-T30">Đăng ký cửa hàng</Text>
-                  {' '}để nộp lại đơn mới.
+                  Hồ sơ đăng ký cửa hàng của bạn chưa được duyệt. Bạn có thể
+                  nhấn nút{' '}
+                  <Text className="font-semibold text-neutral-T30">
+                    Đăng ký cửa hàng
+                  </Text>{' '}
+                  để nộp lại đơn mới.
                 </Text>
               </View>
               {/* Action */}
@@ -170,7 +188,9 @@ export default function ProfileScreen() {
                 style={{ backgroundColor: 'rgba(186,26,26,0.1)' }}
                 onPress={() => setShowRejectionModal(false)}
               >
-                <Text className="font-label font-semibold text-error">Đã hiểu</Text>
+                <Text className="font-label font-semibold text-error">
+                  Đã hiểu
+                </Text>
               </TouchableOpacity>
             </View>
           </Pressable>
@@ -231,6 +251,9 @@ export default function ProfileScreen() {
           <ProfileActions
             onEditProfile={() => router.push('/(post)/edit-profile')}
             onRegisterStore={() => router.push('/(post)/register-store')}
+            onViewTransactions={() =>
+              router.push('/(transaction)/transaction-list' as any)
+            }
             onLogOut={handleLogout}
             showRegisterStore={canRegisterStore}
             storeRegistrationPending={storeRegistrationPending}
