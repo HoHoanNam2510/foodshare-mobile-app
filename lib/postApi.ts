@@ -124,3 +124,44 @@ export async function getPostByIdApi(postId: string): Promise<{ success: boolean
     extractErrorMessage(error, 'Không thể tải bài đăng');
   }
 }
+
+// ── Update post ───────────────────────────────────────────────────────────
+
+export interface UpdatePostPayload {
+  category?: string;
+  title?: string;
+  description?: string;
+  images?: string[];
+  totalQuantity?: number;
+  remainingQuantity?: number;
+  price?: number;
+  expiryDate?: string;
+  pickupTime?: { start: string; end: string };
+  location?: { type: 'Point'; coordinates: [number, number] };
+  publishAt?: string;
+}
+
+export async function updatePostApi(
+  postId: string,
+  payload: UpdatePostPayload
+): Promise<{ success: boolean; message: string; data?: IPostDetail }> {
+  try {
+    const { data } = await api.put(`/posts/${postId}`, payload);
+    return data;
+  } catch (error) {
+    extractErrorMessage(error, 'Cập nhật bài đăng thất bại');
+  }
+}
+
+// ── Delete post ───────────────────────────────────────────────────────────
+
+export async function deletePostApi(
+  postId: string
+): Promise<{ success: boolean; message: string }> {
+  try {
+    const { data } = await api.delete(`/posts/${postId}`);
+    return data;
+  } catch (error) {
+    extractErrorMessage(error, 'Xóa bài đăng thất bại');
+  }
+}

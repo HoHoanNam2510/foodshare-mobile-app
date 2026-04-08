@@ -17,7 +17,7 @@ import {
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 
-import { getPostByIdApi, type IPostDetail } from '@/lib/postApi';
+import { getPostByIdApi, deletePostApi, type IPostDetail } from '@/lib/postApi';
 import { createRequestApi } from '@/lib/transactionApi';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -94,6 +94,39 @@ export default function PostDetailScreen() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleEditPost = () => {
+    if (!post) return;
+    router.push({
+      pathname: '/(post)/edit-post',
+      params: { id: post._id },
+    } as any);
+  };
+
+  const handleDeletePost = () => {
+    if (!post) return;
+    Alert.alert(
+      'Xác nhận xóa',
+      'Bạn có chắc chắn muốn xóa bài đăng này? Hành động này không thể hoàn tác.',
+      [
+        { text: 'Hủy', style: 'cancel' },
+        {
+          text: 'Xóa',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deletePostApi(post._id);
+              Alert.alert('Thành công', 'Đã xóa bài đăng.', [
+                { text: 'OK', onPress: () => router.back() },
+              ]);
+            } catch (e) {
+              Alert.alert('Lỗi', e instanceof Error ? e.message : 'Không thể xóa bài đăng.');
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleBuyNow = () => {
@@ -307,11 +340,25 @@ export default function PostDetailScreen() {
         ]}
       >
         {isOwnPost ? (
-          // Own post — no action button
-          <View className="w-full bg-neutral-T95 rounded-2xl items-center justify-center py-4">
-            <Text className="font-label font-semibold text-neutral-T50">
-              Đây là bài đăng của bạn
-            </Text>
+          // Own post — Edit & Delete actions
+          <View className="flex-row gap-3 w-full">
+            <TouchableOpacity
+              className="flex-1 bg-primary-T40 rounded-2xl items-center justify-center py-4 flex-row gap-2"
+              activeOpacity={0.85}
+              onPress={handleEditPost}
+            >
+              <MaterialIcons name="edit" size={18} color="#fff" />
+              <Text className="text-neutral-T100 font-sans font-black text-base tracking-tight">
+                Chỉnh sửa
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="bg-neutral-T95 rounded-2xl items-center justify-center py-4 px-5"
+              activeOpacity={0.85}
+              onPress={handleDeletePost}
+            >
+              <MaterialIcons name="delete-outline" size={22} color="#DC2626" />
+            </TouchableOpacity>
           </View>
         ) : !isAvailable ? (
           // Unavailable
