@@ -20,7 +20,8 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import QRCode from 'react-native-qrcode-svg';
 
-import { cancelRequestApi, fileDisputeApi, getTransactionByIdApi, scanQrApi, type ITransaction, type TransactionStatus } from '@/lib/transactionApi';
+import { cancelRequestApi, fileDisputeApi, getTransactionByIdApi, scanQrApi, type ITransaction, type ITransactionRequester, type TransactionStatus } from '@/lib/transactionApi';
+import { getOrCreateConversationApi } from '@/lib/chatApi';
 import { useAuthStore } from '@/stores/authStore';
 
 // ── Status config ─────────────────────────────────────────────────────────────
@@ -408,6 +409,7 @@ export default function TransactionDetailScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
+  const [isChatting, setIsChatting] = useState(false);
   const [showDisputeModal, setShowDisputeModal] = useState(false);
   const [disputeReason, setDisputeReason] = useState('');
   const [isDisputing, setIsDisputing] = useState(false);
@@ -466,6 +468,31 @@ export default function TransactionDetailScreen() {
   const isDonor = currentUser?._id === tx.ownerId;
   const isReceiver = currentUser?._id === requesterId;
   const showQrSection = tx.status === 'ACCEPTED';
+
+  const handleChat = async () => {
+    if (!currentUser) return;
+    const otherId = isDonor
+      ? (tx.requesterId as ITransactionRequester)._id
+      : tx.ownerId;
+    setIsChatting(true);
+    try {
+      const res = await getOrCreateConversationApi(otherId);
+      const conv = res.data.data;
+      const other = conv.participants.find((p) => p._id !== currentUser._id);
+      router.push({
+        pathname: '/(chat)/chat-detail',
+        params: {
+          conversationId: conv._id,
+          name: other?.fullName ?? 'Người dùng',
+          avatarUri: other?.avatar ?? '',
+        },
+      } as any);
+    } catch {
+      Alert.alert('Lỗi', 'Không thể mở cuộc trò chuyện.');
+    } finally {
+      setIsChatting(false);
+    }
+  };
 
   const handleCancelRequest = () => {
     Alert.alert(
@@ -579,6 +606,32 @@ export default function TransactionDetailScreen() {
               </Text>
             </View>
           </View>
+
+          {/* ── Contact other party ── */}
+          <TouchableOpacity
+            style={styles.card}
+            className="bg-neutral-T100 rounded-2xl px-5 py-4 flex-row items-center gap-3"
+            activeOpacity={0.8}
+            onPress={handleChat}
+            disabled={isChatting}
+          >
+            <View className="w-10 h-10 rounded-xl bg-primary-T95 items-center justify-center">
+              <MaterialIcons name="chat-bubble-outline" size={20} color="#296C24" />
+            </View>
+            <View className="flex-1">
+              <Text className="font-label text-[10px] text-neutral-T50 uppercase tracking-wider">
+                Liên hệ
+              </Text>
+              <Text className="font-sans font-bold text-sm text-neutral-T10 mt-0.5">
+                {isDonor ? 'Nhắn tin với người nhận' : 'Nhắn tin với người cho'}
+              </Text>
+            </View>
+            {isChatting ? (
+              <ActivityIndicator size="small" color="#296C24" />
+            ) : (
+              <MaterialIcons name="chevron-right" size={20} color="#AAABAB" />
+            )}
+          </TouchableOpacity>
 
           {/* ── Status Timeline ── */}
           {isP2P && <StatusTimeline status={tx.status} />}

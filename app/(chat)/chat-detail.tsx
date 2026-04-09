@@ -1,85 +1,126 @@
 import { useLocalSearchParams } from 'expo-router';
-import React, { useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ChatHeader from '@/components/chat/ChatHeader';
 import ChatInput from '@/components/chat/ChatInput';
 import MessageBubble, { Message } from '@/components/chat/MessageBubble';
+import { ChatMessage, getMessagesApi, markAsReadApi, sendMessageApi } from '@/lib/chatApi';
+import { connectSocket, joinRoom, leaveRoom } from '@/lib/socket';
+import { useAuthStore } from '@/stores/authStore';
 
-const AVATAR_URI = 'https://i.pravatar.cc/150?img=11';
+// ─── HELPERS ────────────────────────────────────────────────────────────────
 
-const MOCK_MESSAGES: Message[] = [
-  {
-    id: '1',
-    sender: 'other',
-    type: 'text',
-    text: 'Hi bạn, mình thấy bó rau xà lách bạn share.',
-    time: '10:30 SA',
-  },
-  {
-    id: '2',
-    sender: 'other',
-    type: 'text',
-    text: 'Rau còn tươi không bạn ơi? Nhà mình ngay gần.',
-    time: '10:30 SA',
-  },
-  {
-    id: '3',
-    sender: 'me',
-    type: 'text',
-    text: 'Hi Nam! Rau mình vừa hái sáng nay, tươi rói nha.',
-    time: '10:32 SA',
-    isRead: true,
-  },
-  {
-    id: '4',
-    sender: 'me',
-    type: 'text',
-    text: 'Bạn qua lấy lúc nào cũng được, mình ở nhà cả ngày.',
-    time: '10:32 SA',
-    isRead: true,
-  },
-  {
-    id: '5',
-    sender: 'other',
-    type: 'image',
-    imageUri: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400',
-    text: 'Đây là rau mình đang cần nè bạn, giống không?',
-    time: '10:33 SA',
-  },
-  {
-    id: '6',
-    sender: 'other',
-    type: 'location',
-    time: '10:34 SA',
-    location: {
-      name: '12 Nguyễn Thị Minh Khai',
-      subtitle: 'Cổng chung cư The Garden',
-      previewUri: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?w=400',
-    },
-  },
-  {
-    id: '7',
-    sender: 'me',
-    type: 'text',
-    text: 'Ok bạn, 7pm mình ghé lấy nhé. Giống y chang rồi 😄',
-    time: '10:36 SA',
-    isRead: false,
-  },
-];
+function formatTime(iso: string): string {
+  const date = new Date(iso);
+  return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+}
+
+function toDisplayMessage(msg: ChatMessage, currentUserId: string): Message {
+  return {
+    id: msg._id,
+    sender: msg.senderId === currentUserId ? 'me' : 'other',
+    text: msg.content,
+    time: formatTime(msg.createdAt),
+    isRead: msg.isRead,
+  };
+}
+
+// ─── SCREEN ─────────────────────────────────────────────────────────────────
 
 export default function ChatDetailScreen() {
   const insets = useSafeAreaInsets();
-  const params = useLocalSearchParams();
+  const params = useLocalSearchParams<{
+    conversationId: string;
+    name: string;
+    avatarUri: string;
+  }>();
+  const { user } = useAuthStore();
   const scrollRef = useRef<ScrollView>(null);
+
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [sending, setSending] = useState(false);
+
+  const conversationId = params.conversationId;
+  const avatarUri = params.avatarUri || `https://i.pravatar.cc/150?u=${conversationId}`;
+
+  // Load message history
+  const loadMessages = useCallback(async () => {
+    if (!conversationId || !user) return;
+    try {
+      const res = await getMessagesApi(conversationId);
+      // API returns newest first — reverse for chronological display
+      const sorted = [...(res.data.data ?? [])].reverse();
+      setMessages(sorted.map((m) => toDisplayMessage(m, user._id)));
+    } catch {
+      // keep existing messages on error
+    }
+  }, [conversationId, user]);
+
+  // Setup socket + load history
+  useEffect(() => {
+    if (!conversationId) return;
+
+    let mounted = true;
+
+    const setup = async () => {
+      await loadMessages();
+
+      // Mark as read
+      markAsReadApi(conversationId).catch(() => {});
+
+      // Connect socket and join room
+      const socket = await connectSocket();
+      if (!mounted) return;
+
+      joinRoom(conversationId);
+
+      socket.on('new-message', (msg: ChatMessage) => {
+        if (!user) return;
+        setMessages((prev) => {
+          // Deduplicate by id
+          if (prev.some((m) => m.id === msg._id)) return prev;
+          return [...prev, toDisplayMessage(msg, user._id)];
+        });
+        // Scroll to bottom
+        setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
+        // Mark as read when screen is open
+        markAsReadApi(conversationId).catch(() => {});
+      });
+    };
+
+    setup();
+
+    return () => {
+      mounted = false;
+      leaveRoom(conversationId);
+    };
+  }, [conversationId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleSend = async (text: string) => {
+    if (!conversationId || sending) return;
+    setSending(true);
+    try {
+      const res = await sendMessageApi(conversationId, text);
+      const saved = res.data.data;
+      // Emit to socket so other participant gets it in real-time
+      const { getSocket } = await import('@/lib/socket');
+      const socket = getSocket();
+      socket?.emit('client-message', { conversationId, message: saved });
+    } catch {
+      // message failed — could show a toast here
+    } finally {
+      setSending(false);
+    }
+  };
 
   return (
     <View className="flex-1 bg-neutral">
       <ChatHeader
-        name={(params.name as string) || 'Hồ Hoàn Nam'}
-        avatarUri={AVATAR_URI}
-        isOnline
+        name={params.name || 'Người dùng'}
+        avatarUri={avatarUri}
+        isOnline={false}
       />
 
       <KeyboardAvoidingView
@@ -103,13 +144,13 @@ export default function ChatDetailScreen() {
             </View>
           </View>
 
-          {MOCK_MESSAGES.map((msg) => (
-            <MessageBubble key={msg.id} message={msg} avatarUri={AVATAR_URI} />
+          {messages.map((msg) => (
+            <MessageBubble key={msg.id} message={msg} avatarUri={avatarUri} />
           ))}
         </ScrollView>
 
         <View style={{ paddingBottom: Math.max(insets.bottom, 8) }}>
-          <ChatInput />
+          <ChatInput onSend={handleSend} disabled={sending} />
         </View>
       </KeyboardAvoidingView>
     </View>

@@ -19,6 +19,7 @@ import {
 
 import { getPostByIdApi, deletePostApi, type IPostDetail } from '@/lib/postApi';
 import { createRequestApi } from '@/lib/transactionApi';
+import { getOrCreateConversationApi } from '@/lib/chatApi';
 import { useAuthStore } from '@/stores/authStore';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -50,6 +51,7 @@ export default function PostDetailScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isChatting, setIsChatting] = useState(false);
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -127,6 +129,28 @@ export default function PostDetailScreen() {
         },
       ]
     );
+  };
+
+  const handleChat = async () => {
+    if (!post || !currentUser) return;
+    setIsChatting(true);
+    try {
+      const res = await getOrCreateConversationApi(owner._id);
+      const conv = res.data.data;
+      const other = conv.participants.find((p) => p._id !== currentUser._id);
+      router.push({
+        pathname: '/(chat)/chat-detail',
+        params: {
+          conversationId: conv._id,
+          name: other?.fullName ?? owner.fullName,
+          avatarUri: other?.avatar ?? owner.avatar ?? '',
+        },
+      } as any);
+    } catch {
+      Alert.alert('Lỗi', 'Không thể mở cuộc trò chuyện.');
+    } finally {
+      setIsChatting(false);
+    }
   };
 
   const handleBuyNow = () => {
@@ -361,45 +385,88 @@ export default function PostDetailScreen() {
             </TouchableOpacity>
           </View>
         ) : !isAvailable ? (
-          // Unavailable
-          <View className="w-full bg-neutral-T95 rounded-2xl items-center justify-center py-4">
-            <Text className="font-label font-semibold text-neutral-T50">
-              Không còn hàng
-            </Text>
+          // Unavailable — still allow chatting with owner
+          <View className="flex-row gap-3 w-full">
+            <View className="flex-1 bg-neutral-T95 rounded-2xl items-center justify-center py-4">
+              <Text className="font-label font-semibold text-neutral-T50">
+                Không còn hàng
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={handleChat}
+              disabled={isChatting}
+              activeOpacity={0.85}
+              className="w-14 bg-neutral-T95 rounded-2xl items-center justify-center"
+            >
+              {isChatting ? (
+                <ActivityIndicator color="#296C24" />
+              ) : (
+                <MaterialIcons name="chat-bubble-outline" size={22} color="#296C24" />
+              )}
+            </TouchableOpacity>
           </View>
         ) : isP2P ? (
-          // P2P — Request Item
-          <TouchableOpacity
-            className="w-full bg-primary-T40 rounded-2xl items-center justify-center py-4"
-            activeOpacity={0.85}
-            onPress={handleRequestItem}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text className="text-neutral-T100 font-sans font-black text-lg tracking-tight uppercase">
-                Yêu cầu nhận đồ
-              </Text>
-            )}
-          </TouchableOpacity>
+          // P2P — Request Item + Chat
+          <View className="flex-row gap-3 w-full">
+            <TouchableOpacity
+              className="flex-1 bg-primary-T40 rounded-2xl items-center justify-center py-4"
+              activeOpacity={0.85}
+              onPress={handleRequestItem}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text className="text-neutral-T100 font-sans font-black text-lg tracking-tight uppercase">
+                  Yêu cầu nhận đồ
+                </Text>
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleChat}
+              disabled={isChatting}
+              activeOpacity={0.85}
+              className="w-14 bg-primary-T95 rounded-2xl items-center justify-center"
+            >
+              {isChatting ? (
+                <ActivityIndicator color="#296C24" />
+              ) : (
+                <MaterialIcons name="chat-bubble-outline" size={22} color="#296C24" />
+              )}
+            </TouchableOpacity>
+          </View>
         ) : (
-          // B2C — Buy Now
-          <TouchableOpacity
-            className="w-full rounded-2xl items-center justify-center py-4"
-            activeOpacity={0.85}
-            onPress={handleBuyNow}
-            disabled={isSubmitting}
-            style={styles.buyBtn}
-          >
-            {isSubmitting ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text className="text-neutral-T100 font-sans font-black text-lg tracking-tight uppercase">
-                Mua ngay · {post.price.toLocaleString('vi-VN')}đ
-              </Text>
-            )}
-          </TouchableOpacity>
+          // B2C — Buy Now + Chat
+          <View className="flex-row gap-3 w-full">
+            <TouchableOpacity
+              className="flex-1 rounded-2xl items-center justify-center py-4"
+              activeOpacity={0.85}
+              onPress={handleBuyNow}
+              disabled={isSubmitting}
+              style={styles.buyBtn}
+            >
+              {isSubmitting ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text className="text-neutral-T100 font-sans font-black text-lg tracking-tight uppercase">
+                  Mua ngay · {post.price.toLocaleString('vi-VN')}đ
+                </Text>
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleChat}
+              disabled={isChatting}
+              activeOpacity={0.85}
+              className="w-14 rounded-2xl items-center justify-center"
+              style={{ backgroundColor: 'rgba(148,74,0,0.1)' }}
+            >
+              {isChatting ? (
+                <ActivityIndicator color="#944A00" />
+              ) : (
+                <MaterialIcons name="chat-bubble-outline" size={22} color="#944A00" />
+              )}
+            </TouchableOpacity>
+          </View>
         )}
       </View>
     </SafeAreaView>
