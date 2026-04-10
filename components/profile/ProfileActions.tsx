@@ -9,6 +9,7 @@ interface ProfileActionsProps {
   onViewVouchers?: () => void;
   onViewPointHistory?: () => void;
   onManageStoreVouchers?: () => void;
+  onViewReports?: () => void;
   onLogOut?: () => void;
   showRegisterStore?: boolean;
   storeRegistrationPending?: boolean;
@@ -22,6 +23,7 @@ export default function ProfileActions({
   onViewVouchers,
   onViewPointHistory,
   onManageStoreVouchers,
+  onViewReports,
   onLogOut,
   showRegisterStore,
   storeRegistrationPending,
@@ -64,6 +66,18 @@ export default function ProfileActions({
         <MaterialIcons name="receipt-long" size={20} color="#296C24" />
         <Text className="font-label font-semibold text-primary-T40">
           Giao dịch của tôi
+        </Text>
+      </TouchableOpacity>
+
+      {/* Reports button */}
+      <TouchableOpacity
+        className="h-14 rounded-xl bg-neutral-T95 border border-neutral-T80 flex-row items-center justify-center gap-2 active:scale-[0.98]"
+        onPress={onViewReports}
+        activeOpacity={0.8}
+      >
+        <MaterialIcons name="flag" size={20} color="#296C24" />
+        <Text className="font-label font-semibold text-primary-T40">
+          Báo cáo của tôi
         </Text>
       </TouchableOpacity>
 

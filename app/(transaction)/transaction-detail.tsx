@@ -788,6 +788,38 @@ export default function TransactionDetailScreen() {
               </View>
             </View>
           )}
+
+          {/* ── Report transaction ── */}
+          {(isDonor || isReceiver) && (
+            <TouchableOpacity
+              style={styles.card}
+              className="bg-neutral-T100 rounded-2xl px-5 py-4 flex-row items-center gap-3"
+              activeOpacity={0.8}
+              onPress={() =>
+                router.push({
+                  pathname: '/(report)/create-report',
+                  params: {
+                    targetType: 'TRANSACTION',
+                    targetId: tx._id,
+                    targetTitle: post.title,
+                  },
+                } as any)
+              }
+            >
+              <View className="w-10 h-10 rounded-xl bg-neutral-T95 items-center justify-center">
+                <MaterialIcons name="flag" size={20} color="#757777" />
+              </View>
+              <View className="flex-1">
+                <Text className="font-label text-[10px] text-neutral-T50 uppercase tracking-wider">
+                  Báo cáo
+                </Text>
+                <Text className="font-sans font-bold text-sm text-neutral-T10 mt-0.5">
+                  Báo cáo giao dịch này
+                </Text>
+              </View>
+              <MaterialIcons name="chevron-right" size={20} color="#AAABAB" />
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
 

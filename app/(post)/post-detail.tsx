@@ -194,9 +194,33 @@ export default function PostDetailScreen() {
   const thumb = post.images?.[0];
   const owner = post.ownerId;
 
+  const handleReport = () => {
+    router.push({
+      pathname: '/(report)/create-report',
+      params: {
+        targetType: 'POST',
+        targetId: post._id,
+        targetTitle: post.title,
+      },
+    } as any);
+  };
+
   return (
     <View className="flex-1 bg-neutral">
-      <StackHeader title="Chi tiết bài đăng" />
+      <StackHeader
+        title="Chi tiết bài đăng"
+        rightElement={
+          !isOwnPost ? (
+            <TouchableOpacity
+              onPress={handleReport}
+              activeOpacity={0.7}
+              className="w-10 h-10 rounded-full bg-neutral-T95 items-center justify-center"
+            >
+              <MaterialIcons name="flag" size={20} color="#757777" />
+            </TouchableOpacity>
+          ) : undefined
+        }
+      />
 
       <ScrollView
         className="flex-1"

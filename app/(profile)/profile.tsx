@@ -268,6 +268,7 @@ export default function ProfileScreen() {
             onManageStoreVouchers={() =>
               router.push('/(voucher)/store-vouchers' as any)
             }
+            onViewReports={() => router.push('/(report)/my-reports' as any)}
             onLogOut={handleLogout}
             showRegisterStore={canRegisterStore}
             storeRegistrationPending={storeRegistrationPending}
