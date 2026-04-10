@@ -21,6 +21,7 @@ import { getPostByIdApi, deletePostApi, type IPostDetail } from '@/lib/postApi';
 import { createRequestApi } from '@/lib/transactionApi';
 import { getOrCreateConversationApi } from '@/lib/chatApi';
 import { useAuthStore } from '@/stores/authStore';
+import StackHeader from '@/components/shared/headers/StackHeader';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -194,23 +195,8 @@ export default function PostDetailScreen() {
   const owner = post.ownerId;
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral" edges={['top']}>
-      {/* ─── Top Navigation Bar ─── */}
-      <View className="flex-row items-center justify-between w-full h-14 px-4 bg-neutral">
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="w-10 h-10 items-center justify-center rounded-xl"
-          style={styles.navBtn}
-        >
-          <MaterialIcons name="arrow-back" size={22} color="#191C1C" />
-        </TouchableOpacity>
-
-        <Text className="font-sans font-extrabold text-base tracking-tight text-neutral-T10 uppercase">
-          FoodShare
-        </Text>
-
-        <View className="w-10 h-10" />
-      </View>
+    <View className="flex-1 bg-neutral">
+      <StackHeader title="Chi tiết bài đăng" />
 
       <ScrollView
         className="flex-1"
@@ -469,19 +455,11 @@ export default function PostDetailScreen() {
           </View>
         )}
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  navBtn: {
-    backgroundColor: 'rgba(255,255,255,0.8)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
-  },
   badge: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },

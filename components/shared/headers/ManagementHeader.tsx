@@ -11,23 +11,35 @@ interface ActionItem {
 interface ManagementHeaderProps {
   title: string;
   actions?: ActionItem[];
+  onBack?: () => void;
 }
 
 export default function ManagementHeader({
   title,
   actions = [],
+  onBack,
 }: ManagementHeaderProps) {
   return (
     <BaseHeader>
       <View className="flex-row items-center justify-between flex-1">
-        {/* Left: Title ExtraBold */}
-        <Text
-          className="text-xl"
-          style={{ fontFamily: 'Epilogue', fontWeight: '800' }}
-          numberOfLines={1}
-        >
-          {title}
-        </Text>
+        {/* Left: Back button (optional) + Title ExtraBold */}
+        <View className="flex-row items-center gap-3 flex-1">
+          {onBack && (
+            <TouchableOpacity
+              className="w-10 h-10 rounded-full bg-neutral-T95 items-center justify-center active:opacity-80"
+              onPress={onBack}
+            >
+              <Feather name="arrow-left" size={20} color="#191C1C" />
+            </TouchableOpacity>
+          )}
+          <Text
+            className="text-xl flex-1"
+            style={{ fontFamily: 'Epilogue', fontWeight: '800' }}
+            numberOfLines={1}
+          >
+            {title}
+          </Text>
+        </View>
 
         {/* Right: Actions */}
         <View className="flex-row items-center gap-2">

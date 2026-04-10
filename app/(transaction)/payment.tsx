@@ -11,7 +11,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
+import StackHeader from '@/components/shared/headers/StackHeader';
 
 import { getPostByIdApi, type IPostDetail } from '@/lib/postApi';
 import { createOrderApi, type PaymentMethod } from '@/lib/transactionApi';
@@ -177,9 +178,12 @@ export default function PaymentScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-neutral-DEFAULT items-center justify-center" edges={['top']}>
-        <ActivityIndicator size="large" color="#296C24" />
-      </SafeAreaView>
+      <View className="flex-1 bg-neutral-DEFAULT">
+        <StackHeader title="Thanh toán" />
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color="#296C24" />
+        </View>
+      </View>
     );
   }
 
@@ -187,36 +191,26 @@ export default function PaymentScreen() {
 
   const totalAmount = post.price * quantity;
 
-  return (
-    <SafeAreaView className="flex-1 bg-neutral-DEFAULT" edges={['top']}>
-      {/* Header */}
-      <View className="flex-row items-center h-14 px-4 bg-neutral-T100" style={styles.header}>
-        <TouchableOpacity
-          onPress={() => {
-            if (orderCreated) {
-              Alert.alert(
-                'Huỷ thanh toán?',
-                'Đơn hàng đã được tạo. Bạn có chắc muốn thoát?',
-                [
-                  { text: 'Ở lại', style: 'cancel' },
-                  { text: 'Thoát', style: 'destructive', onPress: () => router.back() },
-                ]
-              );
-            } else {
-              router.back();
-            }
-          }}
-          className="w-10 h-10 items-center justify-center"
-        >
-          <MaterialIcons name="arrow-back" size={22} color="#191C1C" />
-        </TouchableOpacity>
-        <Text className="flex-1 text-center font-sans font-bold text-lg text-neutral-T10">
-          Thanh toán
-        </Text>
-        <View className="w-10" />
-      </View>
+  const handleBack = () => {
+    if (orderCreated) {
+      Alert.alert(
+        'Huỷ thanh toán?',
+        'Đơn hàng đã được tạo. Bạn có chắc muốn thoát?',
+        [
+          { text: 'Ở lại', style: 'cancel' },
+          { text: 'Thoát', style: 'destructive', onPress: () => router.back() },
+        ]
+      );
+    } else {
+      router.back();
+    }
+  };
 
-      <View className="flex-1 px-5 pt-5 gap-5">
+  return (
+    <View className="flex-1 bg-neutral-DEFAULT">
+      <StackHeader title="Thanh toán" onBack={handleBack} />
+
+      <View className="flex-1 px-5 pt-4 gap-5">
         {/* Order Summary */}
         <View className="bg-neutral-T100 rounded-2xl p-4 flex-row gap-3" style={styles.card}>
           {post.images?.[0] ? (
@@ -339,18 +333,11 @@ export default function PaymentScreen() {
           )}
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
   card: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },

@@ -14,12 +14,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import CategoryPicker from '@/components/post/CategoryPicker';
+import StackHeader from '@/components/shared/headers/StackHeader';
 import ImagePickerSection from '@/components/post/ImagePickerSection';
 import PasscodeModal from '@/components/post/PasscodeModal';
 import QuantityStepper from '@/components/post/QuantityStepper';
@@ -278,29 +276,19 @@ export default function CreatePost() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral" edges={['top']}>
+    <View className="flex-1 bg-neutral">
+      <StackHeader
+        title={isB2C ? 'Share surprise bag' : 'Share meal'}
+        rightElement={
+          <Text className="font-label text-xs text-neutral-T70">
+            Auto-saving
+          </Text>
+        }
+      />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
       >
-        {/* ── Header ── */}
-        <View className="flex-row items-center justify-between px-6 h-16 bg-neutral-T100 shadow-sm">
-          <View className="flex-row items-center gap-4">
-            <TouchableOpacity
-              className="active:opacity-70 p-1"
-              onPress={() => router.back()}
-            >
-              <MaterialIcons name="arrow-back" size={24} color="#757777" />
-            </TouchableOpacity>
-            <Text className="font-sans font-bold text-lg text-primary-T40">
-              {isB2C ? 'Share surprise bag' : 'Share meal'}
-            </Text>
-          </View>
-          <Text className="font-label text-xs text-neutral-T70">
-            Auto-saving
-          </Text>
-        </View>
-
         <ScrollView
           className="flex-1"
           contentContainerStyle={{
@@ -535,6 +523,6 @@ export default function CreatePost() {
         isLoading={isSubmitting}
         deliveryMethod={deliveryMethod}
       />
-    </SafeAreaView>
+    </View>
   );
 }

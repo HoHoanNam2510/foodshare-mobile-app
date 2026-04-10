@@ -8,12 +8,14 @@ import {
   FlatList,
   Image,
   RefreshControl,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
+import ManagementHeader from '@/components/shared/headers/ManagementHeader';
 
 import {
   cancelRequestApi,
@@ -404,24 +406,12 @@ export default function TransactionListScreen() {
   ];
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral" edges={['top']}>
-      {/* ── Header ── */}
-      <View className="flex-row items-center px-4 h-14 gap-3">
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.navBtn}
-          className="w-10 h-10 items-center justify-center rounded-xl"
-          activeOpacity={0.8}
-        >
-          <MaterialIcons name="arrow-back" size={22} color="#191C1C" />
-        </TouchableOpacity>
-        <Text className="font-sans font-bold text-lg text-neutral-T10 flex-1">
-          Giao dịch của tôi
-        </Text>
-      </View>
+    <View className="flex-1 bg-neutral">
+      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
+      <ManagementHeader title="Giao dịch của tôi" onBack={() => router.back()} />
 
       {/* ── Tab Bar ── */}
-      <View className="flex-row mx-4 mb-3 bg-neutral-T95 rounded-xl p-1">
+      <View className="flex-row mx-4 mt-4 mb-3 bg-neutral-T95 rounded-xl p-1">
         {tabs.map((tab) => (
           <TouchableOpacity
             key={tab.key}
@@ -478,7 +468,7 @@ export default function TransactionListScreen() {
                 tintColor="#296C24"
               />
             }
-            contentContainerStyle={{ paddingTop: 4, paddingBottom: 40, flexGrow: 1 }}
+            contentContainerStyle={{ paddingTop: 16, paddingBottom: 40, flexGrow: 1 }}
             showsVerticalScrollIndicator={false}
           />
         )
@@ -522,7 +512,7 @@ export default function TransactionListScreen() {
               tintColor="#296C24"
             />
           }
-          contentContainerStyle={{ paddingTop: 4, paddingBottom: 40, flexGrow: 1 }}
+          contentContainerStyle={{ paddingTop: 16, paddingBottom: 40, flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
         />
       ) : (
@@ -547,25 +537,17 @@ export default function TransactionListScreen() {
               tintColor="#296C24"
             />
           }
-          contentContainerStyle={{ paddingTop: 4, paddingBottom: 40, flexGrow: 1 }}
+          contentContainerStyle={{ paddingTop: 16, paddingBottom: 40, flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
 // ── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  navBtn: {
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
-  },
   card: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },

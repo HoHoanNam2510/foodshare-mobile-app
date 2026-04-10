@@ -10,10 +10,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import ManagementHeader from '@/components/shared/headers/ManagementHeader';
 
 import VoucherCard from '@/components/voucher/VoucherCard';
 import { storeGetMyVouchersApi, storeToggleVoucherApi } from '@/lib/voucherApi';
@@ -86,7 +85,17 @@ export default function StoreVouchersScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral" edges={['bottom']}>
+    <View className="flex-1 bg-neutral">
+      <ManagementHeader
+        title="Voucher của tôi"
+        onBack={() => router.back()}
+        actions={[
+          {
+            icon: 'plus',
+            onPress: () => router.push('/(voucher)/create-voucher' as any),
+          },
+        ]}
+      />
       {/* ── List ── */}
       {loading ? (
         <View className="flex-1 items-center justify-center gap-3">
@@ -102,7 +111,7 @@ export default function StoreVouchersScreen() {
           style={{ flex: 1 }}
           contentContainerStyle={{
             paddingHorizontal: 16,
-            paddingTop: 8,
+            paddingTop: 16,
             paddingBottom: insets.bottom + 20,
           }}
           showsVerticalScrollIndicator={false}
@@ -138,6 +147,6 @@ export default function StoreVouchersScreen() {
           )}
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 }

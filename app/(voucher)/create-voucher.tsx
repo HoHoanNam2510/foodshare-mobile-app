@@ -12,9 +12,9 @@ import {
   Keyboard,
 } from 'react-native';
 import { useEffect, useRef } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePickerModal from '@/components/shared/DateTimePickerModal';
 import { useRouter } from 'expo-router';
+import StackHeader from '@/components/shared/headers/StackHeader';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '@/stores/authStore';
@@ -132,10 +132,8 @@ const CreateVoucherScreen = () => {
       className="flex-1"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <SafeAreaView
-        className="flex-1 bg-background"
-        edges={['top', 'left', 'right']}
-      >
+      <View className="flex-1 bg-neutral">
+        <StackHeader title="Tạo Voucher mới" />
         <ScrollView
           ref={scrollViewRef}
           className="flex-1"
@@ -147,10 +145,6 @@ const CreateVoucherScreen = () => {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <Text className="text-2xl font-bold text-foreground mb-6">
-            Tạo Voucher mới
-          </Text>
-
           {/* Title */}
           <View className="mb-4">
             <Text className="text-sm font-medium text-foreground mb-2">
@@ -331,7 +325,7 @@ const CreateVoucherScreen = () => {
           }}
           onClose={() => setActiveValidUntilPicker(false)}
         />
-      </SafeAreaView>
+      </View>
     </KeyboardAvoidingView>
   );
 };

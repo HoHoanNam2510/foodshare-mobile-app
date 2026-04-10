@@ -10,12 +10,18 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import ManagementHeader from '@/components/shared/headers/ManagementHeader';
 
 import RedeemConfirmModal from '@/components/voucher/RedeemConfirmModal';
 import VoucherCard from '@/components/voucher/VoucherCard';
 import { getVoucherMarketApi, redeemVoucherApi } from '@/lib/voucherApi';
-import type { IVoucher, VoucherSortOption, DiscountTypeFilter } from '@/lib/voucherApi';
+import type {
+  IVoucher,
+  VoucherSortOption,
+  DiscountTypeFilter,
+} from '@/lib/voucherApi';
 import { useAuthStore } from '@/stores/authStore';
 
 type SortLabel = 'Mới nhất' | 'Điểm tăng dần' | 'Điểm giảm dần';
@@ -50,7 +56,10 @@ export default function VoucherMarketScreen() {
   const loadVouchers = useCallback(async () => {
     setIsLoading(true);
     try {
-      const params: { sort?: VoucherSortOption; discountType?: 'PERCENTAGE' | 'FIXED_AMOUNT' } = {
+      const params: {
+        sort?: VoucherSortOption;
+        discountType?: 'PERCENTAGE' | 'FIXED_AMOUNT';
+      } = {
         sort: activeSort,
       };
       if (activeFilter !== 'ALL') {
@@ -84,7 +93,10 @@ export default function VoucherMarketScreen() {
     } catch (e) {
       // Rollback
       restoreGreenPoints(selectedVoucher.pointCost);
-      Alert.alert('Lỗi', e instanceof Error ? e.message : 'Không thể đổi voucher.');
+      Alert.alert(
+        'Lỗi',
+        e instanceof Error ? e.message : 'Không thể đổi voucher.'
+      );
     } finally {
       setIsRedeeming(false);
     }
@@ -94,25 +106,12 @@ export default function VoucherMarketScreen() {
     SORT_OPTIONS.find((o) => o.value === activeSort)?.label ?? 'Mới nhất';
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral" edges={['top']}>
-      {/* ── Header ── */}
-      <View className="flex-row items-center justify-between h-14 px-4 bg-neutral">
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="w-10 h-10 items-center justify-center rounded-xl bg-neutral-T95"
-          activeOpacity={0.8}
-        >
-          <MaterialIcons name="arrow-back" size={22} color="#191C1C" />
-        </TouchableOpacity>
-        <Text className="font-sans font-bold text-lg text-neutral-T10">
-          Chợ Voucher
-        </Text>
-        <View className="w-10" />
-      </View>
+    <View className="flex-1 bg-neutral">
+      <ManagementHeader title="Chợ Voucher" onBack={() => router.back()} />
 
       {/* ── Points Widget ── */}
       {user && (
-        <View className="mx-4 mb-3 px-4 py-3 bg-primary-T95 rounded-xl flex-row items-center gap-2">
+        <View className="m-4 p-4 bg-primary-T95 rounded-xl flex-row items-center gap-2">
           <Text className="text-lg">🍃</Text>
           <Text className="font-label font-semibold text-sm text-primary-T30">
             Điểm của bạn:{' '}
@@ -244,6 +243,6 @@ export default function VoucherMarketScreen() {
         onConfirm={handleRedeem}
         onClose={() => !isRedeeming && setSelectedVoucher(null)}
       />
-    </SafeAreaView>
+    </View>
   );
 }

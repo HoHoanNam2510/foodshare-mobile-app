@@ -11,9 +11,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
 import ImagePickerSection from '@/components/post/ImagePickerSection';
+import StackHeader from '@/components/shared/headers/StackHeader';
 import FormInput from '@/components/shared/FormInput';
 import SectionLabel from '@/components/shared/SectionLabel';
 import { registerStoreApi } from '@/lib/profileApi';
@@ -58,7 +57,7 @@ export default function RegisterStore() {
         `Vui lòng cập nhật ${missingFields.join(' và ')} trong hồ sơ cá nhân trước khi đăng ký cửa hàng.`,
         [
           { text: 'Để sau', style: 'cancel' },
-          { text: 'Cập nhật ngay', onPress: () => router.push('/(post)/edit-profile') },
+          { text: 'Cập nhật ngay', onPress: () => router.push('/(profile)/edit-profile') },
         ]
       );
       return;
@@ -136,20 +135,8 @@ export default function RegisterStore() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-DEFAULT" edges={['top']}>
-      {/* Header */}
-      <View className="flex-row items-center justify-between h-16 px-6 bg-neutral-T100 shadow-sm">
-        <TouchableOpacity
-          className="p-2 rounded-full active:opacity-70"
-          onPress={() => router.back()}
-        >
-          <MaterialIcons name="arrow-back" size={24} color="#191C1C" />
-        </TouchableOpacity>
-        <Text className="font-sans font-bold text-lg text-neutral-T10">
-          Đăng ký cửa hàng
-        </Text>
-        <View style={{ width: 40 }} />
-      </View>
+    <View className="flex-1 bg-neutral-DEFAULT">
+      <StackHeader title="Đăng ký cửa hàng" />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -298,7 +285,6 @@ export default function RegisterStore() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
-

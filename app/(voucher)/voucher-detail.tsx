@@ -11,7 +11,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import StackHeader from '@/components/shared/headers/StackHeader';
 
 import RedeemConfirmModal from '@/components/voucher/RedeemConfirmModal';
 import VoucherDiscountBadge from '@/components/voucher/VoucherDiscountBadge';
@@ -26,7 +28,11 @@ import { useAuthStore } from '@/stores/authStore';
 export default function VoucherDetailScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { id, source, status: walletStatus } = useLocalSearchParams<{
+  const {
+    id,
+    source,
+    status: walletStatus,
+  } = useLocalSearchParams<{
     id: string;
     source: 'market' | 'wallet';
     status?: 'UNUSED' | 'USED' | 'EXPIRED';
@@ -55,7 +61,8 @@ export default function VoucherDetailScreen() {
       .finally(() => setIsLoading(false));
   }, [id]);
 
-  const canAfford = user && voucher ? user.greenPoints >= voucher.pointCost : false;
+  const canAfford =
+    user && voucher ? user.greenPoints >= voucher.pointCost : false;
   const isFromWallet = source === 'wallet';
 
   const handleCopyCode = () => {
@@ -76,7 +83,10 @@ export default function VoucherDetailScreen() {
       ]);
     } catch (e) {
       restoreGreenPoints(voucher.pointCost);
-      Alert.alert('Lỗi', e instanceof Error ? e.message : 'Không thể đổi voucher.');
+      Alert.alert(
+        'Lỗi',
+        e instanceof Error ? e.message : 'Không thể đổi voucher.'
+      );
     } finally {
       setIsRedeeming(false);
     }
@@ -84,27 +94,33 @@ export default function VoucherDetailScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-neutral items-center justify-center" edges={['top']}>
-        <ActivityIndicator size="large" color="#296C24" />
-      </SafeAreaView>
+      <View className="flex-1 bg-neutral">
+        <StackHeader title="Chi tiết Voucher" />
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color="#296C24" />
+        </View>
+      </View>
     );
   }
 
   if (!voucher) {
     return (
-      <SafeAreaView className="flex-1 bg-neutral items-center justify-center px-8 gap-4" edges={['top']}>
-        <Text className="font-body text-sm text-neutral-T50 text-center">
-          Không tìm thấy voucher này.
-        </Text>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="px-6 py-3 bg-primary-T40 rounded-xl"
-        >
-          <Text className="font-label font-semibold text-neutral-T100">
-            Quay lại
+      <View className="flex-1 bg-neutral">
+        <StackHeader title="Chi tiết Voucher" />
+        <View className="flex-1 items-center justify-center px-8 gap-4">
+          <Text className="font-body text-sm text-neutral-T50 text-center">
+            Không tìm thấy voucher này.
           </Text>
-        </TouchableOpacity>
-      </SafeAreaView>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="px-6 py-3 bg-primary-T40 rounded-xl"
+          >
+            <Text className="font-label font-semibold text-neutral-T100">
+              Quay lại
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     );
   }
 
@@ -116,33 +132,23 @@ export default function VoucherDetailScreen() {
     });
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral" edges={['top']}>
-      {/* ── Header ── */}
-      <View className="flex-row items-center justify-between h-14 px-4 bg-neutral">
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="w-10 h-10 items-center justify-center rounded-xl bg-neutral-T95"
-          activeOpacity={0.8}
-        >
-          <MaterialIcons name="arrow-back" size={22} color="#191C1C" />
-        </TouchableOpacity>
-        <Text className="font-sans font-bold text-lg text-neutral-T10">
-          Chi tiết Voucher
-        </Text>
-        <View className="w-10" />
-      </View>
+    <View className="flex-1 bg-neutral">
+      <StackHeader title="Chi tiết Voucher" />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingHorizontal: 16,
           paddingBottom: insets.bottom + 100,
-          paddingTop: 8,
+          paddingTop: 16,
           gap: 12,
         }}
       >
         {/* ── Hero Badge Card ── */}
-        <View className="bg-neutral-T100 rounded-2xl p-6 items-center gap-4" style={styles.card}>
+        <View
+          className="bg-neutral-T100 rounded-2xl p-6 items-center gap-4"
+          style={styles.card}
+        >
           <VoucherDiscountBadge
             discountType={voucher.discountType}
             discountValue={voucher.discountValue}
@@ -171,7 +177,10 @@ export default function VoucherDetailScreen() {
         </View>
 
         {/* ── Details Card ── */}
-        <View className="bg-neutral-T100 rounded-2xl p-5 gap-4" style={styles.card}>
+        <View
+          className="bg-neutral-T100 rounded-2xl p-5 gap-4"
+          style={styles.card}
+        >
           <Text className="font-sans font-bold text-base text-neutral-T10">
             Thông tin chi tiết
           </Text>
@@ -179,7 +188,11 @@ export default function VoucherDetailScreen() {
           <View className="gap-3">
             <DetailRow
               label="Loại giảm giá"
-              value={voucher.discountType === 'PERCENTAGE' ? 'Phần trăm' : 'Số tiền cố định'}
+              value={
+                voucher.discountType === 'PERCENTAGE'
+                  ? 'Phần trăm'
+                  : 'Số tiền cố định'
+              }
             />
             <DetailRow
               label="Giá trị"
@@ -190,7 +203,9 @@ export default function VoucherDetailScreen() {
               }
             />
             <View className="flex-row items-center justify-between">
-              <Text className="font-label text-sm text-neutral-T50">Điểm cần đổi</Text>
+              <Text className="font-label text-sm text-neutral-T50">
+                Điểm cần đổi
+              </Text>
               <VoucherPointCost
                 pointCost={voucher.pointCost}
                 canAfford={!isFromWallet ? canAfford : true}
@@ -198,7 +213,9 @@ export default function VoucherDetailScreen() {
               />
             </View>
             <View className="gap-1">
-              <Text className="font-label text-sm text-neutral-T50">Số lượng còn lại</Text>
+              <Text className="font-label text-sm text-neutral-T50">
+                Số lượng còn lại
+              </Text>
               <VoucherQuantityBar
                 remainingQuantity={voucher.remainingQuantity}
                 totalQuantity={voucher.totalQuantity}
@@ -214,7 +231,9 @@ export default function VoucherDetailScreen() {
             <>
               <View className="h-px bg-neutral-T90" />
               <View className="gap-1">
-                <Text className="font-label text-sm text-neutral-T50">Mô tả</Text>
+                <Text className="font-label text-sm text-neutral-T50">
+                  Mô tả
+                </Text>
                 <Text className="font-body text-sm text-neutral-T30 leading-5">
                   {voucher.description}
                 </Text>
@@ -276,7 +295,7 @@ export default function VoucherDetailScreen() {
         onConfirm={handleRedeem}
         onClose={() => !isRedeeming && setShowModal(false)}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -284,7 +303,9 @@ function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <View className="flex-row items-center justify-between">
       <Text className="font-label text-sm text-neutral-T50">{label}</Text>
-      <Text className="font-label font-semibold text-sm text-neutral-T20">{value}</Text>
+      <Text className="font-label font-semibold text-sm text-neutral-T20">
+        {value}
+      </Text>
     </View>
   );
 }

@@ -9,8 +9,8 @@ import {
   ActivityIndicator,
   Platform,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import StackHeader from '@/components/shared/headers/StackHeader';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
 import {
@@ -102,24 +102,22 @@ const EditVoucherScreen = () => {
 
   if (fetching) {
     return (
-      <SafeAreaView className="flex-1 bg-background" edges={['top']}>
+      <View className="flex-1 bg-neutral">
+        <StackHeader title="Chỉnh sửa Voucher" />
         <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color="#10b981" />
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   if (!voucher) return null;
 
   return (
-    <SafeAreaView className="flex-1 bg-background" edges={['top']}>
+    <View className="flex-1 bg-neutral">
+      <StackHeader title="Chỉnh sửa Voucher" />
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
         <View className="p-6">
-          <Text className="text-2xl font-bold text-foreground mb-6">
-            Chỉnh sửa Voucher
-          </Text>
-
           {/* Warning banner — shown when voucher has been redeemed */}
           {hasRedeemed && (
             <View className="bg-yellow-50 border border-yellow-300 rounded-xl p-4 mb-6 flex-row items-start gap-3">
@@ -248,7 +246,7 @@ const EditVoucherScreen = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

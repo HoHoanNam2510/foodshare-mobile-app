@@ -2,15 +2,10 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ActivityIndicator, Alert, FlatList, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import ManagementHeader from '@/components/shared/headers/ManagementHeader';
 
 import PointHistoryItem from '@/components/voucher/PointHistoryItem';
 import { getPointHistoryApi } from '@/lib/greenPointApi';
@@ -59,24 +54,14 @@ export default function PointHistoryScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral" edges={['top']}>
-      {/* ── Header ── */}
-      <View className="flex-row items-center justify-between h-14 px-4 bg-neutral">
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="w-10 h-10 items-center justify-center rounded-xl bg-neutral-T95"
-          activeOpacity={0.8}
-        >
-          <MaterialIcons name="arrow-back" size={22} color="#191C1C" />
-        </TouchableOpacity>
-        <Text className="font-sans font-bold text-lg text-neutral-T10">
-          Lịch sử GreenPoints
-        </Text>
-        <View className="w-10" />
-      </View>
+    <View className="flex-1 bg-neutral">
+      <ManagementHeader
+        title="Lịch sử GreenPoints"
+        onBack={() => router.back()}
+      />
 
       {/* ── Points Widget ── */}
-      <View className="mx-4 mb-4">
+      <View className="m-4">
         <View
           className="bg-primary-T95 rounded-2xl p-5 items-center gap-2"
           style={{
@@ -145,6 +130,6 @@ export default function PointHistoryScreen() {
           renderItem={({ item }) => <PointHistoryItem log={item} />}
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 }

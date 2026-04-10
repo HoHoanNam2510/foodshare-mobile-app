@@ -1,9 +1,10 @@
-// app/(tabs)/profile.tsx
+// app/(profile)/profile.tsx
 import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Button,
   Modal,
   Pressable,
   ScrollView,
@@ -11,7 +12,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import ContactCard from '@/components/profile/ContactCard';
 import IdentityCard from '@/components/profile/IdentityCard';
@@ -112,12 +112,12 @@ export default function ProfileScreen() {
 
   if (!user) {
     return (
-      <SafeAreaView className="flex-1 bg-neutral-DEFAULT items-center justify-center">
+      <View className="flex-1 bg-neutral-DEFAULT items-center justify-center">
         <ActivityIndicator size="large" color="#72B866" />
         <Text className="font-body text-sm text-neutral-T50 mt-3">
           Loading profile...
         </Text>
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -143,7 +143,7 @@ export default function ProfileScreen() {
     (user.kycDocuments && user.kycDocuments.length > 0);
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-DEFAULT" edges={['top']}>
+    <View className="flex-1 bg-neutral-DEFAULT">
       {/* ── KYC Rejection Modal ── */}
       <Modal
         visible={showRejectionModal}
@@ -199,12 +199,16 @@ export default function ProfileScreen() {
 
       <MainHeader />
 
+      <TouchableOpacity className="px-6 pt-3" onPress={() => router.back()}>
+        <Text className="font-bold text-slate-500 underline">Back</Text>
+      </TouchableOpacity>
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingBottom: 120,
           paddingHorizontal: 24,
-          paddingTop: 24,
+          paddingTop: 16,
         }}
         className="flex-1"
       >
@@ -252,8 +256,8 @@ export default function ProfileScreen() {
           <RecentPosts posts={MOCK_LISTINGS} onSeeAll={() => {}} />
 
           <ProfileActions
-            onEditProfile={() => router.push('/(post)/edit-profile')}
-            onRegisterStore={() => router.push('/(post)/register-store')}
+            onEditProfile={() => router.push('/(profile)/edit-profile')}
+            onRegisterStore={() => router.push('/(profile)/register-store')}
             onViewTransactions={() =>
               router.push('/(transaction)/transaction-list' as any)
             }
@@ -271,6 +275,6 @@ export default function ProfileScreen() {
           />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

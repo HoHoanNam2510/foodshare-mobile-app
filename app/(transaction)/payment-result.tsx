@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
+import StackHeader from '@/components/shared/headers/StackHeader';
 
 import {
   getTransactionByIdApi,
@@ -121,7 +122,8 @@ export default function PaymentResultScreen() {
   const config = RESULT_CONFIG[resultStatus];
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-DEFAULT" edges={['top']}>
+    <View className="flex-1 bg-neutral-DEFAULT">
+      <StackHeader title="Kết quả thanh toán" />
       <View className="flex-1 items-center justify-center px-8 gap-6">
         {/* Status Icon */}
         <View
@@ -217,7 +219,7 @@ export default function PaymentResultScreen() {
           </Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

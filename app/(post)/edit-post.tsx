@@ -23,6 +23,7 @@ import {
 import CategoryPicker from '@/components/post/CategoryPicker';
 import ImagePickerSection from '@/components/post/ImagePickerSection';
 import QuantityStepper from '@/components/post/QuantityStepper';
+import StackHeader from '@/components/shared/headers/StackHeader';
 import {
   ApiValidationError,
   getPostByIdApi,
@@ -256,28 +257,21 @@ export default function EditPost() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral" edges={['top']}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1"
-      >
-        {/* ── Header ── */}
-        <View className="flex-row items-center justify-between px-6 h-16 bg-neutral-T100 shadow-sm">
-          <View className="flex-row items-center gap-4">
-            <TouchableOpacity className="active:opacity-70 p-1" onPress={() => router.back()}>
-              <MaterialIcons name="arrow-back" size={24} color="#757777" />
-            </TouchableOpacity>
-            <Text className="font-sans font-bold text-lg text-primary-T40">
-              Chỉnh sửa bài đăng
-            </Text>
-          </View>
+    <View className="flex-1 bg-neutral">
+      <StackHeader
+        title="Chỉnh sửa bài đăng"
+        rightElement={
           <View className="bg-neutral-T95 px-3 py-1.5 rounded-full">
             <Text className="font-label text-[10px] font-semibold text-neutral-T50 uppercase tracking-wider">
               {isB2C ? 'Túi bí ngờ' : 'Miễn phí'}
             </Text>
           </View>
-        </View>
-
+        }
+      />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        className="flex-1"
+      >
         <ScrollView
           className="flex-1"
           contentContainerStyle={{
@@ -461,6 +455,6 @@ export default function EditPost() {
 
       {/* ── Date/time picker modal ── */}
       {renderPickerModal()}
-    </SafeAreaView>
+    </View>
   );
 }

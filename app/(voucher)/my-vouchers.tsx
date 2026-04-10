@@ -10,7 +10,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import ManagementHeader from '@/components/shared/headers/ManagementHeader';
 
 import VoucherCard from '@/components/voucher/VoucherCard';
 import { getMyVouchersApi } from '@/lib/voucherApi';
@@ -55,24 +57,14 @@ export default function MyVouchersScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral" edges={['top']}>
-      {/* ── Header ── */}
-      <View className="flex-row items-center justify-between h-14 px-4 bg-neutral">
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="w-10 h-10 items-center justify-center rounded-xl bg-neutral-T95"
-          activeOpacity={0.8}
-        >
-          <MaterialIcons name="arrow-back" size={22} color="#191C1C" />
-        </TouchableOpacity>
-        <Text className="font-sans font-bold text-lg text-neutral-T10">
-          Ví Voucher của tôi
-        </Text>
-        <View className="w-10" />
-      </View>
+    <View className="flex-1 bg-neutral">
+      <ManagementHeader
+        title="Ví Voucher của tôi"
+        onBack={() => router.back()}
+      />
 
       {/* ── Tab Bar ── */}
-      <View className="flex-row mx-4 mb-3 bg-neutral-T95 rounded-xl p-1">
+      <View className="flex-row m-4 bg-neutral-T95 rounded-xl p-1">
         {TABS.map((tab) => (
           <TouchableOpacity
             key={tab.value}
@@ -95,7 +87,9 @@ export default function MyVouchersScreen() {
           >
             <Text
               className={`font-label text-sm font-semibold ${
-                activeTab === tab.value ? 'text-neutral-T10' : 'text-neutral-T50'
+                activeTab === tab.value
+                  ? 'text-neutral-T10'
+                  : 'text-neutral-T50'
               }`}
             >
               {tab.label}
@@ -108,7 +102,9 @@ export default function MyVouchersScreen() {
       {isLoading ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-sm text-neutral-T50">Đang tải...</Text>
+          <Text className="font-body text-sm text-neutral-T50">
+            Đang tải...
+          </Text>
         </View>
       ) : (
         <FlatList
@@ -154,6 +150,6 @@ export default function MyVouchersScreen() {
           )}
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 }

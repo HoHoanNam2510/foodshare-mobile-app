@@ -7,9 +7,10 @@ import BaseHeader from './BaseHeader';
 interface StackHeaderProps {
   title: string;
   rightElement?: ReactNode;
+  onBack?: () => void;
 }
 
-export default function StackHeader({ title, rightElement }: StackHeaderProps) {
+export default function StackHeader({ title, rightElement, onBack }: StackHeaderProps) {
   const router = useRouter();
 
   return (
@@ -18,7 +19,7 @@ export default function StackHeader({ title, rightElement }: StackHeaderProps) {
         {/* Left: Back Button */}
         <TouchableOpacity
           className="w-10 h-10 rounded-full bg-neutral-T95 items-center justify-center active:opacity-80"
-          onPress={() => router.back()}
+          onPress={() => (onBack ? onBack() : router.back())}
         >
           <Feather name="arrow-left" size={20} color="#191C1C" />
         </TouchableOpacity>

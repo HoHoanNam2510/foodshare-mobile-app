@@ -16,7 +16,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import StackHeader from '@/components/shared/headers/StackHeader';
 
 import QRCode from 'react-native-qrcode-svg';
 
@@ -401,7 +403,6 @@ function ReceiverScanSection({ transactionId, onCompleted }: ReceiverScanSection
 
 export default function TransactionDetailScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
   const currentUser = useAuthStore((s) => s.user);
 
@@ -434,27 +435,26 @@ export default function TransactionDetailScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-neutral items-center justify-center" edges={['top']}>
-        <ActivityIndicator size="large" color="#296C24" />
-      </SafeAreaView>
+      <View className="flex-1 bg-neutral">
+        <StackHeader title="Chi tiết giao dịch" />
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color="#296C24" />
+        </View>
+      </View>
     );
   }
 
   if (error || !transaction) {
     return (
-      <SafeAreaView className="flex-1 bg-neutral" edges={['top']}>
-        <View className="flex-row items-center px-4 h-14 gap-3">
-          <TouchableOpacity onPress={() => router.back()} style={styles.navBtn} className="w-10 h-10 items-center justify-center rounded-xl" activeOpacity={0.8}>
-            <MaterialIcons name="arrow-back" size={22} color="#191C1C" />
-          </TouchableOpacity>
-        </View>
+      <View className="flex-1 bg-neutral">
+        <StackHeader title="Chi tiết giao dịch" />
         <View className="flex-1 items-center justify-center px-8 gap-4">
           <Text className="font-body text-sm text-neutral-T50 text-center">{error ?? 'Không tìm thấy giao dịch'}</Text>
           <TouchableOpacity onPress={load} className="px-6 py-3 bg-primary-T40 rounded-xl" activeOpacity={0.85}>
             <Text className="font-label font-semibold text-neutral-T100">Thử lại</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -521,35 +521,24 @@ export default function TransactionDetailScreen() {
     );
   };
 
+  const statusBadge = (
+    <View className="px-3 py-1 rounded-full" style={{ backgroundColor: cfg.bg }}>
+      <Text className="font-label font-bold text-xs" style={{ color: cfg.text }}>
+        {cfg.label.toUpperCase()}
+      </Text>
+    </View>
+  );
+
   return (
-    <SafeAreaView className="flex-1 bg-neutral" edges={['top']}>
-      {/* ── Header ── */}
-      <View className="flex-row items-center px-4 h-14 gap-3">
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.navBtn}
-          className="w-10 h-10 items-center justify-center rounded-xl"
-          activeOpacity={0.8}
-        >
-          <MaterialIcons name="arrow-back" size={22} color="#191C1C" />
-        </TouchableOpacity>
-        <Text className="font-sans font-bold text-lg text-neutral-T10 flex-1" numberOfLines={1}>
-          Chi tiết giao dịch
-        </Text>
-        {/* Status pill in header */}
-        <View className="px-3 py-1 rounded-full" style={{ backgroundColor: cfg.bg }}>
-          <Text className="font-label font-bold text-xs" style={{ color: cfg.text }}>
-            {cfg.label.toUpperCase()}
-          </Text>
-        </View>
-      </View>
+    <View className="flex-1 bg-neutral">
+      <StackHeader title="Chi tiết giao dịch" rightElement={statusBadge} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}
+        contentContainerStyle={{ paddingBottom: 40 }}
         className="flex-1"
       >
-        <View className="px-4 gap-3 pt-2">
+        <View className="px-4 gap-3 pt-4">
           {/* ── Post Info Card ── */}
           <View style={styles.card} className="bg-neutral-T100 rounded-2xl p-5 gap-3">
             <Text className="font-label font-semibold text-[10px] text-neutral-T50 uppercase tracking-wider">
@@ -880,21 +869,13 @@ export default function TransactionDetailScreen() {
           </View>
         </KeyboardAvoidingView>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  navBtn: {
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
-  },
   card: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },

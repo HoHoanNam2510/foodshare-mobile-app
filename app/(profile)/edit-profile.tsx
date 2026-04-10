@@ -13,8 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
+import StackHeader from '@/components/shared/headers/StackHeader';
 import { pickImage } from '@/lib/imagePicker';
 import { updateProfileApi } from '@/lib/profileApi';
 import { uploadImage } from '@/lib/uploadApi';
@@ -134,32 +133,25 @@ export default function EditProfile() {
   if (!user) return null;
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-DEFAULT" edges={['top']}>
-      {/* Header */}
-      <View className="flex-row items-center justify-between h-16 px-6 bg-neutral-T100 shadow-sm">
-        <TouchableOpacity
-          className="p-2 rounded-full active:opacity-70"
-          onPress={() => router.back()}
-        >
-          <MaterialIcons name="close" size={24} color="#191C1C" />
-        </TouchableOpacity>
-        <Text className="font-sans font-bold text-lg text-neutral-T10">
-          Edit profile
-        </Text>
-        <TouchableOpacity
-          className="px-4 py-2 bg-primary-T40 rounded-lg active:opacity-80"
-          onPress={handleSave}
-          disabled={isSaving}
-        >
-          {isSaving ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <Text className="font-label font-bold text-sm text-neutral-T100">
-              Save
-            </Text>
-          )}
-        </TouchableOpacity>
-      </View>
+    <View className="flex-1 bg-neutral-DEFAULT">
+      <StackHeader
+        title="Edit profile"
+        rightElement={
+          <TouchableOpacity
+            className="px-4 py-2 bg-primary-T40 rounded-lg active:opacity-80"
+            onPress={handleSave}
+            disabled={isSaving}
+          >
+            {isSaving ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text className="font-label font-bold text-sm text-neutral-T100">
+                Save
+              </Text>
+            )}
+          </TouchableOpacity>
+        }
+      />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -321,7 +313,7 @@ export default function EditProfile() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
