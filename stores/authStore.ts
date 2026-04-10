@@ -73,6 +73,10 @@ interface AuthState {
   logout: () => Promise<void>;
   fetchProfile: () => Promise<void>;
   setUser: (user: User) => void;
+  /** Optimistic update: trừ điểm ngay lập tức trước khi server xác nhận */
+  deductGreenPoints: (amount: number) => void;
+  /** Rollback: hoàn trả điểm nếu server báo lỗi */
+  restoreGreenPoints: (amount: number) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -206,4 +210,18 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ user });
     SecureStore.setItemAsync('auth_user', JSON.stringify(user));
   },
+
+  deductGreenPoints: (amount) =>
+    set((state) => ({
+      user: state.user
+        ? { ...state.user, greenPoints: Math.max(0, state.user.greenPoints - amount) }
+        : null,
+    })),
+
+  restoreGreenPoints: (amount) =>
+    set((state) => ({
+      user: state.user
+        ? { ...state.user, greenPoints: state.user.greenPoints + amount }
+        : null,
+    })),
 }));
