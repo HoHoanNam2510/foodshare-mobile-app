@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
-import { Image, Text, View } from 'react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 import SectionIncompleteBadge from '@/components/profile/SectionIncompleteBadge';
 
@@ -15,6 +15,7 @@ interface IdentityCardProps {
   greenPoints: number;
   averageRating: number;
   isIncomplete?: boolean;
+  onGreenPointsPress?: () => void;
 }
 
 const ROLE_BADGE: Record<
@@ -47,6 +48,7 @@ export default function IdentityCard({
   greenPoints,
   averageRating,
   isIncomplete,
+  onGreenPointsPress,
 }: IdentityCardProps) {
   const year = new Date(createdAt).getFullYear();
 
@@ -99,14 +101,19 @@ export default function IdentityCard({
 
       {/* Stats */}
       <View className="flex-row gap-3 pt-2">
-        <View className="flex-1 bg-neutral-T95 rounded-xl p-4">
+        <TouchableOpacity
+          className="flex-1 bg-neutral-T95 rounded-xl p-4 active:opacity-70"
+          onPress={onGreenPointsPress}
+          activeOpacity={onGreenPointsPress ? 0.7 : 1}
+          disabled={!onGreenPointsPress}
+        >
           <Text className="font-label text-[10px] font-semibold text-neutral-T50 tracking-wider uppercase">
             Green Points
           </Text>
           <Text className="font-sans font-bold text-primary-T40 text-xl mt-1">
             {greenPoints.toLocaleString()}
           </Text>
-        </View>
+        </TouchableOpacity>
         <View className="flex-1 bg-neutral-T95 rounded-xl p-4">
           <Text className="font-label text-[10px] font-semibold text-neutral-T50 tracking-wider uppercase">
             Rating

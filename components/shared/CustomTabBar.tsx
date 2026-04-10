@@ -23,7 +23,7 @@ const TABS: Tab[] = [
   { name: 'Home', routeName: '/home', iconName: 'home' },
   { name: 'Explore', routeName: '/explore', iconName: 'compass' },
   { name: 'Add', routeName: 'ACTION_ADD', iconName: 'plus' },
-  { name: 'Posts', routeName: '/post-list', iconName: 'file-text' },
+  { name: 'Post', routeName: '/post', iconName: 'file-text' },
   { name: 'Chat', routeName: '/chat', iconName: 'message-circle' },
 ];
 

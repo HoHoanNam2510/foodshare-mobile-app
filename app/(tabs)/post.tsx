@@ -6,14 +6,15 @@ import {
   Image,
   RefreshControl,
   ScrollView,
+  StatusBar,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import api from '@/lib/axios';
+import MainHeader from '@/components/shared/headers/MainHeader';
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
 
@@ -122,11 +123,20 @@ function formatDate(iso: string): string {
 function StatusBadge({ status }: { status: PostStatus }) {
   const config = STATUS_CONFIG[status];
   return (
-    <View className={`flex-row items-center gap-1 px-2.5 py-1 rounded-full ${config.bgClass}`}>
+    <View
+      className={`flex-row items-center gap-1 px-2.5 py-1 rounded-full ${config.bgClass}`}
+    >
       <View
-        style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: config.dotColor }}
+        style={{
+          width: 6,
+          height: 6,
+          borderRadius: 3,
+          backgroundColor: config.dotColor,
+        }}
       />
-      <Text className={`font-label text-[11px] font-semibold ${config.textClass}`}>
+      <Text
+        className={`font-label text-[11px] font-semibold ${config.textClass}`}
+      >
         {config.label}
       </Text>
     </View>
@@ -139,7 +149,10 @@ interface PostCardProps {
 }
 
 function PostCard({ post, onPress }: PostCardProps) {
-  const isDimmed = post.status === 'HIDDEN' || post.status === 'REJECTED' || post.status === 'DRAFT';
+  const isDimmed =
+    post.status === 'HIDDEN' ||
+    post.status === 'REJECTED' ||
+    post.status === 'DRAFT';
   const imageUrl = post.images?.[0];
 
   return (
@@ -189,7 +202,9 @@ function PostCard({ post, onPress }: PostCardProps) {
           <View className="flex-row items-center gap-1.5">
             <Feather name="tag" size={13} color="#AAABAB" />
             <Text className="font-body text-xs text-neutral-T50">
-              {post.type === 'P2P_FREE' ? 'Miễn phí' : `${post.price.toLocaleString('vi-VN')}đ`}
+              {post.type === 'P2P_FREE'
+                ? 'Miễn phí'
+                : `${post.price.toLocaleString('vi-VN')}đ`}
             </Text>
           </View>
           {post.expiryDate && (
@@ -268,42 +283,17 @@ export default function PostList() {
   }, [posts, searchQuery, activeFilter, sortAsc]);
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral" edges={['top']}>
-      {/* ── Header ── */}
-      <View className="bg-neutral-T100 px-4 pt-4 pb-3 shadow-sm z-10">
-        <View className="flex-row items-center justify-between mb-3">
-          <View className="flex-row items-center gap-3">
-            <TouchableOpacity
-              onPress={() => router.back()}
-              activeOpacity={0.7}
-              className="w-9 h-9 rounded-xl bg-neutral-T95 items-center justify-center active:opacity-70"
-            >
-              <Feather name="arrow-left" size={20} color="#191C1C" />
-            </TouchableOpacity>
-            <Text className="text-xl font-sans font-extrabold tracking-tight text-neutral-T10">
-              Bài đăng của tôi
-            </Text>
-          </View>
+    <View className="flex-1 bg-neutral">
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent
+      />
+      <MainHeader />
 
-          {/* Sort toggle */}
-          <TouchableOpacity
-            onPress={() => setSortAsc((prev) => !prev)}
-            activeOpacity={0.7}
-            className="flex-row items-center gap-1.5 bg-neutral-T95 px-3 py-2 rounded-xl active:opacity-70"
-          >
-            <Feather
-              name={sortAsc ? 'arrow-up' : 'arrow-down'}
-              size={14}
-              color="#296C24"
-            />
-            <Text className="font-label text-xs font-semibold text-primary-T40">
-              {sortAsc ? 'Cũ nhất' : 'Mới nhất'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Search bar */}
-        <View className="flex-row items-center bg-neutral-T95 rounded-xl px-3 gap-2 border border-neutral-T90 h-11">
+      {/* ── Search bar ── */}
+      <View className="bg-neutral-T100 p-3 flex-row items-center gap-3">
+        <View className="flex-1 flex-row items-center bg-neutral-T95 rounded-xl px-3 gap-2 border border-neutral-T90 h-11">
           <Feather name="search" size={16} color="#AAABAB" />
           <TextInput
             value={searchQuery}
@@ -314,19 +304,36 @@ export default function PostList() {
             returnKeyType="search"
           />
           {searchQuery.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchQuery('')} activeOpacity={0.7}>
+            <TouchableOpacity
+              onPress={() => setSearchQuery('')}
+              activeOpacity={0.7}
+            >
               <Feather name="x" size={16} color="#AAABAB" />
             </TouchableOpacity>
           )}
         </View>
+        <TouchableOpacity
+          onPress={() => setSortAsc((prev) => !prev)}
+          activeOpacity={0.8}
+          className="w-11 h-11 rounded-full bg-neutral-T95 items-center justify-center border border-neutral-T90 active:opacity-70"
+        >
+          <Feather
+            name={sortAsc ? 'arrow-up' : 'arrow-down'}
+            size={18}
+            color="#191C1C"
+          />
+        </TouchableOpacity>
       </View>
 
       {/* ── Filter Bar ── */}
-      <View className="bg-neutral-T100 border-b border-neutral-T90">
+      <View className="bg-neutral-T100 border-b border-neutral-T90 px-3 overflow-hidden">
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ gap: 8, paddingHorizontal: 16, paddingVertical: 12 }}
+          contentContainerStyle={{
+            gap: 8,
+            paddingVertical: 12,
+          }}
         >
           {STATUS_FILTERS.map((filter) => {
             const isActive = activeFilter === filter.id;
@@ -358,17 +365,23 @@ export default function PostList() {
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-sm text-neutral-T50 mt-3">Đang tải...</Text>
+          <Text className="font-body text-sm text-neutral-T50 mt-3">
+            Đang tải...
+          </Text>
         </View>
       ) : error ? (
         <View className="flex-1 items-center justify-center px-8 gap-4">
-          <Text className="font-body text-sm text-neutral-T50 text-center">{error}</Text>
+          <Text className="font-body text-sm text-neutral-T50 text-center">
+            {error}
+          </Text>
           <TouchableOpacity
             onPress={() => load()}
             className="px-6 py-3 bg-primary-T40 rounded-xl"
             activeOpacity={0.85}
           >
-            <Text className="font-label font-semibold text-neutral-T100">Thử lại</Text>
+            <Text className="font-label font-semibold text-neutral-T100">
+              Thử lại
+            </Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -383,7 +396,11 @@ export default function PostList() {
           <ScrollView
             className="flex-1"
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 120, gap: 12 }}
+            contentContainerStyle={{
+              paddingHorizontal: 16,
+              paddingBottom: 120,
+              gap: 12,
+            }}
             refreshControl={
               <RefreshControl
                 refreshing={isRefreshing}
@@ -418,6 +435,6 @@ export default function PostList() {
           </ScrollView>
         </>
       )}
-    </SafeAreaView>
+    </View>
   );
 }

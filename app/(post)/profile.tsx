@@ -16,7 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import ContactCard from '@/components/profile/ContactCard';
 import IdentityCard from '@/components/profile/IdentityCard';
 import ProfileActions from '@/components/profile/ProfileActions';
-import ProfileHeader from '@/components/profile/ProfileHeader';
+import MainHeader from '@/components/shared/headers/MainHeader';
 import RecentPosts from '@/components/profile/RecentPosts';
 import StoreDetailsCard from '@/components/profile/StoreDetailsCard';
 import VerificationCard from '@/components/profile/VerificationCard';
@@ -197,7 +197,7 @@ export default function ProfileScreen() {
         </Pressable>
       </Modal>
 
-      <ProfileHeader />
+      <MainHeader />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -218,6 +218,9 @@ export default function ProfileScreen() {
             greenPoints={user.greenPoints}
             averageRating={user.averageRating}
             isIncomplete={isIdentityIncomplete}
+            onGreenPointsPress={() =>
+              router.push('/(voucher)/point-history' as any)
+            }
           />
 
           {user.role === 'STORE' && (
@@ -254,9 +257,17 @@ export default function ProfileScreen() {
             onViewTransactions={() =>
               router.push('/(transaction)/transaction-list' as any)
             }
+            onViewVouchers={() => router.push('/(voucher)/my-vouchers' as any)}
+            onViewPointHistory={() =>
+              router.push('/(voucher)/point-history' as any)
+            }
+            onManageStoreVouchers={() =>
+              router.push('/(voucher)/store-vouchers' as any)
+            }
             onLogOut={handleLogout}
             showRegisterStore={canRegisterStore}
             storeRegistrationPending={storeRegistrationPending}
+            isStore={user.role === 'STORE'}
           />
         </View>
       </ScrollView>

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Dimensions, View } from 'react-native';
 
 import { IconMarker, PriceMarker } from './MapMarker';
 import MapPreviewCard from './MapPreviewCard';
@@ -17,7 +16,6 @@ interface ExploreMapViewProps {
   onSortChange: (sort: SortOption) => void;
   searchText: string;
   onSearchChange: (text: string) => void;
-  headerHeight: number;
 }
 
 export default function ExploreMapView({
@@ -28,9 +26,7 @@ export default function ExploreMapView({
   onSortChange,
   searchText,
   onSearchChange,
-  headerHeight,
 }: ExploreMapViewProps) {
-  const insets = useSafeAreaInsets();
   const [selectedPostId, setSelectedPostId] = useState<string>(posts[0]?._id);
 
   const selectedPost = posts.find((p) => p._id === selectedPostId) ?? posts[0];
@@ -154,7 +150,7 @@ export default function ExploreMapView({
       <View
         style={{
           position: 'absolute',
-          top: headerHeight + insets.top + 12,
+          top: 12,
           left: 16,
           right: 16,
           zIndex: 20,

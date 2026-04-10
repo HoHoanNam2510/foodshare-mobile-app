@@ -1,6 +1,5 @@
 import React from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import PostCard from './PostCard';
 import SearchFilterBar from './SearchFilterBar';
@@ -15,7 +14,6 @@ interface ExploreListViewProps {
   onSortChange: (sort: SortOption) => void;
   searchText: string;
   onSearchChange: (text: string) => void;
-  headerHeight: number;
   onPostPress?: (post: ExplorePost) => void;
 }
 
@@ -28,16 +26,13 @@ export default function ExploreListView({
   onSortChange,
   searchText,
   onSearchChange,
-  headerHeight,
   onPostPress,
 }: ExploreListViewProps) {
-  const insets = useSafeAreaInsets();
-
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{
-        paddingTop: headerHeight + insets.top + 16,
+        paddingTop: 16,
         paddingHorizontal: 16,
         paddingBottom: 120,
         gap: 16,

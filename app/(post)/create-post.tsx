@@ -203,7 +203,7 @@ export default function CreatePost() {
         Alert.alert('Success', 'Your meal has been published!', [
           {
             text: 'OK',
-            onPress: () => router.push('/(post)/post-list' as never),
+            onPress: () => router.push('/post' as never),
           },
         ]);
       } else {

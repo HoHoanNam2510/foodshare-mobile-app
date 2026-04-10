@@ -29,8 +29,8 @@ export default function TabLayout() {
 
   let activeIndex = 0;
   if (currentSegment === 'explore') activeIndex = 1;
-  else if (currentSegment === 'chat') activeIndex = 3;
-  else if (currentSegment === 'profile') activeIndex = 4;
+  else if (currentSegment === 'post') activeIndex = 3;
+  else if (currentSegment === 'chat') activeIndex = 4;
 
   return (
     // FIX TÀNG HÌNH NỀN: Đổi bg-surface thành bg-neutral

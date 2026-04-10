@@ -1,6 +1,5 @@
 import React from 'react';
 import { ScrollView, StatusBar, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import FilterPills from '../../components/home/FilterPills';
 import FreshlyShared from '../../components/home/FreshlyShared';
@@ -8,11 +7,9 @@ import GuideSection from '../../components/home/GuideSection';
 import HeroBanner from '../../components/home/HeroBanner';
 import ImpactBanner from '../../components/home/ImpactBanner';
 import MarketTeaser from '../../components/home/MarketTeaser';
-import Header from '../../components/shared/Header';
+import MainHeader from '../../components/shared/headers/MainHeader';
 
 export default function HomeScreen() {
-  const insets = useSafeAreaInsets();
-
   return (
     <View className="flex-1 bg-neutral">
       <StatusBar
@@ -20,12 +17,12 @@ export default function HomeScreen() {
         backgroundColor="transparent"
         translucent
       />
-      <Header />
+      <MainHeader />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingBottom: 90,
-          paddingTop: insets.top + 90,
+          paddingTop: 16,
         }}
         className="flex-1"
       >

@@ -6,15 +6,16 @@ import {
   Image,
   RefreshControl,
   ScrollView,
+  StatusBar,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Conversation, getMyConversationsApi } from '@/lib/chatApi';
 import { useAuthStore } from '@/stores/authStore';
+import MainHeader from '@/components/shared/headers/MainHeader';
 
 // ─── HELPERS ────────────────────────────────────────────────────────────────
 
@@ -26,7 +27,10 @@ function formatTime(iso?: string): string {
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
   if (diffDays === 0) {
-    return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString('vi-VN', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   } else if (diffDays === 1) {
     return 'Hôm qua';
   } else if (diffDays < 7) {
@@ -50,9 +54,13 @@ function ChatCard({
   const other = conversation.participants.find((p) => p._id !== currentUserId);
   const unread = conversation.unreadCount?.[currentUserId] ?? 0;
   const hasUnread = unread > 0;
-  const lastMsg = conversation.lastMessage?.content ?? 'Bắt đầu cuộc trò chuyện';
-  const time = formatTime(conversation.lastMessage?.createdAt ?? conversation.updatedAt);
-  const avatarUri = other?.avatar ?? `https://i.pravatar.cc/150?u=${other?._id}`;
+  const lastMsg =
+    conversation.lastMessage?.content ?? 'Bắt đầu cuộc trò chuyện';
+  const time = formatTime(
+    conversation.lastMessage?.createdAt ?? conversation.updatedAt
+  );
+  const avatarUri =
+    other?.avatar ?? `https://i.pravatar.cc/150?u=${other?._id}`;
 
   return (
     <TouchableOpacity
@@ -62,7 +70,10 @@ function ChatCard({
     >
       {/* Avatar */}
       <View className="relative mr-3.5">
-        <Image source={{ uri: avatarUri }} className="w-[54px] h-[54px] rounded-full" />
+        <Image
+          source={{ uri: avatarUri }}
+          className="w-[54px] h-[54px] rounded-full"
+        />
       </View>
 
       {/* Text content */}
@@ -94,7 +105,10 @@ function ChatCard({
 
           {hasUnread ? (
             <View className="min-w-[20px] h-5 bg-primary-T40 rounded-full items-center justify-center px-1.5">
-              <Text className="font-label text-[10px] text-neutral-T100" style={{ fontWeight: '700' }}>
+              <Text
+                className="font-label text-[10px] text-neutral-T100"
+                style={{ fontWeight: '700' }}
+              >
                 {unread}
               </Text>
             </View>
@@ -145,25 +159,16 @@ export default function ChatListScreen() {
     : conversations;
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral" edges={['top']}>
-      {/* ── Header ── */}
-      <View className="flex-row items-center justify-between px-5 pt-3 pb-2">
-        <Text className="font-sans text-[28px] text-neutral-T10" style={{ fontWeight: '700', letterSpacing: -0.5 }}>
-          Tin nhắn
-        </Text>
-        <View className="flex-row items-center gap-3">
-          {user?.avatar ? (
-            <Image source={{ uri: user.avatar }} className="w-9 h-9 rounded-full" />
-          ) : (
-            <View className="w-9 h-9 rounded-full bg-neutral-T90 items-center justify-center">
-              <Feather name="user" size={18} color="#AAABAB" />
-            </View>
-          )}
-        </View>
-      </View>
+    <View className="flex-1 bg-neutral">
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent
+      />
+      <MainHeader />
 
       {/* ── Search Bar ── */}
-      <View className="px-5 mb-4">
+      <View className="px-5 py-3">
         <View className="flex-row items-center bg-neutral-T100 rounded-xl px-4 py-5 shadow-sm border border-neutral-T90">
           <Feather name="search" size={18} color="#AAABAB" />
           <TextInput
@@ -235,7 +240,10 @@ export default function ChatListScreen() {
               <View className="w-16 h-16 bg-neutral-T95 rounded-full items-center justify-center mb-4">
                 <Feather name="message-circle" size={28} color="#AAABAB" />
               </View>
-              <Text className="font-body text-[15px] text-neutral-T10 mb-1" style={{ fontWeight: '700' }}>
+              <Text
+                className="font-body text-[15px] text-neutral-T10 mb-1"
+                style={{ fontWeight: '700' }}
+              >
                 {query ? 'Không tìm thấy cuộc trò chuyện' : 'Chưa có tin nhắn'}
               </Text>
               <Text className="font-body text-[13px] text-neutral-T50 text-center">
@@ -247,6 +255,6 @@ export default function ChatListScreen() {
           )}
         </ScrollView>
       )}
-    </SafeAreaView>
+    </View>
   );
 }
