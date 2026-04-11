@@ -789,6 +789,41 @@ export default function TransactionDetailScreen() {
             </View>
           )}
 
+          {/* ── Review CTA (COMPLETED transactions) ── */}
+          {tx.status === 'COMPLETED' && (isDonor || isReceiver) && (
+            <TouchableOpacity
+              style={styles.card}
+              className="bg-primary-T95 rounded-2xl px-5 py-4 flex-row items-center gap-3"
+              activeOpacity={0.8}
+              onPress={() => {
+                const otherId = isDonor
+                  ? (typeof tx.requesterId === 'object' ? tx.requesterId._id : tx.requesterId)
+                  : tx.ownerId;
+                const otherName = isDonor
+                  ? (typeof tx.requesterId === 'object' ? tx.requesterId.fullName : 'Người nhận')
+                  : 'Người cho';
+                router.push({
+                  pathname: '/(review)/create-review',
+                  params: {
+                    transactionId: tx._id,
+                    revieweeName: otherName,
+                  },
+                } as any);
+              }}
+            >
+              <View className="w-10 h-10 rounded-xl bg-primary-T40 items-center justify-center">
+                <MaterialIcons name="star" size={20} color="#FFFFFF" />
+              </View>
+              <View className="flex-1">
+                <Text className="font-sans font-bold text-sm text-primary-T10">Để lại đánh giá</Text>
+                <Text className="font-body text-xs text-primary-T30 mt-0.5 leading-4">
+                  Nhận +2 GreenPoints và giúp cộng đồng tin tưởng lẫn nhau hơn
+                </Text>
+              </View>
+              <MaterialIcons name="chevron-right" size={20} color="#296C24" />
+            </TouchableOpacity>
+          )}
+
           {/* ── Report transaction ── */}
           {(isDonor || isReceiver) && (
             <TouchableOpacity

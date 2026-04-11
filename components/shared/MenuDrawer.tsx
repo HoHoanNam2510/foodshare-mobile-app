@@ -233,6 +233,11 @@ export default function MenuDrawer() {
             onPress={() => navigate('/(transaction)/transaction-list')}
           />
           <MenuItem
+            icon="star"
+            label="Đánh giá của tôi"
+            onPress={() => navigate('/(review)/my-reviews')}
+          />
+          <MenuItem
             icon="flag"
             label="Báo cáo của tôi"
             onPress={() => navigate('/(report)/my-reports')}

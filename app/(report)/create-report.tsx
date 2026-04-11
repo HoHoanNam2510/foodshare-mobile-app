@@ -364,7 +364,7 @@ export default function CreateReportScreen() {
               Tối thiểu 10 ký tự — cung cấp càng nhiều chi tiết càng tốt
             </Text>
             <View
-              className="bg-neutral-T100 rounded-2xl overflow-hidden"
+              className="bg-neutral-T100 rounded-2xl"
               style={[
                 styles.card,
                 description.length > 0 &&
