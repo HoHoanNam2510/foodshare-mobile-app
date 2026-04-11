@@ -521,6 +521,33 @@ export default function TransactionDetailScreen() {
     );
   };
 
+  const handleCancelOrder = () => {
+    Alert.alert(
+      'Hủy đơn hàng',
+      'Bạn có chắc muốn hủy đơn này không? Bài đăng sẽ được khôi phục về trạng thái ban đầu.',
+      [
+        { text: 'Không', style: 'cancel' },
+        {
+          text: 'Hủy đơn',
+          style: 'destructive',
+          onPress: async () => {
+            setIsCancelling(true);
+            try {
+              await cancelRequestApi(tx._id);
+              Alert.alert('Đã hủy', 'Đơn hàng đã được hủy.', [
+                { text: 'OK', onPress: () => router.back() },
+              ]);
+            } catch (e: any) {
+              Alert.alert('Lỗi', e?.response?.data?.message ?? 'Không thể hủy đơn hàng.');
+            } finally {
+              setIsCancelling(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const statusBadge = (
     <View className="px-3 py-1 rounded-full" style={{ backgroundColor: cfg.bg }}>
       <Text className="font-label font-bold text-xs" style={{ color: cfg.text }}>
@@ -740,8 +767,8 @@ export default function TransactionDetailScreen() {
             </View>
           )}
 
-          {/* PENDING state */}
-          {tx.status === 'PENDING' && isReceiver && (
+          {/* PENDING state — P2P: chờ người cho xác nhận */}
+          {tx.status === 'PENDING' && isReceiver && isP2P && (
             <View style={styles.card} className="bg-neutral-T100 rounded-2xl p-5 gap-4">
               <View className="flex-row items-center gap-3">
                 <View className="w-10 h-10 rounded-xl bg-yellow-50 items-center justify-center">
@@ -768,6 +795,65 @@ export default function TransactionDetailScreen() {
                     <MaterialIcons name="cancel" size={16} color="#DC2626" />
                     <Text className="font-label font-semibold text-sm" style={{ color: '#DC2626' }}>
                       Hủy yêu cầu
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* PENDING state — B2C: chờ chuyển khoản */}
+          {tx.status === 'PENDING' && isReceiver && !isP2P && (
+            <View style={styles.card} className="bg-neutral-T100 rounded-2xl p-5 gap-4">
+              <View className="flex-row items-center gap-3">
+                <View className="w-10 h-10 rounded-xl bg-amber-50 items-center justify-center">
+                  <MaterialIcons name="account-balance" size={20} color="#B45309" />
+                </View>
+                <View className="flex-1">
+                  <Text className="font-sans font-bold text-sm text-neutral-T10">Chờ thanh toán chuyển khoản</Text>
+                  <Text className="font-body text-xs text-neutral-T50 mt-0.5 leading-4">
+                    Đơn hàng đang chờ bạn chuyển khoản. Admin sẽ xác nhận sau khi nhận được tiền.
+                  </Text>
+                </View>
+              </View>
+              {tx.expiredAt && (
+                <View className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 flex-row items-center gap-2">
+                  <MaterialIcons name="schedule" size={15} color="#B45309" />
+                  <Text className="font-body text-xs text-amber-800">
+                    Hết hạn: {formatDate(tx.expiredAt)}
+                  </Text>
+                </View>
+              )}
+              <TouchableOpacity
+                onPress={() =>
+                  router.push({
+                    pathname: '/(transaction)/payment',
+                    params: { transactionId: tx._id },
+                  } as any)
+                }
+                activeOpacity={0.85}
+                className="h-12 rounded-xl flex-row items-center justify-center gap-2"
+                style={{ backgroundColor: '#296C24' }}
+              >
+                <MaterialIcons name="qr-code" size={18} color="#FFFFFF" />
+                <Text className="font-label font-bold text-base" style={{ color: '#FFFFFF' }}>
+                  Tiếp tục thanh toán
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleCancelOrder}
+                disabled={isCancelling}
+                activeOpacity={0.8}
+                className="h-11 border border-red-200 rounded-xl flex-row items-center justify-center gap-2"
+                style={{ backgroundColor: '#FEF2F2' }}
+              >
+                {isCancelling ? (
+                  <ActivityIndicator size="small" color="#DC2626" />
+                ) : (
+                  <>
+                    <MaterialIcons name="cancel" size={16} color="#DC2626" />
+                    <Text className="font-label font-semibold text-sm" style={{ color: '#DC2626' }}>
+                      Hủy đơn hàng
                     </Text>
                   </>
                 )}

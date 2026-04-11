@@ -20,7 +20,7 @@ export type TransactionStatus =
   | 'REFUNDED'
   | 'DISPUTED';
 
-export type PaymentMethod = 'FREE' | 'MOMO'; // TODO: Re-add | 'ZALOPAY' | 'VNPAY' when ready
+export type PaymentMethod = 'FREE' | 'BANK_TRANSFER';
 
 export interface ITransaction {
   _id: string;
@@ -103,12 +103,24 @@ export async function createRequestApi(
 // ── POST /api/transactions/orders ───────────────────────────────────────────
 // Người mua đặt túi mù (B2C)
 
+export interface IPaymentInfo {
+  qrDataURL: string;
+  bankName: string;
+  bankAccountNumber: string;
+  bankAccountName: string;
+  amount: number;
+  description: string;
+}
+
+export interface IOrderWithPayment extends ITransaction {
+  paymentInfo: IPaymentInfo | null;
+}
+
 export async function createOrderApi(
   postId: string,
-  quantity: number,
-  paymentMethod: 'MOMO' // TODO: Re-add | 'ZALOPAY' | 'VNPAY' when ready
-): Promise<{ success: boolean; message: string; data: ITransaction }> {
-  const { data } = await api.post('/transactions/orders', { postId, quantity, paymentMethod });
+  quantity: number
+): Promise<{ success: boolean; message: string; data: IOrderWithPayment }> {
+  const { data } = await api.post('/transactions/orders', { postId, quantity });
   return data;
 }
 

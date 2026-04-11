@@ -1,11 +1,11 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import * as WebBrowser from 'expo-web-browser';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   Image,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -13,68 +13,31 @@ import {
 } from 'react-native';
 
 import StackHeader from '@/components/shared/headers/StackHeader';
-
 import { getPostByIdApi, type IPostDetail } from '@/lib/postApi';
-import { createOrderApi, type PaymentMethod } from '@/lib/transactionApi';
-import { initiatePaymentApi } from '@/lib/paymentApi';
+import { getPaymentQRApi } from '@/lib/paymentApi';
+import { createOrderApi, type IPaymentInfo } from '@/lib/transactionApi';
 
-// ── Payment method config ───────────────────────────────────────────────────
-
-const PAYMENT_METHODS: {
-  key: PaymentMethod;
-  label: string;
-  sublabel: string;
-  icon: string;
-  color: string;
-}[] = [
-  {
-    key: 'MOMO',
-    label: 'MoMo',
-    sublabel: 'Ví MoMo',
-    icon: 'account-balance-wallet',
-    color: '#A50064',
-  },
-  // TODO: Re-enable when ZaloPay is ready
-  // {
-  //   key: 'ZALOPAY',
-  //   label: 'ZaloPay',
-  //   sublabel: 'Ví ZaloPay',
-  //   icon: 'account-balance-wallet',
-  //   color: '#008FE5',
-  // },
-  // TODO: Re-enable when VNPay is ready
-  // {
-  //   key: 'VNPAY',
-  //   label: 'VNPay',
-  //   sublabel: 'ATM / Internet Banking / QR',
-  //   icon: 'account-balance',
-  //   color: '#E41E2B',
-  // },
-];
-
-const PAYMENT_TIMEOUT_SECONDS = 10 * 60; // 10 minutes
-
-// ── Main Screen ─────────────────────────────────────────────────────────────
+const PAYMENT_TIMEOUT_SECONDS = 30 * 60; // 30 phút
 
 export default function PaymentScreen() {
   const router = useRouter();
-  const { postId, quantity: qtyStr } = useLocalSearchParams<{
-    postId: string;
+  const { postId, quantity: qtyStr, transactionId: resumeTxId } = useLocalSearchParams<{
+    postId?: string;
     quantity?: string;
+    transactionId?: string; // resume mode: đơn đã tạo, chỉ cần lấy lại QR
   }>();
   const quantity = Number(qtyStr) || 1;
+  const isResumeMode = !!resumeTxId;
 
   const [post, setPost] = useState<IPostDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>('MOMO');
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [transactionId, setTransactionId] = useState<string | null>(resumeTxId ?? null);
+  const [paymentInfo, setPaymentInfo] = useState<IPaymentInfo | null>(null);
   const [countdown, setCountdown] = useState(PAYMENT_TIMEOUT_SECONDS);
-  const [orderCreated, setOrderCreated] = useState(false);
-  const [transactionId, setTransactionId] = useState<string | null>(null);
-
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Load post
+  // Load post info (chỉ cần khi tạo đơn mới)
   useEffect(() => {
     if (!postId) return;
     (async () => {
@@ -85,19 +48,42 @@ export default function PaymentScreen() {
         Alert.alert('Lỗi', e instanceof Error ? e.message : 'Không thể tải bài đăng.');
         router.back();
       } finally {
-        setIsLoading(false);
+        if (!isResumeMode) setIsLoading(false);
       }
     })();
   }, [postId]);
 
-  // Countdown timer (starts after order is created)
+  // Resume mode: lấy lại QR từ đơn đã có
   useEffect(() => {
-    if (!orderCreated) return;
+    if (!resumeTxId) return;
+    (async () => {
+      try {
+        const res = await getPaymentQRApi(resumeTxId);
+        setPaymentInfo(res.data);
+        // Tính countdown từ expiredAt thực tế
+        if (res.data.expiredAt) {
+          const remaining = Math.floor(
+            (new Date(res.data.expiredAt).getTime() - Date.now()) / 1000
+          );
+          setCountdown(remaining > 0 ? remaining : 0);
+        }
+      } catch (e: any) {
+        const msg = e?.response?.data?.message ?? 'Không thể tải thông tin thanh toán.';
+        Alert.alert('Lỗi', msg, [{ text: 'OK', onPress: () => router.back() }]);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [resumeTxId]);
+
+  // Countdown timer (bắt đầu sau khi có transactionId)
+  useEffect(() => {
+    if (!transactionId || countdown <= 0) return;
 
     timerRef.current = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          if (timerRef.current) clearInterval(timerRef.current);
+          clearInterval(timerRef.current!);
           Alert.alert(
             'Hết thời gian',
             'Thời gian thanh toán đã hết. Đơn hàng sẽ bị huỷ.',
@@ -112,7 +98,7 @@ export default function PaymentScreen() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [orderCreated]);
+  }, [transactionId, countdown > 0]);
 
   const formatCountdown = useCallback((seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -120,59 +106,46 @@ export default function PaymentScreen() {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   }, []);
 
-  const handlePay = async () => {
+  const handleCreateOrder = async () => {
     if (!post) return;
-    setIsProcessing(true);
-
+    setIsCreating(true);
     try {
-      // Step 1: Create order (if not yet)
-      let txnId = transactionId;
-      if (!txnId) {
-        const orderRes = await createOrderApi(post._id, quantity, selectedMethod as 'MOMO');
-        txnId = orderRes.data._id;
-        setTransactionId(txnId);
-        setOrderCreated(true);
-      }
-
-      // Step 2: Initiate payment → get payUrl
-      const payRes = await initiatePaymentApi(txnId!);
-      const { payUrl } = payRes.data;
-
-      // Step 3: Open payment gateway in browser
-      const result = await WebBrowser.openBrowserAsync(payUrl, {
-        dismissButtonStyle: 'cancel',
-        showTitle: true,
-      });
-
-      // After browser closes, navigate to result screen
-      if (result.type === 'cancel') {
-        // User closed browser — check payment status later
-        Alert.alert(
-          'Thanh toán chưa hoàn tất?',
-          'Nếu bạn đã thanh toán, hệ thống sẽ cập nhật trạng thái trong giây lát.',
-          [
-            {
-              text: 'Xem giao dịch',
-              onPress: () =>
-                router.replace({
-                  pathname: '/(transaction)/payment-result',
-                  params: { transactionId: txnId!, status: 'pending' },
-                } as any),
-            },
-            { text: 'Đóng', style: 'cancel' },
-          ]
-        );
-      } else {
-        // Browser dismissed (deep-link or done) — go to result
-        router.replace({
-          pathname: '/(transaction)/payment-result',
-          params: { transactionId: txnId!, status: 'pending' },
-        } as any);
-      }
+      const res = await createOrderApi(post._id, quantity);
+      setTransactionId(res.data._id);
+      setPaymentInfo(res.data.paymentInfo);
     } catch (e) {
-      Alert.alert('Lỗi', e instanceof Error ? e.message : 'Không thể xử lý thanh toán.');
+      Alert.alert('Lỗi', e instanceof Error ? e.message : 'Không thể tạo đơn hàng.');
     } finally {
-      setIsProcessing(false);
+      setIsCreating(false);
+    }
+  };
+
+  const handleDoneTransfer = () => {
+    router.replace({
+      pathname: '/(transaction)/payment-result',
+      params: { transactionId: transactionId!, status: 'pending' },
+    } as any);
+  };
+
+  const handleBack = () => {
+    if (transactionId) {
+      Alert.alert(
+        'Thoát?',
+        'Đơn hàng đang chờ thanh toán. Bạn vẫn có thể quay lại chuyển khoản trong thời gian còn lại.',
+        [
+          { text: 'Ở lại', style: 'cancel' },
+          {
+            text: 'Xem đơn hàng',
+            onPress: () =>
+              router.replace({
+                pathname: '/(transaction)/payment-result',
+                params: { transactionId: transactionId!, status: 'pending' },
+              } as any),
+          },
+        ]
+      );
+    } else {
+      router.back();
     }
   };
 
@@ -187,33 +160,25 @@ export default function PaymentScreen() {
     );
   }
 
-  if (!post) return null;
+  // Resume mode không cần post data để hiển thị QR
+  if (!isResumeMode && !post) return null;
 
-  const totalAmount = post.price * quantity;
-
-  const handleBack = () => {
-    if (orderCreated) {
-      Alert.alert(
-        'Huỷ thanh toán?',
-        'Đơn hàng đã được tạo. Bạn có chắc muốn thoát?',
-        [
-          { text: 'Ở lại', style: 'cancel' },
-          { text: 'Thoát', style: 'destructive', onPress: () => router.back() },
-        ]
-      );
-    } else {
-      router.back();
-    }
-  };
+  const totalAmount = isResumeMode
+    ? (paymentInfo?.amount ?? 0)
+    : (post!.price * quantity);
 
   return (
     <View className="flex-1 bg-neutral-DEFAULT">
       <StackHeader title="Thanh toán" onBack={handleBack} />
 
-      <View className="flex-1 px-5 pt-4 gap-5">
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 24, gap: 16 }}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Order Summary */}
         <View className="bg-neutral-T100 rounded-2xl p-4 flex-row gap-3" style={styles.card}>
-          {post.images?.[0] ? (
+          {post?.images?.[0] ? (
             <Image
               source={{ uri: post.images[0] }}
               className="w-16 h-16 rounded-xl"
@@ -226,11 +191,13 @@ export default function PaymentScreen() {
           )}
           <View className="flex-1 justify-center">
             <Text className="font-sans font-bold text-base text-neutral-T10" numberOfLines={2}>
-              {post.title}
+              {post?.title ?? paymentInfo?.description ?? 'Đơn hàng'}
             </Text>
-            <Text className="font-body text-sm text-neutral-T50 mt-1">
-              {quantity} x {post.price.toLocaleString('vi-VN')}đ
-            </Text>
+            {!isResumeMode && post && (
+              <Text className="font-body text-sm text-neutral-T50 mt-1">
+                {quantity} x {post.price.toLocaleString('vi-VN')}đ
+              </Text>
+            )}
           </View>
           <View className="justify-center">
             <Text className="font-sans font-extrabold text-lg text-secondary-T30">
@@ -239,12 +206,12 @@ export default function PaymentScreen() {
           </View>
         </View>
 
-        {/* Countdown (shown after order created) */}
-        {orderCreated && (
+        {/* Countdown */}
+        {transactionId && (
           <View className="bg-secondary-T95 border border-secondary-T70 rounded-xl px-4 py-3 flex-row items-center gap-3">
             <MaterialIcons name="timer" size={20} color="#944A00" />
             <Text className="font-body text-sm text-secondary-T30 flex-1">
-              Hoàn tất thanh toán trong
+              Hoàn tất chuyển khoản trong
             </Text>
             <Text className="font-sans font-extrabold text-lg text-secondary-T20">
               {formatCountdown(countdown)}
@@ -252,86 +219,137 @@ export default function PaymentScreen() {
           </View>
         )}
 
-        {/* Payment Method Selection */}
-        <View className="gap-2">
-          <Text className="font-label text-xs font-semibold text-neutral-T50 uppercase tracking-wider">
-            Phương thức thanh toán
-          </Text>
-          {PAYMENT_METHODS.map((method) => {
-            // Only allow FREE-excluded methods
-            if (method.key === 'FREE') return null;
-            const isSelected = selectedMethod === method.key;
-            return (
-              <TouchableOpacity
-                key={method.key}
-                className={`flex-row items-center gap-4 p-4 rounded-xl border ${
-                  isSelected ? 'border-primary-T40 bg-primary-T95' : 'border-neutral-T80 bg-neutral-T100'
-                }`}
-                onPress={() => {
-                  if (!orderCreated) setSelectedMethod(method.key);
-                }}
-                disabled={orderCreated}
-                activeOpacity={orderCreated ? 1 : 0.7}
-              >
-                <View
-                  className="w-10 h-10 rounded-full items-center justify-center"
-                  style={{ backgroundColor: method.color + '15' }}
-                >
-                  <MaterialIcons
-                    name={method.icon as any}
-                    size={20}
-                    color={method.color}
-                  />
-                </View>
-                <View className="flex-1">
-                  <Text className="font-sans font-bold text-base text-neutral-T10">
-                    {method.label}
-                  </Text>
-                  <Text className="font-body text-xs text-neutral-T50">
-                    {method.sublabel}
-                  </Text>
-                </View>
-                <View
-                  className={`w-5 h-5 rounded-full border-2 items-center justify-center ${
-                    isSelected ? 'border-primary-T40' : 'border-neutral-T70'
-                  }`}
-                >
-                  {isSelected && (
-                    <View className="w-2.5 h-2.5 rounded-full bg-primary-T40" />
-                  )}
-                </View>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      </View>
-
-      {/* Bottom Pay Button */}
-      <View className="px-5 pb-6 pt-3" style={styles.bottomBar}>
-        <View className="flex-row items-center justify-between mb-3">
-          <Text className="font-body text-sm text-neutral-T50">Tổng thanh toán</Text>
-          <Text className="font-sans font-extrabold text-xl text-secondary-T20">
-            {totalAmount.toLocaleString('vi-VN')}đ
-          </Text>
-        </View>
-        <TouchableOpacity
-          className="w-full rounded-2xl items-center justify-center py-4"
-          activeOpacity={0.85}
-          onPress={handlePay}
-          disabled={isProcessing || countdown === 0}
-          style={[
-            styles.payBtn,
-            (isProcessing || countdown === 0) && { opacity: 0.5 },
-          ]}
-        >
-          {isProcessing ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text className="text-neutral-T100 font-sans font-black text-lg tracking-tight uppercase">
-              {orderCreated ? 'Mở cổng thanh toán' : 'Thanh toán ngay'}
+        {/* Before order created — instruction */}
+        {!transactionId && (
+          <View className="bg-primary-T95 border border-primary-T70 rounded-xl p-4 gap-2">
+            <View className="flex-row items-center gap-2">
+              <MaterialIcons name="info-outline" size={18} color="#296C24" />
+              <Text className="font-sans font-bold text-sm text-primary-T30">
+                Thanh toán qua chuyển khoản ngân hàng
+              </Text>
+            </View>
+            <Text className="font-body text-sm text-neutral-T30 leading-5">
+              Sau khi nhấn "Tạo đơn hàng", bạn sẽ nhận được mã QR và thông tin tài khoản để chuyển khoản. Admin sẽ xác nhận thanh toán và kích hoạt đơn hàng của bạn.
             </Text>
-          )}
-        </TouchableOpacity>
+          </View>
+        )}
+
+        {/* VietQR + Bank Info (after order created) */}
+        {transactionId && paymentInfo && (
+          <View className="bg-neutral-T100 rounded-2xl p-4 gap-4" style={styles.card}>
+            <Text className="font-sans font-bold text-base text-neutral-T10 text-center">
+              Quét QR để chuyển khoản
+            </Text>
+
+            {/* QR Image */}
+            <View className="items-center">
+              <Image
+                source={{ uri: paymentInfo.qrDataURL }}
+                style={{ width: 200, height: 200 }}
+                resizeMode="contain"
+              />
+            </View>
+
+            {/* Divider */}
+            <View className="flex-row items-center gap-3">
+              <View className="flex-1 h-px bg-neutral-T85" />
+              <Text className="font-body text-xs text-neutral-T50">hoặc chuyển khoản thủ công</Text>
+              <View className="flex-1 h-px bg-neutral-T85" />
+            </View>
+
+            {/* Bank details */}
+            <View className="gap-2">
+              <BankInfoRow label="Ngân hàng" value={paymentInfo.bankName} />
+              <BankInfoRow label="Số tài khoản" value={paymentInfo.bankAccountNumber} copyable />
+              <BankInfoRow label="Chủ tài khoản" value={paymentInfo.bankAccountName} />
+              <BankInfoRow
+                label="Số tiền"
+                value={`${paymentInfo.amount.toLocaleString('vi-VN')}đ`}
+                highlight
+              />
+              <BankInfoRow label="Nội dung CK" value={paymentInfo.description} copyable />
+            </View>
+
+            <View className="bg-yellow-50 border border-yellow-200 rounded-xl p-3">
+              <Text className="font-body text-xs text-yellow-800 text-center leading-5">
+                ⚠️ Vui lòng nhập đúng nội dung chuyển khoản để đơn hàng được xác nhận tự động.
+              </Text>
+            </View>
+          </View>
+        )}
+
+        {/* No QR available fallback */}
+        {transactionId && !paymentInfo && (
+          <View className="bg-neutral-T100 rounded-2xl p-4 items-center gap-3" style={styles.card}>
+            <MaterialIcons name="warning-amber" size={32} color="#944A00" />
+            <Text className="font-body text-sm text-neutral-T30 text-center">
+              Không thể tải mã QR. Vui lòng liên hệ admin để biết thông tin tài khoản chuyển khoản.
+            </Text>
+          </View>
+        )}
+      </ScrollView>
+
+      {/* Bottom action */}
+      <View className="px-5 pb-6 pt-3" style={styles.bottomBar}>
+        {!transactionId ? (
+          <TouchableOpacity
+            className="w-full rounded-2xl items-center justify-center py-4"
+            activeOpacity={0.85}
+            onPress={handleCreateOrder}
+            disabled={isCreating}
+            style={[styles.primaryBtn, isCreating && { opacity: 0.6 }]}
+          >
+            {isCreating ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text className="text-neutral-T100 font-sans font-black text-lg tracking-tight">
+                Tạo đơn hàng
+              </Text>
+            )}
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            className="w-full rounded-2xl items-center justify-center py-4"
+            activeOpacity={0.85}
+            onPress={handleDoneTransfer}
+            style={styles.primaryBtn}
+          >
+            <Text className="text-neutral-T100 font-sans font-black text-lg tracking-tight">
+              Đã chuyển khoản xong
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </View>
+  );
+}
+
+// ── Internal helpers ─────────────────────────────────────────────────────────
+
+function BankInfoRow({
+  label,
+  value,
+  copyable = false,
+  highlight = false,
+}: {
+  label: string;
+  value: string;
+  copyable?: boolean;
+  highlight?: boolean;
+}) {
+  return (
+    <View className="flex-row items-center justify-between py-1.5 border-b border-neutral-T90">
+      <Text className="font-body text-sm text-neutral-T50 flex-1">{label}</Text>
+      <View className="flex-row items-center gap-1 flex-1 justify-end">
+        <Text
+          className={`font-sans text-sm text-right ${highlight ? 'font-extrabold text-secondary-T20' : 'font-semibold text-neutral-T10'}`}
+          numberOfLines={1}
+        >
+          {value}
+        </Text>
+        {copyable && (
+          <MaterialIcons name="content-copy" size={14} color="#AAABAB" />
+        )}
       </View>
     </View>
   );
@@ -352,12 +370,13 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 8,
   },
-  payBtn: {
+  primaryBtn: {
     backgroundColor: '#944A00',
     shadowColor: '#944A00',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 5,
+    borderRadius: 16,
   },
 });

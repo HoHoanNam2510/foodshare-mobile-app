@@ -1,22 +1,13 @@
 import api from '@/lib/axios';
+import type { IPaymentInfo } from '@/lib/transactionApi';
 
-// ── Types ──────────────────────────────────────────────────────────────────
+// ── GET /api/transactions/orders/:id/qr ───────────────────────────────────
+// Lấy lại thông tin VietQR cho đơn hàng PENDING (dùng khi cần hiển thị lại QR)
 
-export interface InitiatePaymentResult {
-  payUrl: string;
-  partnerTransId: string;
-}
-
-// ── POST /api/payment/initiate ─────────────────────────────────────────────
-// Buyer gọi sau khi createOrder → nhận payUrl để mở cổng thanh toán
-
-export async function initiatePaymentApi(
-  transactionId: string,
-  returnUrl?: string
-): Promise<{ success: boolean; data: InitiatePaymentResult }> {
-  const { data } = await api.post('/payment/initiate', {
-    transactionId,
-    returnUrl,
-  });
+export async function getPaymentQRApi(transactionId: string): Promise<{
+  success: boolean;
+  data: IPaymentInfo & { expiredAt: string };
+}> {
+  const { data } = await api.get(`/transactions/orders/${transactionId}/qr`);
   return data;
 }

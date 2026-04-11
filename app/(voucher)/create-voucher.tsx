@@ -317,8 +317,7 @@ const CreateVoucherScreen = () => {
           value={validUntil}
           mode="date"
           minimumDate={new Date()}
-          onChange={(event, date) => {
-            setActiveValidUntilPicker(Platform.OS === 'android');
+          onChange={(_, date) => {
             if (date) {
               setValidUntil(date);
             }

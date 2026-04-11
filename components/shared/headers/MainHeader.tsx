@@ -4,10 +4,12 @@ import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import BaseHeader from './BaseHeader';
 import { useMenuDrawerStore } from '@/stores/menuDrawerStore';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function MainHeader() {
   const router = useRouter();
   const openDrawer = useMenuDrawerStore((s) => s.open);
+  const user = useAuthStore((s) => s.user);
 
   return (
     <BaseHeader>
@@ -45,7 +47,11 @@ export default function MainHeader() {
             onPress={() => router.push('/profile')}
           >
             <Image
-              source={{ uri: 'https://i.pravatar.cc/60?img=33' }}
+              source={
+                user?.avatar
+                  ? { uri: user.avatar }
+                  : require('../../../assets/images/logo.png')
+              }
               className="w-10 h-10 rounded-full border border-neutral-T90"
             />
           </TouchableOpacity>

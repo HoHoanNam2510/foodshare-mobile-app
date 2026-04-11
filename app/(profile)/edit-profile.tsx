@@ -46,17 +46,8 @@ export default function EditProfile() {
     user?.storeInfo?.businessAddress ?? ''
   );
 
-  // Payment info (chỉ hiện khi role = STORE)
-  const [momoPhone, setMomoPhone] = useState(
-    user?.paymentInfo?.momoPhone ?? ''
-  );
-  // TODO: Re-enable when ZaloPay is ready
-  // const [zalopayPhone, setZalopayPhone] = useState(
-  //   user?.paymentInfo?.zalopayPhone ?? ''
-  // );
-  const [bankName, setBankName] = useState(
-    user?.paymentInfo?.bankName ?? ''
-  );
+  // Payment info — bank account cho cả STORE (nhận giải ngân) và USER (nhận hoàn tiền)
+  const [bankName, setBankName] = useState(user?.paymentInfo?.bankName ?? '');
   const [bankAccountNumber, setBankAccountNumber] = useState(
     user?.paymentInfo?.bankAccountNumber ?? ''
   );
@@ -108,14 +99,14 @@ export default function EditProfile() {
           description: storeDescription.trim() || undefined,
           businessAddress: businessAddress.trim() || undefined,
         };
-        payload.paymentInfo = {
-          momoPhone: momoPhone.trim() || undefined,
-          // zalopayPhone: zalopayPhone.trim() || undefined, // TODO: Re-enable when ZaloPay is ready
-          bankName: bankName.trim() || undefined,
-          bankAccountNumber: bankAccountNumber.trim() || undefined,
-          bankAccountName: bankAccountName.trim() || undefined,
-        };
       }
+
+      // Lưu tài khoản ngân hàng cho tất cả user roles (STORE để nhận giải ngân, USER để nhận hoàn tiền)
+      payload.paymentInfo = {
+        bankName: bankName.trim() || undefined,
+        bankAccountNumber: bankAccountNumber.trim() || undefined,
+        bankAccountName: bankAccountName.trim() || undefined,
+      };
 
       const res = await updateProfileApi(payload);
       if (res.success) {
@@ -270,45 +261,36 @@ export default function EditProfile() {
                   placeholder="Store address"
                 />
 
-                {/* ─── Payment Info ─── */}
-                <SectionLabel icon="account-balance" label="Payment info" />
-
-                <FormInput
-                  label="MoMo phone"
-                  value={momoPhone}
-                  onChangeText={setMomoPhone}
-                  placeholder="0912345678"
-                  keyboardType="phone-pad"
-                />
-                {/* TODO: Re-enable when ZaloPay is ready */}
-                {/* <FormInput
-                  label="ZaloPay phone"
-                  value={zalopayPhone}
-                  onChangeText={setZalopayPhone}
-                  placeholder="0912345678"
-                  keyboardType="phone-pad"
-                /> */}
-                <FormInput
-                  label="Bank name"
-                  value={bankName}
-                  onChangeText={setBankName}
-                  placeholder="e.g. Vietcombank, MB Bank..."
-                />
-                <FormInput
-                  label="Bank account number"
-                  value={bankAccountNumber}
-                  onChangeText={setBankAccountNumber}
-                  placeholder="Account number"
-                  keyboardType="numeric"
-                />
-                <FormInput
-                  label="Account holder name"
-                  value={bankAccountName}
-                  onChangeText={setBankAccountName}
-                  placeholder="e.g. NGUYEN VAN A"
-                />
               </>
             )}
+
+            {/* ─── Bank Account (tất cả users) ─── */}
+            <SectionLabel icon="account-balance" label="Tài khoản ngân hàng" />
+            <Text className="font-body text-xs text-neutral-T50 -mt-2">
+              {isStore
+                ? 'Tài khoản nhận giải ngân khi hoàn tất đơn hàng'
+                : 'Tài khoản nhận hoàn tiền khi đơn bị hủy (tuỳ chọn)'}
+            </Text>
+
+            <FormInput
+              label="Tên ngân hàng"
+              value={bankName}
+              onChangeText={setBankName}
+              placeholder="VD: Vietcombank, MB Bank..."
+            />
+            <FormInput
+              label="Số tài khoản"
+              value={bankAccountNumber}
+              onChangeText={setBankAccountNumber}
+              placeholder="Số tài khoản"
+              keyboardType="numeric"
+            />
+            <FormInput
+              label="Tên chủ tài khoản"
+              value={bankAccountName}
+              onChangeText={setBankAccountName}
+              placeholder="VD: NGUYEN VAN A"
+            />
 
           </View>
         </ScrollView>

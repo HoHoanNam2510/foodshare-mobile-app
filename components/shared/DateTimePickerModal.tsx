@@ -5,11 +5,9 @@ import {
   View,
   TouchableOpacity,
   Text,
-  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { MaterialIcons } from '@expo/vector-icons';
 
 interface DateTimePickerModalProps {
   visible: boolean;
@@ -63,16 +61,14 @@ const DateTimePickerModal: React.FC<DateTimePickerModalProps> = ({
                 style={{ height: 216 }}
               />
             </View>
-            {Platform.OS === 'ios' && (
-              <TouchableOpacity
-                className="h-14 bg-primary-T40 rounded-xl items-center justify-center shadow-sm active:opacity-80 mt-4"
-                onPress={onClose}
-              >
-                <Text className="font-label font-semibold text-neutral-T100">
-                  Done
-                </Text>
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity
+              className="h-14 bg-primary-T40 rounded-xl items-center justify-center shadow-sm active:opacity-80 mt-4"
+              onPress={onClose}
+            >
+              <Text className="font-label font-semibold text-neutral-T100">
+                Xong
+              </Text>
+            </TouchableOpacity>
           </View>
         </Pressable>
       </Pressable>
