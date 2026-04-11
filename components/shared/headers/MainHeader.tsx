@@ -3,15 +3,20 @@ import { useRouter } from 'expo-router';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import BaseHeader from './BaseHeader';
+import { useMenuDrawerStore } from '@/stores/menuDrawerStore';
 
 export default function MainHeader() {
   const router = useRouter();
+  const openDrawer = useMenuDrawerStore((s) => s.open);
 
   return (
     <BaseHeader>
       <View className="flex-row items-center justify-between flex-1">
         {/* Left: Menu */}
-        <TouchableOpacity className="w-10 h-10 rounded-full bg-neutral-T95 items-center justify-center active:opacity-80">
+        <TouchableOpacity
+          className="w-10 h-10 rounded-full bg-neutral-T95 items-center justify-center active:opacity-80"
+          onPress={openDrawer}
+        >
           <Feather name="menu" size={20} color="#191C1C" />
         </TouchableOpacity>
 

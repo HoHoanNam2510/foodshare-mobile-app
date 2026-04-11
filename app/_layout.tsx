@@ -21,6 +21,7 @@ import { View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/stores/authStore';
+import MenuDrawer from '@/components/shared/MenuDrawer';
 import './global.css';
 
 // Tắt chế độ cảnh báo Strict Mode
@@ -83,6 +84,7 @@ export default function RootLayout() {
       <View className="flex-1 bg-neutral">
         <Slot />
       </View>
+      <MenuDrawer />
     </SafeAreaProvider>
   );
 }

@@ -84,17 +84,24 @@ const TARGET_TYPE_LABEL: Record<ReportTargetType, string> = {
 export default function CreateReportScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { targetType, targetId, targetTitle, reportId, existingReason, existingDescription, existingImages } =
-    useLocalSearchParams<{
-      targetType: ReportTargetType;
-      targetId: string;
-      targetTitle?: string;
-      // Edit-mode params (all optional)
-      reportId?: string;
-      existingReason?: ReportReason;
-      existingDescription?: string;
-      existingImages?: string; // JSON string of string[]
-    }>();
+  const {
+    targetType,
+    targetId,
+    targetTitle,
+    reportId,
+    existingReason,
+    existingDescription,
+    existingImages,
+  } = useLocalSearchParams<{
+    targetType: ReportTargetType;
+    targetId: string;
+    targetTitle?: string;
+    // Edit-mode params (all optional)
+    reportId?: string;
+    existingReason?: ReportReason;
+    existingDescription?: string;
+    existingImages?: string; // JSON string of string[]
+  }>();
 
   const isEditMode = !!reportId;
 
@@ -112,7 +119,8 @@ export default function CreateReportScreen() {
   );
   const [description, setDescription] = useState(existingDescription ?? '');
   // Already-uploaded URLs the user wants to keep
-  const [keptImageUrls, setKeptImageUrls] = useState<string[]>(parsedExistingImages);
+  const [keptImageUrls, setKeptImageUrls] =
+    useState<string[]>(parsedExistingImages);
   // New local URIs picked from the device (need uploading)
   const [newLocalImages, setNewLocalImages] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -152,7 +160,10 @@ export default function CreateReportScreen() {
       return;
     }
     if (totalImages === 0) {
-      Alert.alert('Thiếu bằng chứng', 'Vui lòng đính kèm ít nhất 1 ảnh bằng chứng.');
+      Alert.alert(
+        'Thiếu bằng chứng',
+        'Vui lòng đính kèm ít nhất 1 ảnh bằng chứng.'
+      );
       return;
     }
 
@@ -197,7 +208,9 @@ export default function CreateReportScreen() {
     } catch (err: any) {
       const msg: string =
         err?.response?.data?.message ??
-        (isEditMode ? 'Không thể cập nhật báo cáo. Vui lòng thử lại.' : 'Không thể gửi báo cáo. Vui lòng thử lại.');
+        (isEditMode
+          ? 'Không thể cập nhật báo cáo. Vui lòng thử lại.'
+          : 'Không thể gửi báo cáo. Vui lòng thử lại.');
       if (err?.response?.status === 409) {
         Alert.alert('Không thể gửi', msg);
       } else {
@@ -429,10 +442,16 @@ export default function CreateReportScreen() {
                   key={`kept-${url}-${index}`}
                   className="w-28 h-28 rounded-2xl overflow-hidden shadow-sm"
                 >
-                  <Image source={{ uri: url }} className="w-full h-full" resizeMode="cover" />
+                  <Image
+                    source={{ uri: url }}
+                    className="w-full h-full"
+                    resizeMode="cover"
+                  />
                   {/* "Saved" badge */}
                   <View className="absolute bottom-1.5 left-1.5 bg-primary-T40/80 rounded px-1.5 py-0.5">
-                    <Text className="text-white text-[9px] font-bold">Đã lưu</Text>
+                    <Text className="text-white text-[9px] font-bold">
+                      Đã lưu
+                    </Text>
                   </View>
                   {!isSubmitting && (
                     <TouchableOpacity

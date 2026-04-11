@@ -4,7 +4,6 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  Button,
   Modal,
   Pressable,
   ScrollView,
@@ -78,7 +77,6 @@ const MOCK_LISTINGS = [
 export default function ProfileScreen() {
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
-  const logout = useAuthStore((s) => s.logout);
   const fetchProfile = useAuthStore((s) => s.fetchProfile);
 
   const [showRejectionModal, setShowRejectionModal] = useState(false);
@@ -105,10 +103,6 @@ export default function ProfileScreen() {
       rejectionShownRef.current = true;
     }
   }, [user?.kycStatus, user?.kycDocuments?.length]);
-
-  const handleLogout = async (): Promise<void> => {
-    await logout();
-  };
 
   if (!user) {
     return (
@@ -206,7 +200,7 @@ export default function ProfileScreen() {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          paddingBottom: 120,
+          paddingBottom: 48,
           paddingHorizontal: 24,
           paddingTop: 16,
         }}
@@ -258,21 +252,8 @@ export default function ProfileScreen() {
           <ProfileActions
             onEditProfile={() => router.push('/(profile)/edit-profile')}
             onRegisterStore={() => router.push('/(profile)/register-store')}
-            onViewTransactions={() =>
-              router.push('/(transaction)/transaction-list' as any)
-            }
-            onViewVouchers={() => router.push('/(voucher)/my-vouchers' as any)}
-            onViewPointHistory={() =>
-              router.push('/(voucher)/point-history' as any)
-            }
-            onManageStoreVouchers={() =>
-              router.push('/(voucher)/store-vouchers' as any)
-            }
-            onViewReports={() => router.push('/(report)/my-reports' as any)}
-            onLogOut={handleLogout}
             showRegisterStore={canRegisterStore}
             storeRegistrationPending={storeRegistrationPending}
-            isStore={user.role === 'STORE'}
           />
         </View>
       </ScrollView>
