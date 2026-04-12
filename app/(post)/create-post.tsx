@@ -21,6 +21,9 @@ import StackHeader from '@/components/shared/headers/StackHeader';
 import ImagePickerSection from '@/components/post/ImagePickerSection';
 import PasscodeModal from '@/components/post/PasscodeModal';
 import QuantityStepper from '@/components/post/QuantityStepper';
+import LocationPickerSheet, {
+  PickedLocation,
+} from '@/components/map/LocationPickerSheet';
 import {
   ApiValidationError,
   createPostApi,
@@ -66,6 +69,10 @@ export default function CreatePost() {
   // ── Picker UI state ──
   const [activePicker, setActivePicker] = useState<ActivePicker>(null);
   const [pickerMode, setPickerMode] = useState<PickerMode>('time');
+
+  // ── Location state ──
+  const [pickedLocation, setPickedLocation] = useState<PickedLocation | null>(null);
+  const [showLocationPicker, setShowLocationPicker] = useState(false);
 
   // ── Passcode / submit state ──
   const [showPasscode, setShowPasscode] = useState(false);
@@ -180,7 +187,7 @@ export default function CreatePost() {
       const uploadResults = await uploadMultipleImages(images, 'posts');
       const imageUrls = uploadResults.map((r) => r.url);
 
-      // 2. Create post via API (location tạm thời không bắt buộc — map chưa tích hợp)
+      // 2. Create post via API
       const res = await createPostApi({
         type: isB2C ? 'B2C_MYSTERY_BAG' : 'P2P_FREE',
         category,
@@ -194,6 +201,9 @@ export default function CreatePost() {
           start: pickupStart.toISOString(),
           end: pickupEnd.toISOString(),
         },
+        location: pickedLocation
+          ? { type: 'Point', coordinates: pickedLocation.coordinates }
+          : undefined,
         passcode,
       });
 
@@ -470,7 +480,30 @@ export default function CreatePost() {
             )}
           </View>
 
-          {/* ── Location (tạm ẩn — map service chưa tích hợp) ── */}
+          {/* ── Location picker ── */}
+          <View className="gap-2 mb-2">
+            <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
+              Vị trí nhận hàng
+            </Text>
+            <TouchableOpacity
+              className="h-14 px-4 rounded-xl bg-neutral-T95 border border-neutral-T90 flex-row items-center justify-between active:opacity-80"
+              onPress={() => setShowLocationPicker(true)}
+            >
+              <View className="flex-row items-center gap-2 flex-1">
+                <MaterialIcons name="location-on" size={20} color={pickedLocation ? '#296C24' : '#AAABAB'} />
+                <Text
+                  className="font-body text-sm flex-1"
+                  style={{ color: pickedLocation ? '#2B2C2C' : '#AAABAB' }}
+                  numberOfLines={1}
+                >
+                  {pickedLocation
+                    ? pickedLocation.address || 'Đã chọn vị trí'
+                    : 'Chọn vị trí trên bản đồ...'}
+                </Text>
+              </View>
+              <MaterialIcons name="chevron-right" size={20} color="#AAABAB" />
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
 
@@ -513,6 +546,14 @@ export default function CreatePost() {
 
       {/* ── Date/time picker modal ── */}
       {renderPickerModal()}
+
+      {/* ── Location picker sheet ── */}
+      <LocationPickerSheet
+        visible={showLocationPicker}
+        onClose={() => setShowLocationPicker(false)}
+        onConfirm={(loc) => setPickedLocation(loc)}
+        initialCoords={pickedLocation?.coordinates}
+      />
 
       {/* ── Passcode modal ── */}
       <PasscodeModal

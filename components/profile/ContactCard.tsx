@@ -1,8 +1,9 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import SectionIncompleteBadge from '@/components/profile/SectionIncompleteBadge';
+import { reverseGeocode } from '@/lib/mapApi';
 
 interface PrivacyFieldProps {
   icon: React.ComponentProps<typeof MaterialIcons>['name'];
@@ -45,10 +46,21 @@ export default function ContactCard({
   isIncomplete,
 }: ContactCardProps) {
   const [hideAll, setHideAll] = useState(true);
+  const [resolvedAddress, setResolvedAddress] = useState<string | null>(null);
 
-  const locationText = location
-    ? `${location.coordinates[1].toFixed(4)}, ${location.coordinates[0].toFixed(4)}`
-    : undefined;
+  useEffect(() => {
+    if (!location) return;
+    const [lng, lat] = location.coordinates;
+    reverseGeocode(lat, lng).then((addr) => {
+      if (addr) setResolvedAddress(addr);
+    });
+  }, [location]);
+
+  const locationText =
+    resolvedAddress ??
+    (location
+      ? `${location.coordinates[1].toFixed(4)}, ${location.coordinates[0].toFixed(4)}`
+      : undefined);
 
   return (
     <View className="bg-neutral-T100 rounded-2xl shadow-sm p-6 gap-5">

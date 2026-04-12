@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -14,7 +14,9 @@ import {
   View,
 } from 'react-native';
 import StackHeader from '@/components/shared/headers/StackHeader';
+import LocationPickerSheet, { PickedLocation } from '@/components/map/LocationPickerSheet';
 import { pickImage } from '@/lib/imagePicker';
+import { reverseGeocode, updateUserLocation } from '@/lib/mapApi';
 import { updateProfileApi } from '@/lib/profileApi';
 import { uploadImage } from '@/lib/uploadApi';
 import { useAuthStore } from '@/stores/authStore';
@@ -55,9 +57,23 @@ export default function EditProfile() {
     user?.paymentInfo?.bankAccountName ?? ''
   );
 
+  // ── Location state ───
+  const [pickedLocation, setPickedLocation] = useState<PickedLocation | null>(null);
+  const [showLocationPicker, setShowLocationPicker] = useState(false);
+  const [locationLabel, setLocationLabel] = useState('');
+
   const [isSaving, setIsSaving] = useState(false);
 
   const isStore = user?.role === 'STORE';
+
+  // Reverse geocode existing location on mount
+  useEffect(() => {
+    if (!user?.location) return;
+    const [lng, lat] = user.location.coordinates;
+    reverseGeocode(lat, lng).then((addr) => {
+      if (addr) setLocationLabel(addr);
+    });
+  }, []);
 
   const handlePickAvatar = async (): Promise<void> => {
     const uri = await pickImage({ allowsEditing: true, aspect: [1, 1] });
@@ -110,6 +126,12 @@ export default function EditProfile() {
 
       const res = await updateProfileApi(payload);
       if (res.success) {
+        if (pickedLocation) {
+          await updateUserLocation(
+            pickedLocation.coordinates[0],
+            pickedLocation.coordinates[1]
+          );
+        }
         await fetchProfile();
         router.back();
       }
@@ -218,6 +240,27 @@ export default function EditProfile() {
               placeholder="Your address"
             />
 
+            {/* ─── Location picker ─── */}
+            <View className="gap-1.5">
+              <Text className="font-label text-xs font-semibold text-neutral-T50 uppercase tracking-wider">
+                Vị trí (bản đồ)
+              </Text>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => setShowLocationPicker(true)}
+                className="bg-neutral-T100 border border-neutral-T80 rounded-xl px-4 h-12 flex-row items-center gap-3"
+              >
+                <MaterialIcons name="location-on" size={18} color="#296C24" />
+                <Text
+                  className="flex-1 font-body text-sm text-neutral-T10"
+                  numberOfLines={1}
+                >
+                  {pickedLocation?.address || locationLabel || 'Chưa đặt vị trí'}
+                </Text>
+                <MaterialIcons name="chevron-right" size={20} color="#AAABAB" />
+              </TouchableOpacity>
+            </View>
+
             {/* ─── Store Section (only STORE role) ─── */}
             {isStore && (
               <>
@@ -295,6 +338,18 @@ export default function EditProfile() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <LocationPickerSheet
+        visible={showLocationPicker}
+        onClose={() => setShowLocationPicker(false)}
+        onConfirm={setPickedLocation}
+        initialCoords={
+          pickedLocation?.coordinates ??
+          (user?.location
+            ? [user.location.coordinates[0], user.location.coordinates[1]]
+            : undefined)
+        }
+      />
     </View>
   );
 }

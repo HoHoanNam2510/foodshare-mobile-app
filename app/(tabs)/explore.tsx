@@ -6,7 +6,6 @@ import ExploreListView from '../../components/explore/ExploreListView';
 import ExploreMapView from '../../components/explore/ExploreMapView';
 import MainHeader from '../../components/shared/headers/MainHeader';
 import ViewToggle from '../../components/explore/ViewToggle';
-import { EXPLORE_POSTS } from '../../components/explore/mockData';
 import {
   ExplorePost,
   SortOption,
@@ -37,7 +36,6 @@ export default function ExploreScreen() {
     }
   }, [activeFilter, sortOption]);
 
-  // Fetch on mount and whenever filter/sort changes (list view only)
   useEffect(() => {
     if (viewMode === 'list') {
       loadPosts();
@@ -79,16 +77,7 @@ export default function ExploreScreen() {
             }
           />
         ) : (
-          // Map view stays static — uses mock data
-          <ExploreMapView
-            posts={EXPLORE_POSTS}
-            activeFilter={activeFilter}
-            onFilterChange={setActiveFilter}
-            sortOption={sortOption}
-            onSortChange={setSortOption}
-            searchText={searchText}
-            onSearchChange={setSearchText}
-          />
+          <ExploreMapView activeFilter={activeFilter} />
         )}
       </View>
 

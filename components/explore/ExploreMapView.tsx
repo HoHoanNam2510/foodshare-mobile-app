@@ -1,235 +1,142 @@
-import React, { useState } from 'react';
-import { Dimensions, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Text, View } from 'react-native';
 
-import { IconMarker, PriceMarker } from './MapMarker';
-import MapPreviewCard from './MapPreviewCard';
-import SearchFilterBar from './SearchFilterBar';
-import { ExplorePost, SortOption, TypeFilter } from './types';
+import GoongMapView from '@/components/map/GoongMapView';
+import PostMarker from '@/components/map/PostMarker';
+import PostPreviewCard from '@/components/map/PostPreviewCard';
+import RadiusFilter, { RadiusOption } from '@/components/map/RadiusFilter';
+import { MapPost } from '@/components/map/types';
+import { fetchMapPosts } from '@/lib/mapApi';
+import { TypeFilter } from './types';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+// HCM center fallback [lng, lat]
+const HCM_CENTER: [number, number] = [106.6297, 10.8231];
 
 interface ExploreMapViewProps {
-  posts: ExplorePost[];
   activeFilter: TypeFilter;
-  onFilterChange: (filter: TypeFilter) => void;
-  sortOption: SortOption;
-  onSortChange: (sort: SortOption) => void;
-  searchText: string;
-  onSearchChange: (text: string) => void;
 }
 
-export default function ExploreMapView({
-  posts,
-  activeFilter,
-  onFilterChange,
-  sortOption,
-  onSortChange,
-  searchText,
-  onSearchChange,
-}: ExploreMapViewProps) {
-  const [selectedPostId, setSelectedPostId] = useState<string>(posts[0]?._id);
+function toApiType(
+  filter: TypeFilter
+): 'P2P_FREE' | 'B2C_MYSTERY_BAG' | undefined {
+  if (filter === 'Free Food') return 'P2P_FREE';
+  if (filter === 'Surprise Bags') return 'B2C_MYSTERY_BAG';
+  return undefined;
+}
 
-  const selectedPost = posts.find((p) => p._id === selectedPostId) ?? posts[0];
+export default function ExploreMapView({ activeFilter }: ExploreMapViewProps) {
+  const router = useRouter();
+  const userCoordsRef = useRef<[number, number]>(HCM_CENTER);
 
-  const handleMarkerPress = (postId: string) => {
-    setSelectedPostId(postId);
+  const [radius, setRadius] = useState<RadiusOption>(3000);
+  const [posts, setPosts] = useState<MapPost[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
+
+  const loadPosts = async (coords: [number, number], r: RadiusOption) => {
+    setLoading(true);
+    try {
+      const results = await fetchMapPosts({
+        lng: coords[0],
+        lat: coords[1],
+        distance: r,
+        type: toApiType(activeFilter),
+      });
+      setPosts(results);
+      setSelectedId(results[0]?._id ?? null);
+    } catch {
+      setPosts([]);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleUserLocation = (coords: [number, number]) => {
+    userCoordsRef.current = coords;
+    setReady(true);
+    loadPosts(coords, radius);
+  };
+
+  // Re-fetch when filter or radius changes (after GPS ready)
+  useEffect(() => {
+    if (!ready) return;
+    loadPosts(userCoordsRef.current, radius);
+  }, [activeFilter, radius]);
+
+  const handleRadiusChange = (r: RadiusOption) => {
+    setRadius(r);
+  };
+
+  const selectedPost = posts.find((p) => p._id === selectedId) ?? null;
 
   return (
     <View className="flex-1">
-      {/* ── Simulated Map Background ── */}
-      <View className="absolute inset-0 bg-[#E8F2E8]">
-        {/* Block fills to simulate city parcels */}
-        <View
-          style={{
-            position: 'absolute',
-            top: '15%',
-            left: '10%',
-            width: '35%',
-            height: '18%',
-            backgroundColor: '#D4E9D0',
-            borderRadius: 4,
-          }}
-        />
-        <View
-          style={{
-            position: 'absolute',
-            top: '15%',
-            right: '8%',
-            width: '28%',
-            height: '14%',
-            backgroundColor: '#D4E9D0',
-            borderRadius: 4,
-          }}
-        />
-        <View
-          style={{
-            position: 'absolute',
-            top: '42%',
-            left: '5%',
-            width: '22%',
-            height: '22%',
-            backgroundColor: '#D4E9D0',
-            borderRadius: 4,
-          }}
-        />
-        <View
-          style={{
-            position: 'absolute',
-            top: '55%',
-            right: '12%',
-            width: '30%',
-            height: '16%',
-            backgroundColor: '#D4E9D0',
-            borderRadius: 4,
-          }}
-        />
+      <GoongMapView onUserLocation={handleUserLocation}>
+        {posts.map((post) => (
+          <PostMarker
+            key={post._id}
+            post={post}
+            isActive={post._id === selectedId}
+            onPress={setSelectedId}
+          />
+        ))}
+      </GoongMapView>
 
-        {/* Horizontal roads */}
-        <View
-          style={{
-            position: 'absolute',
-            top: '36%',
-            left: 0,
-            right: 0,
-            height: 10,
-            backgroundColor: '#fff',
-            opacity: 0.7,
-          }}
-        />
-        <View
-          style={{
-            position: 'absolute',
-            top: '60%',
-            left: 0,
-            right: 0,
-            height: 7,
-            backgroundColor: '#fff',
-            opacity: 0.6,
-          }}
-        />
-        {/* Vertical roads */}
-        <View
-          style={{
-            position: 'absolute',
-            left: '32%',
-            top: 0,
-            bottom: 0,
-            width: 8,
-            backgroundColor: '#fff',
-            opacity: 0.7,
-          }}
-        />
-        <View
-          style={{
-            position: 'absolute',
-            left: '65%',
-            top: 0,
-            bottom: 0,
-            width: 10,
-            backgroundColor: '#fff',
-            opacity: 0.65,
-          }}
-        />
-
-        {/* Park area */}
-        <View
-          style={{
-            position: 'absolute',
-            top: '70%',
-            left: '35%',
-            width: '25%',
-            height: '15%',
-            backgroundColor: '#B8D9B2',
-            borderRadius: 6,
-          }}
-        />
-      </View>
-
-      {/* ── Search + Filter overlay ── */}
+      {/* Radius filter — top overlay */}
       <View
         style={{
           position: 'absolute',
-          top: 12,
+          top: 16,
           left: 16,
           right: 16,
           zIndex: 20,
         }}
+        pointerEvents="box-none"
       >
-        <SearchFilterBar
-          activeFilter={activeFilter}
-          onFilterChange={onFilterChange}
-          sortOption={sortOption}
-          onSortChange={onSortChange}
-          searchText={searchText}
-          onSearchChange={onSearchChange}
-        />
+        <RadiusFilter value={radius} onChange={handleRadiusChange} />
       </View>
 
-      {/* ── Map Markers ── */}
-      {posts.map((post) => {
-        if (post.mapX == null || post.mapY == null) return null;
-        const left = post.mapX * SCREEN_WIDTH;
-        const top = post.mapY * SCREEN_HEIGHT;
-        const isActive = post._id === selectedPostId;
-
-        return (
-          <View
-            key={post._id}
-            style={{ position: 'absolute', left, top, zIndex: 15 }}
-          >
-            {post.type === 'B2C_MYSTERY_BAG' ? (
-              <PriceMarker
-                price={post.price > 0 ? `$${post.price.toFixed(2)}` : ''}
-                isActive={isActive}
-                onPress={() => handleMarkerPress(post._id)}
-              />
-            ) : (
-              <IconMarker
-                isActive={isActive}
-                onPress={() => handleMarkerPress(post._id)}
-              />
-            )}
-          </View>
-        );
-      })}
-
-      {/* ── My Location dot ── */}
-      <View
-        style={{
-          position: 'absolute',
-          left: SCREEN_WIDTH * 0.5 - 8,
-          top: SCREEN_HEIGHT * 0.52,
-          zIndex: 15,
-        }}
-      >
-        <View className="w-4 h-4 rounded-full bg-primary-T40 items-center justify-center border-2 border-neutral-T100">
-          <View className="w-2 h-2 rounded-full bg-neutral-T100" />
-        </View>
-        {/* Ripple ring */}
+      {/* Loading indicator */}
+      {loading && (
         <View
-          className="absolute rounded-full border border-primary-T40 opacity-30"
           style={{
-            width: 32,
-            height: 32,
-            top: -8,
-            left: -8,
+            position: 'absolute',
+            top: 68,
+            alignSelf: 'center',
+            zIndex: 25,
           }}
-        />
-      </View>
+        >
+          <View className="bg-neutral-T100 rounded-full px-4 py-2 flex-row items-center gap-2 shadow-sm">
+            <ActivityIndicator size="small" color="#296C24" />
+            <Text className="font-label text-xs text-neutral-T50">
+              Đang tải...
+            </Text>
+          </View>
+        </View>
+      )}
 
-      {/* ── Bottom preview card ── */}
+      {/* Bottom post preview card */}
       {selectedPost && (
         <View
           style={{
             position: 'absolute',
-            bottom: 80, // above tab bar
+            bottom: 80,
             left: 16,
             right: 16,
             zIndex: 30,
           }}
         >
-          <MapPreviewCard post={selectedPost} />
+          <PostPreviewCard
+            post={selectedPost}
+            onViewDetails={() =>
+              router.push({
+                pathname: '/(post)/post-detail' as any,
+                params: { id: selectedPost._id },
+              })
+            }
+          />
         </View>
       )}
     </View>

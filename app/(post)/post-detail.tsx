@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  Linking,
   ScrollView,
   StyleSheet,
   Text,
@@ -22,6 +23,7 @@ import { createRequestApi } from '@/lib/transactionApi';
 import { getOrCreateConversationApi } from '@/lib/chatApi';
 import { useAuthStore } from '@/stores/authStore';
 import StackHeader from '@/components/shared/headers/StackHeader';
+import PostDetailMap from '@/components/map/PostDetailMap';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -161,6 +163,13 @@ export default function PostDetailScreen() {
       pathname: '/(transaction)/payment',
       params: { postId: post._id, quantity: '1' },
     } as any);
+  };
+
+  const handleDirections = () => {
+    if (!post?.location) return;
+    const [lng, lat] = post.location.coordinates;
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+    Linking.openURL(url);
   };
 
   // ── Loading ──
@@ -359,6 +368,16 @@ export default function PostDetailScreen() {
             </View>
           </View>
         </View>
+
+        {/* ─── Map Section ─── */}
+        {post.location && (
+          <View className="mx-4 mt-3 mb-2">
+            <PostDetailMap
+              coordinates={post.location.coordinates}
+              onDirections={handleDirections}
+            />
+          </View>
+        )}
       </ScrollView>
 
       {/* ─── Fixed Bottom Action Bar ─── */}

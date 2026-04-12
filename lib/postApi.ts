@@ -107,6 +107,7 @@ export interface IPostDetail {
   pickupTime: { start: string; end: string };
   status: string;
   createdAt: string;
+  location?: { type: 'Point'; coordinates: [number, number] };
   ownerId: {
     _id: string;
     fullName: string;
