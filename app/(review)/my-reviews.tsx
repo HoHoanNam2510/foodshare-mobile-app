@@ -105,7 +105,6 @@ export default function MyReviewsScreen() {
 
   // Received reviews state
   const [received, setReceived] = useState<IReceivedReview[]>([]);
-  const [receivedLoading, setReceivedLoading] = useState(false);
   const [receivedLoaded, setReceivedLoaded] = useState(false);
   const [receivedRefreshing, setReceivedRefreshing] = useState(false);
   const [receivedError, setReceivedError] = useState<string | null>(null);
@@ -118,7 +117,7 @@ export default function MyReviewsScreen() {
     setWrittenError(null);
     try {
       const res = await getMyWrittenReviewsApi({ limit: 50 });
-      setWritten(res.data);
+      setWritten(res.data ?? []);
     } catch {
       setWrittenError('Không thể tải dữ liệu. Vui lòng thử lại.');
     } finally {
@@ -130,15 +129,13 @@ export default function MyReviewsScreen() {
   const loadReceived = useCallback(async (isRefresh = false) => {
     if (!myId) return;
     if (isRefresh) setReceivedRefreshing(true);
-    else setReceivedLoading(true);
     setReceivedError(null);
     try {
       const res = await getUserReviewsApi(myId, { limit: 50 });
-      setReceived(res.data);
+      setReceived(res.data ?? []);
     } catch {
       setReceivedError('Không thể tải dữ liệu. Vui lòng thử lại.');
     } finally {
-      setReceivedLoading(false);
       setReceivedRefreshing(false);
       setReceivedLoaded(true);
     }
@@ -319,7 +316,7 @@ export default function MyReviewsScreen() {
             showsVerticalScrollIndicator={false}
           />
         )
-      ) : receivedLoading && !receivedLoaded ? (
+      ) : !receivedLoaded && !receivedError ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
           <Text className="font-body text-sm text-neutral-T50">Đang tải...</Text>

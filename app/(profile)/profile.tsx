@@ -15,11 +15,14 @@ import {
 import ContactCard from '@/components/profile/ContactCard';
 import IdentityCard from '@/components/profile/IdentityCard';
 import ProfileActions from '@/components/profile/ProfileActions';
+import BadgesRow from '@/components/profile/BadgesRow';
 import MainHeader from '@/components/shared/headers/MainHeader';
 import RecentPosts from '@/components/profile/RecentPosts';
 import StoreDetailsCard from '@/components/profile/StoreDetailsCard';
 import VerificationCard from '@/components/profile/VerificationCard';
 import { useAuthStore } from '@/stores/authStore';
+import { getBadgeCatalogApi } from '@/lib/badgeApi';
+import type { IBadge } from '@/lib/badgeApi';
 
 // ─── MOCK LISTINGS (sẽ được thay thế khi có API posts) ───
 const MOCK_LISTINGS = [
@@ -83,10 +86,26 @@ export default function ProfileScreen() {
   // Track để chỉ show modal 1 lần mỗi session (không pop lại mỗi lần focus)
   const rejectionShownRef = useRef(false);
 
+  // ── Badge state ──
+  const [badgeList, setBadgeList] = useState<IBadge[]>([]);
+  const [badgeTotal, setBadgeTotal] = useState(0);
+  const [badgeUnlocked, setBadgeUnlocked] = useState(0);
+  const [badgesLoading, setBadgesLoading] = useState(false);
+
   // Fetch fresh profile data khi tab được focus
   useFocusEffect(
     useCallback(() => {
       fetchProfile();
+      // Load badge catalog để hiển thị preview row
+      setBadgesLoading(true);
+      getBadgeCatalogApi()
+        .then((res) => {
+          setBadgeList(res.data.badges);
+          setBadgeTotal(res.data.total);
+          setBadgeUnlocked(res.data.unlocked);
+        })
+        .catch(() => {})
+        .finally(() => setBadgesLoading(false));
     }, [fetchProfile])
   );
 
@@ -246,6 +265,14 @@ export default function ProfileScreen() {
               kycDocuments={user.kycDocuments ?? []}
             />
           )}
+
+          <BadgesRow
+            badges={badgeList}
+            total={badgeTotal}
+            unlocked={badgeUnlocked}
+            isLoading={badgesLoading}
+            onSeeAll={() => router.push('/(profile)/badges' as any)}
+          />
 
           <RecentPosts posts={MOCK_LISTINGS} onSeeAll={() => {}} />
 
