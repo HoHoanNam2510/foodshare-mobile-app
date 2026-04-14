@@ -259,6 +259,11 @@ export default function MenuDrawer() {
             label="Lịch sử điểm"
             onPress={() => navigate('/(voucher)/point-history')}
           />
+          <MenuItem
+            icon="leaderboard"
+            label="Bảng xếp hạng điểm xanh"
+            onPress={() => navigate('/(leaderboard)/leaderboard')}
+          />
         </ScrollView>
 
         {/* ── Logout (pinned to bottom) ── */}

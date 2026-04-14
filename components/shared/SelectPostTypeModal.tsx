@@ -8,16 +8,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 type PostType = 'FREE_FOOD' | 'SURPRISE_BAG';
 type UserRole = 'USER' | 'STORE' | 'ADMIN';
 
-// USER chỉ tạo P2P (FREE_FOOD), STORE chỉ tạo B2C (SURPRISE_BAG)
-const ALLOWED_POST_TYPE: Record<UserRole, PostType> = {
-  USER:  'FREE_FOOD',
-  STORE: 'SURPRISE_BAG',
-  ADMIN: 'FREE_FOOD', // Admin không tạo bài, nhưng fallback về P2P
-};
-
-const ROLE_RESTRICTION_MSG: Record<PostType, string> = {
-  FREE_FOOD:    'Chỉ dành cho Người dùng (P2P)',
-  SURPRISE_BAG: 'Chỉ dành cho Cửa hàng (B2C)',
+// USER chỉ được tạo FREE_FOOD (P2P). STORE/ADMIN được tạo cả hai.
+const ALLOWED_POST_TYPES: Record<UserRole, PostType[]> = {
+  USER: ['FREE_FOOD'],
+  STORE: ['FREE_FOOD', 'SURPRISE_BAG'],
+  ADMIN: ['FREE_FOOD', 'SURPRISE_BAG'],
 };
 
 type SelectPostTypeModalProps = {
@@ -35,10 +30,10 @@ export default function SelectPostTypeModal({
   const insets = useSafeAreaInsets();
   const [errorType, setErrorType] = useState<PostType | null>(null);
 
-  const allowedType = ALLOWED_POST_TYPE[userRole];
+  const allowedTypes = ALLOWED_POST_TYPES[userRole];
 
   const handleSelect = (postType: PostType) => {
-    if (postType !== allowedType) {
+    if (!allowedTypes.includes(postType)) {
       setErrorType(postType);
       return;
     }
@@ -55,6 +50,13 @@ export default function SelectPostTypeModal({
   const handleClose = () => {
     setErrorType(null);
     onClose();
+  };
+
+  const handleGoRegisterStore = () => {
+    handleClose();
+    setTimeout(() => {
+      router.push('/(profile)/register-store' as any);
+    }, 150);
   };
 
   return (
@@ -79,12 +81,14 @@ export default function SelectPostTypeModal({
             {/* ── Option 1: P2P Free Food ── */}
             <PostTypeOption
               icon="heart"
-              iconBg={allowedType === 'FREE_FOOD' ? '#296C24' : '#AAABAB'}
+              iconBg={
+                allowedTypes.includes('FREE_FOOD') ? '#296C24' : '#AAABAB'
+              }
               title="Free food"
               subtitle="Chia sẻ thức ăn miễn phí"
-              allowed={allowedType === 'FREE_FOOD'}
+              allowed={allowedTypes.includes('FREE_FOOD')}
               showError={errorType === 'FREE_FOOD'}
-              errorMsg={ROLE_RESTRICTION_MSG['FREE_FOOD']}
+              errorMsg="Bạn không có quyền tạo loại bài đăng này"
               onPress={() => handleSelect('FREE_FOOD')}
             />
 
@@ -93,12 +97,20 @@ export default function SelectPostTypeModal({
             {/* ── Option 2: B2C Surprise Bag ── */}
             <PostTypeOption
               icon="shopping-bag"
-              iconBg={allowedType === 'SURPRISE_BAG' ? '#944A00' : '#AAABAB'}
+              iconBg={
+                allowedTypes.includes('SURPRISE_BAG') ? '#944A00' : '#AAABAB'
+              }
               title="Surprise bag"
               subtitle="Bán túi thức ăn thừa với giá ưu đãi"
-              allowed={allowedType === 'SURPRISE_BAG'}
+              allowed={allowedTypes.includes('SURPRISE_BAG')}
               showError={errorType === 'SURPRISE_BAG'}
-              errorMsg={ROLE_RESTRICTION_MSG['SURPRISE_BAG']}
+              errorMsg={
+                userRole === 'USER'
+                  ? 'Chỉ dành cho tài khoản cửa hàng'
+                  : 'Bạn không có quyền tạo loại bài đăng này'
+              }
+              upgradeLabel={userRole === 'USER' ? 'Đăng ký cửa hàng ngay →' : undefined}
+              onUpgradePress={userRole === 'USER' ? handleGoRegisterStore : undefined}
               onPress={() => handleSelect('SURPRISE_BAG')}
             />
           </View>
@@ -117,6 +129,8 @@ interface PostTypeOptionProps {
   allowed: boolean;
   showError: boolean;
   errorMsg: string;
+  upgradeLabel?: string;
+  onUpgradePress?: () => void;
   onPress: () => void;
 }
 
@@ -128,6 +142,8 @@ function PostTypeOption({
   allowed,
   showError,
   errorMsg,
+  upgradeLabel,
+  onUpgradePress,
   onPress,
 }: PostTypeOptionProps) {
   return (
@@ -163,9 +179,18 @@ function PostTypeOption({
         )}
       </TouchableOpacity>
       {showError && (
-        <View className="flex-row items-center gap-1 mt-1.5 ml-1">
-          <MaterialIcons name="info-outline" size={13} color="#ba1a1a" />
-          <Text className="font-body text-xs text-error">{errorMsg}</Text>
+        <View className="mt-1.5 ml-1 gap-0.5">
+          <View className="flex-row items-center gap-1">
+            <MaterialIcons name="info-outline" size={13} color="#ba1a1a" />
+            <Text className="font-body text-xs text-error">{errorMsg}</Text>
+          </View>
+          {upgradeLabel && onUpgradePress && (
+            <TouchableOpacity onPress={onUpgradePress} className="ml-4">
+              <Text className="font-label text-xs text-primary-T30 underline">
+                {upgradeLabel}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       )}
     </View>
