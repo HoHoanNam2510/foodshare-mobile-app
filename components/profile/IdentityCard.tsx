@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import SectionIncompleteBadge from '@/components/profile/SectionIncompleteBadge';
 
@@ -50,12 +51,13 @@ export default function IdentityCard({
   isIncomplete,
   onGreenPointsPress,
 }: IdentityCardProps) {
+  const { t } = useTranslation();
   const year = new Date(createdAt).getFullYear();
 
   return (
     <View className="bg-neutral-T100 rounded-2xl shadow-sm p-6 gap-4">
       {isIncomplete && (
-        <SectionIncompleteBadge message="Missing avatar — tap Edit to add" />
+        <SectionIncompleteBadge message={t('profile.missingAvatarMsg')} />
       )}
       <View className="flex-row items-center gap-6">
         {/* Avatar */}
@@ -90,7 +92,7 @@ export default function IdentityCard({
           </Text>
           <View className="flex-row items-center gap-2 mt-1">
             <Text className="text-sm font-label text-neutral-T50">
-              Since {year}
+              {t('profile.since', { year })}
             </Text>
             {status === 'ACTIVE' && (
               <MaterialIcons name="verified" size={16} color="#296C24" />
@@ -108,7 +110,7 @@ export default function IdentityCard({
           disabled={!onGreenPointsPress}
         >
           <Text className="font-label text-[10px] font-semibold text-neutral-T50 tracking-wider uppercase">
-            Green Points
+            {t('profile.greenPoints')}
           </Text>
           <Text className="font-sans font-bold text-primary-T40 text-xl mt-1">
             {greenPoints.toLocaleString()}
@@ -116,7 +118,7 @@ export default function IdentityCard({
         </TouchableOpacity>
         <View className="flex-1 bg-neutral-T95 rounded-xl p-4">
           <Text className="font-label text-[10px] font-semibold text-neutral-T50 tracking-wider uppercase">
-            Rating
+            {t('profile.ratingLabel')}
           </Text>
           <View className="flex-row items-center gap-1 mt-1">
             <Text className="font-sans font-bold text-secondary-T40 text-xl">

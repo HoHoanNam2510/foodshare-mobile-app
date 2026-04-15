@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import SectionIncompleteBadge from '@/components/profile/SectionIncompleteBadge';
 import { reverseGeocode } from '@/lib/mapApi';
@@ -45,6 +46,7 @@ export default function ContactCard({
   location,
   isIncomplete,
 }: ContactCardProps) {
+  const { t } = useTranslation();
   const [hideAll, setHideAll] = useState(true);
   const [resolvedAddress, setResolvedAddress] = useState<string | null>(null);
 
@@ -65,7 +67,7 @@ export default function ContactCard({
   return (
     <View className="bg-neutral-T100 rounded-2xl shadow-sm p-6 gap-5">
       {isIncomplete && (
-        <SectionIncompleteBadge message="Missing phone or address — tap Edit" />
+        <SectionIncompleteBadge message={t('profile.contactIncompleteMsg')} />
       )}
       {/* Section header */}
       <View className="flex-row items-center justify-between">
@@ -74,7 +76,7 @@ export default function ContactCard({
             <MaterialIcons name="contact-mail" size={20} color="#944A00" />
           </View>
           <Text className="font-sans font-bold text-lg text-neutral-T10">
-            Contact
+            {t('profile.contactTitle')}
           </Text>
         </View>
         <TouchableOpacity
@@ -92,14 +94,14 @@ export default function ContactCard({
       <View className="gap-4">
         <PrivacyField
           icon="mail"
-          label="Email"
+          label={t('auth.email')}
           value={email}
           isHidden={hideAll}
         />
         {phoneNumber ? (
           <PrivacyField
             icon="phone"
-            label="Phone"
+            label={t('profile.fieldPhone')}
             value={phoneNumber}
             isHidden={hideAll}
           />
@@ -107,7 +109,7 @@ export default function ContactCard({
         {defaultAddress ? (
           <PrivacyField
             icon="home"
-            label="Address"
+            label={t('profile.fieldAddress')}
             value={defaultAddress}
             isHidden={hideAll}
           />
@@ -115,7 +117,7 @@ export default function ContactCard({
         {locationText && (
           <PrivacyField
             icon="location-on"
-            label="Location"
+            label={t('profile.fieldLocation')}
             value={locationText}
             isHidden={hideAll}
           />

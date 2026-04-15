@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Alert,
@@ -22,6 +23,7 @@ import { uploadImage } from '@/lib/uploadApi';
 import { useAuthStore } from '@/stores/authStore';
 
 export default function EditProfile() {
+  const { t } = useTranslation();
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const fetchProfile = useAuthStore((s) => s.fetchProfile);
@@ -87,7 +89,7 @@ export default function EditProfile() {
 
   const handleSave = async (): Promise<void> => {
     if (!fullName.trim()) {
-      Alert.alert('Validation', 'Full name is required');
+      Alert.alert(t('common.warning'), t('profile.fullNameRequired'));
       return;
     }
 
@@ -136,8 +138,8 @@ export default function EditProfile() {
         router.back();
       }
     } catch (error: unknown) {
-      const msg = error instanceof Error ? error.message : 'Update failed';
-      Alert.alert('Error', msg);
+      const msg = error instanceof Error ? error.message : t('profile.updateFailed');
+      Alert.alert(t('common.error'), msg);
     } finally {
       setIsSaving(false);
     }
@@ -148,7 +150,7 @@ export default function EditProfile() {
   return (
     <View className="flex-1 bg-neutral-DEFAULT">
       <StackHeader
-        title="Edit profile"
+        title={t('profile.editProfile')}
         rightElement={
           <TouchableOpacity
             className="px-4 py-2 bg-primary-T40 rounded-lg active:opacity-80"
@@ -159,7 +161,7 @@ export default function EditProfile() {
               <ActivityIndicator size="small" color="#fff" />
             ) : (
               <Text className="font-label font-bold text-sm text-neutral-T100">
-                Save
+                {t('common.save')}
               </Text>
             )}
           </TouchableOpacity>
@@ -203,47 +205,47 @@ export default function EditProfile() {
                 </View>
               </TouchableOpacity>
               <Text className="font-label text-xs text-neutral-T50">
-                Tap to change avatar
+                {t('profile.tapToChangeAvatar')}
               </Text>
             </View>
 
             {/* ─── Identity Section ─── */}
-            <SectionLabel icon="person" label="Identity" />
+            <SectionLabel icon="person" label={t('profile.identitySection')} />
 
             <FormInput
-              label="Full name"
+              label={t('auth.fullName')}
               value={fullName}
               onChangeText={setFullName}
-              placeholder="Your full name"
+              placeholder={t('profile.fullNamePlaceholder')}
             />
 
             {/* ─── Contact Section ─── */}
-            <SectionLabel icon="contact-mail" label="Contact" />
+            <SectionLabel icon="contact-mail" label={t('profile.contactSection')} />
 
             <FormInput
-              label="Email"
+              label={t('auth.email')}
               value={user.email}
               editable={false}
-              placeholder="Email"
+              placeholder={t('auth.email')}
             />
             <FormInput
-              label="Phone number"
+              label={t('auth.phoneNumber')}
               value={phoneNumber}
               onChangeText={setPhoneNumber}
               placeholder="+84 xxx xxx xxx"
               keyboardType="phone-pad"
             />
             <FormInput
-              label="Default address"
+              label={t('profile.defaultAddress')}
               value={defaultAddress}
               onChangeText={setDefaultAddress}
-              placeholder="Your address"
+              placeholder={t('profile.addressPlaceholder')}
             />
 
             {/* ─── Location picker ─── */}
             <View className="gap-1.5">
               <Text className="font-label text-xs font-semibold text-neutral-T50 uppercase tracking-wider">
-                Vị trí (bản đồ)
+                {t('profile.locationMap')}
               </Text>
               <TouchableOpacity
                 activeOpacity={0.7}
@@ -255,7 +257,7 @@ export default function EditProfile() {
                   className="flex-1 font-body text-sm text-neutral-T10"
                   numberOfLines={1}
                 >
-                  {pickedLocation?.address || locationLabel || 'Chưa đặt vị trí'}
+                  {pickedLocation?.address || locationLabel || t('profile.locationNotSet')}
                 </Text>
                 <MaterialIcons name="chevron-right" size={20} color="#AAABAB" />
               </TouchableOpacity>
@@ -264,18 +266,18 @@ export default function EditProfile() {
             {/* ─── Store Section (only STORE role) ─── */}
             {isStore && (
               <>
-                <SectionLabel icon="storefront" label="Store details" />
+                <SectionLabel icon="storefront" label={t('profile.storeDetailsSection')} />
 
                 <FormInput
-                  label="Business name"
+                  label={t('profile.businessNameLabel')}
                   value={businessName}
                   onChangeText={setBusinessName}
-                  placeholder="Store name"
+                  placeholder={t('profile.businessNameLabel')}
                 />
                 <View className="flex-row gap-3">
                   <View className="flex-1">
                     <FormInput
-                      label="Open hours"
+                      label={t('profile.openHoursLabel')}
                       value={openHours}
                       onChangeText={setOpenHours}
                       placeholder="09:00"
@@ -283,7 +285,7 @@ export default function EditProfile() {
                   </View>
                   <View className="flex-1">
                     <FormInput
-                      label="Close hours"
+                      label={t('profile.closeHoursLabel')}
                       value={closeHours}
                       onChangeText={setCloseHours}
                       placeholder="21:00"
@@ -291,48 +293,46 @@ export default function EditProfile() {
                   </View>
                 </View>
                 <FormInput
-                  label="Description"
+                  label={t('profile.storeDescriptionLabel')}
                   value={storeDescription}
                   onChangeText={setStoreDescription}
-                  placeholder="Describe your store..."
+                  placeholder={t('profile.storeDescriptionPlaceholder')}
                   multiline
                 />
                 <FormInput
-                  label="Business address"
+                  label={t('profile.businessAddressLabel')}
                   value={businessAddress}
                   onChangeText={setBusinessAddress}
-                  placeholder="Store address"
+                  placeholder={t('profile.businessAddressLabel')}
                 />
 
               </>
             )}
 
             {/* ─── Bank Account (tất cả users) ─── */}
-            <SectionLabel icon="account-balance" label="Tài khoản ngân hàng" />
+            <SectionLabel icon="account-balance" label={t('profile.bankSection')} />
             <Text className="font-body text-xs text-neutral-T50 -mt-2">
-              {isStore
-                ? 'Tài khoản nhận giải ngân khi hoàn tất đơn hàng'
-                : 'Tài khoản nhận hoàn tiền khi đơn bị hủy (tuỳ chọn)'}
+              {isStore ? t('profile.bankHintStore') : t('profile.bankHintUser')}
             </Text>
 
             <FormInput
-              label="Tên ngân hàng"
+              label={t('profile.bankNameLabel')}
               value={bankName}
               onChangeText={setBankName}
-              placeholder="VD: Vietcombank, MB Bank..."
+              placeholder={t('profile.bankNamePlaceholder')}
             />
             <FormInput
-              label="Số tài khoản"
+              label={t('profile.bankAccountNumberLabel')}
               value={bankAccountNumber}
               onChangeText={setBankAccountNumber}
-              placeholder="Số tài khoản"
+              placeholder={t('profile.bankAccountNumberLabel')}
               keyboardType="numeric"
             />
             <FormInput
-              label="Tên chủ tài khoản"
+              label={t('profile.bankAccountNameLabel')}
               value={bankAccountName}
               onChangeText={setBankAccountName}
-              placeholder="VD: NGUYEN VAN A"
+              placeholder={t('profile.bankAccountNamePlaceholder')}
             />
 
           </View>

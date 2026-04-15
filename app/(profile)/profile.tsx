@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import ContactCard from '@/components/profile/ContactCard';
 import IdentityCard from '@/components/profile/IdentityCard';
@@ -78,6 +79,7 @@ const MOCK_LISTINGS = [
 
 // ─── MAIN COMPONENT ───
 export default function ProfileScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const fetchProfile = useAuthStore((s) => s.fetchProfile);
@@ -128,7 +130,7 @@ export default function ProfileScreen() {
       <View className="flex-1 bg-neutral-DEFAULT items-center justify-center">
         <ActivityIndicator size="large" color="#72B866" />
         <Text className="font-body text-sm text-neutral-T50 mt-3">
-          Loading profile...
+          {t('profile.loadingProfile')}
         </Text>
       </View>
     );
@@ -184,15 +186,14 @@ export default function ProfileScreen() {
               {/* Title */}
               <View className="gap-1">
                 <Text className="font-sans font-bold text-lg text-neutral-T10 text-center">
-                  Đơn đăng ký bị từ chối
+                  {t('profile.kycRejectedTitle')}
                 </Text>
                 <Text className="font-body text-sm text-neutral-T50 text-center leading-5">
-                  Hồ sơ đăng ký cửa hàng của bạn chưa được duyệt. Bạn có thể
-                  nhấn nút{' '}
+                  {t('profile.kycRejectedMsgPart1')}
                   <Text className="font-semibold text-neutral-T30">
-                    Đăng ký cửa hàng
-                  </Text>{' '}
-                  để nộp lại đơn mới.
+                    {t('profile.registerStore')}
+                  </Text>
+                  {t('profile.kycRejectedMsgPart2')}
                 </Text>
               </View>
               {/* Action */}
@@ -202,7 +203,7 @@ export default function ProfileScreen() {
                 onPress={() => setShowRejectionModal(false)}
               >
                 <Text className="font-label font-semibold text-error">
-                  Đã hiểu
+                  {t('common.gotIt')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -213,7 +214,7 @@ export default function ProfileScreen() {
       <MainHeader />
 
       <TouchableOpacity className="px-6 pt-3" onPress={() => router.back()}>
-        <Text className="font-bold text-slate-500 underline">Back</Text>
+        <Text className="font-bold text-slate-500 underline">{t('common.back')}</Text>
       </TouchableOpacity>
 
       <ScrollView

@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface ProfileActionsProps {
   onEditProfile?: () => void;
@@ -15,6 +16,7 @@ export default function ProfileActions({
   showRegisterStore,
   storeRegistrationPending,
 }: ProfileActionsProps) {
+  const { t } = useTranslation();
   return (
     <View className="gap-3 pt-4">
       {showRegisterStore && (
@@ -37,8 +39,8 @@ export default function ProfileActions({
             className={`font-label font-semibold ${storeRegistrationPending ? 'text-neutral-T50' : 'text-secondary-T40'}`}
           >
             {storeRegistrationPending
-              ? 'Đang chờ xét duyệt cửa hàng...'
-              : 'Đăng ký cửa hàng'}
+              ? t('profile.storePendingLabel')
+              : t('profile.registerStore')}
           </Text>
         </TouchableOpacity>
       )}
@@ -50,7 +52,7 @@ export default function ProfileActions({
       >
         <MaterialIcons name="edit" size={20} color="#296C24" />
         <Text className="font-label font-semibold text-primary-T40">
-          Chỉnh sửa hồ sơ
+          {t('profile.editProfile')}
         </Text>
       </TouchableOpacity>
     </View>

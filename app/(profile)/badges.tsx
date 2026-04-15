@@ -2,6 +2,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Alert,
@@ -20,16 +21,16 @@ import type { IBadge, TargetRole } from '@/lib/badgeApi';
 // ─── Bộ lọc ───
 type FilterOption = 'ALL' | 'UNLOCKED' | 'LOCKED';
 
-const FILTER_LABELS: { value: FilterOption; label: string }[] = [
-  { value: 'ALL', label: 'Tất cả' },
-  { value: 'UNLOCKED', label: 'Đã mở' },
-  { value: 'LOCKED', label: 'Chưa mở' },
+const FILTER_OPTIONS: { value: FilterOption; labelKey: string }[] = [
+  { value: 'ALL', labelKey: 'profile.badgeFilterAll' },
+  { value: 'UNLOCKED', labelKey: 'profile.badgeFilterUnlocked' },
+  { value: 'LOCKED', labelKey: 'profile.badgeFilterLocked' },
 ];
 
-const TARGET_ROLE_LABEL: Record<TargetRole, string> = {
-  BOTH: 'Tất cả',
-  USER: 'User',
-  STORE: 'Store',
+const TARGET_ROLE_LABEL_KEYS: Record<TargetRole, string> = {
+  BOTH: 'profile.badgeTargetBoth',
+  USER: 'roles.USER',
+  STORE: 'roles.STORE',
 };
 
 const NUM_COLUMNS = 3;
@@ -115,8 +116,9 @@ function BadgeDetail({
   badge: IBadge;
   onClose: () => void;
 }) {
+  const { t, i18n } = useTranslation();
   const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString('vi-VN', {
+    new Date(dateStr).toLocaleDateString(i18n.language === 'vi' ? 'vi-VN' : 'en-US', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -172,7 +174,7 @@ function BadgeDetail({
                   badge.isUnlocked ? 'text-primary-T30' : 'text-neutral-T50'
                 }`}
               >
-                {badge.isUnlocked ? 'Đã mở khóa' : 'Chưa mở khóa'}
+                {badge.isUnlocked ? t('profile.badgeUnlocked') : t('profile.badgeLocked')}
               </Text>
             </View>
           </View>
@@ -188,19 +190,19 @@ function BadgeDetail({
           <View className="gap-2">
             <InfoRow
               icon="eco"
-              label="Phần thưởng"
+              label={t('profile.badgeRewardLabel')}
               value={`+${badge.pointReward} Green Points`}
               valueColor="#296C24"
             />
             <InfoRow
               icon="group"
-              label="Đối tượng"
-              value={TARGET_ROLE_LABEL[badge.targetRole]}
+              label={t('profile.badgeTargetLabel')}
+              value={t(TARGET_ROLE_LABEL_KEYS[badge.targetRole])}
             />
             {badge.isUnlocked && badge.unlockedAt && (
               <InfoRow
                 icon="calendar-today"
-                label="Mở khóa lúc"
+                label={t('profile.badgeUnlockedAtLabel')}
                 value={formatDate(badge.unlockedAt)}
               />
             )}
@@ -212,7 +214,7 @@ function BadgeDetail({
           className="h-12 bg-primary rounded-2xl items-center justify-center active:opacity-80"
         >
           <Text className="font-label font-bold text-sm text-neutral-T100">
-            Đóng
+            {t('common.close')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -247,6 +249,7 @@ function InfoRow({
 
 // ─── Main Screen ───
 export default function BadgesScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
@@ -265,7 +268,7 @@ export default function BadgesScreen() {
       setTotal(res.data.total);
       setUnlocked(res.data.unlocked);
     } catch {
-      Alert.alert('Lỗi', 'Không thể tải danh sách huy hiệu.');
+      Alert.alert(t('common.error'), t('profile.badgesError'));
     } finally {
       setIsLoading(false);
     }
@@ -293,7 +296,7 @@ export default function BadgesScreen() {
   return (
     <View className="flex-1 bg-neutral">
       <ManagementHeader
-        title="Bộ sưu tập huy hiệu"
+        title={t('profile.badgesCollection')}
         onBack={() => router.back()}
       />
 
@@ -303,7 +306,7 @@ export default function BadgesScreen() {
           <View className="flex-row items-center gap-2">
             <MaterialIcons name="military-tech" size={22} color="#296C24" />
             <Text className="font-sans font-bold text-lg text-primary-T20">
-              {unlocked}/{total} huy hiệu
+              {t('profile.badgesCount', { unlocked, total })}
             </Text>
           </View>
           <Text className="font-label text-sm font-bold text-primary-T40">
@@ -317,14 +320,13 @@ export default function BadgesScreen() {
           />
         </View>
         <Text className="font-body text-xs text-primary-T40">
-          Tiếp tục chia sẻ thực phẩm để mở khóa thêm huy hiệu và nhận Green
-          Points!
+          {t('profile.badgesProgressText')}
         </Text>
       </View>
 
       {/* Filter chips */}
       <View className="flex-row gap-2 px-4 pt-4">
-        {FILTER_LABELS.map((f) => (
+        {FILTER_OPTIONS.map((f) => (
           <TouchableOpacity
             key={f.value}
             onPress={() => setFilter(f.value)}
@@ -339,7 +341,7 @@ export default function BadgesScreen() {
                 filter === f.value ? 'text-neutral-T100' : 'text-neutral-T30'
               }`}
             >
-              {f.label}
+              {t(f.labelKey)}
             </Text>
           </TouchableOpacity>
         ))}
@@ -350,7 +352,7 @@ export default function BadgesScreen() {
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
           <Text className="font-body text-sm text-neutral-T50">
-            Đang tải...
+            {t('common.loading')}
           </Text>
         </View>
       ) : filtered.length === 0 ? (
@@ -358,8 +360,8 @@ export default function BadgesScreen() {
           <MaterialIcons name="military-tech" size={56} color="#C5C7C6" />
           <Text className="font-body text-sm text-neutral-T50 text-center">
             {filter === 'UNLOCKED'
-              ? 'Chưa mở khóa huy hiệu nào.\nHãy tham gia chia sẻ thực phẩm!'
-              : 'Không có huy hiệu nào.'}
+              ? t('profile.badgeEmptyUnlocked')
+              : t('profile.badgesEmptyAll')}
           </Text>
         </View>
       ) : (

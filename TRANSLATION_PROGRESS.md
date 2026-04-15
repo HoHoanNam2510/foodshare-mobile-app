@@ -14,7 +14,7 @@ Tracking i18n (VN ↔ EN) integration across all UI screens and components in `f
 | ----------- | -------------------------------------------------------------------------------------------------- | ------- |
 | **Phase 1** | i18n infrastructure + `(auth)`, `(chat)`, `(leaderboard)`, `(post)` screens + core chat components | ✅ Done |
 | **Phase 2** | `(tabs)` screens + `components/home/` + `components/explore/`                                      | ✅ Done |
-| **Phase 3** | `(profile)` screens + `components/profile/` + shared components                                    | ⬜      |
+| **Phase 3** | `(profile)` screens + `components/profile/` + shared components                                    | ✅ Done |
 | **Phase 4** | `(transaction)`, `(review)`, `(report)` screens + related components                               | ⬜      |
 | **Phase 5** | `(voucher)` screens + `components/voucher/` + `components/map/`                                    | ⬜      |
 
@@ -74,10 +74,10 @@ Tracking i18n (VN ↔ EN) integration across all UI screens and components in `f
 | File                           | Status |
 | ------------------------------ | ------ |
 | `(profile)/_layout.tsx`        | ➖     |
-| `(profile)/profile.tsx`        | ⬜     |
-| `(profile)/edit-profile.tsx`   | ⬜     |
-| `(profile)/register-store.tsx` | ⬜     |
-| `(profile)/badges.tsx`         | ⬜     |
+| `(profile)/profile.tsx`        | ✅     |
+| `(profile)/edit-profile.tsx`   | ✅     |
+| `(profile)/register-store.tsx` | ✅     |
+| `(profile)/badges.tsx`         | ✅     |
 
 ### app/(transaction)/ — Phase 4
 
@@ -129,22 +129,22 @@ Tracking i18n (VN ↔ EN) integration across all UI screens and components in `f
 | ------------------------------------- | ------ |
 | `shared/MenuDrawer.tsx`               | ✅     |
 | `shared/CustomTabBar.tsx`             | ✅     |
-| `shared/FormInput.tsx`                | ⬜     |
-| `shared/SectionLabel.tsx`             | ⬜     |
-| `shared/SelectPostTypeModal.tsx`      | ⬜     |
-| `shared/BadgeUnlockToast.tsx`         | ⬜     |
-| `shared/DateTimePickerModal.tsx`      | ⬜     |
+| `shared/FormInput.tsx`                | ➖     |
+| `shared/SectionLabel.tsx`             | ➖     |
+| `shared/SelectPostTypeModal.tsx`      | ✅     |
+| `shared/BadgeUnlockToast.tsx`         | ✅     |
+| `shared/DateTimePickerModal.tsx`      | ✅     |
 | `shared/TranslatedText.tsx`           | ➖     |
-| `shared/headers/BaseHeader.tsx`       | ⬜     |
-| `shared/headers/StackHeader.tsx`      | ⬜     |
-| `shared/headers/MainHeader.tsx`       | ⬜     |
-| `shared/headers/ManagementHeader.tsx` | ⬜     |
+| `shared/headers/BaseHeader.tsx`       | ➖     |
+| `shared/headers/StackHeader.tsx`      | ➖     |
+| `shared/headers/MainHeader.tsx`       | ➖     |
+| `shared/headers/ManagementHeader.tsx` | ➖     |
 
 ### components/auth/ — Phase 1 ✅
 
 | File                        | Status |
 | --------------------------- | ------ |
-| `auth/EmailVerifyModal.tsx` | ⬜     |
+| `auth/EmailVerifyModal.tsx` | ✅     |
 
 ### components/home/ — Phase 2 ✅
 
@@ -192,15 +192,15 @@ Tracking i18n (VN ↔ EN) integration across all UI screens and components in `f
 
 | File                                 | Status |
 | ------------------------------------ | ------ |
-| `profile/ProfileHeader.tsx`          | ⬜     |
-| `profile/ProfileActions.tsx`         | ⬜     |
-| `profile/RecentPosts.tsx`            | ⬜     |
-| `profile/ContactCard.tsx`            | ⬜     |
-| `profile/StoreDetailsCard.tsx`       | ⬜     |
-| `profile/VerificationCard.tsx`       | ⬜     |
-| `profile/IdentityCard.tsx`           | ⬜     |
-| `profile/BadgesRow.tsx`              | ⬜     |
-| `profile/SectionIncompleteBadge.tsx` | ⬜     |
+| `profile/ProfileHeader.tsx`          | ✅     |
+| `profile/ProfileActions.tsx`         | ✅     |
+| `profile/RecentPosts.tsx`            | ✅     |
+| `profile/ContactCard.tsx`            | ✅     |
+| `profile/StoreDetailsCard.tsx`       | ✅     |
+| `profile/VerificationCard.tsx`       | ✅     |
+| `profile/IdentityCard.tsx`           | ✅     |
+| `profile/BadgesRow.tsx`              | ✅     |
+| `profile/SectionIncompleteBadge.tsx` | ➖     |
 
 ### components/review/ — Phase 4
 
@@ -254,19 +254,19 @@ Tracking i18n (VN ↔ EN) integration across all UI screens and components in `f
 | app/(leaderboard)  | 1      | 1      |
 | app/(post)         | 3      | 3      |
 | app/(tabs)         | 4      | 4      |
-| app/(profile)      | 0      | 4      |
+| app/(profile)      | 4      | 4      |
 | app/(transaction)  | 0      | 4      |
 | app/(review)       | 0      | 2      |
 | app/(report)       | 0      | 3      |
 | app/(voucher)      | 0      | 7      |
-| components/shared  | 2      | 11     |
-| components/auth    | 0      | 1      |
+| components/shared  | 5      | 5      |
+| components/auth    | 1      | 1      |
 | components/home    | 6      | 6      |
 | components/explore | 6      | 6      |
 | components/post    | 0      | 4      |
 | components/chat    | 2      | 3      |
-| components/profile | 0      | 9      |
+| components/profile | 8      | 8      |
 | components/review  | 0      | 1      |
 | components/voucher | 0      | 8      |
 | components/map     | 0      | 6      |
-| **Total**          | **27** | **86** |
+| **Total**          | **43** | **68** |

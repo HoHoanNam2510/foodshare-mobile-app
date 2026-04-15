@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 
 const CODE_LENGTH = 6;
 
@@ -31,6 +32,7 @@ export default function EmailVerifyModal({
   onResend,
   isLoading = false,
 }: EmailVerifyModalProps) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [digits, setDigits] = useState(Array(CODE_LENGTH).fill(''));
   const [isResending, setIsResending] = useState(false);
@@ -110,10 +112,10 @@ export default function EmailVerifyModal({
             >
               <View className="items-center gap-2">
                 <Text className="font-sans font-bold text-xl text-neutral-T10">
-                  Verify your email
+                  {t('auth.verifyTitle')}
                 </Text>
                 <Text className="font-body text-sm text-neutral-T50 text-center leading-relaxed">
-                  We sent a 6-digit code to{'\n'}
+                  {t('auth.verifyCodeSentTo')}{'\n'}
                   <Text className="font-semibold text-neutral-T30">
                     {maskedEmail}
                   </Text>
@@ -148,7 +150,7 @@ export default function EmailVerifyModal({
                     <ActivityIndicator size="small" color="#296C24" />
                   ) : (
                     <Text className="font-label text-sm font-semibold text-primary-T40">
-                      Resend code
+                      {t('auth.resendCode')}
                     </Text>
                   )}
                 </TouchableOpacity>
@@ -160,7 +162,7 @@ export default function EmailVerifyModal({
                   onPress={handleCancel}
                 >
                   <Text className="font-label font-semibold text-neutral-T50">
-                    Cancel
+                    {t('common.cancel')}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -171,7 +173,7 @@ export default function EmailVerifyModal({
                   }
                 >
                   <Text className="font-label font-semibold text-neutral-T100">
-                    {isLoading ? 'Verifying...' : 'Verify'}
+                    {isLoading ? t('auth.verifying') : t('auth.verify')}
                   </Text>
                 </TouchableOpacity>
               </View>

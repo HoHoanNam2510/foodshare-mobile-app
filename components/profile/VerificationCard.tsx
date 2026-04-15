@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, ScrollView, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 type KycStatus = 'PENDING' | 'VERIFIED' | 'REJECTED';
 
@@ -11,22 +12,22 @@ interface VerificationCardProps {
 
 const KYC_BADGE: Record<
   KycStatus,
-  { containerClass: string; textClass: string; label: string; bgStyle?: object }
+  { containerClass: string; textClass: string; labelKey: string; bgStyle?: object }
 > = {
   VERIFIED: {
     containerClass: 'bg-primary-T95',
     textClass: 'text-primary-T40',
-    label: 'Đã xác minh',
+    labelKey: 'profile.kycVerified',
   },
   PENDING: {
     containerClass: 'bg-secondary-T95',
     textClass: 'text-secondary-T40',
-    label: 'Đang chờ duyệt',
+    labelKey: 'profile.kycPending',
   },
   REJECTED: {
     containerClass: '',
     textClass: 'text-error',
-    label: 'Bị từ chối',
+    labelKey: 'profile.kycRejected',
     bgStyle: { backgroundColor: 'rgba(186,26,26,0.1)' },
   },
 };
@@ -35,6 +36,7 @@ export default function VerificationCard({
   kycStatus,
   kycDocuments,
 }: VerificationCardProps) {
+  const { t } = useTranslation();
   const badge = KYC_BADGE[kycStatus];
 
   return (
@@ -46,7 +48,7 @@ export default function VerificationCard({
             <MaterialIcons name="verified-user" size={20} color="#296C24" />
           </View>
           <Text className="font-sans font-bold text-lg text-neutral-T10">
-            Xác minh cửa hàng
+            {t('profile.verificationTitle')}
           </Text>
         </View>
         {/* KYC status badge */}
@@ -57,7 +59,7 @@ export default function VerificationCard({
           <Text
             className={`font-label text-[11px] font-bold ${badge.textClass}`}
           >
-            {badge.label}
+            {t(badge.labelKey)}
           </Text>
         </View>
       </View>
@@ -67,7 +69,7 @@ export default function VerificationCard({
         <View className="bg-secondary-T95 border border-secondary-T70 rounded-xl p-3 flex-row gap-2 items-start">
           <MaterialIcons name="schedule" size={16} color="#6B5E00" />
           <Text className="font-body text-xs text-secondary-T30 flex-1 leading-5">
-            Hồ sơ đã được gửi. Admin sẽ xét duyệt trong thời gian sớm nhất.
+            {t('profile.verificationPendingMsg')}
           </Text>
         </View>
       )}
@@ -80,7 +82,7 @@ export default function VerificationCard({
         >
           <MaterialIcons name="error-outline" size={16} color="#ba1a1a" />
           <Text className="font-body text-xs text-error flex-1 leading-5">
-            Hồ sơ bị từ chối. Vui lòng liên hệ Admin để biết thêm chi tiết.
+            {t('profile.verificationRejectedMsg')}
           </Text>
         </View>
       )}

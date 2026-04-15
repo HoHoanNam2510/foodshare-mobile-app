@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Alert,
@@ -20,6 +21,7 @@ import { uploadImage } from '@/lib/uploadApi';
 import { useAuthStore } from '@/stores/authStore';
 
 export default function RegisterStore() {
+  const { t } = useTranslation();
   const router = useRouter();
   const fetchProfile = useAuthStore((s) => s.fetchProfile);
   const user = useAuthStore((s) => s.user);
@@ -53,11 +55,11 @@ export default function RegisterStore() {
     if (!user?.defaultAddress?.trim()) missingFields.push('địa chỉ mặc định');
     if (missingFields.length > 0) {
       Alert.alert(
-        'Hồ sơ chưa hoàn thiện',
-        `Vui lòng cập nhật ${missingFields.join(' và ')} trong hồ sơ cá nhân trước khi đăng ký cửa hàng.`,
+        t('profile.profileIncompleteTitle'),
+        t('profile.profileIncompleteMsg', { missing: missingFields.join(' và ') }),
         [
-          { text: 'Để sau', style: 'cancel' },
-          { text: 'Cập nhật ngay', onPress: () => router.push('/(profile)/edit-profile') },
+          { text: t('common.later'), style: 'cancel' },
+          { text: t('profile.updateNow'), onPress: () => router.push('/(profile)/edit-profile') },
         ]
       );
       return;
@@ -65,22 +67,19 @@ export default function RegisterStore() {
 
     // Validate required fields
     if (!businessName.trim()) {
-      Alert.alert('Thiếu thông tin', 'Vui lòng nhập tên cửa hàng');
+      Alert.alert(t('profile.missingInfoTitle'), t('profile.missingBusinessName'));
       return;
     }
     if (!openHours.trim() || !closeHours.trim()) {
-      Alert.alert('Thiếu thông tin', 'Vui lòng nhập giờ mở cửa và đóng cửa');
+      Alert.alert(t('profile.missingInfoTitle'), t('profile.missingHours'));
       return;
     }
     if (!businessAddress.trim()) {
-      Alert.alert('Thiếu thông tin', 'Vui lòng nhập địa chỉ cửa hàng');
+      Alert.alert(t('profile.missingInfoTitle'), t('profile.missingBusinessAddress'));
       return;
     }
     if (kycDocuments.length === 0) {
-      Alert.alert(
-        'Thiếu tài liệu',
-        'Vui lòng tải lên ít nhất 1 tài liệu KYC (giấy phép kinh doanh, CMND/CCCD...)'
-      );
+      Alert.alert(t('profile.missingKycTitle'), t('profile.missingKycMsg'));
       return;
     }
 
@@ -120,15 +119,15 @@ export default function RegisterStore() {
       if (res.success) {
         await fetchProfile();
         Alert.alert(
-          'Thành công',
-          'Đơn đăng ký cửa hàng đã được gửi. Vui lòng chờ Admin xét duyệt.',
+          t('common.success'),
+          t('profile.registerSuccessMsg'),
           [{ text: 'OK', onPress: () => router.back() }]
         );
       }
     } catch (error: unknown) {
       const msg =
-        error instanceof Error ? error.message : 'Đăng ký cửa hàng thất bại';
-      Alert.alert('Lỗi', msg);
+        error instanceof Error ? error.message : t('profile.registerStoreFailed');
+      Alert.alert(t('common.error'), msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -136,7 +135,7 @@ export default function RegisterStore() {
 
   return (
     <View className="flex-1 bg-neutral-DEFAULT">
-      <StackHeader title="Đăng ký cửa hàng" />
+      <StackHeader title={t('profile.registerStore')} />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -158,18 +157,16 @@ export default function RegisterStore() {
               <MaterialIcons name="info-outline" size={22} color="#6B5E00" />
               <View className="flex-1">
                 <Text className="font-body text-sm text-secondary-T30 leading-5">
-                  Sau khi đăng ký, đơn của bạn sẽ được Admin xét duyệt. Khi
-                  được duyệt, tài khoản sẽ được nâng cấp lên Cửa hàng và bạn có
-                  thể đăng bài dưới danh nghĩa cửa hàng.
+                  {t('profile.registerStoreBanner')}
                 </Text>
               </View>
             </View>
 
             {/* Store Details */}
-            <SectionLabel icon="storefront" label="Thông tin cửa hàng" />
+            <SectionLabel icon="storefront" label={t('profile.storeInfoSection')} />
 
             <FormInput
-              label="Tên cửa hàng *"
+              label={`${t('profile.businessNameLabel')} *`}
               value={businessName}
               onChangeText={setBusinessName}
               placeholder="VD: Tiệm bánh mì Sài Gòn"
@@ -178,7 +175,7 @@ export default function RegisterStore() {
             <View className="flex-row gap-3">
               <View className="flex-1">
                 <FormInput
-                  label="Giờ mở cửa *"
+                  label={`${t('profile.openHoursLabel')} *`}
                   value={openHours}
                   onChangeText={setOpenHours}
                   placeholder="06:00"
@@ -186,7 +183,7 @@ export default function RegisterStore() {
               </View>
               <View className="flex-1">
                 <FormInput
-                  label="Giờ đóng cửa *"
+                  label={`${t('profile.closeHoursLabel')} *`}
                   value={closeHours}
                   onChangeText={setCloseHours}
                   placeholder="22:00"
@@ -195,25 +192,25 @@ export default function RegisterStore() {
             </View>
 
             <FormInput
-              label="Địa chỉ cửa hàng *"
+              label={`${t('profile.businessAddressLabel')} *`}
               value={businessAddress}
               onChangeText={setBusinessAddress}
               placeholder="123 Nguyễn Trãi, Q.1, TP.HCM"
             />
 
             <FormInput
-              label="Mô tả cửa hàng"
+              label={t('profile.storeDescriptionLabel')}
               value={description}
               onChangeText={setDescription}
-              placeholder="Giới thiệu ngắn về cửa hàng của bạn..."
+              placeholder={t('profile.storeDescriptionPlaceholder')}
               multiline
             />
 
             {/* KYC Documents */}
-            <SectionLabel icon="verified-user" label="Tài liệu xác minh (KYC)" />
+            <SectionLabel icon="verified-user" label={t('profile.kycSection')} />
 
             <Text className="font-body text-xs text-neutral-T50 -mt-2">
-              Tải lên giấy phép kinh doanh, CMND/CCCD, hoặc giấy tờ liên quan
+              {t('profile.kycHint')}
             </Text>
 
             <ImagePickerSection
@@ -223,14 +220,14 @@ export default function RegisterStore() {
             />
 
             {/* Payment Info */}
-            <SectionLabel icon="account-balance" label="Thông tin nhận tiền" />
+            <SectionLabel icon="account-balance" label={t('profile.paymentSection')} />
 
             <Text className="font-body text-xs text-neutral-T50 -mt-2">
-              Cung cấp ít nhất 1 phương thức để nhận tiền từ đơn hàng túi mù
+              {t('profile.paymentHint')}
             </Text>
 
             <FormInput
-              label="SĐT MoMo"
+              label={t('profile.momoLabel')}
               value={momoPhone}
               onChangeText={setMomoPhone}
               placeholder="0912345678"
@@ -247,25 +244,25 @@ export default function RegisterStore() {
             /> */}
 
             <FormInput
-              label="Tên ngân hàng"
+              label={t('profile.bankNameLabel')}
               value={bankName}
               onChangeText={setBankName}
-              placeholder="VD: Vietcombank, MB Bank..."
+              placeholder={t('profile.bankNamePlaceholder')}
             />
 
             <FormInput
-              label="Số tài khoản"
+              label={t('profile.bankAccountNumberLabel')}
               value={bankAccountNumber}
               onChangeText={setBankAccountNumber}
-              placeholder="Nhập số tài khoản ngân hàng"
+              placeholder={t('profile.bankAccountNumberLabel')}
               keyboardType="numeric"
             />
 
             <FormInput
-              label="Tên chủ tài khoản"
+              label={t('profile.bankAccountNameLabel')}
               value={bankAccountName}
               onChangeText={setBankAccountName}
-              placeholder="VD: NGUYEN VAN A"
+              placeholder={t('profile.bankAccountNamePlaceholder')}
             />
 
             {/* Submit button */}
@@ -278,7 +275,7 @@ export default function RegisterStore() {
                 <ActivityIndicator size="small" color="#fff" />
               ) : (
                 <Text className="font-label font-bold text-base text-neutral-T100">
-                  Gửi đơn đăng ký
+                  {t('profile.submitApplication')}
                 </Text>
               )}
             </TouchableOpacity>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 type PostStatus =
   | 'PENDING_REVIEW'
@@ -39,28 +40,27 @@ const getStatusBadgeColor = (status: string): string => {
   }
 };
 
-const formatStatusLabel = (status: string): string => {
-  switch (status as PostStatus) {
-    case 'PENDING_REVIEW':
-      return 'PENDING';
-    case 'OUT_OF_STOCK':
-      return 'OUT OF STOCK';
-    default:
-      return status.toUpperCase();
-  }
+const STATUS_LABEL_KEYS: Record<PostStatus, string> = {
+  PENDING_REVIEW: 'post.statusPending',
+  AVAILABLE: 'post.statusOpen',
+  BOOKED: 'post.statusBooked',
+  OUT_OF_STOCK: 'post.statusOutOfStock',
+  HIDDEN: 'post.statusHidden',
+  REJECTED: 'post.statusRejected',
 };
 
 export default function RecentPosts({ posts, onSeeAll }: RecentPostsProps) {
+  const { t } = useTranslation();
   return (
     <View className="gap-4">
       {/* Header */}
       <View className="flex-row items-center justify-between px-1">
         <Text className="font-sans font-bold text-xl text-neutral-T10">
-          Recent posts
+          {t('profile.recentPosts')}
         </Text>
         <TouchableOpacity onPress={onSeeAll} className="active:opacity-70">
           <Text className="text-primary-T40 font-label text-sm font-semibold">
-            See all
+            {t('common.seeAll')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -85,7 +85,7 @@ export default function RecentPosts({ posts, onSeeAll }: RecentPostsProps) {
                   style={{ opacity: 0.9 }}
                 >
                   <Text className="text-neutral-T100 text-[9px] font-label font-bold">
-                    {formatStatusLabel(post.status)}
+                    {t(STATUS_LABEL_KEYS[post.status as PostStatus] ?? 'common.empty').toUpperCase()}
                   </Text>
                 </View>
               </View>

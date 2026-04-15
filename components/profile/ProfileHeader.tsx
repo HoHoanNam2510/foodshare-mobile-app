@@ -2,12 +2,14 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface ProfileHeaderProps {
   onSettingsPress?: () => void;
 }
 
 export default function ProfileHeader({ onSettingsPress }: ProfileHeaderProps) {
+  const { t } = useTranslation();
   const router = useRouter();
 
   return (
@@ -19,7 +21,7 @@ export default function ProfileHeader({ onSettingsPress }: ProfileHeaderProps) {
         <MaterialIcons name="arrow-back" size={24} color="#757777" />
       </TouchableOpacity>
       <Text className="font-sans font-bold text-lg text-primary-T40">
-        Profile
+        {t('profile.title')}
       </Text>
       {/* <TouchableOpacity
         className="p-2 rounded-full active:opacity-70"

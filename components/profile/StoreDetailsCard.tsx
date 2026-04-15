@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import SectionIncompleteBadge from '@/components/profile/SectionIncompleteBadge';
 
@@ -21,10 +22,11 @@ export default function StoreDetailsCard({
   businessAddress,
   isIncomplete,
 }: StoreDetailsCardProps) {
+  const { t } = useTranslation();
   return (
     <View className="bg-neutral-T100 rounded-2xl shadow-sm p-6 gap-4">
       {isIncomplete && (
-        <SectionIncompleteBadge message="Store info incomplete — tap Edit" />
+        <SectionIncompleteBadge message={t('profile.storeIncompleteMsg')} />
       )}
       {/* Section header */}
       <View className="flex-row items-center gap-3">
@@ -32,7 +34,7 @@ export default function StoreDetailsCard({
           <MaterialIcons name="storefront" size={20} color="#983F6A" />
         </View>
         <Text className="font-sans font-bold text-lg text-neutral-T10">
-          Store details
+          {t('profile.storeDetailsTitle')}
         </Text>
       </View>
 
@@ -40,7 +42,7 @@ export default function StoreDetailsCard({
       <View className="gap-4 pt-2">
         <View>
           <Text className="font-body font-semibold text-lg text-neutral-T10">
-            {businessName || 'Not set'}
+            {businessName || t('profile.storeNotSet')}
           </Text>
           {(openHours || closeHours) && (
             <View className="flex-row items-center gap-2 mt-1">

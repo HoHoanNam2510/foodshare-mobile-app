@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import type { IBadge } from '@/lib/badgeApi';
 
@@ -26,6 +27,7 @@ export default function BadgesRow({
   isLoading,
   onSeeAll,
 }: BadgesRowProps) {
+  const { t } = useTranslation();
   // Ưu tiên show badge đã mở khóa trước, sau đó bổ sung badge chưa mở cho đủ 5
   const unlockedBadges = badges.filter((b) => b.isUnlocked);
   const lockedBadges = badges.filter((b) => !b.isUnlocked);
@@ -39,7 +41,7 @@ export default function BadgesRow({
         <View className="flex-row items-center gap-2">
           <MaterialIcons name="military-tech" size={20} color="#296C24" />
           <Text className="font-sans font-bold text-base text-neutral-T10">
-            Huy hiệu
+            {t('profile.badges')}
           </Text>
         </View>
         <TouchableOpacity
@@ -47,7 +49,7 @@ export default function BadgesRow({
           className="flex-row items-center gap-1 active:opacity-70"
         >
           <Text className="font-label text-xs font-semibold text-primary-T40">
-            Xem tất cả
+            {t('common.seeAll')}
           </Text>
           <MaterialIcons name="chevron-right" size={16} color="#296C24" />
         </TouchableOpacity>
@@ -57,7 +59,7 @@ export default function BadgesRow({
       <View className="gap-1.5">
         <View className="flex-row items-center justify-between">
           <Text className="font-label text-xs text-neutral-T50">
-            Đã mở khóa
+            {t('profile.badgeUnlockedLabel')}
           </Text>
           <Text className="font-label text-xs font-semibold text-primary-T40">
             {unlocked}/{total}
@@ -80,8 +82,7 @@ export default function BadgesRow({
         <View className="items-center py-6 gap-2">
           <MaterialIcons name="military-tech" size={40} color="#C5C7C6" />
           <Text className="font-body text-xs text-neutral-T50 text-center">
-            Chưa có huy hiệu nào.{'\n'}Tham gia chia sẻ thực phẩm để nhận huy
-            hiệu đầu tiên!
+            {t('profile.badgesNoBadges')}
           </Text>
         </View>
       ) : (

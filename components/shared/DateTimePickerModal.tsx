@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useTranslation } from 'react-i18next';
 
 interface DateTimePickerModalProps {
   visible: boolean;
@@ -28,6 +29,7 @@ const DateTimePickerModal: React.FC<DateTimePickerModalProps> = ({
   minimumDate,
   themeVariant = 'light',
 }) => {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
   if (!visible) return null;
@@ -66,7 +68,7 @@ const DateTimePickerModal: React.FC<DateTimePickerModalProps> = ({
               onPress={onClose}
             >
               <Text className="font-label font-semibold text-neutral-T100">
-                Xong
+                {t('common.done')}
               </Text>
             </TouchableOpacity>
           </View>

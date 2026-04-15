@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Modal, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 
 type PostType = 'FREE_FOOD' | 'SURPRISE_BAG';
 type UserRole = 'USER' | 'STORE' | 'ADMIN';
@@ -26,6 +27,7 @@ export default function SelectPostTypeModal({
   onClose,
   userRole = 'USER',
 }: SelectPostTypeModalProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [errorType, setErrorType] = useState<PostType | null>(null);
@@ -84,11 +86,11 @@ export default function SelectPostTypeModal({
               iconBg={
                 allowedTypes.includes('FREE_FOOD') ? '#296C24' : '#AAABAB'
               }
-              title="Free food"
-              subtitle="Chia sẻ thức ăn miễn phí"
+              title={t('post.selectTypeFreeFoodTitle')}
+              subtitle={t('post.selectTypeFreeFoodSubtitle')}
               allowed={allowedTypes.includes('FREE_FOOD')}
               showError={errorType === 'FREE_FOOD'}
-              errorMsg="Bạn không có quyền tạo loại bài đăng này"
+              errorMsg={t('post.selectTypeNoPermission')}
               onPress={() => handleSelect('FREE_FOOD')}
             />
 
@@ -100,16 +102,16 @@ export default function SelectPostTypeModal({
               iconBg={
                 allowedTypes.includes('SURPRISE_BAG') ? '#944A00' : '#AAABAB'
               }
-              title="Surprise bag"
-              subtitle="Bán túi thức ăn thừa với giá ưu đãi"
+              title={t('post.selectTypeSurpriseBagTitle')}
+              subtitle={t('post.selectTypeSurpriseBagSubtitle')}
               allowed={allowedTypes.includes('SURPRISE_BAG')}
               showError={errorType === 'SURPRISE_BAG'}
               errorMsg={
                 userRole === 'USER'
-                  ? 'Chỉ dành cho tài khoản cửa hàng'
-                  : 'Bạn không có quyền tạo loại bài đăng này'
+                  ? t('post.selectTypeStoreOnly')
+                  : t('post.selectTypeNoPermission')
               }
-              upgradeLabel={userRole === 'USER' ? 'Đăng ký cửa hàng ngay →' : undefined}
+              upgradeLabel={userRole === 'USER' ? t('post.selectTypeUpgradeToStore') : undefined}
               onUpgradePress={userRole === 'USER' ? handleGoRegisterStore : undefined}
               onPress={() => handleSelect('SURPRISE_BAG')}
             />

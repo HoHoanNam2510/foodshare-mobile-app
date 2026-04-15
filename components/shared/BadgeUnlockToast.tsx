@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 
 import type { IBadge } from '@/lib/badgeApi';
 
@@ -20,6 +21,7 @@ export default function BadgeUnlockToast({
   badge,
   onDismiss,
 }: BadgeUnlockToastProps) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const translateY = useRef(new Animated.Value(-140)).current;
   const opacity = useRef(new Animated.Value(0)).current;
@@ -147,7 +149,7 @@ export default function BadgeUnlockToast({
                     letterSpacing: 0.3,
                   }}
                 >
-                  🎉 Huy hiệu mới mở khóa!
+                  {t('profile.badgeNewUnlockToast')}
                 </Text>
                 <Text
                   style={{
@@ -164,7 +166,7 @@ export default function BadgeUnlockToast({
                   <Text
                     style={{ color: '#A8E6A1', fontSize: 11, marginTop: 3 }}
                   >
-                    +{displayBadge.pointReward} điểm xanh
+                    {t('profile.badgeGreenPointsEarned', { points: displayBadge.pointReward })}
                   </Text>
                 )}
               </View>
