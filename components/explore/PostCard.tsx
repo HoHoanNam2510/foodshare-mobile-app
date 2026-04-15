@@ -1,6 +1,7 @@
 import { Feather, Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import { ExplorePost } from './types';
 
@@ -9,7 +10,9 @@ interface PostCardProps {
   onPress?: () => void;
 }
 
-function formatPickupTime(start: string, end: string): string {
+type TFunc = (key: string, opts?: Record<string, unknown>) => string;
+
+function formatPickupTime(start: string, end: string, t: TFunc): string {
   const s = new Date(start);
   const e = new Date(end);
   const pad = (n: number) => n.toString().padStart(2, '0');
@@ -19,33 +22,34 @@ function formatPickupTime(start: string, end: string): string {
   const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
 
-  if (s.toDateString() === tomorrow.toDateString()) return `Tomorrow, ${timeRange}`;
+  if (s.toDateString() === tomorrow.toDateString()) return t('explore.tomorrowTime', { time: timeRange });
   return timeRange;
 }
 
-function getUrgencyInfo(expiryDate: string): { label: string; isUrgent: boolean } | null {
+function getUrgencyInfo(expiryDate: string, t: TFunc): { label: string; isUrgent: boolean } | null {
   const expiry = new Date(expiryDate);
   const now = new Date();
   const msPerDay = 24 * 60 * 60 * 1000;
   const daysLeft = (expiry.getTime() - now.getTime()) / msPerDay;
 
-  if (daysLeft < 0) return { label: 'Expired', isUrgent: true };
-  if (expiry.toDateString() === now.toDateString()) return { label: 'Expiring Today', isUrgent: true };
+  if (daysLeft < 0) return { label: t('explore.expired'), isUrgent: true };
+  if (expiry.toDateString() === now.toDateString()) return { label: t('explore.expiringToday'), isUrgent: true };
 
   const tomorrow = new Date(now);
   tomorrow.setDate(now.getDate() + 1);
-  if (expiry.toDateString() === tomorrow.toDateString()) return { label: 'Expiring Tomorrow', isUrgent: true };
+  if (expiry.toDateString() === tomorrow.toDateString()) return { label: t('explore.expiringTomorrow'), isUrgent: true };
 
   return null;
 }
 
 export default function PostCard({ post, onPress }: PostCardProps) {
+  const { t } = useTranslation();
   const isFree = post.type === 'P2P_FREE';
   const imageUrl = post.images?.[0];
-  const urgency = getUrgencyInfo(post.expiryDate);
-  const pickupLabel = formatPickupTime(post.pickupTime.start, post.pickupTime.end);
-  const priceLabel = isFree ? 'FREE' : `$${post.price.toFixed(2)}`;
-  const tag = post.type === 'B2C_MYSTERY_BAG' ? 'Surprise Bag' : undefined;
+  const urgency = getUrgencyInfo(post.expiryDate, t as TFunc);
+  const pickupLabel = formatPickupTime(post.pickupTime.start, post.pickupTime.end, t as TFunc);
+  const priceLabel = isFree ? t('common.free').toUpperCase() : `${post.price.toLocaleString('vi-VN')}đ`;
+  const tag = post.type === 'B2C_MYSTERY_BAG' ? t('explore.surpriseBag') : undefined;
 
   return (
     <TouchableOpacity

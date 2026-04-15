@@ -1,8 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 export default function ImpactBanner() {
+  const { t } = useTranslation();
   return (
     <View className="mx-5 mt-8 mb-6 bg-primary-T40 rounded-2xl px-5 py-5 overflow-hidden shadow-md">
       {/* Decorative elements */}
@@ -23,15 +25,15 @@ export default function ImpactBanner() {
           className="text-lg font-sans text-neutral-T100"
           style={{ fontWeight: '700' }}
         >
-          You make a difference
+          {t('home.impactTitle')}
         </Text>
       </View>
 
       <View className="flex-row justify-between">
         {[
-          { label: 'Meals saved', value: '2.4M' },
-          { label: 'CO₂ reduced', value: '800t' },
-          { label: 'Members', value: '150K+' },
+          { label: t('home.impactMeals'), value: '2.4M' },
+          { label: t('home.impactCO2'), value: '800t' },
+          { label: t('home.impactMembers'), value: '150K+' },
         ].map((stat, i) => (
           <View key={i} className="items-center">
             <Text

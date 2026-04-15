@@ -1,8 +1,10 @@
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { ImageBackground, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 export default function HeroBanner() {
+  const { t } = useTranslation();
   return (
     <View className="mx-5">
       <ImageBackground
@@ -21,21 +23,21 @@ export default function HeroBanner() {
             className="text-xs font-body tracking-widest text-neutral-T100/70"
             style={{ letterSpacing: 1.5 }}
           >
-            Community Movement
+            {t('home.heroBannerBadge')}
           </Text>
           <View className="mt-3">
             <Text
               className="text-2xl font-sans text-neutral-T100 leading-tight"
               style={{ fontWeight: '700', letterSpacing: -0.5, lineHeight: 32 }}
             >
-              Zero Waste Week –{'\n'}Join the movement!
+              {t('home.heroBannerTitle')}
             </Text>
             <TouchableOpacity className="mt-5 self-start bg-neutral-T100 rounded-xl px-5 py-3 flex-row items-center gap-2 active:opacity-80">
               <Text
                 className="text-primary-T40 text-sm font-body"
                 style={{ fontWeight: '600' }}
               >
-                Take action
+                {t('home.heroBannerCta')}
               </Text>
               <Feather name="arrow-right" size={14} color="#296C24" />
             </TouchableOpacity>

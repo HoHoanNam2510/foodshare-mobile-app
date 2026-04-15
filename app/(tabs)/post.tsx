@@ -1,6 +1,7 @@
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Image,
@@ -49,56 +50,53 @@ interface StatusConfig {
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 
-const STATUS_FILTERS: { id: PostStatus | 'ALL'; label: string }[] = [
-  { id: 'ALL', label: 'Tất cả' },
-  { id: 'DRAFT', label: 'Draft' },
-  { id: 'PENDING_REVIEW', label: 'Chờ duyệt' },
-  { id: 'AVAILABLE', label: 'Đang mở' },
-  { id: 'BOOKED', label: 'Đã đặt' },
-  { id: 'OUT_OF_STOCK', label: 'Hết hàng' },
-  { id: 'HIDDEN', label: 'Ẩn' },
-  { id: 'REJECTED', label: 'Từ chối' },
+const STATUS_FILTER_IDS: (PostStatus | 'ALL')[] = [
+  'ALL', 'DRAFT', 'PENDING_REVIEW', 'AVAILABLE', 'BOOKED', 'OUT_OF_STOCK', 'HIDDEN', 'REJECTED',
 ];
 
-const STATUS_CONFIG: Record<PostStatus, StatusConfig> = {
+const STATUS_LABEL_KEYS: Record<PostStatus | 'ALL', string> = {
+  ALL: 'post.statusAll',
+  DRAFT: 'post.statusDraft',
+  PENDING_REVIEW: 'post.statusPending',
+  AVAILABLE: 'post.statusOpen',
+  BOOKED: 'post.statusBooked',
+  OUT_OF_STOCK: 'post.statusOutOfStock',
+  HIDDEN: 'post.statusHidden',
+  REJECTED: 'post.statusRejected',
+};
+
+const STATUS_CONFIG: Record<PostStatus, Omit<StatusConfig, 'label'>> = {
   DRAFT: {
-    label: 'Draft',
     bgClass: 'bg-neutral-T95',
     textClass: 'text-neutral-T40',
     dotColor: '#5C5F5E',
   },
   PENDING_REVIEW: {
-    label: 'Chờ duyệt',
     bgClass: 'bg-secondary-T95',
     textClass: 'text-secondary-T40',
     dotColor: '#944A00',
   },
   AVAILABLE: {
-    label: 'Đang mở',
     bgClass: 'bg-primary-T95',
     textClass: 'text-primary-T40',
     dotColor: '#296C24',
   },
   BOOKED: {
-    label: 'Đã đặt',
     bgClass: 'bg-primary-T95',
     textClass: 'text-primary-T30',
     dotColor: '#0A530C',
   },
   OUT_OF_STOCK: {
-    label: 'Hết hàng',
     bgClass: 'bg-tertiary-T95',
     textClass: 'text-tertiary-T40',
     dotColor: '#983F6A',
   },
   HIDDEN: {
-    label: 'Ẩn',
     bgClass: 'bg-neutral-T90',
     textClass: 'text-neutral-T50',
     dotColor: '#757777',
   },
   REJECTED: {
-    label: 'Từ chối',
     bgClass: 'bg-tertiary-T95',
     textClass: 'text-tertiary-T30',
     dotColor: '#7B2752',
@@ -121,6 +119,7 @@ function formatDate(iso: string): string {
 // ─── SUB-COMPONENTS ───────────────────────────────────────────────────────────
 
 function StatusBadge({ status }: { status: PostStatus }) {
+  const { t } = useTranslation();
   const config = STATUS_CONFIG[status];
   return (
     <View
@@ -137,7 +136,7 @@ function StatusBadge({ status }: { status: PostStatus }) {
       <Text
         className={`font-label text-[11px] font-semibold ${config.textClass}`}
       >
-        {config.label}
+        {t(STATUS_LABEL_KEYS[status])}
       </Text>
     </View>
   );
@@ -149,6 +148,7 @@ interface PostCardProps {
 }
 
 function PostCard({ post, onPress }: PostCardProps) {
+  const { t } = useTranslation();
   const isDimmed =
     post.status === 'HIDDEN' ||
     post.status === 'REJECTED' ||
@@ -177,7 +177,7 @@ function PostCard({ post, onPress }: PostCardProps) {
         {/* Type chip — top left */}
         <View className="absolute top-3 left-3 bg-neutral-T10/70 px-2.5 py-1 rounded-full">
           <Text className="font-label text-[10px] font-semibold text-neutral-T100 uppercase tracking-wide">
-            {post.type === 'P2P_FREE' ? 'Miễn phí' : 'Túi bí ngờ'}
+            {post.type === 'P2P_FREE' ? t('common.free') : t('post.b2cMysteryBag')}
           </Text>
         </View>
         {/* Status badge — top right */}
@@ -203,7 +203,7 @@ function PostCard({ post, onPress }: PostCardProps) {
             <Feather name="tag" size={13} color="#AAABAB" />
             <Text className="font-body text-xs text-neutral-T50">
               {post.type === 'P2P_FREE'
-                ? 'Miễn phí'
+                ? t('common.free')
                 : `${post.price.toLocaleString('vi-VN')}đ`}
             </Text>
           </View>
@@ -211,7 +211,7 @@ function PostCard({ post, onPress }: PostCardProps) {
             <View className="flex-row items-center gap-1.5">
               <Feather name="clock" size={13} color="#AAABAB" />
               <Text className="font-body text-xs text-neutral-T50">
-                HSD: {new Date(post.expiryDate).toLocaleDateString('vi-VN')}
+                {t('post.expiryPrefix')} {new Date(post.expiryDate).toLocaleDateString('vi-VN')}
               </Text>
             </View>
           )}
@@ -232,6 +232,7 @@ function PostCard({ post, onPress }: PostCardProps) {
 // ─── MAIN SCREEN ──────────────────────────────────────────────────────────────
 
 export default function PostList() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -250,7 +251,7 @@ export default function PostList() {
       const { data } = await api.get('/posts/me');
       setPosts(data.data ?? []);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Không thể tải bài đăng.');
+      setError(e instanceof Error ? e.message : t('post.errorLoadPosts'));
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -298,7 +299,7 @@ export default function PostList() {
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Tìm kiếm theo tên bài đăng..."
+            placeholder={t('post.searchByTitle')}
             placeholderTextColor="#AAABAB"
             className="flex-1 font-body text-sm text-neutral-T10 h-full"
             returnKeyType="search"
@@ -335,12 +336,12 @@ export default function PostList() {
             paddingVertical: 12,
           }}
         >
-          {STATUS_FILTERS.map((filter) => {
-            const isActive = activeFilter === filter.id;
+          {STATUS_FILTER_IDS.map((id) => {
+            const isActive = activeFilter === id;
             return (
               <TouchableOpacity
-                key={filter.id}
-                onPress={() => setActiveFilter(filter.id as PostStatus | 'ALL')}
+                key={id}
+                onPress={() => setActiveFilter(id as PostStatus | 'ALL')}
                 activeOpacity={0.8}
                 className={`px-4 py-2 rounded-full active:scale-95 ${
                   isActive
@@ -353,7 +354,7 @@ export default function PostList() {
                     isActive ? 'text-neutral-T100' : 'text-neutral-T50'
                   }`}
                 >
-                  {filter.label}
+                  {t(STATUS_LABEL_KEYS[id])}
                 </Text>
               </TouchableOpacity>
             );
@@ -366,7 +367,7 @@ export default function PostList() {
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#296C24" />
           <Text className="font-body text-sm text-neutral-T50 mt-3">
-            Đang tải...
+            {t('common.loading')}
           </Text>
         </View>
       ) : error ? (
@@ -380,7 +381,7 @@ export default function PostList() {
             activeOpacity={0.85}
           >
             <Text className="font-label font-semibold text-neutral-T100">
-              Thử lại
+              {t('common.retry')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -389,7 +390,7 @@ export default function PostList() {
           {/* Result count */}
           <View className="px-4 pt-4 pb-2">
             <Text className="font-label text-xs text-neutral-T70">
-              {displayedPosts.length} bài đăng
+              {t('post.postCount', { count: displayedPosts.length })}
             </Text>
           </View>
 
@@ -415,7 +416,7 @@ export default function PostList() {
                   <Feather name="inbox" size={28} color="#AAABAB" />
                 </View>
                 <Text className="font-body text-sm text-neutral-T50 text-center">
-                  Không tìm thấy bài đăng nào
+                  {t('post.noPostsFound')}
                 </Text>
               </View>
             ) : (

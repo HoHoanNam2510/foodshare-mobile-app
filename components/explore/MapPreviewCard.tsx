@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import { ExplorePost } from './types';
 
@@ -13,9 +14,10 @@ export default function MapPreviewCard({
   post,
   onViewDetails,
 }: MapPreviewCardProps) {
+  const { t } = useTranslation();
   const isFree = post.type === 'P2P_FREE';
   const imageUrl = post.images?.[0];
-  const priceLabel = isFree ? 'FREE' : `$${post.price.toFixed(2)}`;
+  const priceLabel = isFree ? t('common.free').toUpperCase() : `${post.price.toLocaleString('vi-VN')}đ`;
 
   return (
     <View
@@ -52,7 +54,7 @@ export default function MapPreviewCard({
               className="text-secondary text-[10px] font-label uppercase tracking-widest"
               style={{ fontWeight: '700' }}
             >
-              {isFree ? 'Free Food' : 'Surprise Bag'}
+              {isFree ? t('explore.filterFreeFood') : t('explore.surpriseBag')}
             </Text>
             <Ionicons name="heart" size={16} color="#983F6A" />
           </View>
@@ -67,7 +69,7 @@ export default function MapPreviewCard({
             <View className="flex-row items-center gap-1 mt-1">
               <Ionicons name="location-outline" size={12} color="#757777" />
               <Text className="text-neutral-T50 text-xs font-label">
-                {post.distance} away
+                {t('explore.distanceAway', { dist: post.distance })}
               </Text>
             </View>
           )}
@@ -89,7 +91,7 @@ export default function MapPreviewCard({
               className="text-primary-T30 text-xs font-label"
               style={{ fontWeight: '700' }}
             >
-              View Details
+              {t('explore.viewDetails')}
             </Text>
           </TouchableOpacity>
         </View>

@@ -1,16 +1,18 @@
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
-const FILTERS = [
-  { id: 'all', label: 'All', active: true },
-  { id: 'food', label: 'Food', active: false },
-  { id: 'nonfood', label: 'Non-food', active: false },
-  { id: 'veg', label: 'Vegetarian', active: false },
-  { id: 'bakery', label: 'Bakery', active: false },
-  { id: 'produce', label: 'Produce', active: false },
+const FILTER_CONFIGS = [
+  { id: 'all', labelKey: 'home.filterAll', active: true },
+  { id: 'food', labelKey: 'home.filterFood', active: false },
+  { id: 'nonfood', labelKey: 'home.filterNonfood', active: false },
+  { id: 'veg', labelKey: 'home.filterVegetarian', active: false },
+  { id: 'bakery', labelKey: 'home.filterBakery', active: false },
+  { id: 'produce', labelKey: 'home.filterProduce', active: false },
 ];
 
 export default function FilterPills() {
+  const { t } = useTranslation();
   return (
     <View className="mx-5 overflow-hidden">
       <ScrollView
@@ -18,14 +20,14 @@ export default function FilterPills() {
         showsHorizontalScrollIndicator={false}
         className="py-1"
       >
-        {FILTERS.map((f, index) => (
+        {FILTER_CONFIGS.map((f, index) => (
           <TouchableOpacity
             key={f.id}
             className={`px-4 py-2 rounded-full ${
               f.active
                 ? 'bg-primary-T40'
                 : 'bg-neutral-T100 border border-neutral-T90'
-            } ${index < FILTERS.length - 1 ? 'mr-2' : ''}`}
+            } ${index < FILTER_CONFIGS.length - 1 ? 'mr-2' : ''}`}
             activeOpacity={0.8}
           >
             <Text
@@ -34,7 +36,7 @@ export default function FilterPills() {
               }`}
               style={{ fontWeight: f.active ? '600' : '400' }}
             >
-              {f.label}
+              {t(f.labelKey)}
             </Text>
           </TouchableOpacity>
         ))}

@@ -11,10 +11,10 @@ import {
 import { TYPE_FILTER_OPTIONS } from './mockData';
 import { SortOption, TypeFilter } from './types';
 
-const SORT_OPTIONS: { value: SortOption; label: string; icon: string }[] = [
-  { value: 'newest', label: 'Newest', icon: 'clock' },
-  { value: 'closest', label: 'Closest', icon: 'navigation' },
-  { value: 'expiring', label: 'Expiring Soonest', icon: 'alert-triangle' },
+const SORT_OPTION_CONFIGS: { value: SortOption; labelKey: string; icon: string }[] = [
+  { value: 'newest', labelKey: 'explore.sortNewest', icon: 'clock' },
+  { value: 'closest', labelKey: 'explore.sortClosest', icon: 'navigation' },
+  { value: 'expiring', labelKey: 'explore.sortExpiring', icon: 'alert-triangle' },
 ];
 
 interface SearchFilterBarProps {
@@ -34,10 +34,17 @@ export default function SearchFilterBar({
   sortOption,
   onSortChange,
 }: SearchFilterBarProps) {
+  const { t } = useTranslation();
   const [sortOpen, setSortOpen] = useState(false);
 
-  const activeSortLabel =
-    SORT_OPTIONS.find((o) => o.value === sortOption)?.label ?? 'Newest';
+  const FILTER_DISPLAY: Record<TypeFilter, string> = {
+    All: t('explore.filterAll'),
+    'Free Food': t('explore.filterFreeFood'),
+    'Surprise Bags': t('explore.filterSurpriseBags'),
+  };
+
+  const activeSortLabelKey =
+    SORT_OPTION_CONFIGS.find((o) => o.value === sortOption)?.labelKey ?? 'explore.sortNewest';
 
   return (
     <View className="gap-3">
@@ -55,7 +62,7 @@ export default function SearchFilterBar({
         <Feather name="search" size={20} color="#757777" />
         <TextInput
           className="flex-1 font-label text-neutral-T10"
-          placeholder="Search for surplus food nearby..."
+          placeholder={t('explore.searchPlaceholder')}
           placeholderTextColor="#AAABAB"
           value={searchText}
           onChangeText={onSearchChange}
@@ -99,7 +106,7 @@ export default function SearchFilterBar({
                 }`}
                 style={{ fontWeight: isActive ? '600' : '400' }}
               >
-                {filter}
+                {FILTER_DISPLAY[filter]}
               </Text>
             </TouchableOpacity>
           );
@@ -108,7 +115,7 @@ export default function SearchFilterBar({
 
       {/* ── Sort row ── */}
       <View className="flex-row items-center gap-2">
-        <Text className="text-neutral-T50 text-sm font-label">Sort:</Text>
+        <Text className="text-neutral-T50 text-sm font-label">{t('explore.sort')}:</Text>
 
         <TouchableOpacity
           onPress={() => setSortOpen((prev) => !prev)}
@@ -119,7 +126,7 @@ export default function SearchFilterBar({
             className="text-secondary font-label text-sm"
             style={{ fontWeight: '600' }}
           >
-            {activeSortLabel}
+            {t(activeSortLabelKey)}
           </Text>
           <Feather
             name={sortOpen ? 'chevron-up' : 'chevron-down'}
@@ -141,7 +148,7 @@ export default function SearchFilterBar({
             elevation: 6,
           }}
         >
-          {SORT_OPTIONS.map((option, index) => {
+          {SORT_OPTION_CONFIGS.map((option, index) => {
             const isSelected = sortOption === option.value;
             return (
               <TouchableOpacity
@@ -152,7 +159,7 @@ export default function SearchFilterBar({
                 }}
                 activeOpacity={0.7}
                 className={`flex-row items-center justify-between px-4 py-3 ${
-                  index < SORT_OPTIONS.length - 1 ? 'border-b border-neutral-T95' : ''
+                  index < SORT_OPTION_CONFIGS.length - 1 ? 'border-b border-neutral-T95' : ''
                 } ${isSelected ? 'bg-secondary-T95' : ''}`}
               >
                 <View className="flex-row items-center gap-2">
@@ -168,7 +175,7 @@ export default function SearchFilterBar({
                       fontWeight: isSelected ? '600' : '400',
                     }}
                   >
-                    {option.label}
+                    {t(option.labelKey)}
                   </Text>
                 </View>
                 {isSelected && (

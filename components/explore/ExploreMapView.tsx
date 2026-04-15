@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import GoongMapView from '@/components/map/GoongMapView';
 import PostMarker from '@/components/map/PostMarker';
@@ -26,6 +27,7 @@ function toApiType(
 }
 
 export default function ExploreMapView({ activeFilter }: ExploreMapViewProps) {
+  const { t } = useTranslation();
   const router = useRouter();
   const userCoordsRef = useRef<[number, number]>(HCM_CENTER);
 
@@ -111,7 +113,7 @@ export default function ExploreMapView({ activeFilter }: ExploreMapViewProps) {
           <View className="bg-neutral-T100 rounded-full px-4 py-2 flex-row items-center gap-2 shadow-sm">
             <ActivityIndicator size="small" color="#296C24" />
             <Text className="font-label text-xs text-neutral-T50">
-              Đang tải...
+              {t('common.loading')}
             </Text>
           </View>
         </View>

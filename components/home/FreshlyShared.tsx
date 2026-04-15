@@ -1,6 +1,7 @@
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 const P2P_ITEMS = [
   {
@@ -112,6 +113,7 @@ const P2PCard = ({ item }: { item: P2PItem }) => {
 };
 
 export default function FreshlyShared() {
+  const { t } = useTranslation();
   const rows: P2PItem[][] = [];
   for (let i = 0; i < P2P_ITEMS.length; i += 2) {
     rows.push(P2P_ITEMS.slice(i, i + 2));
@@ -124,14 +126,14 @@ export default function FreshlyShared() {
           className="text-xl font-sans text-neutral-T10"
           style={{ fontWeight: '700', letterSpacing: -0.3 }}
         >
-          Freshly shared
+          {t('home.freshlySharedTitle')}
         </Text>
         <TouchableOpacity className="flex-row items-center gap-1 active:opacity-70">
           <Text
             className="text-sm font-body text-primary-T40"
             style={{ fontWeight: '600' }}
           >
-            See all
+            {t('common.seeAll')}
           </Text>
           <Feather name="chevron-right" size={16} color="#296C24" />
         </TouchableOpacity>

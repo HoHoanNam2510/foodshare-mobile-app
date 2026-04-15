@@ -1,6 +1,7 @@
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import { ViewMode } from './types';
 
@@ -13,6 +14,7 @@ export default function ViewToggle({
   activeView,
   onViewChange,
 }: ViewToggleProps) {
+  const { t } = useTranslation();
   return (
     <View
       className="bg-neutral-T100 p-1.5 rounded-full flex-row items-center"
@@ -43,7 +45,7 @@ export default function ViewToggle({
           }`}
           style={{ fontWeight: activeView === 'list' ? '600' : '500' }}
         >
-          List
+          {t('explore.list')}
         </Text>
       </TouchableOpacity>
 
@@ -66,7 +68,7 @@ export default function ViewToggle({
           }`}
           style={{ fontWeight: activeView === 'map' ? '600' : '500' }}
         >
-          Map
+          {t('explore.map')}
         </Text>
       </TouchableOpacity>
     </View>

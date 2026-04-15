@@ -1,6 +1,7 @@
 import { Feather, Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 const MARKET_ITEMS = [
   {
@@ -42,23 +43,24 @@ const MARKET_ITEMS = [
 ];
 
 export default function MarketTeaser() {
+  const { t } = useTranslation();
   return (
     <View className="mt-8">
       <View className="px-5 mb-1">
-        <Text className="text-sm font-body text-neutral-T50">From shops</Text>
+        <Text className="text-sm font-body text-neutral-T50">{t('home.marketSubtitle')}</Text>
         <View className="flex-row items-end justify-between mt-1">
           <Text
             className="text-xl font-sans text-neutral-T10"
             style={{ fontWeight: '700', letterSpacing: -0.3 }}
           >
-            Surprise bags{'\n'}around you
+            {t('home.marketTitle')}
           </Text>
           <TouchableOpacity className="flex-row items-center gap-1 mb-1 active:opacity-70">
             <Text
               className="text-sm font-body text-primary-T40"
               style={{ fontWeight: '600' }}
             >
-              See all
+              {t('common.seeAll')}
             </Text>
             <Feather name="chevron-right" size={16} color="#296C24" />
           </TouchableOpacity>

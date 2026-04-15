@@ -1,5 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import PostCard from './PostCard';
 import SearchFilterBar from './SearchFilterBar';
@@ -28,6 +29,7 @@ export default function ExploreListView({
   onSearchChange,
   onPostPress,
 }: ExploreListViewProps) {
+  const { t } = useTranslation();
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -59,10 +61,10 @@ export default function ExploreListView({
       {!loading && posts.length === 0 && (
         <View className="items-center py-12 gap-2">
           <Text className="text-neutral-T50 font-sans text-base">
-            No available posts found
+            {t('explore.noPostsTitle')}
           </Text>
           <Text className="text-neutral-T70 font-label text-sm text-center">
-            Try adjusting your filters or check back later.
+            {t('explore.noPostsHint')}
           </Text>
         </View>
       )}

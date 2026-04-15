@@ -13,31 +13,29 @@ import {
   View,
 } from 'react-native';
 
+import { useTranslation } from 'react-i18next';
 import { Conversation, getMyConversationsApi } from '@/lib/chatApi';
 import { useAuthStore } from '@/stores/authStore';
 import MainHeader from '@/components/shared/headers/MainHeader';
 
 // ─── HELPERS ────────────────────────────────────────────────────────────────
 
-function formatTime(iso?: string): string {
+function formatTime(iso: string | undefined, yesterday: string, language: string): string {
   if (!iso) return '';
   const date = new Date(iso);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const locale = language === 'vi' ? 'vi-VN' : 'en-US';
 
   if (diffDays === 0) {
-    return date.toLocaleTimeString('vi-VN', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
   } else if (diffDays === 1) {
-    return 'Hôm qua';
+    return yesterday;
   } else if (diffDays < 7) {
-    const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-    return days[date.getDay()];
+    return date.toLocaleDateString(locale, { weekday: 'short' });
   }
-  return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+  return date.toLocaleDateString(locale, { day: '2-digit', month: '2-digit' });
 }
 
 // ─── SUB-COMPONENTS ──────────────────────────────────────────────────────────
@@ -51,13 +49,16 @@ function ChatCard({
   currentUserId: string;
   onPress: () => void;
 }) {
+  const { t, i18n } = useTranslation();
   const other = conversation.participants.find((p) => p._id !== currentUserId);
   const unread = conversation.unreadCount?.[currentUserId] ?? 0;
   const hasUnread = unread > 0;
   const lastMsg =
-    conversation.lastMessage?.content ?? 'Bắt đầu cuộc trò chuyện';
+    conversation.lastMessage?.content ?? t('chat.startConversation');
   const time = formatTime(
-    conversation.lastMessage?.createdAt ?? conversation.updatedAt
+    conversation.lastMessage?.createdAt ?? conversation.updatedAt,
+    t('common.yesterday'),
+    i18n.language
   );
   const avatarUri =
     other?.avatar ?? `https://i.pravatar.cc/150?u=${other?._id}`;
@@ -84,7 +85,7 @@ function ChatCard({
             style={{ fontWeight: hasUnread ? '700' : '400' }}
             numberOfLines={1}
           >
-            {other?.fullName ?? 'Người dùng'}
+            {other?.fullName ?? t('chat.unknownUser')}
           </Text>
           <Text
             className={`font-label text-[11px] ${hasUnread ? 'text-primary-T40' : 'text-neutral-T50'}`}
@@ -124,6 +125,7 @@ function ChatCard({
 // ─── MAIN SCREEN ──────────────────────────────────────────────────────────────
 
 export default function ChatListScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { user } = useAuthStore();
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -172,7 +174,7 @@ export default function ChatListScreen() {
         <View className="flex-row items-center bg-neutral-T100 rounded-xl px-4 py-5 shadow-sm border border-neutral-T90">
           <Feather name="search" size={18} color="#AAABAB" />
           <TextInput
-            placeholder="Tìm kiếm tin nhắn…"
+            placeholder={t('chat.searchPlaceholder')}
             placeholderTextColor="#AAABAB"
             value={query}
             onChangeText={setQuery}
@@ -209,7 +211,7 @@ export default function ChatListScreen() {
           {/* ── Section label ── */}
           <View className="flex-row justify-between items-center px-5 mb-3">
             <Text className="font-body-semibold text-[13px] text-neutral-T50">
-              {query ? `Kết quả cho "${query}"` : 'Gần đây'}
+              {query ? t('chat.searchResultsFor', { query }) : t('chat.recentLabel')}
             </Text>
           </View>
 
@@ -227,7 +229,7 @@ export default function ChatListScreen() {
                       pathname: '/(chat)/chat-detail' as any,
                       params: {
                         conversationId: conv._id,
-                        name: other?.fullName ?? 'Người dùng',
+                        name: other?.fullName ?? t('chat.unknownUser'),
                         avatarUri: other?.avatar ?? '',
                       },
                     })
@@ -244,12 +246,10 @@ export default function ChatListScreen() {
                 className="font-body text-[15px] text-neutral-T10 mb-1"
                 style={{ fontWeight: '700' }}
               >
-                {query ? 'Không tìm thấy cuộc trò chuyện' : 'Chưa có tin nhắn'}
+                {query ? t('chat.noResultsTitle') : t('chat.noChats')}
               </Text>
               <Text className="font-body text-[13px] text-neutral-T50 text-center">
-                {query
-                  ? 'Thử tìm kiếm với tên khác.'
-                  : 'Bắt đầu trò chuyện từ trang chi tiết bài đăng.'}
+                {query ? t('chat.noResultsHint') : t('chat.startFromPost')}
               </Text>
             </View>
           )}
