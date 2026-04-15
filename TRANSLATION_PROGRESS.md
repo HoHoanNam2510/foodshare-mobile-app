@@ -15,7 +15,7 @@ Tracking i18n (VN ↔ EN) integration across all UI screens and components in `f
 | **Phase 1** | i18n infrastructure + `(auth)`, `(chat)`, `(leaderboard)`, `(post)` screens + core chat components | ✅ Done |
 | **Phase 2** | `(tabs)` screens + `components/home/` + `components/explore/`                                      | ✅ Done |
 | **Phase 3** | `(profile)` screens + `components/profile/` + shared components                                    | ✅ Done |
-| **Phase 4** | `(transaction)`, `(review)`, `(report)` screens + related components                               | ⬜      |
+| **Phase 4** | `(transaction)`, `(review)`, `(report)` screens + related components                               | ✅ Done |
 | **Phase 5** | `(voucher)` screens + `components/voucher/` + `components/map/`                                    | ⬜      |
 
 ---
@@ -84,27 +84,27 @@ Tracking i18n (VN ↔ EN) integration across all UI screens and components in `f
 | File                                   | Status |
 | -------------------------------------- | ------ |
 | `(transaction)/_layout.tsx`            | ➖     |
-| `(transaction)/transaction-list.tsx`   | ⬜     |
-| `(transaction)/transaction-detail.tsx` | ⬜     |
-| `(transaction)/payment.tsx`            | ⬜     |
-| `(transaction)/payment-result.tsx`     | ⬜     |
+| `(transaction)/transaction-list.tsx`   | ✅     |
+| `(transaction)/transaction-detail.tsx` | ✅     |
+| `(transaction)/payment.tsx`            | ✅     |
+| `(transaction)/payment-result.tsx`     | ✅     |
 
 ### app/(review)/ — Phase 4
 
 | File                         | Status |
 | ---------------------------- | ------ |
 | `(review)/_layout.tsx`       | ➖     |
-| `(review)/create-review.tsx` | ⬜     |
-| `(review)/my-reviews.tsx`    | ⬜     |
+| `(review)/create-review.tsx` | ✅     |
+| `(review)/my-reviews.tsx`    | ✅     |
 
 ### app/(report)/ — Phase 4
 
 | File                         | Status |
 | ---------------------------- | ------ |
 | `(report)/_layout.tsx`       | ➖     |
-| `(report)/create-report.tsx` | ⬜     |
-| `(report)/my-reports.tsx`    | ⬜     |
-| `(report)/report-detail.tsx` | ⬜     |
+| `(report)/create-report.tsx` | ✅     |
+| `(report)/my-reports.tsx`    | ✅     |
+| `(report)/report-detail.tsx` | ✅     |
 
 ### app/(voucher)/ — Phase 5
 
@@ -186,7 +186,7 @@ Tracking i18n (VN ↔ EN) integration across all UI screens and components in `f
 | ------------------------ | ------ |
 | `chat/ChatHeader.tsx`    | ✅     |
 | `chat/ChatInput.tsx`     | ✅     |
-| `chat/MessageBubble.tsx` | ⬜     |
+| `chat/MessageBubble.tsx` | ➖     |
 
 ### components/profile/ — Phase 3
 
@@ -206,7 +206,7 @@ Tracking i18n (VN ↔ EN) integration across all UI screens and components in `f
 
 | File                    | Status |
 | ----------------------- | ------ |
-| `review/ReviewCard.tsx` | ⬜     |
+| `review/ReviewCard.tsx` | ✅     |
 | `review/StarRating.tsx` | ➖     |
 
 ### components/voucher/ — Phase 5
@@ -255,18 +255,18 @@ Tracking i18n (VN ↔ EN) integration across all UI screens and components in `f
 | app/(post)         | 3      | 3      |
 | app/(tabs)         | 4      | 4      |
 | app/(profile)      | 4      | 4      |
-| app/(transaction)  | 0      | 4      |
-| app/(review)       | 0      | 2      |
-| app/(report)       | 0      | 3      |
+| app/(transaction)  | 4      | 4      |
+| app/(review)       | 2      | 2      |
+| app/(report)       | 3      | 3      |
 | app/(voucher)      | 0      | 7      |
 | components/shared  | 5      | 5      |
 | components/auth    | 1      | 1      |
 | components/home    | 6      | 6      |
 | components/explore | 6      | 6      |
 | components/post    | 0      | 4      |
-| components/chat    | 2      | 3      |
+| components/chat    | 2      | 2      |
 | components/profile | 8      | 8      |
-| components/review  | 0      | 1      |
+| components/review  | 1      | 1      |
 | components/voucher | 0      | 8      |
 | components/map     | 0      | 6      |
-| **Total**          | **43** | **68** |
+| **Total**          | **52** | **66** |

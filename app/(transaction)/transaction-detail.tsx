@@ -3,6 +3,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Alert,
@@ -28,23 +29,23 @@ import { useAuthStore } from '@/stores/authStore';
 
 // ── Status config ─────────────────────────────────────────────────────────────
 
-const STATUS_CONFIG: Record<TransactionStatus, { label: string; bg: string; text: string; icon: string }> = {
-  PENDING:   { label: 'Chờ xác nhận', bg: '#FEF9C3', text: '#A16207', icon: 'hourglass-empty' },
-  ACCEPTED:  { label: 'Đã chấp nhận', bg: '#DBEAFE', text: '#1D4ED8', icon: 'check-circle' },
-  ESCROWED:  { label: 'Đã thanh toán', bg: '#F3E8FF', text: '#7E22CE', icon: 'lock' },
-  COMPLETED: { label: 'Hoàn thành',   bg: '#DCFCE7', text: '#15803D', icon: 'verified' },
-  CANCELLED: { label: 'Đã hủy',       bg: '#F3F4F6', text: '#6B7280', icon: 'cancel' },
-  REJECTED:  { label: 'Đã từ chối',   bg: '#FEE2E2', text: '#DC2626', icon: 'block' },
-  REFUNDED:  { label: 'Đã hoàn tiền', bg: '#FFF7ED', text: '#C2410C', icon: 'replay' },
-  DISPUTED:  { label: 'Đang khiếu nại', bg: '#FFF1F2', text: '#BE123C', icon: 'report-problem' },
+const STATUS_CONFIG: Record<TransactionStatus, { labelKey: string; bg: string; text: string; icon: string }> = {
+  PENDING:   { labelKey: 'transaction.statusPending',   bg: '#FEF9C3', text: '#A16207', icon: 'hourglass-empty' },
+  ACCEPTED:  { labelKey: 'transaction.statusAccepted',  bg: '#DBEAFE', text: '#1D4ED8', icon: 'check-circle' },
+  ESCROWED:  { labelKey: 'transaction.statusEscrowed',  bg: '#F3E8FF', text: '#7E22CE', icon: 'lock' },
+  COMPLETED: { labelKey: 'transaction.statusCompleted', bg: '#DCFCE7', text: '#15803D', icon: 'verified' },
+  CANCELLED: { labelKey: 'transaction.statusCancelled', bg: '#F3F4F6', text: '#6B7280', icon: 'cancel' },
+  REJECTED:  { labelKey: 'transaction.statusRejected',  bg: '#FEE2E2', text: '#DC2626', icon: 'block' },
+  REFUNDED:  { labelKey: 'transaction.statusRefunded',  bg: '#FFF7ED', text: '#C2410C', icon: 'replay' },
+  DISPUTED:  { labelKey: 'transaction.statusDisputed',  bg: '#FFF1F2', text: '#BE123C', icon: 'report-problem' },
 };
 
 // ── Workflow steps ────────────────────────────────────────────────────────────
 
-const P2P_STEPS: { status: TransactionStatus; label: string }[] = [
-  { status: 'PENDING',   label: 'Gửi yêu cầu' },
-  { status: 'ACCEPTED',  label: 'Được chấp nhận' },
-  { status: 'COMPLETED', label: 'Hoàn thành' },
+const P2P_STEPS: { status: TransactionStatus; labelKey: string }[] = [
+  { status: 'PENDING',   labelKey: 'transaction.stepSendRequest' },
+  { status: 'ACCEPTED',  labelKey: 'transaction.stepAccepted' },
+  { status: 'COMPLETED', labelKey: 'transaction.stepCompleted' },
 ];
 
 function getStepIndex(status: TransactionStatus): number {
@@ -79,13 +80,14 @@ function InfoRow({ icon, label, value }: { icon: string; label: string; value: s
 }
 
 function StatusTimeline({ status }: { status: TransactionStatus }) {
+  const { t } = useTranslation();
   const currentStep = getStepIndex(status);
   const isCancelledOrRejected = status === 'CANCELLED' || status === 'REJECTED';
 
   return (
     <View style={styles.card} className="bg-neutral-T100 rounded-2xl p-5 gap-3">
       <Text className="font-label font-semibold text-xs text-neutral-T50 uppercase tracking-wider">
-        Tiến trình giao dịch
+        {t('transaction.progressTitle')}
       </Text>
       {isCancelledOrRejected ? (
         <View className="flex-row items-center gap-3">
@@ -93,7 +95,7 @@ function StatusTimeline({ status }: { status: TransactionStatus }) {
             <MaterialIcons name="close" size={16} color="#DC2626" />
           </View>
           <Text className="font-body font-semibold text-sm text-red-600">
-            {STATUS_CONFIG[status].label}
+            {t(STATUS_CONFIG[status].labelKey)}
           </Text>
         </View>
       ) : (
@@ -128,7 +130,7 @@ function StatusTimeline({ status }: { status: TransactionStatus }) {
                     className="font-body font-semibold text-sm"
                     style={{ color: done ? '#191C1C' : '#9CA3AF' }}
                   >
-                    {step.label}
+                    {t(step.labelKey)}
                   </Text>
                 </View>
               </View>
@@ -143,14 +145,15 @@ function StatusTimeline({ status }: { status: TransactionStatus }) {
 // ── QR Display for Donor ──────────────────────────────────────────────────────
 
 function DonorQrSection({ verificationCode }: { verificationCode: string }) {
+  const { t } = useTranslation();
   return (
     <View style={styles.card} className="bg-neutral-T100 rounded-2xl p-5 gap-4">
       <View className="gap-1">
         <Text className="font-sans font-bold text-base text-neutral-T10">
-          Mã xác minh QR
+          {t('transaction.qrVerifyTitle')}
         </Text>
         <Text className="font-body text-xs text-neutral-T50 leading-4">
-          Cho người nhận quét mã này khi gặp mặt để xác nhận hoàn tất giao dịch.
+          {t('transaction.qrVerifyDesc')}
         </Text>
       </View>
 
@@ -174,7 +177,7 @@ function DonorQrSection({ verificationCode }: { verificationCode: string }) {
       {/* Text code for manual input */}
       <View className="bg-neutral-T95 rounded-xl p-4 gap-2">
         <Text className="font-label text-[10px] text-neutral-T50 uppercase tracking-wider text-center">
-          Hoặc đọc mã cho người nhận
+          {t('transaction.orReadCode')}
         </Text>
         <Text
           className="font-body font-semibold text-sm text-neutral-T10 text-center leading-5"
@@ -195,6 +198,7 @@ interface ReceiverScanSectionProps {
 }
 
 function ReceiverScanSection({ transactionId, onCompleted }: ReceiverScanSectionProps) {
+  const { t } = useTranslation();
   const [showCameraModal, setShowCameraModal] = useState(false);
   const [showManualModal, setShowManualModal] = useState(false);
   const [codeInput, setCodeInput] = useState('');
@@ -208,8 +212,8 @@ function ReceiverScanSection({ transactionId, onCompleted }: ReceiverScanSection
       const result = await requestPermission();
       if (!result.granted) {
         Alert.alert(
-          'Cần quyền camera',
-          'Vui lòng cấp quyền truy cập camera để quét mã QR.',
+          t('transaction.cameraPermissionTitle'),
+          t('transaction.cameraPermissionMsg'),
           [{ text: 'OK' }]
         );
         return;
@@ -226,12 +230,12 @@ function ReceiverScanSection({ transactionId, onCompleted }: ReceiverScanSection
     setIsSubmitting(true);
     try {
       await scanQrApi(data.trim());
-      Alert.alert('Thành công!', 'Giao dịch đã được xác nhận hoàn tất.', [
+      Alert.alert(t('transaction.scanSuccessTitle'), t('transaction.scanSuccessMsg'), [
         { text: 'OK', onPress: onCompleted },
       ]);
     } catch (e: any) {
-      const msg = e?.response?.data?.message || 'Mã không hợp lệ. Vui lòng thử lại.';
-      Alert.alert('Lỗi xác minh', msg, [{ text: 'OK' }]);
+      const msg = e?.response?.data?.message || t('transaction.invalidCodeMsg');
+      Alert.alert(t('transaction.scanErrorTitle'), msg, [{ text: 'OK' }]);
     } finally {
       setIsSubmitting(false);
     }
@@ -239,7 +243,7 @@ function ReceiverScanSection({ transactionId, onCompleted }: ReceiverScanSection
 
   const handleManualSubmit = async () => {
     if (!codeInput.trim()) {
-      setInputError('Vui lòng nhập mã xác minh');
+      setInputError(t('transaction.enterCodeTitle'));
       return;
     }
     setIsSubmitting(true);
@@ -247,11 +251,11 @@ function ReceiverScanSection({ transactionId, onCompleted }: ReceiverScanSection
     try {
       await scanQrApi(codeInput.trim());
       setShowManualModal(false);
-      Alert.alert('Thành công!', 'Giao dịch đã được xác nhận hoàn tất.', [
+      Alert.alert(t('transaction.scanSuccessTitle'), t('transaction.scanSuccessMsg'), [
         { text: 'OK', onPress: onCompleted },
       ]);
     } catch (e: any) {
-      const msg = e?.response?.data?.message || 'Mã không hợp lệ. Vui lòng thử lại.';
+      const msg = e?.response?.data?.message || t('transaction.invalidCodeMsg');
       setInputError(msg);
     } finally {
       setIsSubmitting(false);
@@ -263,10 +267,10 @@ function ReceiverScanSection({ transactionId, onCompleted }: ReceiverScanSection
       <View style={styles.card} className="bg-neutral-T100 rounded-2xl p-5 gap-4">
         <View className="gap-1">
           <Text className="font-sans font-bold text-base text-neutral-T10">
-            Xác minh giao nhận
+            {t('transaction.scanVerifyTitle')}
           </Text>
           <Text className="font-body text-xs text-neutral-T50 leading-4">
-            Quét mã QR từ người cho hoặc nhập mã thủ công để xác nhận bạn đã nhận đồ.
+            {t('transaction.scanVerifyDesc')}
           </Text>
         </View>
 
@@ -283,7 +287,7 @@ function ReceiverScanSection({ transactionId, onCompleted }: ReceiverScanSection
             <>
               <MaterialIcons name="qr-code-scanner" size={22} color="#FFFFFF" />
               <Text className="font-label font-bold text-base text-neutral-T100">
-                Quét mã QR
+                {t('transaction.scanQRBtn')}
               </Text>
             </>
           )}
@@ -296,7 +300,7 @@ function ReceiverScanSection({ transactionId, onCompleted }: ReceiverScanSection
         >
           <MaterialIcons name="keyboard" size={18} color="#757777" />
           <Text className="font-label font-semibold text-sm text-neutral-T50">
-            Nhập mã thủ công
+            {t('transaction.enterManualBtn')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -329,7 +333,7 @@ function ReceiverScanSection({ transactionId, onCompleted }: ReceiverScanSection
           <View style={StyleSheet.absoluteFill} pointerEvents="none" className="items-center justify-center">
             <View style={styles.scanFrame} />
             <Text className="text-white font-body text-sm mt-6 text-center px-8">
-              Hướng camera vào mã QR của người cho
+              {t('transaction.cameraHint')}
             </Text>
           </View>
         </View>
@@ -353,18 +357,18 @@ function ReceiverScanSection({ transactionId, onCompleted }: ReceiverScanSection
 
               <View className="gap-1">
                 <Text className="font-sans font-bold text-lg text-neutral-T10">
-                  Nhập mã xác minh
+                  {t('transaction.enterCodeTitle')}
                 </Text>
                 <Text className="font-body text-sm text-neutral-T50">
-                  Lấy mã từ người cho và nhập vào ô bên dưới.
+                  {t('transaction.enterCodeDesc')}
                 </Text>
               </View>
 
               <View className="gap-2">
                 <TextInput
                   value={codeInput}
-                  onChangeText={(t) => { setCodeInput(t); setInputError(''); }}
-                  placeholder="Nhập mã xác minh..."
+                  onChangeText={(v) => { setCodeInput(v); setInputError(''); }}
+                  placeholder={t('transaction.enterCodePlaceholder')}
                   placeholderTextColor="#AAABAB"
                   autoCapitalize="none"
                   autoCorrect={false}
@@ -387,7 +391,7 @@ function ReceiverScanSection({ transactionId, onCompleted }: ReceiverScanSection
                   <ActivityIndicator color="#FFFFFF" />
                 ) : (
                   <Text className="font-label font-bold text-base text-neutral-T100">
-                    Xác nhận
+                    {t('common.confirm')}
                   </Text>
                 )}
               </TouchableOpacity>
@@ -403,6 +407,7 @@ function ReceiverScanSection({ transactionId, onCompleted }: ReceiverScanSection
 
 export default function TransactionDetailScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const currentUser = useAuthStore((s) => s.user);
 
@@ -423,7 +428,7 @@ export default function TransactionDetailScreen() {
       const res = await getTransactionByIdApi(id);
       setTransaction(res.data);
     } catch {
-      setError('Không thể tải giao dịch. Vui lòng thử lại.');
+      setError(t('transaction.loadError'));
     } finally {
       setIsLoading(false);
     }
@@ -436,7 +441,7 @@ export default function TransactionDetailScreen() {
   if (isLoading) {
     return (
       <View className="flex-1 bg-neutral">
-        <StackHeader title="Chi tiết giao dịch" />
+        <StackHeader title={t('transaction.transactionDetail')} />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#296C24" />
         </View>
@@ -447,11 +452,11 @@ export default function TransactionDetailScreen() {
   if (error || !transaction) {
     return (
       <View className="flex-1 bg-neutral">
-        <StackHeader title="Chi tiết giao dịch" />
+        <StackHeader title={t('transaction.transactionDetail')} />
         <View className="flex-1 items-center justify-center px-8 gap-4">
-          <Text className="font-body text-sm text-neutral-T50 text-center">{error ?? 'Không tìm thấy giao dịch'}</Text>
+          <Text className="font-body text-sm text-neutral-T50 text-center">{error ?? t('transaction.notFound')}</Text>
           <TouchableOpacity onPress={load} className="px-6 py-3 bg-primary-T40 rounded-xl" activeOpacity={0.85}>
-            <Text className="font-label font-semibold text-neutral-T100">Thử lại</Text>
+            <Text className="font-label font-semibold text-neutral-T100">{t('common.retry')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -488,7 +493,7 @@ export default function TransactionDetailScreen() {
         },
       } as any);
     } catch {
-      Alert.alert('Lỗi', 'Không thể mở cuộc trò chuyện.');
+      Alert.alert(t('common.error'), t('transaction.chatError'));
     } finally {
       setIsChatting(false);
     }
@@ -496,22 +501,22 @@ export default function TransactionDetailScreen() {
 
   const handleCancelRequest = () => {
     Alert.alert(
-      'Hủy yêu cầu',
-      'Bạn có chắc muốn hủy yêu cầu xin đồ này không?',
+      t('transaction.cancelRequestTitle'),
+      t('transaction.cancelRequestMsg'),
       [
-        { text: 'Không', style: 'cancel' },
+        { text: t('common.no'), style: 'cancel' },
         {
-          text: 'Hủy yêu cầu',
+          text: t('transaction.cancelRequest'),
           style: 'destructive',
           onPress: async () => {
             setIsCancelling(true);
             try {
               await cancelRequestApi(tx._id);
-              Alert.alert('Đã hủy', 'Yêu cầu xin đồ đã được hủy.', [
+              Alert.alert(t('transaction.cancelledAlertTitle'), t('transaction.cancelledRequestMsg'), [
                 { text: 'OK', onPress: () => router.back() },
               ]);
             } catch (e: any) {
-              Alert.alert('Lỗi', e?.response?.data?.message ?? 'Không thể hủy yêu cầu.');
+              Alert.alert(t('common.error'), e?.response?.data?.message ?? t('common.error'));
             } finally {
               setIsCancelling(false);
             }
@@ -523,22 +528,22 @@ export default function TransactionDetailScreen() {
 
   const handleCancelOrder = () => {
     Alert.alert(
-      'Hủy đơn hàng',
-      'Bạn có chắc muốn hủy đơn này không? Bài đăng sẽ được khôi phục về trạng thái ban đầu.',
+      t('transaction.cancelOrderAlertTitle'),
+      t('transaction.cancelOrderAlertMsg'),
       [
-        { text: 'Không', style: 'cancel' },
+        { text: t('common.no'), style: 'cancel' },
         {
-          text: 'Hủy đơn',
+          text: t('transaction.cancelOrderDestructiveBtn'),
           style: 'destructive',
           onPress: async () => {
             setIsCancelling(true);
             try {
               await cancelRequestApi(tx._id);
-              Alert.alert('Đã hủy', 'Đơn hàng đã được hủy.', [
+              Alert.alert(t('transaction.cancelledAlertTitle'), t('transaction.orderCancelledMsg'), [
                 { text: 'OK', onPress: () => router.back() },
               ]);
             } catch (e: any) {
-              Alert.alert('Lỗi', e?.response?.data?.message ?? 'Không thể hủy đơn hàng.');
+              Alert.alert(t('common.error'), e?.response?.data?.message ?? t('common.error'));
             } finally {
               setIsCancelling(false);
             }
@@ -551,14 +556,14 @@ export default function TransactionDetailScreen() {
   const statusBadge = (
     <View className="px-3 py-1 rounded-full" style={{ backgroundColor: cfg.bg }}>
       <Text className="font-label font-bold text-xs" style={{ color: cfg.text }}>
-        {cfg.label.toUpperCase()}
+        {t(cfg.labelKey).toUpperCase()}
       </Text>
     </View>
   );
 
   return (
     <View className="flex-1 bg-neutral">
-      <StackHeader title="Chi tiết giao dịch" rightElement={statusBadge} />
+      <StackHeader title={t('transaction.transactionDetail')} rightElement={statusBadge} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -569,7 +574,7 @@ export default function TransactionDetailScreen() {
           {/* ── Post Info Card ── */}
           <View style={styles.card} className="bg-neutral-T100 rounded-2xl p-5 gap-3">
             <Text className="font-label font-semibold text-[10px] text-neutral-T50 uppercase tracking-wider">
-              Bài đăng
+              {t('transaction.postSectionLabel')}
             </Text>
             <Text className="font-sans font-bold text-lg text-neutral-T10 leading-tight">
               {post.title}
@@ -578,12 +583,12 @@ export default function TransactionDetailScreen() {
             <View className="flex-row gap-2 flex-wrap">
               <View className="px-2 py-1 rounded-md" style={{ backgroundColor: isP2P ? '#DCFCE7' : '#FEF3C7' }}>
                 <Text className="font-label font-bold text-[10px] uppercase tracking-wider" style={{ color: isP2P ? '#15803D' : '#92400E' }}>
-                  {isP2P ? 'P2P – Miễn phí' : 'B2C – Túi mù'}
+                  {isP2P ? t('transaction.p2pFreeLabel') : t('transaction.b2cMysteryLabel')}
                 </Text>
               </View>
               <View className="px-2 py-1 rounded-md bg-neutral-T95">
                 <Text className="font-label font-bold text-[10px] text-neutral-T50 uppercase tracking-wider">
-                  SL: {tx.quantity}
+                  {t('transaction.qtyLabel')} {tx.quantity}
                 </Text>
               </View>
               {!isP2P && (
@@ -597,10 +602,10 @@ export default function TransactionDetailScreen() {
 
             <View className="h-px bg-neutral-T90" />
 
-            <InfoRow icon="event" label="Ngày tạo" value={formatDate(tx.createdAt)} />
-            <InfoRow icon="payment" label="Thanh toán" value={tx.paymentMethod} />
+            <InfoRow icon="event" label={t('transaction.createdAtLabel')} value={formatDate(tx.createdAt)} />
+            <InfoRow icon="payment" label={t('transaction.paymentLabel')} value={tx.paymentMethod} />
             {tx.expiredAt && (
-              <InfoRow icon="schedule" label="Hết hạn thanh toán" value={formatDate(tx.expiredAt)} />
+              <InfoRow icon="schedule" label={t('transaction.paymentExpiryLabel')} value={formatDate(tx.expiredAt)} />
             )}
           </View>
 
@@ -615,10 +620,10 @@ export default function TransactionDetailScreen() {
             </View>
             <View>
               <Text className="font-label text-[10px] text-neutral-T50 uppercase tracking-wider">
-                Vai trò của bạn
+                {t('transaction.yourRoleLabel')}
               </Text>
               <Text className="font-sans font-bold text-sm text-neutral-T10 mt-0.5">
-                {isDonor ? 'Người cho (Donor)' : isReceiver ? 'Người nhận (Receiver)' : 'Người tham gia'}
+                {isDonor ? t('transaction.donorRoleFull') : isReceiver ? t('transaction.receiverRoleFull') : t('transaction.participantRole')}
               </Text>
             </View>
           </View>
@@ -636,10 +641,10 @@ export default function TransactionDetailScreen() {
             </View>
             <View className="flex-1">
               <Text className="font-label text-[10px] text-neutral-T50 uppercase tracking-wider">
-                Liên hệ
+                {t('transaction.contactSectionLabel')}
               </Text>
               <Text className="font-sans font-bold text-sm text-neutral-T10 mt-0.5">
-                {isDonor ? 'Nhắn tin với người nhận' : 'Nhắn tin với người cho'}
+                {isDonor ? t('transaction.msgWithReceiver') : t('transaction.msgWithDonor')}
               </Text>
             </View>
             {isChatting ? (
@@ -669,10 +674,10 @@ export default function TransactionDetailScreen() {
             <View style={styles.card} className="bg-neutral-T100 rounded-2xl p-5 gap-4">
               <View className="gap-1">
                 <Text className="font-sans font-bold text-base text-neutral-T10">
-                  Mã xác nhận nhận hàng
+                  {t('transaction.b2cPickupCodeTitle')}
                 </Text>
                 <Text className="font-body text-xs text-neutral-T50 leading-4">
-                  Đưa mã này cho cửa hàng khi đến nhận hàng.
+                  {t('transaction.b2cPickupCodeDesc')}
                 </Text>
               </View>
               <View className="bg-primary-T95 border border-primary-T70 rounded-xl px-6 py-4 items-center">
@@ -698,9 +703,9 @@ export default function TransactionDetailScreen() {
                   <MaterialIcons name="report-problem" size={20} color="#BE123C" />
                 </View>
                 <View className="flex-1">
-                  <Text className="font-sans font-bold text-sm text-neutral-T10">Gặp vấn đề?</Text>
+                  <Text className="font-sans font-bold text-sm text-neutral-T10">{t('transaction.issueSectionTitle')}</Text>
                   <Text className="font-body text-xs text-neutral-T50 mt-0.5 leading-4">
-                    Nếu sản phẩm không đúng mô tả, bạn có thể gửi khiếu nại.
+                    {t('transaction.issueSectionDesc')}
                   </Text>
                 </View>
               </View>
@@ -716,7 +721,7 @@ export default function TransactionDetailScreen() {
               >
                 <MaterialIcons name="report-problem" size={16} color="#BE123C" />
                 <Text className="font-label font-semibold text-sm" style={{ color: '#BE123C' }}>
-                  Gửi khiếu nại
+                  {t('transaction.fileDisputeBtn')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -730,14 +735,14 @@ export default function TransactionDetailScreen() {
                   <MaterialIcons name="report-problem" size={20} color="#BE123C" />
                 </View>
                 <View className="flex-1">
-                  <Text className="font-sans font-bold text-sm text-neutral-T10">Đang khiếu nại</Text>
+                  <Text className="font-sans font-bold text-sm text-neutral-T10">{t('transaction.disputedTitle')}</Text>
                   <Text className="font-body text-xs text-neutral-T50 mt-0.5 leading-4">
-                    Admin đang xem xét khiếu nại của bạn.
+                    {t('transaction.disputedDesc')}
                   </Text>
                 </View>
               </View>
               <View className="bg-rose-50 rounded-xl p-4">
-                <Text className="font-label text-[10px] text-neutral-T50 uppercase tracking-wider mb-1">Lý do</Text>
+                <Text className="font-label text-[10px] text-neutral-T50 uppercase tracking-wider mb-1">{t('transaction.disputeReasonLabel')}</Text>
                 <Text className="font-body text-sm text-neutral-T10">{tx.disputeReason}</Text>
               </View>
             </View>
@@ -751,7 +756,7 @@ export default function TransactionDetailScreen() {
                   <MaterialIcons name="replay" size={20} color="#C2410C" />
                 </View>
                 <View className="flex-1">
-                  <Text className="font-sans font-bold text-sm text-neutral-T10">Đã hoàn tiền</Text>
+                  <Text className="font-sans font-bold text-sm text-neutral-T10">{t('transaction.refundedTitle')}</Text>
                   {tx.refundReason && (
                     <Text className="font-body text-xs text-neutral-T50 mt-0.5 leading-4">
                       {tx.refundReason}
@@ -761,7 +766,7 @@ export default function TransactionDetailScreen() {
               </View>
               {tx.refundedAt && (
                 <Text className="font-body text-xs text-neutral-T50">
-                  Hoàn tiền lúc: {formatDate(tx.refundedAt)}
+                  {t('transaction.refundedAtLabel')} {formatDate(tx.refundedAt)}
                 </Text>
               )}
             </View>
@@ -775,9 +780,9 @@ export default function TransactionDetailScreen() {
                   <MaterialIcons name="hourglass-empty" size={20} color="#A16207" />
                 </View>
                 <View className="flex-1">
-                  <Text className="font-sans font-bold text-sm text-neutral-T10">Chờ người cho xác nhận</Text>
+                  <Text className="font-sans font-bold text-sm text-neutral-T10">{t('transaction.pendingDonorWaitTitle')}</Text>
                   <Text className="font-body text-xs text-neutral-T50 mt-0.5 leading-4">
-                    Mã QR sẽ được tạo sau khi người cho chấp nhận yêu cầu của bạn.
+                    {t('transaction.pendingDonorWaitDesc')}
                   </Text>
                 </View>
               </View>
@@ -794,7 +799,7 @@ export default function TransactionDetailScreen() {
                   <>
                     <MaterialIcons name="cancel" size={16} color="#DC2626" />
                     <Text className="font-label font-semibold text-sm" style={{ color: '#DC2626' }}>
-                      Hủy yêu cầu
+                      {t('transaction.cancelRequest')}
                     </Text>
                   </>
                 )}
@@ -810,9 +815,9 @@ export default function TransactionDetailScreen() {
                   <MaterialIcons name="account-balance" size={20} color="#B45309" />
                 </View>
                 <View className="flex-1">
-                  <Text className="font-sans font-bold text-sm text-neutral-T10">Chờ thanh toán chuyển khoản</Text>
+                  <Text className="font-sans font-bold text-sm text-neutral-T10">{t('transaction.pendingB2CWaitTitle')}</Text>
                   <Text className="font-body text-xs text-neutral-T50 mt-0.5 leading-4">
-                    Đơn hàng đang chờ bạn chuyển khoản. Admin sẽ xác nhận sau khi nhận được tiền.
+                    {t('transaction.pendingB2CWaitDesc')}
                   </Text>
                 </View>
               </View>
@@ -820,7 +825,7 @@ export default function TransactionDetailScreen() {
                 <View className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 flex-row items-center gap-2">
                   <MaterialIcons name="schedule" size={15} color="#B45309" />
                   <Text className="font-body text-xs text-amber-800">
-                    Hết hạn: {formatDate(tx.expiredAt)}
+                    {t('transaction.expiresLabel')} {formatDate(tx.expiredAt)}
                   </Text>
                 </View>
               )}
@@ -837,7 +842,7 @@ export default function TransactionDetailScreen() {
               >
                 <MaterialIcons name="qr-code" size={18} color="#FFFFFF" />
                 <Text className="font-label font-bold text-base" style={{ color: '#FFFFFF' }}>
-                  Tiếp tục thanh toán
+                  {t('transaction.continuePaymentBtn')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -853,7 +858,7 @@ export default function TransactionDetailScreen() {
                   <>
                     <MaterialIcons name="cancel" size={16} color="#DC2626" />
                     <Text className="font-label font-semibold text-sm" style={{ color: '#DC2626' }}>
-                      Hủy đơn hàng
+                      {t('transaction.cancelOrderBtn')}
                     </Text>
                   </>
                 )}
@@ -867,9 +872,9 @@ export default function TransactionDetailScreen() {
                 <MaterialIcons name="inbox" size={20} color="#1D4ED8" />
               </View>
               <View className="flex-1">
-                <Text className="font-sans font-bold text-sm text-neutral-T10">Có yêu cầu đang chờ bạn</Text>
+                <Text className="font-sans font-bold text-sm text-neutral-T10">{t('transaction.pendingForDonorTitle')}</Text>
                 <Text className="font-body text-xs text-neutral-T50 mt-0.5 leading-4">
-                  Vào tab "Nhận yêu cầu" để chấp nhận hoặc từ chối yêu cầu này.
+                  {t('transaction.pendingForDonorDesc')}
                 </Text>
               </View>
             </View>
@@ -901,9 +906,9 @@ export default function TransactionDetailScreen() {
                 <MaterialIcons name="star" size={20} color="#FFFFFF" />
               </View>
               <View className="flex-1">
-                <Text className="font-sans font-bold text-sm text-primary-T10">Để lại đánh giá</Text>
+                <Text className="font-sans font-bold text-sm text-primary-T10">{t('transaction.reviewCTATitle')}</Text>
                 <Text className="font-body text-xs text-primary-T30 mt-0.5 leading-4">
-                  Nhận +2 GreenPoints và giúp cộng đồng tin tưởng lẫn nhau hơn
+                  {t('transaction.reviewCTADesc')}
                 </Text>
               </View>
               <MaterialIcons name="chevron-right" size={20} color="#296C24" />
@@ -932,10 +937,10 @@ export default function TransactionDetailScreen() {
               </View>
               <View className="flex-1">
                 <Text className="font-label text-[10px] text-neutral-T50 uppercase tracking-wider">
-                  Báo cáo
+                  {t('transaction.reportSectionLabel')}
                 </Text>
                 <Text className="font-sans font-bold text-sm text-neutral-T10 mt-0.5">
-                  Báo cáo giao dịch này
+                  {t('transaction.reportTransactionTitle')}
                 </Text>
               </View>
               <MaterialIcons name="chevron-right" size={20} color="#AAABAB" />
@@ -962,10 +967,10 @@ export default function TransactionDetailScreen() {
 
               <View className="gap-1">
                 <Text className="font-sans font-bold text-lg text-neutral-T10">
-                  Khiếu nại đơn hàng
+                  {t('transaction.disputeModalTitle')}
                 </Text>
                 <Text className="font-body text-sm text-neutral-T50">
-                  Mô tả lý do khiếu nại (ít nhất 10 ký tự). Admin sẽ xem xét và xử lý.
+                  {t('transaction.disputeModalDesc')}
                 </Text>
               </View>
 
@@ -973,7 +978,7 @@ export default function TransactionDetailScreen() {
                 <TextInput
                   value={disputeReason}
                   onChangeText={(t) => { setDisputeReason(t); setDisputeError(''); }}
-                  placeholder="Nhập lý do khiếu nại..."
+                  placeholder={t('transaction.disputePlaceholder')}
                   placeholderTextColor="#AAABAB"
                   multiline
                   numberOfLines={4}
@@ -989,18 +994,18 @@ export default function TransactionDetailScreen() {
               <TouchableOpacity
                 onPress={async () => {
                   if (disputeReason.trim().length < 10) {
-                    setDisputeError('Lý do khiếu nại phải có ít nhất 10 ký tự');
+                    setDisputeError(t('transaction.disputeMinCharsError'));
                     return;
                   }
                   setIsDisputing(true);
                   try {
                     await fileDisputeApi(tx._id, disputeReason.trim());
                     setShowDisputeModal(false);
-                    Alert.alert('Đã gửi', 'Khiếu nại của bạn đã được gửi. Admin sẽ xem xét và xử lý.', [
+                    Alert.alert(t('transaction.disputeSentTitle'), t('transaction.disputeSentMsg'), [
                       { text: 'OK', onPress: load },
                     ]);
                   } catch (e: any) {
-                    setDisputeError(e?.response?.data?.message ?? 'Không thể gửi khiếu nại');
+                    setDisputeError(e?.response?.data?.message ?? t('common.error'));
                   } finally {
                     setIsDisputing(false);
                   }
@@ -1014,7 +1019,7 @@ export default function TransactionDetailScreen() {
                   <ActivityIndicator color="#FFFFFF" />
                 ) : (
                   <Text className="font-label font-bold text-base text-neutral-T100">
-                    Gửi khiếu nại
+                    {t('transaction.sendDisputeBtn')}
                   </Text>
                 )}
               </TouchableOpacity>

@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   StyleSheet,
@@ -21,28 +22,28 @@ import {
 
 const RESULT_CONFIG: Record<
   'success' | 'pending' | 'failed',
-  { icon: keyof typeof MaterialIcons.glyphMap; color: string; bg: string; title: string; subtitle: string }
+  { icon: keyof typeof MaterialIcons.glyphMap; color: string; bg: string; titleKey: string; subtitleKey: string }
 > = {
   success: {
     icon: 'check-circle',
     color: '#296C24',
     bg: '#E8F5E3',
-    title: 'Thanh toán thành công!',
-    subtitle: 'Đơn hàng của bạn đã được xác nhận. Hãy đến cửa hàng nhận hàng và quét mã QR.',
+    titleKey: 'transaction.resultSuccessTitle',
+    subtitleKey: 'transaction.resultSuccessSubtitle',
   },
   pending: {
     icon: 'hourglass-top',
     color: '#944A00',
     bg: '#FFF7ED',
-    title: 'Đang xử lý...',
-    subtitle: 'Hệ thống đang xác nhận thanh toán. Vui lòng đợi trong giây lát.',
+    titleKey: 'transaction.resultPendingTitle',
+    subtitleKey: 'transaction.resultPendingSubtitle',
   },
   failed: {
     icon: 'cancel',
     color: '#BE123C',
     bg: '#FFF1F2',
-    title: 'Thanh toán thất bại',
-    subtitle: 'Giao dịch không thành công. Bạn có thể thử lại hoặc chọn phương thức khác.',
+    titleKey: 'transaction.resultFailedTitle',
+    subtitleKey: 'transaction.resultFailedSubtitle',
   },
 };
 
@@ -65,6 +66,7 @@ function getResultStatus(txnStatus?: TransactionStatus): 'success' | 'pending' |
 
 export default function PaymentResultScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { transactionId, status: initialStatus } = useLocalSearchParams<{
     transactionId: string;
     status?: string;
@@ -123,7 +125,7 @@ export default function PaymentResultScreen() {
 
   return (
     <View className="flex-1 bg-neutral-DEFAULT">
-      <StackHeader title="Kết quả thanh toán" />
+      <StackHeader title={t('transaction.resultTitle')} />
       <View className="flex-1 items-center justify-center px-8 gap-6">
         {/* Status Icon */}
         <View
@@ -140,31 +142,31 @@ export default function PaymentResultScreen() {
         {/* Title + Subtitle */}
         <View className="items-center gap-2">
           <Text className="font-sans font-extrabold text-2xl text-neutral-T10 text-center">
-            {config.title}
+            {t(config.titleKey)}
           </Text>
           <Text className="font-body text-sm text-neutral-T50 text-center leading-5">
-            {config.subtitle}
+            {t(config.subtitleKey)}
           </Text>
         </View>
 
         {/* Transaction Info */}
         {transaction && (
           <View className="w-full bg-neutral-T100 rounded-2xl p-5 gap-3" style={styles.card}>
-            <InfoRow label="Mã đơn hàng" value={`#${transaction._id.slice(-8)}`} />
+            <InfoRow label={t('transaction.orderIdLabel')} value={`#${transaction._id.slice(-8)}`} />
             {transaction.totalAmount != null && (
               <InfoRow
-                label="Tổng tiền"
+                label={t('transaction.totalAmountLabel')}
                 value={`${transaction.totalAmount.toLocaleString('vi-VN')}đ`}
                 bold
               />
             )}
-            <InfoRow label="Phương thức" value={transaction.paymentMethod} />
+            <InfoRow label={t('transaction.paymentMethodLabel')} value={transaction.paymentMethod} />
             {transaction.verificationCode && resultStatus === 'success' && (
               <>
                 <View className="h-px bg-neutral-T90 my-1" />
                 <View className="items-center gap-2 pt-1">
                   <Text className="font-label text-xs text-neutral-T50 uppercase tracking-wider">
-                    Mã xác nhận nhận hàng
+                    {t('transaction.pickupCodeLabel')}
                   </Text>
                   <View className="bg-primary-T95 border border-primary-T70 rounded-xl px-6 py-3">
                     <Text className="font-mono text-xl font-bold text-primary-T30 tracking-widest text-center">
@@ -172,7 +174,7 @@ export default function PaymentResultScreen() {
                     </Text>
                   </View>
                   <Text className="font-body text-xs text-neutral-T50 text-center">
-                    Đưa mã này cho cửa hàng khi nhận hàng
+                    {t('transaction.showCodeAtStore')}
                   </Text>
                 </View>
               </>
@@ -191,7 +193,7 @@ export default function PaymentResultScreen() {
           >
             <MaterialIcons name="refresh" size={18} color="#296C24" />
             <Text className="font-label font-semibold text-sm text-primary-T40">
-              Kiểm tra lại
+              {t('transaction.checkAgainBtn')}
             </Text>
           </TouchableOpacity>
         )}
@@ -205,7 +207,7 @@ export default function PaymentResultScreen() {
           onPress={() => router.replace('/(transaction)/transaction-list' as any)}
         >
           <Text className="text-neutral-T100 font-sans font-bold text-base">
-            Xem giao dịch của tôi
+            {t('transaction.viewMyTransactionsBtn')}
           </Text>
         </TouchableOpacity>
 
@@ -215,7 +217,7 @@ export default function PaymentResultScreen() {
           onPress={() => router.replace('/(tabs)' as any)}
         >
           <Text className="font-label font-semibold text-sm text-neutral-T50">
-            Về trang chủ
+            {t('transaction.backHomeBtn')}
           </Text>
         </TouchableOpacity>
       </View>

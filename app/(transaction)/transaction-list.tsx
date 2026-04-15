@@ -2,6 +2,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Alert,
@@ -34,15 +35,15 @@ const HISTORY_STATUSES: TransactionStatus[] = ['COMPLETED', 'CANCELLED', 'REJECT
 // Trạng thái donor hiển thị trong tab "Đang diễn ra" (đã xác nhận, chờ giao nhận)
 const DONOR_ACTIVE_STATUSES: TransactionStatus[] = ['ACCEPTED', 'ESCROWED'];
 
-const STATUS_CONFIG: Record<TransactionStatus, { label: string; bg: string; text: string }> = {
-  PENDING:   { label: 'Chờ xác nhận', bg: '#FEF9C3', text: '#A16207' },
-  ACCEPTED:  { label: 'Đã chấp nhận', bg: '#DBEAFE', text: '#1D4ED8' },
-  ESCROWED:  { label: 'Đã thanh toán', bg: '#F3E8FF', text: '#7E22CE' },
-  COMPLETED: { label: 'Hoàn thành',   bg: '#DCFCE7', text: '#15803D' },
-  CANCELLED: { label: 'Đã hủy',       bg: '#F3F4F6', text: '#6B7280' },
-  REJECTED:  { label: 'Từ chối',      bg: '#FEE2E2', text: '#DC2626' },
-  REFUNDED:  { label: 'Đã hoàn tiền', bg: '#FFF7ED', text: '#C2410C' },
-  DISPUTED:  { label: 'Đang khiếu nại', bg: '#FFF1F2', text: '#BE123C' },
+const STATUS_CONFIG: Record<TransactionStatus, { labelKey: string; bg: string; text: string }> = {
+  PENDING:   { labelKey: 'transaction.statusPending',   bg: '#FEF9C3', text: '#A16207' },
+  ACCEPTED:  { labelKey: 'transaction.statusAccepted',  bg: '#DBEAFE', text: '#1D4ED8' },
+  ESCROWED:  { labelKey: 'transaction.statusEscrowed',  bg: '#F3E8FF', text: '#7E22CE' },
+  COMPLETED: { labelKey: 'transaction.statusCompleted', bg: '#DCFCE7', text: '#15803D' },
+  CANCELLED: { labelKey: 'transaction.statusCancelled', bg: '#F3F4F6', text: '#6B7280' },
+  REJECTED:  { labelKey: 'transaction.statusRejected',  bg: '#FEE2E2', text: '#DC2626' },
+  REFUNDED:  { labelKey: 'transaction.statusRefunded',  bg: '#FFF7ED', text: '#C2410C' },
+  DISPUTED:  { labelKey: 'transaction.statusDisputed',  bg: '#FFF1F2', text: '#BE123C' },
 };
 
 type TabKey = 'active' | 'history' | 'incoming';
@@ -57,10 +58,11 @@ function formatDate(iso: string) {
 // ── Sub-components ───────────────────────────────────────────────────────────
 
 function StatusBadge({ status }: { status: TransactionStatus }) {
+  const { t } = useTranslation();
   const cfg = STATUS_CONFIG[status];
   return (
     <View style={[styles.badge, { backgroundColor: cfg.bg }]}>
-      <Text style={[styles.badgeText, { color: cfg.text }]}>{cfg.label.toUpperCase()}</Text>
+      <Text style={[styles.badgeText, { color: cfg.text }]}>{t(cfg.labelKey).toUpperCase()}</Text>
     </View>
   );
 }
@@ -76,6 +78,7 @@ interface TransactionCardProps {
 }
 
 function TransactionCard({ tx, role, onPress, onCancel, isCancelling }: TransactionCardProps) {
+  const { t } = useTranslation();
   const post = tx.postId;
   const isP2P = tx.type === 'REQUEST';
   const thumb = post.images?.[0];
@@ -116,7 +119,7 @@ function TransactionCard({ tx, role, onPress, onCancel, isCancelling }: Transact
             {/* Role badge */}
             <View className="px-2 py-0.5 rounded-md" style={{ backgroundColor: role === 'donor' ? '#DCFCE7' : '#EFF6FF' }}>
               <Text className="font-label font-bold text-[9px] uppercase tracking-wider" style={{ color: role === 'donor' ? '#15803D' : '#1D4ED8' }}>
-                {role === 'donor' ? 'Người cho' : 'Người nhận'}
+                {role === 'donor' ? t('transaction.roleGiver') : t('transaction.roleReceiver')}
               </Text>
             </View>
           </View>
@@ -127,8 +130,8 @@ function TransactionCard({ tx, role, onPress, onCancel, isCancelling }: Transact
 
           <View className="flex-row items-center justify-between mt-1">
             <Text className="font-body text-xs text-neutral-T50">
-              {isP2P ? 'Miễn phí' : `${post.price.toLocaleString('vi-VN')}đ`}
-              {'  ·  '}SL: {tx.quantity}
+              {isP2P ? t('common.free') : `${post.price.toLocaleString('vi-VN')}đ`}
+              {'  ·  '}{t('transaction.qtyLabel')} {tx.quantity}
             </Text>
             <Text className="font-body text-xs text-neutral-T70">{formatDate(tx.createdAt)}</Text>
           </View>
@@ -153,7 +156,7 @@ function TransactionCard({ tx, role, onPress, onCancel, isCancelling }: Transact
               <ActivityIndicator size="small" color="#DC2626" />
             ) : (
               <Text className="font-label font-semibold text-sm" style={{ color: '#DC2626' }}>
-                Hủy yêu cầu
+                {t('transaction.cancelRequest')}
               </Text>
             )}
           </TouchableOpacity>
@@ -173,6 +176,7 @@ interface IncomingCardProps {
 }
 
 function IncomingCard({ tx, onRespond, isResponding, onPress }: IncomingCardProps) {
+  const { t } = useTranslation();
   const post = tx.postId;
   const requester = tx.requesterId;
   const thumb = post.images?.[0];
@@ -241,7 +245,7 @@ function IncomingCard({ tx, onRespond, isResponding, onPress }: IncomingCardProp
             activeOpacity={0.8}
           >
             <Text className="font-label font-semibold text-sm" style={{ color: '#DC2626' }}>
-              Từ chối
+              {t('transaction.reject')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -254,7 +258,7 @@ function IncomingCard({ tx, onRespond, isResponding, onPress }: IncomingCardProp
               <ActivityIndicator size="small" color="#fff" />
             ) : (
               <Text className="font-label font-semibold text-sm text-neutral-T100">
-                Chấp nhận
+                {t('transaction.accept')}
               </Text>
             )}
           </TouchableOpacity>
@@ -265,10 +269,11 @@ function IncomingCard({ tx, onRespond, isResponding, onPress }: IncomingCardProp
 }
 
 function EmptyState({ tab }: { tab: TabKey }) {
+  const { t } = useTranslation();
   const configs = {
-    active:   { icon: 'receipt-long' as const, title: 'Chưa có giao dịch nào',  body: 'Các yêu cầu xin đồ đang chờ xử lý sẽ hiển thị tại đây.' },
-    history:  { icon: 'history' as const,      title: 'Chưa có lịch sử',        body: 'Giao dịch đã hoàn thành hoặc hủy sẽ xuất hiện ở đây.' },
-    incoming: { icon: 'inbox' as const,         title: 'Chưa có yêu cầu nào',   body: 'Khi ai đó xin đồ từ bài đăng của bạn, họ sẽ hiển thị tại đây.' },
+    active:   { icon: 'receipt-long' as const, titleKey: 'transaction.emptyActiveTitle',   bodyKey: 'transaction.emptyActiveBody' },
+    history:  { icon: 'history' as const,      titleKey: 'transaction.emptyHistoryTitle',  bodyKey: 'transaction.emptyHistoryBody' },
+    incoming: { icon: 'inbox' as const,         titleKey: 'transaction.emptyIncomingTitle', bodyKey: 'transaction.emptyIncomingBody' },
   };
   const cfg = configs[tab];
   return (
@@ -276,8 +281,8 @@ function EmptyState({ tab }: { tab: TabKey }) {
       <View className="w-16 h-16 rounded-2xl bg-primary-T95 items-center justify-center">
         <MaterialIcons name={cfg.icon} size={28} color="#296C24" />
       </View>
-      <Text className="font-sans font-bold text-base text-neutral-T10 text-center">{cfg.title}</Text>
-      <Text className="font-body text-sm text-neutral-T50 text-center leading-5">{cfg.body}</Text>
+      <Text className="font-sans font-bold text-base text-neutral-T10 text-center">{t(cfg.titleKey)}</Text>
+      <Text className="font-body text-sm text-neutral-T50 text-center leading-5">{t(cfg.bodyKey)}</Text>
     </View>
   );
 }
@@ -286,6 +291,7 @@ function EmptyState({ tab }: { tab: TabKey }) {
 
 export default function TransactionListScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   // Receiver state
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
@@ -311,7 +317,7 @@ export default function TransactionListScreen() {
       const res = await getMyTransactionsApi();
       setTransactions(res.data);
     } catch {
-      setError('Không thể tải dữ liệu. Vui lòng thử lại.');
+      setError(t('review.loadError'));
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -325,7 +331,7 @@ export default function TransactionListScreen() {
       const res = await getMyTransactionsAsOwnerApi();
       setOwnerTransactions(res.data);
     } catch {
-      setOwnerError('Không thể tải dữ liệu. Vui lòng thử lại.');
+      setOwnerError(t('review.loadError'));
     } finally {
       setOwnerLoading(false);
       setOwnerLoaded(true);
@@ -346,13 +352,13 @@ export default function TransactionListScreen() {
         // Reload both: donor sees updated incoming, receiver sees new ACCEPTED in active
         await Promise.all([loadOwner(), loadReceiver()]);
         Alert.alert(
-          response === 'ACCEPT' ? 'Đã chấp nhận' : 'Đã từ chối',
+          response === 'ACCEPT' ? t('transaction.acceptedAlertTitle') : t('transaction.rejectedAlertTitle'),
           response === 'ACCEPT'
-            ? 'Yêu cầu đã được chấp nhận. Mã QR đã được tạo cho người nhận.'
-            : 'Yêu cầu đã bị từ chối.',
+            ? t('transaction.requestAcceptedMsg')
+            : t('transaction.requestRejectedMsg'),
         );
       } catch (e) {
-        Alert.alert('Lỗi', e instanceof Error ? e.message : 'Không thể xử lý yêu cầu.');
+        Alert.alert(t('common.error'), e instanceof Error ? e.message : t('common.error'));
       } finally {
         setRespondingId(null);
       }
@@ -366,9 +372,9 @@ export default function TransactionListScreen() {
       try {
         await cancelRequestApi(transactionId);
         await loadReceiver();
-        Alert.alert('Đã hủy', 'Yêu cầu xin đồ đã được hủy.');
+        Alert.alert(t('transaction.cancelledAlertTitle'), t('transaction.cancelledRequestMsg'));
       } catch (e: any) {
-        Alert.alert('Lỗi', e?.response?.data?.message ?? 'Không thể hủy yêu cầu.');
+        Alert.alert(t('common.error'), e?.response?.data?.message ?? t('common.error'));
       } finally {
         setCancellingId(null);
       }
@@ -400,15 +406,15 @@ export default function TransactionListScreen() {
   const pendingIncomingTxs = ownerTransactions.filter((tx) => tx.status === 'PENDING');
 
   const tabs: { key: TabKey; label: string }[] = [
-    { key: 'active',   label: 'Đang diễn ra' },
-    { key: 'history',  label: 'Lịch sử' },
-    { key: 'incoming', label: 'Nhận yêu cầu' },
+    { key: 'active',   label: t('transaction.tabActive') },
+    { key: 'history',  label: t('transaction.tabHistory') },
+    { key: 'incoming', label: t('transaction.tabIncoming') },
   ];
 
   return (
     <View className="flex-1 bg-neutral">
       <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-      <ManagementHeader title="Giao dịch của tôi" onBack={() => router.back()} />
+      <ManagementHeader title={t('transaction.myTransactions')} onBack={() => router.back()} />
 
       {/* ── Tab Bar ── */}
       <View className="flex-row mx-4 mt-4 mb-3 bg-neutral-T95 rounded-xl p-1">
@@ -435,7 +441,7 @@ export default function TransactionListScreen() {
         ownerLoading && !ownerLoaded ? (
           <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" color="#296C24" />
-            <Text className="font-body text-sm text-neutral-T50 mt-3">Đang tải...</Text>
+            <Text className="font-body text-sm text-neutral-T50 mt-3">{t('common.loading')}</Text>
           </View>
         ) : ownerError ? (
           <View className="flex-1 items-center justify-center px-8 gap-4">
@@ -445,7 +451,7 @@ export default function TransactionListScreen() {
               className="px-6 py-3 bg-primary-T40 rounded-xl"
               activeOpacity={0.85}
             >
-              <Text className="font-label font-semibold text-neutral-T100">Thử lại</Text>
+              <Text className="font-label font-semibold text-neutral-T100">{t('common.retry')}</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -475,7 +481,7 @@ export default function TransactionListScreen() {
       ) : isLoading ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-sm text-neutral-T50 mt-3">Đang tải...</Text>
+          <Text className="font-body text-sm text-neutral-T50 mt-3">{t('common.loading')}</Text>
         </View>
       ) : error ? (
         <View className="flex-1 items-center justify-center px-8 gap-4">

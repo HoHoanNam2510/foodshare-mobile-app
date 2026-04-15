@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Alert,
@@ -21,6 +22,7 @@ const PAYMENT_TIMEOUT_SECONDS = 30 * 60; // 30 phút
 
 export default function PaymentScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { postId, quantity: qtyStr, transactionId: resumeTxId } = useLocalSearchParams<{
     postId?: string;
     quantity?: string;
@@ -45,7 +47,7 @@ export default function PaymentScreen() {
         const res = await getPostByIdApi(postId);
         setPost(res.data);
       } catch (e) {
-        Alert.alert('Lỗi', e instanceof Error ? e.message : 'Không thể tải bài đăng.');
+        Alert.alert(t('common.error'), e instanceof Error ? e.message : t('common.error'));
         router.back();
       } finally {
         if (!isResumeMode) setIsLoading(false);
@@ -68,8 +70,8 @@ export default function PaymentScreen() {
           setCountdown(remaining > 0 ? remaining : 0);
         }
       } catch (e: any) {
-        const msg = e?.response?.data?.message ?? 'Không thể tải thông tin thanh toán.';
-        Alert.alert('Lỗi', msg, [{ text: 'OK', onPress: () => router.back() }]);
+        const msg = e?.response?.data?.message ?? t('common.error');
+        Alert.alert(t('common.error'), msg, [{ text: 'OK', onPress: () => router.back() }]);
       } finally {
         setIsLoading(false);
       }
@@ -85,8 +87,8 @@ export default function PaymentScreen() {
         if (prev <= 1) {
           clearInterval(timerRef.current!);
           Alert.alert(
-            'Hết thời gian',
-            'Thời gian thanh toán đã hết. Đơn hàng sẽ bị huỷ.',
+            t('transaction.resultFailedTitle'),
+            t('transaction.resultFailedSubtitle'),
             [{ text: 'OK', onPress: () => router.back() }]
           );
           return 0;
@@ -114,7 +116,7 @@ export default function PaymentScreen() {
       setTransactionId(res.data._id);
       setPaymentInfo(res.data.paymentInfo);
     } catch (e) {
-      Alert.alert('Lỗi', e instanceof Error ? e.message : 'Không thể tạo đơn hàng.');
+      Alert.alert(t('common.error'), e instanceof Error ? e.message : t('common.error'));
     } finally {
       setIsCreating(false);
     }
@@ -130,12 +132,12 @@ export default function PaymentScreen() {
   const handleBack = () => {
     if (transactionId) {
       Alert.alert(
-        'Thoát?',
-        'Đơn hàng đang chờ thanh toán. Bạn vẫn có thể quay lại chuyển khoản trong thời gian còn lại.',
+        t('transaction.exitPaymentTitle'),
+        t('transaction.exitPaymentMsg'),
         [
-          { text: 'Ở lại', style: 'cancel' },
+          { text: t('transaction.stayBtn'), style: 'cancel' },
           {
-            text: 'Xem đơn hàng',
+            text: t('transaction.viewOrderBtn'),
             onPress: () =>
               router.replace({
                 pathname: '/(transaction)/payment-result',
@@ -152,7 +154,7 @@ export default function PaymentScreen() {
   if (isLoading) {
     return (
       <View className="flex-1 bg-neutral-DEFAULT">
-        <StackHeader title="Thanh toán" />
+        <StackHeader title={t('transaction.paymentTitle')} />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#296C24" />
         </View>
@@ -169,7 +171,7 @@ export default function PaymentScreen() {
 
   return (
     <View className="flex-1 bg-neutral-DEFAULT">
-      <StackHeader title="Thanh toán" onBack={handleBack} />
+      <StackHeader title={t('transaction.paymentTitle')} onBack={handleBack} />
 
       <ScrollView
         className="flex-1"
@@ -191,7 +193,7 @@ export default function PaymentScreen() {
           )}
           <View className="flex-1 justify-center">
             <Text className="font-sans font-bold text-base text-neutral-T10" numberOfLines={2}>
-              {post?.title ?? paymentInfo?.description ?? 'Đơn hàng'}
+              {post?.title ?? paymentInfo?.description ?? t('transaction.orderFallback')}
             </Text>
             {!isResumeMode && post && (
               <Text className="font-body text-sm text-neutral-T50 mt-1">
@@ -211,7 +213,7 @@ export default function PaymentScreen() {
           <View className="bg-secondary-T95 border border-secondary-T70 rounded-xl px-4 py-3 flex-row items-center gap-3">
             <MaterialIcons name="timer" size={20} color="#944A00" />
             <Text className="font-body text-sm text-secondary-T30 flex-1">
-              Hoàn tất chuyển khoản trong
+              {t('transaction.transferCountdown')}
             </Text>
             <Text className="font-sans font-extrabold text-lg text-secondary-T20">
               {formatCountdown(countdown)}
@@ -225,11 +227,11 @@ export default function PaymentScreen() {
             <View className="flex-row items-center gap-2">
               <MaterialIcons name="info-outline" size={18} color="#296C24" />
               <Text className="font-sans font-bold text-sm text-primary-T30">
-                Thanh toán qua chuyển khoản ngân hàng
+                {t('transaction.bankTransferTitle')}
               </Text>
             </View>
             <Text className="font-body text-sm text-neutral-T30 leading-5">
-              Sau khi nhấn "Tạo đơn hàng", bạn sẽ nhận được mã QR và thông tin tài khoản để chuyển khoản. Admin sẽ xác nhận thanh toán và kích hoạt đơn hàng của bạn.
+              {t('transaction.bankTransferDesc')}
             </Text>
           </View>
         )}
@@ -238,7 +240,7 @@ export default function PaymentScreen() {
         {transactionId && paymentInfo && (
           <View className="bg-neutral-T100 rounded-2xl p-4 gap-4" style={styles.card}>
             <Text className="font-sans font-bold text-base text-neutral-T10 text-center">
-              Quét QR để chuyển khoản
+              {t('transaction.scanQRTransferTitle')}
             </Text>
 
             {/* QR Image */}
@@ -253,26 +255,26 @@ export default function PaymentScreen() {
             {/* Divider */}
             <View className="flex-row items-center gap-3">
               <View className="flex-1 h-px bg-neutral-T85" />
-              <Text className="font-body text-xs text-neutral-T50">hoặc chuyển khoản thủ công</Text>
+              <Text className="font-body text-xs text-neutral-T50">{t('transaction.orManualTransfer')}</Text>
               <View className="flex-1 h-px bg-neutral-T85" />
             </View>
 
             {/* Bank details */}
             <View className="gap-2">
-              <BankInfoRow label="Ngân hàng" value={paymentInfo.bankName} />
-              <BankInfoRow label="Số tài khoản" value={paymentInfo.bankAccountNumber} copyable />
-              <BankInfoRow label="Chủ tài khoản" value={paymentInfo.bankAccountName} />
+              <BankInfoRow label={t('transaction.bankLabel')} value={paymentInfo.bankName} />
+              <BankInfoRow label={t('transaction.accountNumberLabel')} value={paymentInfo.bankAccountNumber} copyable />
+              <BankInfoRow label={t('transaction.accountNameLabel')} value={paymentInfo.bankAccountName} />
               <BankInfoRow
-                label="Số tiền"
+                label={t('transaction.amountLabel')}
                 value={`${paymentInfo.amount.toLocaleString('vi-VN')}đ`}
                 highlight
               />
-              <BankInfoRow label="Nội dung CK" value={paymentInfo.description} copyable />
+              <BankInfoRow label={t('transaction.transferRefLabel')} value={paymentInfo.description} copyable />
             </View>
 
             <View className="bg-yellow-50 border border-yellow-200 rounded-xl p-3">
               <Text className="font-body text-xs text-yellow-800 text-center leading-5">
-                ⚠️ Vui lòng nhập đúng nội dung chuyển khoản để đơn hàng được xác nhận tự động.
+                {t('transaction.transferNoteWarning')}
               </Text>
             </View>
           </View>
@@ -283,7 +285,7 @@ export default function PaymentScreen() {
           <View className="bg-neutral-T100 rounded-2xl p-4 items-center gap-3" style={styles.card}>
             <MaterialIcons name="warning-amber" size={32} color="#944A00" />
             <Text className="font-body text-sm text-neutral-T30 text-center">
-              Không thể tải mã QR. Vui lòng liên hệ admin để biết thông tin tài khoản chuyển khoản.
+              {t('transaction.qrLoadError')}
             </Text>
           </View>
         )}
@@ -303,7 +305,7 @@ export default function PaymentScreen() {
               <ActivityIndicator color="#fff" />
             ) : (
               <Text className="text-neutral-T100 font-sans font-black text-lg tracking-tight">
-                Tạo đơn hàng
+                {t('transaction.createOrderBtn')}
               </Text>
             )}
           </TouchableOpacity>
@@ -315,7 +317,7 @@ export default function PaymentScreen() {
             style={styles.primaryBtn}
           >
             <Text className="text-neutral-T100 font-sans font-black text-lg tracking-tight">
-              Đã chuyển khoản xong
+              {t('transaction.transferDoneBtn')}
             </Text>
           </TouchableOpacity>
         )}

@@ -1,5 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import StarRating from './StarRating';
@@ -49,6 +50,7 @@ interface WrittenCardProps {
 }
 
 export function WrittenReviewCard({ review, onEdit, onDelete, onReport }: WrittenCardProps) {
+  const { t } = useTranslation();
   const reviewee = getUser(review.revieweeId as any);
   const tx = typeof review.transactionId === 'object' ? review.transactionId : null;
   const postTitle = tx?.postId ? (tx.postId as any).title : null;
@@ -62,7 +64,7 @@ export function WrittenReviewCard({ review, onEdit, onDelete, onReport }: Writte
           <UserAvatar user={reviewee} />
           <View className="flex-1">
             <Text className="font-label font-semibold text-sm text-neutral-T10" numberOfLines={1}>
-              {reviewee?.fullName ?? 'Người dùng'}
+              {reviewee?.fullName ?? t('review.unknownUser')}
             </Text>
             {postTitle ? (
               <Text className="font-body text-xs text-neutral-T50" numberOfLines={1}>
@@ -80,7 +82,7 @@ export function WrittenReviewCard({ review, onEdit, onDelete, onReport }: Writte
         {review.feedback ? (
           <Text className="font-body text-sm text-neutral-T30 leading-5">{review.feedback}</Text>
         ) : (
-          <Text className="font-body text-xs text-neutral-T70 italic">Không có nhận xét</Text>
+          <Text className="font-body text-xs text-neutral-T70 italic">{t('review.noFeedback')}</Text>
         )}
       </View>
 
@@ -92,7 +94,7 @@ export function WrittenReviewCard({ review, onEdit, onDelete, onReport }: Writte
           className="flex-1 flex-row items-center justify-center gap-1.5 py-3"
         >
           <MaterialIcons name="edit" size={15} color="#296C24" />
-          <Text className="font-label font-semibold text-xs text-primary-T40">Sửa</Text>
+          <Text className="font-label font-semibold text-xs text-primary-T40">{t('review.editBtn')}</Text>
         </TouchableOpacity>
 
         <View className="w-px bg-neutral-T90" />
@@ -104,7 +106,7 @@ export function WrittenReviewCard({ review, onEdit, onDelete, onReport }: Writte
         >
           <MaterialIcons name="delete-outline" size={15} color="#DC2626" />
           <Text className="font-label font-semibold text-xs" style={{ color: '#DC2626' }}>
-            Rút lại
+            {t('review.withdrawBtn')}
           </Text>
         </TouchableOpacity>
 
@@ -117,7 +119,7 @@ export function WrittenReviewCard({ review, onEdit, onDelete, onReport }: Writte
               className="flex-1 flex-row items-center justify-center gap-1.5 py-3"
             >
               <MaterialIcons name="flag" size={15} color="#AAABAB" />
-              <Text className="font-label font-semibold text-xs text-neutral-T50">Báo cáo</Text>
+              <Text className="font-label font-semibold text-xs text-neutral-T50">{t('review.reportBtn')}</Text>
             </TouchableOpacity>
           </>
         )}
@@ -134,6 +136,7 @@ interface ReceivedCardProps {
 }
 
 export function ReceivedReviewCard({ review, onReport }: ReceivedCardProps) {
+  const { t } = useTranslation();
   const reviewer = getUser(review.reviewerId as any);
 
   return (
@@ -144,9 +147,9 @@ export function ReceivedReviewCard({ review, onReport }: ReceivedCardProps) {
           <UserAvatar user={reviewer} />
           <View className="flex-1">
             <Text className="font-label font-semibold text-sm text-neutral-T10" numberOfLines={1}>
-              {reviewer?.fullName ?? 'Người dùng'}
+              {reviewer?.fullName ?? t('review.unknownUser')}
             </Text>
-            <Text className="font-body text-xs text-neutral-T50">Đã đánh giá bạn</Text>
+            <Text className="font-body text-xs text-neutral-T50">{t('review.reviewedYou')}</Text>
           </View>
           <Text className="font-body text-xs text-neutral-T70">{formatDate(review.createdAt)}</Text>
         </View>
@@ -158,7 +161,7 @@ export function ReceivedReviewCard({ review, onReport }: ReceivedCardProps) {
         {review.feedback ? (
           <Text className="font-body text-sm text-neutral-T30 leading-5">{review.feedback}</Text>
         ) : (
-          <Text className="font-body text-xs text-neutral-T70 italic">Không có nhận xét</Text>
+          <Text className="font-body text-xs text-neutral-T70 italic">{t('review.noFeedback')}</Text>
         )}
       </View>
 
@@ -171,7 +174,7 @@ export function ReceivedReviewCard({ review, onReport }: ReceivedCardProps) {
         >
           <MaterialIcons name="flag" size={15} color="#AAABAB" />
           <Text className="font-label font-semibold text-xs text-neutral-T50">
-            Báo cáo đánh giá sai lệch
+            {t('review.reportIncorrect')}
           </Text>
         </TouchableOpacity>
       </View>

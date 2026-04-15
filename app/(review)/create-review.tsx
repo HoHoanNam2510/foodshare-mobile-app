@@ -2,6 +2,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Alert,
@@ -23,12 +24,12 @@ import { createReviewApi, updateMyReviewApi } from '@/lib/reviewApi';
 
 // ── Rating Labels ─────────────────────────────────────────────────────────────
 
-const RATING_LABELS: Record<number, { label: string; color: string }> = {
-  1: { label: 'Rất không hài lòng', color: '#DC2626' },
-  2: { label: 'Không hài lòng',     color: '#F97316' },
-  3: { label: 'Bình thường',        color: '#A16207' },
-  4: { label: 'Hài lòng',          color: '#15803D' },
-  5: { label: 'Rất hài lòng',      color: '#296C24' },
+const RATING_LABELS: Record<number, { labelKey: string; color: string }> = {
+  1: { labelKey: 'review.rating1', color: '#DC2626' },
+  2: { labelKey: 'review.rating2', color: '#F97316' },
+  3: { labelKey: 'review.rating3', color: '#A16207' },
+  4: { labelKey: 'review.rating4', color: '#15803D' },
+  5: { labelKey: 'review.rating5', color: '#296C24' },
 };
 
 // ── Screen ────────────────────────────────────────────────────────────────────
@@ -36,6 +37,7 @@ const RATING_LABELS: Record<number, { label: string; color: string }> = {
 export default function CreateReviewScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   const {
     transactionId,
@@ -75,13 +77,13 @@ export default function CreateReviewScreen() {
       if (isEditMode) {
         await updateMyReviewApi(reviewId!, { rating, feedback: feedback.trim() });
         Alert.alert(
-          'Đã cập nhật',
-          'Đánh giá của bạn đã được cập nhật. Điểm uy tín của người được đánh giá sẽ được tính lại.',
-          [{ text: 'Xong', onPress: () => router.back() }]
+          t('review.updatedTitle'),
+          t('review.updatedMsg'),
+          [{ text: t('review.updatedDoneBtn'), onPress: () => router.back() }]
         );
       } else {
         if (!transactionId) {
-          Alert.alert('Lỗi', 'Thiếu thông tin giao dịch.');
+          Alert.alert(t('common.error'), t('review.missingTxError'));
           return;
         }
         await createReviewApi({
@@ -90,25 +92,25 @@ export default function CreateReviewScreen() {
           feedback: feedback.trim(),
         });
         Alert.alert(
-          'Đánh giá thành công! +2 🌿',
-          'Cảm ơn bạn đã để lại đánh giá. Bạn được cộng 2 GreenPoints vì đã có tâm với cộng đồng.',
-          [{ text: 'Tuyệt vời!', onPress: () => router.back() }]
+          t('review.successTitle'),
+          t('review.successMsg'),
+          [{ text: t('review.successBtn'), onPress: () => router.back() }]
         );
       }
     } catch (err: any) {
       const status = err?.response?.status;
-      const message: string = err?.response?.data?.message ?? 'Không thể gửi đánh giá.';
+      const message: string = err?.response?.data?.message ?? t('review.submitError');
 
       if (status === 409) {
         Alert.alert(
-          'Đã đánh giá rồi',
-          'Bạn đã đánh giá giao dịch này trước đó. Vào "Đánh giá của tôi" để xem và chỉnh sửa.',
-          [{ text: 'Đóng', onPress: () => router.back() }]
+          t('review.alreadyReviewedTitle'),
+          t('review.alreadyReviewedMsg'),
+          [{ text: t('common.close'), onPress: () => router.back() }]
         );
       } else if (status === 400) {
-        Alert.alert('Không thể đánh giá', message);
+        Alert.alert(t('review.cannotReviewTitle'), message);
       } else {
-        Alert.alert('Lỗi', message);
+        Alert.alert(t('common.error'), message);
       }
     } finally {
       setIsSubmitting(false);
@@ -120,7 +122,7 @@ export default function CreateReviewScreen() {
   return (
     <View className="flex-1 bg-neutral">
       <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-      <StackHeader title={isEditMode ? 'Sửa đánh giá' : 'Đánh giá giao dịch'} />
+      <StackHeader title={isEditMode ? t('review.editTitle') : t('review.createTitle')} />
 
       <KeyboardAvoidingView
         className="flex-1"
@@ -140,7 +142,7 @@ export default function CreateReviewScreen() {
                   <MaterialIcons name="rate-review" size={15} color="#296C24" />
                 </View>
                 <Text className="font-label font-semibold text-sm text-neutral-T50">
-                  {isEditMode ? 'Chỉnh sửa đánh giá cho' : 'Bạn đang đánh giá'}
+                  {isEditMode ? t('review.editingContext') : t('review.reviewingContext')}
                 </Text>
               </View>
               <Text
@@ -158,7 +160,7 @@ export default function CreateReviewScreen() {
               style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
               className="text-base text-neutral-T10"
             >
-              Chọn mức độ hài lòng
+              {t('review.selectSatisfaction')}
             </Text>
 
             <StarRating rating={rating} onRate={setRating} size={40} gap={8} />
@@ -172,12 +174,12 @@ export default function CreateReviewScreen() {
                   className="font-label font-semibold text-sm"
                   style={{ color: ratingMeta.color }}
                 >
-                  {ratingMeta.label}
+                  {t(ratingMeta.labelKey)}
                 </Text>
               </View>
             ) : (
               <Text className="font-body text-sm text-neutral-T70">
-                Nhấn vào sao để chọn
+                {t('review.tapStarHint')}
               </Text>
             )}
           </View>
@@ -188,17 +190,17 @@ export default function CreateReviewScreen() {
               style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
               className="text-base text-neutral-T10"
             >
-              Nhận xét (tùy chọn)
+              {t('review.feedbackOptionalTitle')}
             </Text>
             <Text className="font-body text-sm text-neutral-T50 -mt-1">
-              Chia sẻ trải nghiệm của bạn với cộng đồng
+              {t('review.feedbackHint')}
             </Text>
 
             <View className="bg-neutral-T100 rounded-2xl overflow-hidden" style={styles.card}>
               <TextInput
                 value={feedback}
                 onChangeText={setFeedback}
-                placeholder="Viết nhận xét của bạn về giao dịch này..."
+                placeholder={t('review.feedbackPlaceholder')}
                 placeholderTextColor="#AAABAB"
                 multiline
                 numberOfLines={5}
@@ -208,7 +210,7 @@ export default function CreateReviewScreen() {
               />
               <View className="px-4 pb-3 flex-row justify-end">
                 <Text className="font-label text-xs text-neutral-T70">
-                  {feedback.trim().length} ký tự
+                  {t('review.charCount', { count: feedback.trim().length })}
                 </Text>
               </View>
             </View>
@@ -219,7 +221,7 @@ export default function CreateReviewScreen() {
             <View className="mx-4 mt-4 flex-row gap-2 p-3 bg-primary-T95 rounded-xl items-start">
               <MaterialIcons name="eco" size={16} color="#296C24" style={{ marginTop: 1 }} />
               <Text className="font-body text-xs text-primary-T30 flex-1 leading-4">
-                Bạn sẽ nhận được +2 GreenPoints khi hoàn thành đánh giá này. Góp phần xây dựng cộng đồng FoodShare văn minh hơn!
+                {t('review.greenPointsIncentive')}
               </Text>
             </View>
           )}
@@ -229,7 +231,7 @@ export default function CreateReviewScreen() {
             <View className="mx-4 mt-4 flex-row gap-2 p-3 bg-amber-50 rounded-xl items-start">
               <MaterialIcons name="info-outline" size={16} color="#A16207" style={{ marginTop: 1 }} />
               <Text className="font-body text-xs leading-4" style={{ color: '#A16207', flex: 1 }}>
-                Sửa đánh giá sẽ tự động tính lại điểm uy tín của người được đánh giá. Không có GreenPoints bổ sung khi sửa.
+                {t('review.editWarning')}
               </Text>
             </View>
           )}
@@ -238,7 +240,7 @@ export default function CreateReviewScreen() {
           <View className="mx-4 mt-4 flex-row gap-2 p-3 bg-red-50 rounded-xl items-start">
             <MaterialIcons name="gpp-good" size={16} color="#ba1a1a" style={{ marginTop: 1 }} />
             <Text className="font-body text-xs text-error flex-1 leading-4">
-              Đánh giá sai lệch hoặc cố ý ác ý có thể bị Admin xóa và dẫn đến trừ điểm xanh. Người dùng bị đánh giá có quyền báo cáo đánh giá của bạn.
+              {t('review.integrityPolicy')}
             </Text>
           </View>
         </ScrollView>
@@ -269,7 +271,7 @@ export default function CreateReviewScreen() {
                 className="font-label font-semibold text-base"
                 style={{ color: canSubmit ? '#FFFFFF' : '#AAABAB' }}
               >
-                {isEditMode ? 'Lưu thay đổi' : 'Gửi đánh giá'}
+                {isEditMode ? t('review.saveBtn') : t('review.submitBtn')}
               </Text>
             </>
           )}

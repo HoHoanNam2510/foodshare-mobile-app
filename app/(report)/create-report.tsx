@@ -2,6 +2,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Alert,
@@ -34,49 +35,49 @@ const MAX_IMAGES = 5;
 
 interface ReasonOption {
   value: ReportReason;
-  label: string;
+  labelKey: string;
   icon: string;
-  description: string;
+  descKey: string;
 }
 
 const REASON_OPTIONS: ReasonOption[] = [
   {
     value: 'FOOD_SAFETY',
-    label: 'An toàn thực phẩm',
+    labelKey: 'report.reasonFoodSafetyLabel',
     icon: 'warning',
-    description: 'Thức ăn gây ngộ độc, hư hỏng, không an toàn',
+    descKey: 'report.reasonFoodSafetyDesc',
   },
   {
     value: 'SCAM',
-    label: 'Lừa đảo',
+    labelKey: 'report.reasonScamLabel',
     icon: 'gpp-bad',
-    description: 'Hàng không đúng mô tả, cố ý gian lận',
+    descKey: 'report.reasonScamDesc',
   },
   {
     value: 'INAPPROPRIATE_CONTENT',
-    label: 'Nội dung không phù hợp',
+    labelKey: 'report.reasonInappropriateLabel',
     icon: 'block',
-    description: 'Thông tin sai lệch, hình ảnh phản cảm',
+    descKey: 'report.reasonInappropriateDesc',
   },
   {
     value: 'NO_SHOW',
-    label: 'Không xuất hiện',
+    labelKey: 'report.reasonNoShowLabel',
     icon: 'event-busy',
-    description: 'Đã xác nhận nhưng không đến giao/nhận đồ',
+    descKey: 'report.reasonNoShowDesc',
   },
   {
     value: 'OTHER',
-    label: 'Lý do khác',
+    labelKey: 'report.reasonOtherLabel',
     icon: 'more-horiz',
-    description: 'Vi phạm khác không thuộc các mục trên',
+    descKey: 'report.reasonOtherDesc',
   },
 ];
 
-const TARGET_TYPE_LABEL: Record<ReportTargetType, string> = {
-  POST: 'Bài đăng',
-  USER: 'Người dùng',
-  TRANSACTION: 'Giao dịch',
-  REVIEW: 'Đánh giá',
+const TARGET_TYPE_LABEL_KEY: Record<ReportTargetType, string> = {
+  POST: 'report.targetPost',
+  USER: 'report.targetUser',
+  TRANSACTION: 'report.targetTransaction',
+  REVIEW: 'report.targetReview',
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -84,6 +85,7 @@ const TARGET_TYPE_LABEL: Record<ReportTargetType, string> = {
 export default function CreateReportScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const {
     targetType,
     targetId,
@@ -128,7 +130,7 @@ export default function CreateReportScreen() {
 
   const totalImages = keptImageUrls.length + newLocalImages.length;
 
-  const targetLabel = targetType ? TARGET_TYPE_LABEL[targetType] : 'Thực thể';
+  const targetLabel = targetType ? t(TARGET_TYPE_LABEL_KEY[targetType]) : t('report.targetUnknown');
 
   // ── Image handling ────────────────────────────────────────────────────────
 
@@ -152,18 +154,15 @@ export default function CreateReportScreen() {
 
   const handleSubmit = async () => {
     if (!selectedReason) {
-      Alert.alert('Thiếu thông tin', 'Vui lòng chọn lý do vi phạm.');
+      Alert.alert(t('report.missingReasonTitle'), t('report.missingReasonMsg'));
       return;
     }
     if (description.trim().length < 10) {
-      Alert.alert('Thiếu thông tin', 'Mô tả sự việc tối thiểu 10 ký tự.');
+      Alert.alert(t('report.missingReasonTitle'), t('report.descTooShortMsg'));
       return;
     }
     if (totalImages === 0) {
-      Alert.alert(
-        'Thiếu bằng chứng',
-        'Vui lòng đính kèm ít nhất 1 ảnh bằng chứng.'
-      );
+      Alert.alert(t('report.missingEvidenceTitle'), t('report.missingEvidenceMsg'));
       return;
     }
 
@@ -187,9 +186,9 @@ export default function CreateReportScreen() {
           images: finalImages,
         });
         Alert.alert(
-          'Đã cập nhật báo cáo',
-          'Thông tin báo cáo đã được cập nhật thành công.',
-          [{ text: 'Đóng', onPress: () => router.back() }]
+          t('report.updatedTitle'),
+          t('report.updatedMsg'),
+          [{ text: t('common.close'), onPress: () => router.back() }]
         );
       } else {
         await createReportApi({
@@ -200,21 +199,19 @@ export default function CreateReportScreen() {
           images: finalImages,
         });
         Alert.alert(
-          'Đã gửi báo cáo',
-          'Cảm ơn bạn đã báo cáo. Đội ngũ FoodShare sẽ xem xét và xử lý trong thời gian sớm nhất.',
-          [{ text: 'Về trang chính', onPress: () => router.back() }]
+          t('report.sentTitle'),
+          t('report.sentMsg'),
+          [{ text: t('report.backMainBtn'), onPress: () => router.back() }]
         );
       }
     } catch (err: any) {
       const msg: string =
         err?.response?.data?.message ??
-        (isEditMode
-          ? 'Không thể cập nhật báo cáo. Vui lòng thử lại.'
-          : 'Không thể gửi báo cáo. Vui lòng thử lại.');
+        (isEditMode ? t('report.updateError') : t('report.createError'));
       if (err?.response?.status === 409) {
-        Alert.alert('Không thể gửi', msg);
+        Alert.alert(t('report.cannotSendTitle'), msg);
       } else {
-        Alert.alert('Lỗi', msg);
+        Alert.alert(t('common.error'), msg);
       }
     } finally {
       setIsSubmitting(false);
@@ -237,7 +234,7 @@ export default function CreateReportScreen() {
         backgroundColor="transparent"
         translucent
       />
-      <StackHeader title={isEditMode ? 'Sửa báo cáo' : 'Báo cáo vi phạm'} />
+      <StackHeader title={isEditMode ? t('report.editTitle') : t('report.createTitle')} />
 
       <KeyboardAvoidingView
         className="flex-1"
@@ -259,7 +256,7 @@ export default function CreateReportScreen() {
                 <MaterialIcons name="flag" size={15} color="#C05621" />
               </View>
               <Text className="font-label font-semibold text-sm text-neutral-T50">
-                Đối tượng báo cáo
+                {t('report.targetSectionLabel')}
               </Text>
             </View>
             <View className="flex-row items-center gap-2">
@@ -292,10 +289,10 @@ export default function CreateReportScreen() {
               className="text-base text-neutral-T10"
               style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
             >
-              Lý do vi phạm
+              {t('report.reasonTitle')}
             </Text>
             <Text className="font-body text-sm text-neutral-T50 -mt-1">
-              Chọn lý do phù hợp nhất với sự việc
+              {t('report.reasonHint')}
             </Text>
 
             <View className="gap-2 mt-1">
@@ -326,13 +323,13 @@ export default function CreateReportScreen() {
                         className="font-label text-sm text-neutral-T10"
                         style={{ fontWeight: isSelected ? '700' : '600' }}
                       >
-                        {option.label}
+                        {t(option.labelKey)}
                       </Text>
                       <Text
                         className="font-body text-xs text-neutral-T50"
                         numberOfLines={1}
                       >
-                        {option.description}
+                        {t(option.descKey)}
                       </Text>
                     </View>
                     <View
@@ -358,10 +355,10 @@ export default function CreateReportScreen() {
               className="text-base text-neutral-T10"
               style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
             >
-              Mô tả sự việc
+              {t('report.descriptionTitle')}
             </Text>
             <Text className="font-body text-sm text-neutral-T50 -mt-1">
-              Tối thiểu 10 ký tự — cung cấp càng nhiều chi tiết càng tốt
+              {t('report.descriptionHint')}
             </Text>
             <View
               className="bg-neutral-T100 rounded-2xl"
@@ -375,7 +372,7 @@ export default function CreateReportScreen() {
               <TextInput
                 value={description}
                 onChangeText={setDescription}
-                placeholder="Mô tả chi tiết sự việc vi phạm..."
+                placeholder={t('report.descriptionPlaceholder')}
                 placeholderTextColor="#AAABAB"
                 multiline
                 numberOfLines={5}
@@ -394,7 +391,7 @@ export default function CreateReportScreen() {
                       description.trim().length < 10 ? '#C05621' : '#AAABAB',
                   }}
                 >
-                  {description.trim().length}/10 ký tự tối thiểu
+                  {t('report.charMinCount', { count: description.trim().length })}
                 </Text>
               </View>
             </View>
@@ -408,10 +405,10 @@ export default function CreateReportScreen() {
                   className="text-base text-neutral-T10"
                   style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
                 >
-                  Ảnh bằng chứng
+                  {t('report.evidenceTitle')}
                 </Text>
                 <Text className="font-body text-sm text-neutral-T50">
-                  Bắt buộc — tối đa {MAX_IMAGES} ảnh
+                  {t('report.evidenceRequired', { max: MAX_IMAGES })}
                 </Text>
               </View>
               <Text className="font-label font-semibold text-xs text-neutral-T50">
@@ -432,7 +429,7 @@ export default function CreateReportScreen() {
                 >
                   <MaterialIcons name="add-a-photo" size={26} color="#296C24" />
                   <Text className="font-label text-xs font-semibold text-primary-T40">
-                    Thêm ảnh
+                    {t('report.addPhotoBtn')}
                   </Text>
                 </TouchableOpacity>
               )}
@@ -450,7 +447,7 @@ export default function CreateReportScreen() {
                   {/* "Saved" badge */}
                   <View className="absolute bottom-1.5 left-1.5 bg-primary-T40/80 rounded px-1.5 py-0.5">
                     <Text className="text-white text-[9px] font-bold">
-                      Đã lưu
+                      {t('report.savedBadge')}
                     </Text>
                   </View>
                   {!isSubmitting && (
@@ -501,8 +498,7 @@ export default function CreateReportScreen() {
               style={{ marginTop: 1 }}
             />
             <Text className="font-body text-xs text-error flex-1 leading-4">
-              Báo cáo sai sự thật hoặc cố ý spam có thể dẫn đến trừ điểm xanh và
-              khóa tài khoản. Mỗi thực thể chỉ được báo cáo một lần.
+              {t('report.policyNote')}
             </Text>
           </View>
         </ScrollView>
@@ -533,7 +529,7 @@ export default function CreateReportScreen() {
                 className="font-label font-semibold text-base"
                 style={{ color: canSubmit ? '#FFFFFF' : '#AAABAB' }}
               >
-                {isEditMode ? 'Lưu thay đổi' : 'Gửi báo cáo'}
+                {isEditMode ? t('report.saveBtn') : t('report.submitBtn')}
               </Text>
             </>
           )}

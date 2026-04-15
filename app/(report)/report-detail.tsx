@@ -2,6 +2,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   ActivityIndicator,
@@ -30,31 +31,31 @@ import {
 
 const STATUS_CONFIG: Record<
   ReportStatus,
-  { label: string; bg: string; text: string; border: string; icon: string }
+  { labelKey: string; bg: string; text: string; border: string; icon: string }
 > = {
   PENDING: {
-    label: 'Đang xử lý',
+    labelKey: 'report.statusPending',
     bg: '#FEF9C3',
     text: '#A16207',
     border: '#FDE68A',
     icon: 'hourglass-empty',
   },
   RESOLVED: {
-    label: 'Đã giải quyết',
+    labelKey: 'report.statusResolved',
     bg: '#DCFCE7',
     text: '#15803D',
     border: '#BBF7D0',
     icon: 'check-circle',
   },
   DISMISSED: {
-    label: 'Đã bác bỏ',
+    labelKey: 'report.statusDismissed',
     bg: '#FEE2E2',
     text: '#DC2626',
     border: '#FECACA',
     icon: 'cancel',
   },
   WITHDRAWN: {
-    label: 'Đã rút lại',
+    labelKey: 'report.statusWithdrawn',
     bg: '#F3F4F6',
     text: '#6B7280',
     border: '#E5E7EB',
@@ -64,30 +65,30 @@ const STATUS_CONFIG: Record<
 
 const TARGET_TYPE_CONFIG: Record<
   ReportTargetType,
-  { label: string; icon: string; bg: string; text: string }
+  { labelKey: string; icon: string; bg: string; text: string }
 > = {
-  POST: { label: 'Bài đăng', icon: 'article', bg: '#EFF6FF', text: '#1D4ED8' },
+  POST: { labelKey: 'report.targetPost', icon: 'article', bg: '#EFF6FF', text: '#1D4ED8' },
   USER: {
-    label: 'Người dùng',
+    labelKey: 'report.targetUser',
     icon: 'person',
     bg: '#F5F3FF',
     text: '#7C3AED',
   },
   TRANSACTION: {
-    label: 'Giao dịch',
+    labelKey: 'report.targetTransaction',
     icon: 'receipt-long',
     bg: '#FFF7ED',
     text: '#C2410C',
   },
-  REVIEW: { label: 'Đánh giá', icon: 'star', bg: '#FFFBEB', text: '#B45309' },
+  REVIEW: { labelKey: 'report.targetReview', icon: 'star', bg: '#FFFBEB', text: '#B45309' },
 };
 
-const REASON_LABEL: Record<string, string> = {
-  FOOD_SAFETY: 'An toàn thực phẩm',
-  SCAM: 'Lừa đảo',
-  INAPPROPRIATE_CONTENT: 'Nội dung không phù hợp',
-  NO_SHOW: 'Không xuất hiện',
-  OTHER: 'Lý do khác',
+const REASON_LABEL_KEY: Record<string, string> = {
+  FOOD_SAFETY: 'report.reasonFoodSafetyLabel',
+  SCAM: 'report.reasonScamLabel',
+  INAPPROPRIATE_CONTENT: 'report.reasonInappropriateLabel',
+  NO_SHOW: 'report.reasonNoShowLabel',
+  OTHER: 'report.reasonOtherLabel',
 };
 
 const REASON_ICON: Record<string, string> = {
@@ -98,13 +99,13 @@ const REASON_ICON: Record<string, string> = {
   OTHER: 'more-horiz',
 };
 
-const ACTION_LABEL: Record<ReportAction, string | null> = {
+const ACTION_LABEL_KEY: Record<ReportAction, string | null> = {
   NONE: null,
-  POST_HIDDEN: 'Bài đăng đã bị ẩn',
-  USER_WARNED: 'Người dùng đã bị cảnh cáo',
-  USER_BANNED: 'Người dùng đã bị khóa tài khoản',
-  REFUNDED: 'Đã hoàn tiền cho bên liên quan',
-  REVIEW_DELETED: 'Đánh giá vi phạm đã bị xóa',
+  POST_HIDDEN: 'report.actionPostHidden',
+  USER_WARNED: 'report.actionUserWarned',
+  USER_BANNED: 'report.actionUserBanned',
+  REFUNDED: 'report.actionRefunded',
+  REVIEW_DELETED: 'report.actionReviewDeleted',
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -160,6 +161,7 @@ function InfoRow({
 
 export default function ReportDetailScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { reportJson } = useLocalSearchParams<{ reportJson: string }>();
 
@@ -193,24 +195,24 @@ export default function ReportDetailScreen() {
     if (!report) return;
     const reportId = report._id;
     Alert.alert(
-      'Rút lại báo cáo',
-      'Báo cáo sẽ được đánh dấu là đã rút lại. Bạn vẫn có thể gửi báo cáo mới cho thực thể này sau. Xác nhận rút lại?',
+      t('report.withdrawConfirmTitle'),
+      t('report.withdrawConfirmMsg'),
       [
-        { text: 'Huỷ', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Rút lại',
+          text: t('report.withdrawBtn'),
           style: 'destructive',
           onPress: async () => {
             setIsWithdrawing(true);
             try {
               await withdrawReportApi(reportId);
-              Alert.alert('Đã rút lại', 'Báo cáo của bạn đã được rút lại.', [
-                { text: 'Đóng', onPress: () => router.back() },
+              Alert.alert(t('report.withdrawnTitle'), t('report.withdrawnMsg'), [
+                { text: t('common.close'), onPress: () => router.back() },
               ]);
             } catch (err: any) {
               const msg: string =
-                err?.response?.data?.message ?? 'Không thể rút lại báo cáo. Vui lòng thử lại.';
-              Alert.alert('Lỗi', msg);
+                err?.response?.data?.message ?? t('report.withdrawError');
+              Alert.alert(t('common.error'), msg);
             } finally {
               setIsWithdrawing(false);
             }
@@ -224,9 +226,9 @@ export default function ReportDetailScreen() {
     return (
       <View className="flex-1 bg-neutral items-center justify-center">
         <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-        <StackHeader title="Chi tiết báo cáo" />
+        <StackHeader title={t('report.detailTitle')} />
         <Text className="font-body text-sm text-neutral-T50 mt-8">
-          Không tìm thấy dữ liệu báo cáo.
+          {t('report.notFoundMsg')}
         </Text>
       </View>
     );
@@ -234,16 +236,17 @@ export default function ReportDetailScreen() {
 
   const statusCfg = STATUS_CONFIG[report.status];
   const targetCfg = TARGET_TYPE_CONFIG[report.targetType];
-  const reasonLabel = REASON_LABEL[report.reason] ?? report.reason;
+  const reasonLabel = REASON_LABEL_KEY[report.reason] ? t(REASON_LABEL_KEY[report.reason]) : report.reason;
   const reasonIcon = REASON_ICON[report.reason] ?? 'flag';
-  const actionLabel = ACTION_LABEL[report.actionTaken];
+  const actionLabelKey = ACTION_LABEL_KEY[report.actionTaken];
+  const actionLabel = actionLabelKey ? t(actionLabelKey) : null;
   const isDismissed = report.status === 'DISMISSED';
   const isResolved = report.status === 'RESOLVED';
 
   return (
     <View className="flex-1 bg-neutral">
       <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-      <StackHeader title="Chi tiết báo cáo" />
+      <StackHeader title={t('report.detailTitle')} />
 
       {/* ── Lightbox ── */}
       <Modal
@@ -308,13 +311,13 @@ export default function ReportDetailScreen() {
               className="font-label font-semibold text-xs uppercase tracking-wider"
               style={{ color: statusCfg.text + 'CC' }}
             >
-              Trạng thái
+              {t('report.statusSectionLabel')}
             </Text>
             <Text
               className="font-sans text-base mt-0.5"
               style={{ fontFamily: 'Epilogue', fontWeight: '700', color: statusCfg.text }}
             >
-              {statusCfg.label}
+              {t(statusCfg.labelKey)}
             </Text>
           </View>
           <View
@@ -325,22 +328,22 @@ export default function ReportDetailScreen() {
               className="font-label font-semibold text-xs"
               style={{ color: targetCfg.text }}
             >
-              {targetCfg.label}
+              {t(targetCfg.labelKey)}
             </Text>
           </View>
         </View>
 
         {/* ── Report Info Card ── */}
         <View className="mx-4 mb-4 bg-neutral-T100 rounded-2xl p-4 gap-4" style={styles.card}>
-          <SectionLabel label="Thông tin báo cáo" />
+          <SectionLabel label={t('report.infoSectionLabel')} />
 
-          <InfoRow icon={reasonIcon} label="Lý do vi phạm" value={reasonLabel} />
+          <InfoRow icon={reasonIcon} label={t('report.violationReasonLabel')} value={reasonLabel} />
 
           <View className="h-px bg-neutral-T90" />
 
           <InfoRow
             icon="event"
-            label="Ngày gửi báo cáo"
+            label={t('report.submittedDateLabel')}
             value={formatDate(report.createdAt)}
           />
 
@@ -349,7 +352,7 @@ export default function ReportDetailScreen() {
               <View className="h-px bg-neutral-T90" />
               <InfoRow
                 icon="event-available"
-                label={isDismissed ? 'Ngày bác bỏ' : 'Ngày giải quyết'}
+                label={isDismissed ? t('report.dismissedDateLabel') : t('report.resolvedDateLabel')}
                 value={formatDate(report.resolvedAt)}
               />
             </>
@@ -358,7 +361,7 @@ export default function ReportDetailScreen() {
 
         {/* ── Description Card ── */}
         <View className="mx-4 mb-4 bg-neutral-T100 rounded-2xl p-4 gap-3" style={styles.card}>
-          <SectionLabel label="Mô tả sự việc" />
+          <SectionLabel label={t('report.descSectionLabel')} />
           <Text className="font-body text-sm text-neutral-T10 leading-5">
             {report.description}
           </Text>
@@ -368,9 +371,9 @@ export default function ReportDetailScreen() {
         {report.images.length > 0 && (
           <View className="mx-4 mb-4 bg-neutral-T100 rounded-2xl p-4 gap-3" style={styles.card}>
             <View className="flex-row items-center justify-between">
-              <SectionLabel label="Ảnh bằng chứng" />
+              <SectionLabel label={t('report.evidenceSectionLabel')} />
               <Text className="font-label text-xs text-neutral-T50 -mt-2">
-                {report.images.length} ảnh
+                {t('report.evidenceCountLabel', { count: report.images.length })}
               </Text>
             </View>
             <ScrollView
@@ -423,7 +426,7 @@ export default function ReportDetailScreen() {
                 className="font-label font-semibold text-sm"
                 style={{ color: isDismissed ? '#DC2626' : '#15803D' }}
               >
-                {isDismissed ? 'Lý do bác bỏ' : 'Kết quả xử lý'}
+                {isDismissed ? t('report.dismissedReasonLabel') : t('report.resolvedResultLabel')}
               </Text>
             </View>
 
@@ -439,7 +442,7 @@ export default function ReportDetailScreen() {
                 className="font-body text-sm italic"
                 style={{ color: isDismissed ? '#DC2626' : '#15803D', opacity: 0.7 }}
               >
-                Không có ghi chú từ Admin.
+                {t('report.noAdminNote')}
               </Text>
             )}
 
@@ -458,7 +461,7 @@ export default function ReportDetailScreen() {
                   className="font-label font-semibold text-xs flex-1"
                   style={{ color: isDismissed ? '#DC2626' : '#15803D' }}
                 >
-                  Biện pháp xử lý: {actionLabel}
+                  {t('report.actionLabel')} {actionLabel}
                 </Text>
               </View>
             )}
@@ -471,8 +474,7 @@ export default function ReportDetailScreen() {
             <View className="mx-4 mb-4 flex-row gap-3 p-4 bg-yellow-50 rounded-2xl border border-yellow-200" style={styles.card}>
               <MaterialIcons name="hourglass-empty" size={18} color="#A16207" style={{ marginTop: 1 }} />
               <Text className="font-body text-sm text-yellow-800 flex-1 leading-5">
-                Báo cáo của bạn đang được đội ngũ FoodShare xem xét. Chúng tôi sẽ
-                thông báo kết quả qua email sớm nhất có thể.
+                {t('report.pendingNotice')}
               </Text>
             </View>
 
@@ -485,7 +487,7 @@ export default function ReportDetailScreen() {
               >
                 <MaterialIcons name="edit" size={18} color="#296C24" />
                 <Text className="font-label font-semibold text-sm text-primary-T40">
-                  Sửa báo cáo
+                  {t('report.editReportBtn')}
                 </Text>
               </TouchableOpacity>
 
@@ -501,7 +503,7 @@ export default function ReportDetailScreen() {
                   <>
                     <MaterialIcons name="undo" size={18} color="#DC2626" />
                     <Text className="font-label font-semibold text-sm text-error">
-                      Rút lại
+                      {t('report.withdrawBtn')}
                     </Text>
                   </>
                 )}
@@ -515,8 +517,7 @@ export default function ReportDetailScreen() {
           <View className="mx-4 mb-4 flex-row gap-3 p-4 bg-primary-T95 rounded-2xl" style={styles.card}>
             <MaterialIcons name="refresh" size={18} color="#296C24" style={{ marginTop: 1 }} />
             <Text className="font-body text-sm text-primary-T30 flex-1 leading-5">
-              Bạn có thể gửi báo cáo mới với bằng chứng rõ ràng hơn nếu tin rằng
-              vi phạm vẫn còn tồn tại.
+              {t('report.dismissedResubmitNotice')}
             </Text>
           </View>
         )}

@@ -2,6 +2,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   FlatList,
@@ -19,36 +20,36 @@ import { getMyReportsApi, type IReport, type ReportStatus, type ReportTargetType
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
-const STATUS_CONFIG: Record<ReportStatus, { label: string; bg: string; text: string; icon: string }> = {
-  PENDING:   { label: 'Đang xử lý',    bg: '#FEF9C3', text: '#A16207', icon: 'hourglass-empty' },
-  RESOLVED:  { label: 'Đã giải quyết', bg: '#DCFCE7', text: '#15803D', icon: 'check-circle' },
-  DISMISSED: { label: 'Đã bác bỏ',     bg: '#FEE2E2', text: '#DC2626', icon: 'cancel' },
-  WITHDRAWN: { label: 'Đã rút lại',    bg: '#F3F4F6', text: '#6B7280', icon: 'undo' },
+const STATUS_CONFIG: Record<ReportStatus, { labelKey: string; bg: string; text: string; icon: string }> = {
+  PENDING:   { labelKey: 'report.statusPending',   bg: '#FEF9C3', text: '#A16207', icon: 'hourglass-empty' },
+  RESOLVED:  { labelKey: 'report.statusResolved',  bg: '#DCFCE7', text: '#15803D', icon: 'check-circle' },
+  DISMISSED: { labelKey: 'report.statusDismissed', bg: '#FEE2E2', text: '#DC2626', icon: 'cancel' },
+  WITHDRAWN: { labelKey: 'report.statusWithdrawn', bg: '#F3F4F6', text: '#6B7280', icon: 'undo' },
 };
 
-const TARGET_TYPE_CONFIG: Record<ReportTargetType, { label: string; icon: string; bg: string; text: string }> = {
-  POST:        { label: 'Bài đăng',    icon: 'article',        bg: '#EFF6FF', text: '#1D4ED8' },
-  USER:        { label: 'Người dùng',  icon: 'person',         bg: '#F5F3FF', text: '#7C3AED' },
-  TRANSACTION: { label: 'Giao dịch',   icon: 'receipt-long',   bg: '#FFF7ED', text: '#C2410C' },
-  REVIEW:      { label: 'Đánh giá',    icon: 'star',           bg: '#FFFBEB', text: '#B45309' },
+const TARGET_TYPE_CONFIG: Record<ReportTargetType, { labelKey: string; icon: string; bg: string; text: string }> = {
+  POST:        { labelKey: 'report.targetPost',        icon: 'article',        bg: '#EFF6FF', text: '#1D4ED8' },
+  USER:        { labelKey: 'report.targetUser',        icon: 'person',         bg: '#F5F3FF', text: '#7C3AED' },
+  TRANSACTION: { labelKey: 'report.targetTransaction', icon: 'receipt-long',   bg: '#FFF7ED', text: '#C2410C' },
+  REVIEW:      { labelKey: 'report.targetReview',      icon: 'star',           bg: '#FFFBEB', text: '#B45309' },
 };
 
-const REASON_LABEL: Record<string, string> = {
-  FOOD_SAFETY:           'An toàn thực phẩm',
-  SCAM:                  'Lừa đảo',
-  INAPPROPRIATE_CONTENT: 'Nội dung không phù hợp',
-  NO_SHOW:               'Không xuất hiện',
-  OTHER:                 'Lý do khác',
+const REASON_LABEL_KEY: Record<string, string> = {
+  FOOD_SAFETY:           'report.reasonFoodSafetyLabel',
+  SCAM:                  'report.reasonScamLabel',
+  INAPPROPRIATE_CONTENT: 'report.reasonInappropriateLabel',
+  NO_SHOW:               'report.reasonNoShowLabel',
+  OTHER:                 'report.reasonOtherLabel',
 };
 
 type FilterTab = 'ALL' | ReportStatus;
 
-const FILTER_TABS: { key: FilterTab; label: string }[] = [
-  { key: 'ALL',       label: 'Tất cả' },
-  { key: 'PENDING',   label: 'Đang xử lý' },
-  { key: 'RESOLVED',  label: 'Đã giải quyết' },
-  { key: 'DISMISSED', label: 'Đã bác bỏ' },
-  { key: 'WITHDRAWN', label: 'Đã rút lại' },
+const FILTER_TAB_KEYS: { key: FilterTab; labelKey: string }[] = [
+  { key: 'ALL',       labelKey: 'report.filterAll' },
+  { key: 'PENDING',   labelKey: 'report.statusPending' },
+  { key: 'RESOLVED',  labelKey: 'report.statusResolved' },
+  { key: 'DISMISSED', labelKey: 'report.statusDismissed' },
+  { key: 'WITHDRAWN', labelKey: 'report.statusWithdrawn' },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -64,18 +65,20 @@ function formatDate(iso: string) {
 // ── Sub-components ────────────────────────────────────────────────────────────
 
 function StatusBadge({ status }: { status: ReportStatus }) {
+  const { t } = useTranslation();
   const cfg = STATUS_CONFIG[status];
   return (
     <View style={[styles.badge, { backgroundColor: cfg.bg }]} className="flex-row items-center gap-1">
       <MaterialIcons name={cfg.icon as any} size={11} color={cfg.text} />
-      <Text style={[styles.badgeText, { color: cfg.text }]}>{cfg.label.toUpperCase()}</Text>
+      <Text style={[styles.badgeText, { color: cfg.text }]}>{t(cfg.labelKey).toUpperCase()}</Text>
     </View>
   );
 }
 
 function ReportCard({ report, onPress }: { report: IReport; onPress: () => void }) {
+  const { t } = useTranslation();
   const targetCfg = TARGET_TYPE_CONFIG[report.targetType];
-  const reasonLabel = REASON_LABEL[report.reason] ?? report.reason;
+  const reasonLabel = REASON_LABEL_KEY[report.reason] ? t(REASON_LABEL_KEY[report.reason]) : report.reason;
   const isDismissed = report.status === 'DISMISSED';
 
   return (
@@ -95,7 +98,7 @@ function ReportCard({ report, onPress }: { report: IReport; onPress: () => void 
           >
             <MaterialIcons name={targetCfg.icon as any} size={13} color={targetCfg.text} />
             <Text className="font-label font-semibold text-xs" style={{ color: targetCfg.text }}>
-              {targetCfg.label}
+              {t(targetCfg.labelKey)}
             </Text>
           </View>
           <StatusBadge status={report.status} />
@@ -119,7 +122,7 @@ function ReportCard({ report, onPress }: { report: IReport; onPress: () => void 
           <View className="flex-row items-center gap-1">
             <MaterialIcons name="image" size={13} color="#AAABAB" />
             <Text className="font-label text-xs text-neutral-T70">
-              {report.images.length} ảnh bằng chứng
+              {t('report.evidenceCountLabel', { count: report.images.length })}
             </Text>
           </View>
           <Text className="font-body text-xs text-neutral-T70">
@@ -144,7 +147,7 @@ function ReportCard({ report, onPress }: { report: IReport; onPress: () => void 
               className="font-label font-semibold text-xs"
               style={{ color: isDismissed ? '#DC2626' : '#15803D' }}
             >
-              {isDismissed ? 'Lý do bác bỏ' : 'Kết quả xử lý'}
+              {isDismissed ? t('report.dismissedReasonLabel') : t('report.resolvedResultLabel')}
             </Text>
           </View>
           <Text
@@ -161,14 +164,14 @@ function ReportCard({ report, onPress }: { report: IReport; onPress: () => void 
         <View className="mx-4 mb-4 flex-row items-center gap-2 p-3 bg-primary-T95 rounded-xl">
           <MaterialIcons name="refresh" size={14} color="#296C24" />
           <Text className="font-body text-xs text-primary-T30 flex-1 leading-4">
-            Báo cáo đã bị bác bỏ. Bạn có thể gửi lại với bằng chứng rõ ràng hơn.
+            {t('report.dismissedHint')}
           </Text>
         </View>
       )}
 
       {/* Tap hint */}
       <View className="mx-4 mb-3 flex-row items-center justify-end gap-1">
-        <Text className="font-body text-xs text-neutral-T70">Xem chi tiết</Text>
+        <Text className="font-body text-xs text-neutral-T70">{t('report.viewDetailHint')}</Text>
         <MaterialIcons name="chevron-right" size={14} color="#AAABAB" />
       </View>
     </TouchableOpacity>
@@ -176,12 +179,13 @@ function ReportCard({ report, onPress }: { report: IReport; onPress: () => void 
 }
 
 function EmptyState({ filter }: { filter: FilterTab }) {
-  const msgs: Record<FilterTab, { icon: string; title: string; body: string }> = {
-    ALL:       { icon: 'flag',            title: 'Chưa có báo cáo nào',                  body: 'Khi bạn gửi báo cáo vi phạm, chúng sẽ hiển thị tại đây.' },
-    PENDING:   { icon: 'hourglass-empty', title: 'Không có báo cáo đang xử lý',          body: 'Các báo cáo chờ Admin xem xét sẽ xuất hiện ở đây.' },
-    RESOLVED:  { icon: 'check-circle',    title: 'Chưa có báo cáo nào được giải quyết',  body: '' },
-    DISMISSED: { icon: 'cancel',          title: 'Không có báo cáo nào bị bác bỏ',       body: '' },
-    WITHDRAWN: { icon: 'undo',            title: 'Không có báo cáo nào đã rút lại',      body: '' },
+  const { t } = useTranslation();
+  const msgs: Record<FilterTab, { icon: string; titleKey: string; bodyKey: string }> = {
+    ALL:       { icon: 'flag',            titleKey: 'report.emptyAllTitle',      bodyKey: 'report.emptyAllBody' },
+    PENDING:   { icon: 'hourglass-empty', titleKey: 'report.emptyPendingTitle',  bodyKey: 'report.emptyPendingBody' },
+    RESOLVED:  { icon: 'check-circle',    titleKey: 'report.emptyResolvedTitle', bodyKey: '' },
+    DISMISSED: { icon: 'cancel',          titleKey: 'report.emptyDismissedTitle',bodyKey: '' },
+    WITHDRAWN: { icon: 'undo',            titleKey: 'report.emptyWithdrawnTitle',bodyKey: '' },
   };
   const cfg = msgs[filter];
   return (
@@ -189,9 +193,9 @@ function EmptyState({ filter }: { filter: FilterTab }) {
       <View className="w-16 h-16 rounded-2xl bg-primary-T95 items-center justify-center">
         <MaterialIcons name={cfg.icon as any} size={28} color="#296C24" />
       </View>
-      <Text className="font-sans font-bold text-base text-neutral-T10 text-center">{cfg.title}</Text>
-      {cfg.body ? (
-        <Text className="font-body text-sm text-neutral-T50 text-center leading-5">{cfg.body}</Text>
+      <Text className="font-sans font-bold text-base text-neutral-T10 text-center">{t(cfg.titleKey)}</Text>
+      {cfg.bodyKey ? (
+        <Text className="font-body text-sm text-neutral-T50 text-center leading-5">{t(cfg.bodyKey)}</Text>
       ) : null}
     </View>
   );
@@ -201,6 +205,7 @@ function EmptyState({ filter }: { filter: FilterTab }) {
 
 export default function MyReportsScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
   const [reports, setReports] = useState<IReport[]>([]);
@@ -217,7 +222,7 @@ export default function MyReportsScreen() {
       const res = await getMyReportsApi();
       setReports(res.data);
     } catch {
-      setError('Không thể tải dữ liệu. Vui lòng thử lại.');
+      setError(t('review.loadError'));
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -237,11 +242,11 @@ export default function MyReportsScreen() {
   return (
     <View className="flex-1 bg-neutral">
       <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-      <ManagementHeader title="Báo cáo của tôi" onBack={() => router.back()} />
+      <ManagementHeader title={t('report.myReportsTitle')} onBack={() => router.back()} />
 
       {/* ── Filter tabs ── */}
       <View className="mx-4 mt-4 mb-3 bg-neutral-T95 rounded-xl p-1 flex-row">
-        {FILTER_TABS.map((tab) => {
+        {FILTER_TAB_KEYS.map((tab) => {
           const isActive = activeTab === tab.key;
           const showDot = tab.key === 'DISMISSED' && dismissedCount > 0;
           return (
@@ -257,7 +262,7 @@ export default function MyReportsScreen() {
                   className="font-label font-semibold text-xs"
                   style={{ color: isActive ? '#296C24' : '#757777' }}
                 >
-                  {tab.label}
+                  {t(tab.labelKey)}
                 </Text>
                 {showDot && (
                   <View className="w-1.5 h-1.5 rounded-full bg-red-500" />
@@ -272,7 +277,7 @@ export default function MyReportsScreen() {
       {isLoading ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-sm text-neutral-T50">Đang tải...</Text>
+          <Text className="font-body text-sm text-neutral-T50">{t('common.loading')}</Text>
         </View>
       ) : error ? (
         <View className="flex-1 items-center justify-center px-8 gap-4">
@@ -282,7 +287,7 @@ export default function MyReportsScreen() {
             className="px-6 py-3 bg-primary-T40 rounded-xl"
             activeOpacity={0.85}
           >
-            <Text className="font-label font-semibold text-neutral-T100">Thử lại</Text>
+            <Text className="font-label font-semibold text-neutral-T100">{t('common.retry')}</Text>
           </TouchableOpacity>
         </View>
       ) : (

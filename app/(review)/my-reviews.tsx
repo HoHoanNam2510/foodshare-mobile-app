@@ -2,6 +2,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Alert,
@@ -32,6 +33,7 @@ type TabKey = 'written' | 'received';
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function AverageRatingBadge({ average, count }: { average: number; count: number }) {
+  const { t } = useTranslation();
   if (count === 0) return null;
   return (
     <View className="mx-4 mb-3 bg-neutral-T100 rounded-2xl p-4 flex-row items-center gap-3" style={styles.card}>
@@ -42,10 +44,10 @@ function AverageRatingBadge({ average, count }: { average: number; count: number
       </View>
       <View className="flex-1 gap-0.5">
         <Text style={{ fontFamily: 'Epilogue', fontWeight: '700' }} className="text-sm text-neutral-T10">
-          Điểm uy tín của bạn
+          {t('review.trustScoreTitle')}
         </Text>
         <Text className="font-body text-xs text-neutral-T50">
-          Trung bình từ {count} đánh giá đã nhận
+          {t('review.trustScoreFrom', { count })}
         </Text>
       </View>
       <View className="flex-row gap-0.5">
@@ -63,16 +65,17 @@ function AverageRatingBadge({ average, count }: { average: number; count: number
 }
 
 function EmptyState({ tab }: { tab: TabKey }) {
+  const { t } = useTranslation();
   const cfg = {
     written: {
       icon: 'rate-review' as const,
-      title: 'Chưa viết đánh giá nào',
-      body: 'Sau khi hoàn thành giao dịch, hãy để lại đánh giá để nhận GreenPoints thưởng.',
+      titleKey: 'review.emptyWrittenTitle',
+      bodyKey: 'review.emptyWrittenBody',
     },
     received: {
       icon: 'star-border' as const,
-      title: 'Chưa nhận được đánh giá nào',
-      body: 'Khi đối tác giao dịch đánh giá bạn, chúng sẽ hiển thị tại đây.',
+      titleKey: 'review.emptyReceivedTitle',
+      bodyKey: 'review.emptyReceivedBody',
     },
   }[tab];
 
@@ -81,8 +84,8 @@ function EmptyState({ tab }: { tab: TabKey }) {
       <View className="w-16 h-16 rounded-2xl bg-primary-T95 items-center justify-center">
         <MaterialIcons name={cfg.icon} size={28} color="#296C24" />
       </View>
-      <Text className="font-sans font-bold text-base text-neutral-T10 text-center">{cfg.title}</Text>
-      <Text className="font-body text-sm text-neutral-T50 text-center leading-5">{cfg.body}</Text>
+      <Text className="font-sans font-bold text-base text-neutral-T10 text-center">{t(cfg.titleKey)}</Text>
+      <Text className="font-body text-sm text-neutral-T50 text-center leading-5">{t(cfg.bodyKey)}</Text>
     </View>
   );
 }
@@ -91,6 +94,7 @@ function EmptyState({ tab }: { tab: TabKey }) {
 
 export default function MyReviewsScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const myId = user?._id ?? '';
 
@@ -119,7 +123,7 @@ export default function MyReviewsScreen() {
       const res = await getMyWrittenReviewsApi({ limit: 50 });
       setWritten(res.data ?? []);
     } catch {
-      setWrittenError('Không thể tải dữ liệu. Vui lòng thử lại.');
+      setWrittenError(t('review.loadError'));
     } finally {
       setWrittenLoading(false);
       setWrittenRefreshing(false);
@@ -134,7 +138,7 @@ export default function MyReviewsScreen() {
       const res = await getUserReviewsApi(myId, { limit: 50 });
       setReceived(res.data ?? []);
     } catch {
-      setReceivedError('Không thể tải dữ liệu. Vui lòng thử lại.');
+      setReceivedError(t('review.loadError'));
     } finally {
       setReceivedRefreshing(false);
       setReceivedLoaded(true);
@@ -156,21 +160,21 @@ export default function MyReviewsScreen() {
 
   const handleDelete = useCallback((reviewId: string) => {
     Alert.alert(
-      'Rút lại đánh giá?',
-      'Điểm uy tín của người được đánh giá sẽ được tính lại sau khi bạn rút lại. Thao tác này không thể hoàn tác.',
+      t('review.withdrawTitle'),
+      t('review.withdrawConfirmMsg'),
       [
-        { text: 'Hủy', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Rút lại',
+          text: t('review.withdrawBtn'),
           style: 'destructive',
           onPress: async () => {
             setDeletingId(reviewId);
             try {
               await deleteMyReviewApi(reviewId);
               setWritten((prev) => prev.filter((r) => r._id !== reviewId));
-              Alert.alert('Đã rút lại', 'Đánh giá của bạn đã được xóa thành công.');
+              Alert.alert(t('review.withdrawnTitle'), t('review.withdrawnMsg'));
             } catch {
-              Alert.alert('Lỗi', 'Không thể rút lại đánh giá. Vui lòng thử lại.');
+              Alert.alert(t('common.error'), t('review.withdrawError'));
             } finally {
               setDeletingId(null);
             }
@@ -218,8 +222,8 @@ export default function MyReviewsScreen() {
       : 0;
 
   const TABS: { key: TabKey; label: string; count: number }[] = [
-    { key: 'written', label: 'Đã viết', count: written.length },
-    { key: 'received', label: 'Đã nhận', count: received.length },
+    { key: 'written', label: t('review.writtenTab'), count: written.length },
+    { key: 'received', label: t('review.receivedTab'), count: received.length },
   ];
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -227,7 +231,7 @@ export default function MyReviewsScreen() {
   return (
     <View className="flex-1 bg-neutral">
       <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-      <ManagementHeader title="Đánh giá của tôi" onBack={() => router.back()} />
+      <ManagementHeader title={t('review.myReviewsTitle')} onBack={() => router.back()} />
 
       {/* ── Tab Bar ── */}
       <View className="mx-4 mt-4 mb-3 bg-neutral-T95 rounded-xl p-1 flex-row">
@@ -272,7 +276,7 @@ export default function MyReviewsScreen() {
         writtenLoading ? (
           <View className="flex-1 items-center justify-center gap-3">
             <ActivityIndicator size="large" color="#296C24" />
-            <Text className="font-body text-sm text-neutral-T50">Đang tải...</Text>
+            <Text className="font-body text-sm text-neutral-T50">{t('common.loading')}</Text>
           </View>
         ) : writtenError ? (
           <View className="flex-1 items-center justify-center px-8 gap-4">
@@ -282,7 +286,7 @@ export default function MyReviewsScreen() {
               className="px-6 py-3 bg-primary-T40 rounded-xl"
               activeOpacity={0.85}
             >
-              <Text className="font-label font-semibold text-neutral-T100">Thử lại</Text>
+              <Text className="font-label font-semibold text-neutral-T100">{t('common.retry')}</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -301,7 +305,7 @@ export default function MyReviewsScreen() {
               <View className="mx-4 mt-4 mb-3 p-3 bg-primary-T95 rounded-xl flex-row gap-2 items-start">
                 <MaterialIcons name="info-outline" size={15} color="#296C24" style={{ marginTop: 1 }} />
                 <Text className="font-body text-xs text-primary-T30 flex-1 leading-4">
-                  Sửa hoặc rút lại đánh giá sẽ tự động tính lại điểm uy tín của người được đánh giá.
+                  {t('review.editRecalcInfo')}
                 </Text>
               </View>
             }
@@ -319,7 +323,7 @@ export default function MyReviewsScreen() {
       ) : !receivedLoaded && !receivedError ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-sm text-neutral-T50">Đang tải...</Text>
+          <Text className="font-body text-sm text-neutral-T50">{t('common.loading')}</Text>
         </View>
       ) : receivedError ? (
         <View className="flex-1 items-center justify-center px-8 gap-4">
@@ -329,7 +333,7 @@ export default function MyReviewsScreen() {
             className="px-6 py-3 bg-primary-T40 rounded-xl"
             activeOpacity={0.85}
           >
-            <Text className="font-label font-semibold text-neutral-T100">Thử lại</Text>
+            <Text className="font-label font-semibold text-neutral-T100">{t('common.retry')}</Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -343,8 +347,8 @@ export default function MyReviewsScreen() {
                 handleReport(
                   item._id,
                   typeof item.reviewerId === 'object'
-                    ? `Đánh giá từ ${(item.reviewerId as any).fullName}`
-                    : 'Đánh giá'
+                    ? `${t('review.reviewedYou')} — ${(item.reviewerId as any).fullName}`
+                    : t('review.title')
                 )
               }
             />
