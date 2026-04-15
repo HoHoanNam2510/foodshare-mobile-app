@@ -21,9 +21,11 @@ import { AppState, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/stores/authStore';
+import { useLanguageStore } from '@/stores/languageStore';
 import MenuDrawer from '@/components/shared/MenuDrawer';
 import BadgeUnlockToast from '@/components/shared/BadgeUnlockToast';
 import { getBadgeCatalogApi, type IBadge } from '@/lib/badgeApi';
+import '@/lib/i18n';
 import './global.css';
 
 // Tắt chế độ cảnh báo Strict Mode
@@ -56,9 +58,12 @@ export default function RootLayout() {
   const hydrate = useAuthStore((s) => s.hydrate);
   const isHydrated = useAuthStore((s) => s.isHydrated);
   const token = useAuthStore((s) => s.token);
+  const hydrateLanguage = useLanguageStore((s) => s.hydrate);
+  const isLanguageHydrated = useLanguageStore((s) => s.isHydrated);
 
   const [toastBadge, setToastBadge] = useState<IBadge | null>(null);
   const unlockedBadgeIdsRef = useRef<Set<string>>(new Set());
+  const initialBadgeLoadDoneRef = useRef(false);
   const toastHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [fontsLoaded, error] = useFonts({
@@ -72,19 +77,21 @@ export default function RootLayout() {
 
   useEffect(() => {
     hydrate();
-  }, [hydrate]);
+    hydrateLanguage();
+  }, [hydrate, hydrateLanguage]);
 
   useEffect(() => {
-    if ((fontsLoaded || error) && isHydrated) {
+    if ((fontsLoaded || error) && isHydrated && isLanguageHydrated) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, error, isHydrated]);
+  }, [fontsLoaded, error, isHydrated, isLanguageHydrated]);
 
   useProtectedRoute();
 
   useEffect(() => {
     if (!token) {
       unlockedBadgeIdsRef.current = new Set();
+      initialBadgeLoadDoneRef.current = false;
       setToastBadge(null);
       return;
     }
@@ -95,7 +102,7 @@ export default function RootLayout() {
         const unlocked = res.data.badges.filter((b) => b.isUnlocked);
         const nextSet = new Set(unlocked.map((b) => b._id));
 
-        if (unlockedBadgeIdsRef.current.size > 0) {
+        if (initialBadgeLoadDoneRef.current) {
           const newOnes = unlocked.filter(
             (b) => !unlockedBadgeIdsRef.current.has(b._id)
           );
@@ -112,6 +119,7 @@ export default function RootLayout() {
         }
 
         unlockedBadgeIdsRef.current = nextSet;
+        initialBadgeLoadDoneRef.current = true;
       } catch {
         // ignore toast polling errors
       }
@@ -136,7 +144,7 @@ export default function RootLayout() {
     };
   }, [token]);
 
-  if (!fontsLoaded || !isHydrated) {
+  if (!fontsLoaded || !isHydrated || !isLanguageHydrated) {
     return null;
   }
 

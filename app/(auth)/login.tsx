@@ -19,6 +19,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useTranslation } from 'react-i18next';
+
 import { useAuthStore } from '@/stores/authStore';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -60,6 +62,7 @@ function getGoogleRedirectUri(clientId: string): string {
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { login, googleLogin, isLoading } = useAuthStore();
 
   const [email, setEmail] = useState('');
@@ -106,8 +109,8 @@ export default function LoginScreen() {
       const message =
         error instanceof Error
           ? error.message
-          : 'Google login failed. Please try again.';
-      Alert.alert('Google login failed', message);
+          : t('errors.tryAgain');
+      Alert.alert(t('auth.googleLoginFailed'), message);
     } finally {
       setIsGoogleLoading(false);
     }
@@ -125,7 +128,7 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
-      Alert.alert('Missing fields', 'Please enter both email and password.');
+      Alert.alert(t('auth.missingFields'), t('auth.enterEmailAndPassword'));
       return;
     }
     try {
@@ -135,8 +138,8 @@ export default function LoginScreen() {
       const message =
         error instanceof Error
           ? error.message
-          : 'Login failed. Please try again.';
-      Alert.alert('Login failed', message);
+          : t('errors.tryAgain');
+      Alert.alert(t('auth.loginFailed'), message);
     }
   };
 
@@ -180,10 +183,10 @@ export default function LoginScreen() {
             <View className="flex-1 bg-neutral-T100 rounded-t-3xl px-7 pt-10 shadow-md">
               {/* Heading */}
               <Text className="font-sans text-3xl font-bold text-neutral-T10 text-center mb-1">
-                Welcome back
+                {t('auth.welcomeBack')}
               </Text>
               <Text className="font-body text-sm text-neutral-T50 text-center mb-8">
-                Log in to continue sharing meals
+                {t('auth.loginSubtitle')}
               </Text>
 
               {/* Google sign-in */}
@@ -205,7 +208,7 @@ export default function LoginScreen() {
                       className="mr-3"
                     />
                     <Text className="font-body font-semibold text-base text-neutral-T10">
-                      Continue with Google
+                      {t('auth.continueWithGoogle')}
                     </Text>
                   </>
                 )}
@@ -215,7 +218,7 @@ export default function LoginScreen() {
               <View className="flex-row items-center mb-6">
                 <View className="flex-1 h-[1px] bg-neutral-T90" />
                 <Text className="font-label text-xs text-neutral-T70 px-4">
-                  or
+                  {t('auth.or')}
                 </Text>
                 <View className="flex-1 h-[1px] bg-neutral-T90" />
               </View>
@@ -225,7 +228,7 @@ export default function LoginScreen() {
                 {/* Email */}
                 <View className="gap-2">
                   <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
-                    Email
+                    {t('auth.email')}
                   </Text>
                   <TextInput
                     placeholder="example@gmail.com"
@@ -242,11 +245,11 @@ export default function LoginScreen() {
                 {/* Password */}
                 <View className="gap-2">
                   <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
-                    Password
+                    {t('auth.password')}
                   </Text>
                   <View className="flex-row items-center bg-neutral-T95 rounded-xl h-14 px-4 border border-neutral-T90">
                     <TextInput
-                      placeholder="Enter your password"
+                      placeholder={t('auth.passwordPlaceholder')}
                       placeholderTextColor="#AAABAB"
                       secureTextEntry={!showPassword}
                       value={password}
@@ -271,7 +274,7 @@ export default function LoginScreen() {
               <View className="flex-row justify-end mt-3 mb-8">
                 <TouchableOpacity>
                   <Text className="font-label text-sm font-semibold text-primary-T40">
-                    Forgot password?
+                    {t('auth.forgotPassword')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -287,7 +290,7 @@ export default function LoginScreen() {
                   <ActivityIndicator color="#FFFFFF" />
                 ) : (
                   <Text className="font-label font-semibold text-base text-neutral-T100">
-                    Log in
+                    {t('auth.login')}
                   </Text>
                 )}
               </TouchableOpacity>
@@ -295,12 +298,12 @@ export default function LoginScreen() {
               {/* Register link */}
               <View className="flex-row justify-center mt-6 pb-8">
                 <Text className="font-body text-sm text-neutral-T50">
-                  Don&apos;t have an account?{' '}
+                  {t('auth.dontHaveAccount')}{' '}
                 </Text>
                 <Link href="/(auth)/register" asChild>
                   <TouchableOpacity>
                     <Text className="font-body text-sm font-bold text-primary-T40">
-                      Sign up
+                      {t('auth.register')}
                     </Text>
                   </TouchableOpacity>
                 </Link>

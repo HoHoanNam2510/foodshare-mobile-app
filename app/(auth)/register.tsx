@@ -16,12 +16,15 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useTranslation } from 'react-i18next';
+
 import EmailVerifyModal from '@/components/auth/EmailVerifyModal';
 import { registerSendCodeApi } from '@/lib/authApi';
 import { useAuthStore } from '@/stores/authStore';
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { registerSendCode, registerVerify, isLoading } = useAuthStore();
 
   const [fullName, setFullName] = useState('');
@@ -37,11 +40,11 @@ export default function RegisterScreen() {
 
   const handleRegister = async () => {
     if (!fullName.trim() || !email.trim() || !password.trim()) {
-      Alert.alert('Missing fields', 'Please fill in all required fields.');
+      Alert.alert(t('auth.missingFields'), t('auth.enterAllFields'));
       return;
     }
     if (password.length < 6) {
-      Alert.alert('Weak password', 'Password must be at least 6 characters.');
+      Alert.alert(t('auth.weakPassword'), t('auth.passwordMinLength'));
       return;
     }
     try {
@@ -59,8 +62,8 @@ export default function RegisterScreen() {
       const message =
         error instanceof Error
           ? error.message
-          : 'Registration failed. Please try again.';
-      Alert.alert('Registration failed', message);
+          : t('errors.tryAgain');
+      Alert.alert(t('auth.registerFailed'), message);
     }
   };
 
@@ -71,13 +74,13 @@ export default function RegisterScreen() {
       await registerVerify(registeredEmail, code);
 
       setShowVerifyModal(false);
-      Alert.alert('Success', 'Email verified! Your account is ready.', [
+      Alert.alert(t('common.success'), t('auth.emailVerified'), [
         { text: 'OK', onPress: () => router.replace('/(tabs)' as never) },
       ]);
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : 'Verification failed';
-      Alert.alert('Error', message);
+        error instanceof Error ? error.message : t('auth.verifyEmail');
+      Alert.alert(t('common.error'), message);
     } finally {
       setIsVerifying(false);
     }
@@ -94,8 +97,8 @@ export default function RegisterScreen() {
       });
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : 'Failed to resend code';
-      Alert.alert('Error', message);
+        error instanceof Error ? error.message : t('auth.resendCode');
+      Alert.alert(t('common.error'), message);
     }
   };
 
@@ -151,15 +154,15 @@ export default function RegisterScreen() {
             <View className="flex-1 bg-neutral-T100 rounded-t-3xl px-7 pt-8 mt-2 shadow-md">
               {/* Heading */}
               <Text className="font-sans text-3xl font-bold text-neutral-T10 text-center mb-1">
-                Create account
+                {t('auth.createAccount')}
               </Text>
               <View className="flex-row justify-center mb-8">
                 <Text className="font-body text-sm text-neutral-T50">
-                  Already have an account?{' '}
+                  {t('auth.alreadyHaveAccount')}{' '}
                 </Text>
                 <TouchableOpacity onPress={() => router.back()}>
                   <Text className="font-body text-sm font-bold text-primary-T40">
-                    Log in
+                    {t('auth.login')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -169,7 +172,7 @@ export default function RegisterScreen() {
                 {/* Full Name */}
                 <View className="gap-2">
                   <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
-                    Full name
+                    {t('auth.fullName')}
                   </Text>
                   <TextInput
                     placeholder="Nguyen Van A"
@@ -184,7 +187,7 @@ export default function RegisterScreen() {
                 {/* Email */}
                 <View className="gap-2">
                   <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
-                    Email
+                    {t('auth.email')}
                   </Text>
                   <TextInput
                     placeholder="example@gmail.com"
@@ -201,7 +204,7 @@ export default function RegisterScreen() {
                 {/* Phone */}
                 <View className="gap-2">
                   <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
-                    Phone number
+                    {t('auth.phoneNumber')}
                   </Text>
                   <TextInput
                     placeholder="+84 987 654 321"
@@ -216,11 +219,11 @@ export default function RegisterScreen() {
                 {/* Password */}
                 <View className="gap-2">
                   <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
-                    Password
+                    {t('auth.password')}
                   </Text>
                   <View className="flex-row items-center bg-neutral-T95 rounded-xl h-14 px-4 border border-neutral-T90">
                     <TextInput
-                      placeholder="At least 6 characters"
+                      placeholder={t('auth.passwordMinPlaceholder')}
                       placeholderTextColor="#AAABAB"
                       secureTextEntry={!showPassword}
                       value={password}
@@ -252,7 +255,7 @@ export default function RegisterScreen() {
                   <ActivityIndicator color="#FFFFFF" />
                 ) : (
                   <Text className="font-label font-semibold text-base text-neutral-T100">
-                    Create account
+                    {t('auth.createAccount')}
                   </Text>
                 )}
               </TouchableOpacity>

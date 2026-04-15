@@ -2,6 +2,7 @@ import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface ChatHeaderProps {
@@ -12,6 +13,7 @@ interface ChatHeaderProps {
 
 export default function ChatHeader({ name, avatarUri, isOnline = true }: ChatHeaderProps) {
   const router = useRouter();
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView
@@ -43,7 +45,7 @@ export default function ChatHeader({ name, avatarUri, isOnline = true }: ChatHea
         <View className="flex-1">
           <Text className="font-sans text-lg text-neutral-T10">{name}</Text>
           <Text className="font-label text-xs text-primary-T40">
-            {isOnline ? 'Online' : 'Offline'}
+            {isOnline ? t('chat.online') : t('chat.offline')}
           </Text>
         </View>
 

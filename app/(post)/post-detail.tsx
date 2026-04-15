@@ -18,6 +18,8 @@ import {
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 
+import { useTranslation } from 'react-i18next';
+
 import { getPostByIdApi, deletePostApi, type IPostDetail } from '@/lib/postApi';
 import { createRequestApi } from '@/lib/transactionApi';
 import { getOrCreateConversationApi } from '@/lib/chatApi';
@@ -47,6 +49,7 @@ function formatDate(iso: string): string {
 export default function PostDetailScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const currentUser = useAuthStore((s) => s.user);
 
@@ -64,7 +67,7 @@ export default function PostDetailScreen() {
       const res = await getPostByIdApi(id);
       setPost(res.data);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Không thể tải bài đăng.');
+      setError(e instanceof Error ? e.message : t('post.errorLoad'));
     } finally {
       setIsLoading(false);
     }
@@ -84,18 +87,18 @@ export default function PostDetailScreen() {
     try {
       await createRequestApi(post._id, 1);
       Alert.alert(
-        'Đã gửi yêu cầu',
-        'Yêu cầu xin đồ của bạn đã được gửi. Vui lòng chờ người đăng xác nhận.',
+        t('post.requestSent'),
+        t('post.requestSentMsg'),
         [
           {
-            text: 'Xem giao dịch',
+            text: t('post.viewTransaction'),
             onPress: () => router.push('/(transaction)/transaction-list' as any),
           },
           { text: 'OK', style: 'cancel' },
         ]
       );
     } catch (e) {
-      Alert.alert('Lỗi', e instanceof Error ? e.message : 'Không thể gửi yêu cầu.');
+      Alert.alert(t('common.error'), e instanceof Error ? e.message : t('post.errorRequest'));
     } finally {
       setIsSubmitting(false);
     }
@@ -112,21 +115,21 @@ export default function PostDetailScreen() {
   const handleDeletePost = () => {
     if (!post) return;
     Alert.alert(
-      'Xác nhận xóa',
-      'Bạn có chắc chắn muốn xóa bài đăng này? Hành động này không thể hoàn tác.',
+      t('post.confirmDeleteTitle'),
+      t('post.confirmDeleteMsg'),
       [
-        { text: 'Hủy', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Xóa',
+          text: t('common.delete'),
           style: 'destructive',
           onPress: async () => {
             try {
               await deletePostApi(post._id);
-              Alert.alert('Thành công', 'Đã xóa bài đăng.', [
+              Alert.alert(t('common.success'), t('post.deleteSuccess'), [
                 { text: 'OK', onPress: () => router.back() },
               ]);
             } catch (e) {
-              Alert.alert('Lỗi', e instanceof Error ? e.message : 'Không thể xóa bài đăng.');
+              Alert.alert(t('common.error'), e instanceof Error ? e.message : t('post.errorLoad'));
             }
           },
         },
@@ -150,7 +153,7 @@ export default function PostDetailScreen() {
         },
       } as any);
     } catch {
-      Alert.alert('Lỗi', 'Không thể mở cuộc trò chuyện.');
+      Alert.alert(t('common.error'), t('post.errorChat'));
     } finally {
       setIsChatting(false);
     }
@@ -177,7 +180,7 @@ export default function PostDetailScreen() {
     return (
       <SafeAreaView className="flex-1 bg-neutral items-center justify-center" edges={['top']}>
         <ActivityIndicator size="large" color="#296C24" />
-        <Text className="font-body text-sm text-neutral-T50 mt-3">Đang tải...</Text>
+        <Text className="font-body text-sm text-neutral-T50 mt-3">{t('common.loading')}</Text>
       </SafeAreaView>
     );
   }
@@ -187,14 +190,14 @@ export default function PostDetailScreen() {
     return (
       <SafeAreaView className="flex-1 bg-neutral items-center justify-center px-8 gap-4" edges={['top']}>
         <Text className="font-body text-sm text-neutral-T50 text-center">
-          {error ?? 'Không tìm thấy bài đăng.'}
+          {error ?? t('errors.notFound')}
         </Text>
         <TouchableOpacity
           onPress={load}
           className="px-6 py-3 bg-primary-T40 rounded-xl"
           activeOpacity={0.85}
         >
-          <Text className="font-label font-semibold text-neutral-T100">Thử lại</Text>
+          <Text className="font-label font-semibold text-neutral-T100">{t('common.retry')}</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -217,7 +220,7 @@ export default function PostDetailScreen() {
   return (
     <View className="flex-1 bg-neutral">
       <StackHeader
-        title="Chi tiết bài đăng"
+        title={t('post.postDetail')}
         rightElement={
           !isOwnPost ? (
             <TouchableOpacity
@@ -255,7 +258,7 @@ export default function PostDetailScreen() {
               style={[styles.badge, { backgroundColor: isP2P ? '#296C24' : '#944A00' }]}
             >
               <Text className="text-neutral-T100 font-label font-bold text-xs tracking-wider uppercase">
-                {isP2P ? 'Miễn phí' : `${post.price.toLocaleString('vi-VN')}đ`}
+                {isP2P ? t('common.free') : `${post.price.toLocaleString('vi-VN')}đ`}
               </Text>
             </View>
             <View
@@ -263,7 +266,7 @@ export default function PostDetailScreen() {
               style={styles.badge}
             >
               <Text className="text-primary-T30 font-label font-bold text-xs tracking-wider uppercase">
-                {post.status === 'AVAILABLE' ? 'Còn hàng' : post.status === 'BOOKED' ? 'Đã đặt' : post.status}
+                {post.status === 'AVAILABLE' ? t('post.available') : post.status === 'BOOKED' ? t('post.reserved') : post.status}
               </Text>
             </View>
           </View>
@@ -282,7 +285,7 @@ export default function PostDetailScreen() {
               </Text>
               <View className="w-1 h-1 rounded-full bg-neutral-T70" />
               <Text className="font-label text-xs text-neutral-T50 font-semibold uppercase tracking-wider">
-                Còn {post.remainingQuantity}/{post.totalQuantity}
+                {t('post.remainingCount', { remaining: post.remainingQuantity, total: post.totalQuantity })}
               </Text>
             </View>
           </View>
@@ -306,7 +309,7 @@ export default function PostDetailScreen() {
               )}
               <View>
                 <Text className="font-label text-[10px] text-neutral-T50 uppercase tracking-wider">
-                  {owner.role === 'STORE' ? 'Cửa hàng' : 'Người chia sẻ'}
+                  {owner.role === 'STORE' ? t('roles.STORE') : t('post.sharer')}
                 </Text>
                 <Text className="font-sans font-extrabold text-base text-neutral-T10">
                   {owner.fullName}
@@ -345,7 +348,7 @@ export default function PostDetailScreen() {
             </View>
             <View className="flex-1">
               <Text className="font-label text-[10px] text-neutral-T50 uppercase tracking-wider">
-                Khung giờ nhận
+                {t('post.pickupTime')}
               </Text>
               <Text className="font-sans font-extrabold text-base text-neutral-T10 mt-0.5">
                 {formatPickupTime(post.pickupTime.start, post.pickupTime.end)}
@@ -360,7 +363,7 @@ export default function PostDetailScreen() {
             </View>
             <View className="flex-1">
               <Text className="font-label text-[10px] text-neutral-T50 uppercase tracking-wider">
-                Hết hạn
+                {t('post.expires')}
               </Text>
               <Text className="font-sans font-extrabold text-base text-neutral-T10 mt-0.5">
                 {formatDate(post.expiryDate)}
@@ -402,7 +405,7 @@ export default function PostDetailScreen() {
             >
               <MaterialIcons name="edit" size={18} color="#fff" />
               <Text className="text-neutral-T100 font-sans font-black text-base tracking-tight">
-                Chỉnh sửa
+                {t('common.edit')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -418,7 +421,7 @@ export default function PostDetailScreen() {
           <View className="flex-row gap-3 w-full">
             <View className="flex-1 bg-neutral-T95 rounded-2xl items-center justify-center py-4">
               <Text className="font-label font-semibold text-neutral-T50">
-                Không còn hàng
+                {t('post.notAvailable')}
               </Text>
             </View>
             <TouchableOpacity
@@ -447,7 +450,7 @@ export default function PostDetailScreen() {
                 <ActivityIndicator color="#fff" />
               ) : (
                 <Text className="text-neutral-T100 font-sans font-black text-lg tracking-tight uppercase">
-                  Yêu cầu nhận đồ
+                  {t('post.requestItem')}
                 </Text>
               )}
             </TouchableOpacity>
@@ -478,7 +481,7 @@ export default function PostDetailScreen() {
                 <ActivityIndicator color="#fff" />
               ) : (
                 <Text className="text-neutral-T100 font-sans font-black text-lg tracking-tight uppercase">
-                  Mua ngay · {post.price.toLocaleString('vi-VN')}đ
+                  {t('post.buyNow', { price: post.price.toLocaleString('vi-VN') })}
                 </Text>
               )}
             </TouchableOpacity>

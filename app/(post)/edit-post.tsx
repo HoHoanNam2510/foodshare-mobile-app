@@ -2,6 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Alert,
@@ -38,6 +39,7 @@ type PickerMode = 'date' | 'time';
 export default function EditPost() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
 
   // ── Loading state ──
@@ -86,7 +88,7 @@ export default function EditPost() {
       setPickupEnd(new Date(p.pickupTime.end));
       setExpiryDate(new Date(p.expiryDate));
     } catch (e) {
-      Alert.alert('Lỗi', e instanceof Error ? e.message : 'Không thể tải bài đăng.', [
+      Alert.alert(t('common.error'), e instanceof Error ? e.message : t('post.errorLoad'), [
         { text: 'OK', onPress: () => router.back() },
       ]);
     } finally {
@@ -133,11 +135,11 @@ export default function EditPost() {
 
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
-    if (images.length === 0) errors.images = 'Cần ít nhất 1 ảnh';
-    if (!title.trim()) errors.title = 'Tiêu đề là bắt buộc';
-    if (isB2C && (!price || parseFloat(price) <= 0)) errors.price = 'Giá phải lớn hơn 0';
-    if (quantity < 1) errors.quantity = 'Số lượng ít nhất là 1';
-    if (pickupStart >= pickupEnd) errors.pickupTime = 'Giờ kết thúc phải sau giờ bắt đầu';
+    if (images.length === 0) errors.images = t('post.errorImages');
+    if (!title.trim()) errors.title = t('post.errorTitleRequired');
+    if (isB2C && (!price || parseFloat(price) <= 0)) errors.price = t('post.errorPriceRequired');
+    if (quantity < 1) errors.quantity = t('post.errorQuantityMin');
+    if (pickupStart >= pickupEnd) errors.pickupTime = t('post.errorPickupTime');
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -178,11 +180,11 @@ export default function EditPost() {
       const res = await updatePostApi(id, payload);
 
       if (res.success) {
-        Alert.alert('Thành công', 'Đã cập nhật bài đăng.', [
+        Alert.alert(t('common.success'), t('post.updateSuccess'), [
           { text: 'OK', onPress: () => router.back() },
         ]);
       } else {
-        Alert.alert('Lỗi', res.message || 'Cập nhật thất bại');
+        Alert.alert(t('common.error'), res.message || t('common.error'));
       }
     } catch (err) {
       if (err instanceof ApiValidationError) {
@@ -191,9 +193,9 @@ export default function EditPost() {
           errors[fe.path] = fe.message;
         }
         setFieldErrors(errors);
-        Alert.alert('Lỗi dữ liệu', 'Vui lòng kiểm tra các trường được đánh dấu.');
+        Alert.alert(t('post.validationError'), t('post.checkFields'));
       } else {
-        Alert.alert('Lỗi', err instanceof Error ? err.message : 'Cập nhật thất bại');
+        Alert.alert(t('common.error'), err instanceof Error ? err.message : t('common.error'));
       }
     } finally {
       setIsSubmitting(false);
@@ -236,7 +238,7 @@ export default function EditPost() {
                   className="h-14 bg-primary-T40 rounded-xl items-center justify-center shadow-sm active:opacity-80 mt-4"
                   onPress={() => setActivePicker(null)}
                 >
-                  <Text className="font-label font-semibold text-neutral-T100">Xong</Text>
+                  <Text className="font-label font-semibold text-neutral-T100">{t('common.done')}</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -251,7 +253,7 @@ export default function EditPost() {
     return (
       <SafeAreaView className="flex-1 bg-neutral items-center justify-center" edges={['top']}>
         <ActivityIndicator size="large" color="#296C24" />
-        <Text className="font-body text-sm text-neutral-T50 mt-3">Đang tải...</Text>
+        <Text className="font-body text-sm text-neutral-T50 mt-3">{t('common.loading')}</Text>
       </SafeAreaView>
     );
   }
@@ -259,11 +261,11 @@ export default function EditPost() {
   return (
     <View className="flex-1 bg-neutral">
       <StackHeader
-        title="Chỉnh sửa bài đăng"
+        title={t('post.editPost')}
         rightElement={
           <View className="bg-neutral-T95 px-3 py-1.5 rounded-full">
             <Text className="font-label text-[10px] font-semibold text-neutral-T50 uppercase tracking-wider">
-              {isB2C ? 'Túi bí ngờ' : 'Miễn phí'}
+              {isB2C ? t('post.b2cMysteryBag') : t('common.free')}
             </Text>
           </View>
         }
@@ -300,20 +302,20 @@ export default function EditPost() {
           <View className="gap-6 mb-8">
             {/* Category */}
             <View className="gap-2">
-              <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">Danh mục</Text>
+              <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">{t('post.category')}</Text>
               <CategoryPicker selected={category} onSelect={setCategory} />
             </View>
 
             {/* Meal title */}
             <View className="gap-2">
-              <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">Tiêu đề</Text>
+              <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">{t('post.title')}</Text>
               <TextInput
                 className={`w-full h-14 px-4 rounded-xl bg-neutral-T95 border font-body text-base text-neutral-T10 ${fieldErrors.title ? 'border-red-500' : 'border-neutral-T90'}`}
-                placeholder="VD: Cơm nhà nấu, salad rau trộn..."
+                placeholder={t('post.titlePlaceholder')}
                 placeholderTextColor="#AAABAB"
                 value={title}
-                onChangeText={(t) => {
-                  setTitle(t);
+                onChangeText={(text) => {
+                  setTitle(text);
                   if (fieldErrors.title) setFieldErrors((e) => { const { title: _, ...rest } = e; return rest; });
                 }}
               />
@@ -324,10 +326,10 @@ export default function EditPost() {
 
             {/* Description */}
             <View className="gap-2">
-              <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">Mô tả</Text>
+              <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">{t('post.description')}</Text>
               <TextInput
                 className="w-full p-4 rounded-xl bg-neutral-T95 border border-neutral-T90 font-body text-base text-neutral-T10"
-                placeholder="Thành phần, dị ứng, lý do chia sẻ..."
+                placeholder={t('post.descriptionPlaceholder')}
                 placeholderTextColor="#AAABAB"
                 multiline
                 numberOfLines={4}
@@ -342,7 +344,7 @@ export default function EditPost() {
             <View className="flex-row gap-4">
               {isB2C && (
                 <View className="flex-1 gap-2">
-                  <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">Giá (VND)</Text>
+                  <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">{t('post.priceLabel')}</Text>
                   <View className="relative justify-center">
                     <Text className="absolute left-4 font-label font-semibold text-neutral-T50 z-10">đ</Text>
                     <TextInput
@@ -363,7 +365,7 @@ export default function EditPost() {
                 </View>
               )}
               <View className="flex-1 gap-2">
-                <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">Số lượng</Text>
+                <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">{t('post.quantity')}</Text>
                 <QuantityStepper value={quantity} onChange={setQuantity} />
               </View>
             </View>
@@ -373,11 +375,11 @@ export default function EditPost() {
           <View className={`rounded-2xl p-6 gap-4 mb-6 ${fieldErrors.pickupTime ? 'bg-red-50 border border-red-500' : 'bg-neutral-T95'}`}>
             <View className="flex-row items-center gap-2">
               <MaterialIcons name="schedule" size={20} color={fieldErrors.pickupTime ? '#EF4444' : '#296C24'} />
-              <Text className="font-sans font-bold text-base text-neutral-T10">Khung giờ nhận</Text>
+              <Text className="font-sans font-bold text-base text-neutral-T10">{t('post.pickupWindow')}</Text>
             </View>
             <View className="flex-row gap-4">
               <View className="flex-1 gap-1">
-                <Text className="text-[10px] font-label font-semibold tracking-wider text-neutral-T70 ml-1">Từ</Text>
+                <Text className="text-[10px] font-label font-semibold tracking-wider text-neutral-T70 ml-1">{t('post.from')}</Text>
                 <TouchableOpacity
                   className="h-12 px-4 rounded-xl bg-neutral-T100 border border-neutral-T90 flex-row items-center justify-between active:opacity-80"
                   onPress={() => openPicker('pickupStart', 'time')}
@@ -387,7 +389,7 @@ export default function EditPost() {
                 </TouchableOpacity>
               </View>
               <View className="flex-1 gap-1">
-                <Text className="text-[10px] font-label font-semibold tracking-wider text-neutral-T70 ml-1">Đến</Text>
+                <Text className="text-[10px] font-label font-semibold tracking-wider text-neutral-T70 ml-1">{t('post.to')}</Text>
                 <TouchableOpacity
                   className="h-12 px-4 rounded-xl bg-neutral-T100 border border-neutral-T90 flex-row items-center justify-between active:opacity-80"
                   onPress={() => openPicker('pickupEnd', 'time')}
@@ -404,7 +406,7 @@ export default function EditPost() {
 
           {/* ── Expiry date ── */}
           <View className="gap-2 mb-6">
-            <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">Hạn sử dụng</Text>
+            <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">{t('post.expiryDate')}</Text>
             <TouchableOpacity
               className={`h-14 px-4 rounded-xl bg-neutral-T95 border flex-row items-center justify-between active:opacity-80 ${fieldErrors.expiryDate ? 'border-red-500' : 'border-neutral-T90'}`}
               onPress={() => openPicker('expiryDate', 'date')}
@@ -434,7 +436,7 @@ export default function EditPost() {
             onPress={() => router.back()}
           >
             <MaterialIcons name="close" size={18} color="#757777" />
-            <Text className="font-label font-medium text-sm text-neutral-T50">Hủy</Text>
+            <Text className="font-label font-medium text-sm text-neutral-T50">{t('common.cancel')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             className="flex-1 h-14 bg-primary-T40 rounded-xl items-center justify-center flex-row gap-2 shadow-sm active:opacity-80"
@@ -446,7 +448,7 @@ export default function EditPost() {
             ) : (
               <>
                 <MaterialIcons name="check" size={18} color="#FFFFFF" />
-                <Text className="font-label font-medium text-sm text-neutral-T100">Lưu thay đổi</Text>
+                <Text className="font-label font-medium text-sm text-neutral-T100">{t('post.saveChanges')}</Text>
               </>
             )}
           </TouchableOpacity>

@@ -2,6 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Alert,
   KeyboardAvoidingView,
@@ -37,6 +38,7 @@ type PickerMode = 'date' | 'time';
 export default function CreatePost() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   const { type } = useLocalSearchParams();
   const isB2C = type === 'SURPRISE_BAG';
@@ -129,12 +131,12 @@ export default function CreatePost() {
         setDeliveryMethod(res.data.deliveryMethod);
         return true;
       }
-      Alert.alert('Error', res.message || 'Failed to send passcode');
+      Alert.alert(t('common.error'), res.message || t('post.errorSendPasscode'));
       return false;
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : 'Failed to send passcode';
-      Alert.alert('Error', message);
+        error instanceof Error ? error.message : t('post.errorSendPasscode');
+      Alert.alert(t('common.error'), message);
       return false;
     } finally {
       setIsSendingPasscode(false);
@@ -145,22 +147,22 @@ export default function CreatePost() {
     const errors: Record<string, string> = {};
 
     if (images.length === 0) {
-      errors.images = 'Please add at least one photo';
+      errors.images = t('post.errorImages');
     }
     if (!title.trim()) {
-      errors.title = 'Meal title is required';
+      errors.title = t('post.errorTitleRequired');
     }
     if (isB2C && (!price || parseFloat(price) <= 0)) {
-      errors.price = 'Price must be greater than 0';
+      errors.price = t('post.errorPriceRequired');
     }
     if (quantity < 1) {
-      errors.quantity = 'At least 1 serving is required';
+      errors.quantity = t('post.errorQuantityMin');
     }
     if (pickupStart >= pickupEnd) {
-      errors.pickupTime = 'End time must be after start time';
+      errors.pickupTime = t('post.errorPickupTime');
     }
     if (expiryDate <= new Date()) {
-      errors.expiryDate = 'Expiry date must be in the future';
+      errors.expiryDate = t('post.errorExpiryDate');
     }
 
     setFieldErrors(errors);
@@ -208,14 +210,14 @@ export default function CreatePost() {
       });
 
       if (res.success) {
-        Alert.alert('Success', 'Your meal has been published!', [
+        Alert.alert(t('common.success'), t('post.createSuccess'), [
           {
             text: 'OK',
             onPress: () => router.push('/post' as never),
           },
         ]);
       } else {
-        Alert.alert('Error', res.message || 'Failed to create post');
+        Alert.alert(t('common.error'), res.message || t('post.createFailed'));
       }
     } catch (err) {
       if (err instanceof ApiValidationError) {
@@ -225,11 +227,11 @@ export default function CreatePost() {
           errors[fe.path] = fe.message;
         }
         setFieldErrors(errors);
-        Alert.alert('Validation error', 'Please check the highlighted fields.');
+        Alert.alert(t('post.validationError'), t('post.checkFields'));
       } else {
         const message =
-          err instanceof Error ? err.message : 'Failed to publish post';
-        Alert.alert('Publish failed', message);
+          err instanceof Error ? err.message : t('post.createFailed');
+        Alert.alert(t('post.createFailed'), message);
       }
     } finally {
       setIsSubmitting(false);
@@ -274,7 +276,7 @@ export default function CreatePost() {
                   onPress={() => setActivePicker(null)}
                 >
                   <Text className="font-label font-semibold text-neutral-T100">
-                    Done
+                    {t('common.done')}
                   </Text>
                 </TouchableOpacity>
               )}
@@ -288,10 +290,10 @@ export default function CreatePost() {
   return (
     <View className="flex-1 bg-neutral">
       <StackHeader
-        title={isB2C ? 'Share surprise bag' : 'Share meal'}
+        title={isB2C ? t('post.createB2CTitle') : t('post.createP2PTitle')}
         rightElement={
           <Text className="font-label text-xs text-neutral-T70">
-            Auto-saving
+            {t('post.autoSaving')}
           </Text>
         }
       />
@@ -327,26 +329,26 @@ export default function CreatePost() {
 
           {/* ── Form fields ── */}
           <View className="gap-6 mb-8">
-            {/* Category */}
+            {/* Danh mục */}
             <View className="gap-2">
               <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
-                Category
+                {t('post.category')}
               </Text>
               <CategoryPicker selected={category} onSelect={setCategory} />
             </View>
 
-            {/* Meal title */}
+            {/* Tên món ăn */}
             <View className="gap-2">
               <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
-                Meal title
+                {t('post.foodName')}
               </Text>
               <TextInput
                 className={`w-full h-14 px-4 rounded-xl bg-neutral-T95 border font-body text-base text-neutral-T10 ${fieldErrors.title ? 'border-red-500' : 'border-neutral-T90'}`}
-                placeholder="e.g. Homemade Vegetarian Lasagna"
+                placeholder={t('post.foodNamePlaceholder')}
                 placeholderTextColor="#AAABAB"
                 value={title}
-                onChangeText={(t) => {
-                  setTitle(t);
+                onChangeText={(text) => {
+                  setTitle(text);
                   if (fieldErrors.title) setFieldErrors((e) => { const { title: _, ...rest } = e; return rest; });
                 }}
               />
@@ -357,14 +359,14 @@ export default function CreatePost() {
               )}
             </View>
 
-            {/* Description */}
+            {/* Mô tả */}
             <View className="gap-2">
               <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
-                Description
+                {t('post.description')}
               </Text>
               <TextInput
                 className="w-full p-4 rounded-xl bg-neutral-T95 border border-neutral-T90 font-body text-base text-neutral-T10"
-                placeholder="Tell us about the ingredients, allergens, or why you're sharing..."
+                placeholder={t('post.descriptionPlaceholder')}
                 placeholderTextColor="#AAABAB"
                 multiline
                 numberOfLines={4}
@@ -375,28 +377,28 @@ export default function CreatePost() {
               />
             </View>
 
-            {/* Price (B2C only) + Servings row */}
+            {/* Giá (chỉ B2C) + Số phần */}
             <View className="flex-row gap-4">
               {isB2C && (
                 <View className="flex-1 gap-2">
                   <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
-                    Price
+                    {t('post.priceLabel')}
                   </Text>
                   <View className="relative justify-center">
-                    <Text className="absolute left-4 font-label font-semibold text-neutral-T50 z-10">
-                      $
-                    </Text>
                     <TextInput
-                      className={`w-full h-14 pl-8 pr-4 rounded-xl bg-neutral-T95 border font-body text-base text-neutral-T10 ${fieldErrors.price ? 'border-red-500' : 'border-neutral-T90'}`}
-                      placeholder="0.00"
+                      className={`w-full h-14 pl-4 pr-10 rounded-xl bg-neutral-T95 border font-body text-base text-neutral-T10 ${fieldErrors.price ? 'border-red-500' : 'border-neutral-T90'}`}
+                      placeholder="0"
                       placeholderTextColor="#AAABAB"
-                      keyboardType="decimal-pad"
+                      keyboardType="number-pad"
                       value={price}
                       onChangeText={(p) => {
                         setPrice(p);
                         if (fieldErrors.price) setFieldErrors((e) => { const { price: _, ...rest } = e; return rest; });
                       }}
                     />
+                    <Text className="absolute right-4 font-label font-semibold text-neutral-T50 z-10">
+                      ₫
+                    </Text>
                   </View>
                   {fieldErrors.price && (
                     <Text className="text-xs text-red-500 font-label ml-1">
@@ -407,25 +409,25 @@ export default function CreatePost() {
               )}
               <View className="flex-1 gap-2">
                 <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
-                  Servings
+                  {t('post.servings')}
                 </Text>
                 <QuantityStepper value={quantity} onChange={setQuantity} />
               </View>
             </View>
           </View>
 
-          {/* ── Pickup window ── */}
+          {/* ── Khung giờ nhận hàng ── */}
           <View className={`rounded-2xl p-6 gap-4 mb-6 ${fieldErrors.pickupTime ? 'bg-red-50 border border-red-500' : 'bg-neutral-T95'}`}>
             <View className="flex-row items-center gap-2">
               <MaterialIcons name="schedule" size={20} color={fieldErrors.pickupTime ? '#EF4444' : '#296C24'} />
               <Text className="font-sans font-bold text-base text-neutral-T10">
-                Pickup window
+                {t('post.pickupWindow')}
               </Text>
             </View>
             <View className="flex-row gap-4">
               <View className="flex-1 gap-1">
                 <Text className="text-[10px] font-label font-semibold tracking-wider text-neutral-T70 ml-1">
-                  Starts from
+                  {t('post.from')}
                 </Text>
                 <TouchableOpacity
                   className="h-12 px-4 rounded-xl bg-neutral-T100 border border-neutral-T90 flex-row items-center justify-between active:opacity-80"
@@ -439,7 +441,7 @@ export default function CreatePost() {
               </View>
               <View className="flex-1 gap-1">
                 <Text className="text-[10px] font-label font-semibold tracking-wider text-neutral-T70 ml-1">
-                  Until
+                  {t('post.to')}
                 </Text>
                 <TouchableOpacity
                   className="h-12 px-4 rounded-xl bg-neutral-T100 border border-neutral-T90 flex-row items-center justify-between active:opacity-80"
@@ -459,10 +461,10 @@ export default function CreatePost() {
             )}
           </View>
 
-          {/* ── Expiry date ── */}
+          {/* ── Hạn sử dụng ── */}
           <View className="gap-2 mb-6">
             <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
-              Expiry date
+              {t('post.expiryDate')}
             </Text>
             <TouchableOpacity
               className={`h-14 px-4 rounded-xl bg-neutral-T95 border flex-row items-center justify-between active:opacity-80 ${fieldErrors.expiryDate ? 'border-red-500' : 'border-neutral-T90'}`}
@@ -483,7 +485,7 @@ export default function CreatePost() {
           {/* ── Location picker ── */}
           <View className="gap-2 mb-2">
             <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
-              Vị trí nhận hàng
+              {t('post.pickupLocation')}
             </Text>
             <TouchableOpacity
               className="h-14 px-4 rounded-xl bg-neutral-T95 border border-neutral-T90 flex-row items-center justify-between active:opacity-80"
@@ -497,8 +499,8 @@ export default function CreatePost() {
                   numberOfLines={1}
                 >
                   {pickedLocation
-                    ? pickedLocation.address || 'Đã chọn vị trí'
-                    : 'Chọn vị trí trên bản đồ...'}
+                    ? pickedLocation.address || t('post.locationSelected')
+                    : t('post.locationPlaceholder')}
                 </Text>
               </View>
               <MaterialIcons name="chevron-right" size={20} color="#AAABAB" />
@@ -520,7 +522,7 @@ export default function CreatePost() {
           <TouchableOpacity className="flex-1 h-14 bg-neutral-T95 rounded-xl items-center justify-center flex-row gap-2 active:opacity-80">
             <MaterialIcons name="save" size={18} color="#757777" />
             <Text className="font-label font-medium text-sm text-neutral-T50">
-              Save draft
+              {t('post.saveDraft')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -530,13 +532,13 @@ export default function CreatePost() {
           >
             {isSendingPasscode ? (
               <Text className="font-label font-medium text-sm text-neutral-T100">
-                Sending code...
+                {t('post.sendingCode')}
               </Text>
             ) : (
               <>
                 <MaterialIcons name="check-circle" size={18} color="#FFFFFF" />
                 <Text className="font-label font-medium text-sm text-neutral-T100">
-                  Publish meal
+                  {t('post.publishPost')}
                 </Text>
               </>
             )}

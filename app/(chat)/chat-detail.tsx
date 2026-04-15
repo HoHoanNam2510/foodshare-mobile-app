@@ -1,5 +1,6 @@
 import { useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -30,6 +31,7 @@ function toDisplayMessage(msg: ChatMessage, currentUserId: string): Message {
 // ─── SCREEN ─────────────────────────────────────────────────────────────────
 
 export default function ChatDetailScreen() {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{
     conversationId: string;
@@ -118,7 +120,7 @@ export default function ChatDetailScreen() {
   return (
     <View className="flex-1 bg-neutral">
       <ChatHeader
-        name={params.name || 'Người dùng'}
+        name={params.name || t('chat.unknownUser')}
         avatarUri={avatarUri}
         isOnline={false}
       />
@@ -139,7 +141,7 @@ export default function ChatDetailScreen() {
           <View className="items-center my-4">
             <View className="bg-neutral-T95 rounded-full px-4 py-1">
               <Text className="font-label text-xs text-neutral-T50 uppercase tracking-widest">
-                Hôm nay
+                {t('common.today')}
               </Text>
             </View>
           </View>

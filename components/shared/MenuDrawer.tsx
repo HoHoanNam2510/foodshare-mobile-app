@@ -1,6 +1,7 @@
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Animated,
   Dimensions,
@@ -15,6 +16,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/stores/authStore';
+import { useLanguageStore } from '@/stores/languageStore';
 import { useMenuDrawerStore } from '@/stores/menuDrawerStore';
 
 const DRAWER_WIDTH = Dimensions.get('window').width * 0.82;
@@ -51,12 +53,6 @@ function MenuItem({ icon, label, onPress }: MenuItemProps) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-const ROLE_LABEL: Record<string, string> = {
-  USER: 'Người dùng',
-  STORE: 'Cửa hàng',
-  ADMIN: 'Quản trị viên',
-};
-
 const ROLE_BADGE: Record<
   string,
   { containerClass: string; textClass: string }
@@ -69,9 +65,12 @@ const ROLE_BADGE: Record<
 export default function MenuDrawer() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const { isOpen, close } = useMenuDrawerStore();
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
+  const language = useLanguageStore((s) => s.language);
+  const toggleLanguage = useLanguageStore((s) => s.toggleLanguage);
 
   const [modalVisible, setModalVisible] = useState(false);
   const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
@@ -165,7 +164,7 @@ export default function MenuDrawer() {
         }}
       >
         {/* ── Header ── */}
-        <View className="px-5 pt-3 pb-4 flex-row items-center justify-between">
+        <View className="px-5 pt-3 pb-4 flex-row items-center">
           <Text
             className="text-lg font-sans text-primary-T40"
             style={{ fontWeight: '700', letterSpacing: -0.3 }}
@@ -173,10 +172,26 @@ export default function MenuDrawer() {
             FoodShare
           </Text>
           <TouchableOpacity
-            className="w-9 h-9 rounded-full bg-neutral-T95 items-center justify-center active:opacity-70"
+            className="w-9 h-9 rounded-full bg-neutral-T95 items-center justify-center active:opacity-70 ml-3"
             onPress={handleClose}
           >
             <Feather name="x" size={18} color="#191C1C" />
+          </TouchableOpacity>
+
+          {/* Language toggle (right-aligned, opposite side of close) */}
+          <View className="flex-1" />
+          <TouchableOpacity
+            className="flex-row items-center px-3 h-9 rounded-full bg-primary-T95 border border-primary-T90 active:opacity-70"
+            onPress={toggleLanguage}
+            accessibilityLabel="Toggle language"
+          >
+            <MaterialIcons name="language" size={16} color="#296C24" />
+            <Text
+              className="ml-1.5 font-label text-xs font-bold text-primary-T20"
+              style={{ letterSpacing: 0.5 }}
+            >
+              {language === 'vi' ? 'VI' : 'EN'}
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -207,7 +222,7 @@ export default function MenuDrawer() {
               <Text
                 className={`font-label text-[10px] font-bold ${roleBadge.textClass}`}
               >
-                {ROLE_LABEL[user?.role ?? 'USER']}
+                {t(`roles.${user?.role ?? 'USER'}`)}
               </Text>
             </View>
           </View>
@@ -224,44 +239,44 @@ export default function MenuDrawer() {
         >
           {/* Section label */}
           <Text className="font-label text-xs font-semibold text-neutral-T50 tracking-wider uppercase mt-3 mb-1">
-            Menu
+            {t('menu.menu')}
           </Text>
 
           <MenuItem
             icon="receipt-long"
-            label="Giao dịch của tôi"
+            label={t('menu.myTransactions')}
             onPress={() => navigate('/(transaction)/transaction-list')}
           />
           <MenuItem
             icon="star"
-            label="Đánh giá của tôi"
+            label={t('menu.myReviews')}
             onPress={() => navigate('/(review)/my-reviews')}
           />
           <MenuItem
             icon="flag"
-            label="Báo cáo của tôi"
+            label={t('menu.myReports')}
             onPress={() => navigate('/(report)/my-reports')}
           />
           {isStore && (
             <MenuItem
               icon="confirmation-number"
-              label="Quản lý Voucher"
+              label={t('menu.manageVouchers')}
               onPress={() => navigate('/(voucher)/store-vouchers')}
             />
           )}
           <MenuItem
             icon="local-offer"
-            label="Ví Voucher"
+            label={t('menu.myVouchers')}
             onPress={() => navigate('/(voucher)/my-vouchers')}
           />
           <MenuItem
             icon="history"
-            label="Lịch sử điểm"
+            label={t('menu.pointHistory')}
             onPress={() => navigate('/(voucher)/point-history')}
           />
           <MenuItem
             icon="leaderboard"
-            label="Bảng xếp hạng điểm xanh"
+            label={t('menu.leaderboard')}
             onPress={() => navigate('/(leaderboard)/leaderboard')}
           />
         </ScrollView>
@@ -275,7 +290,7 @@ export default function MenuDrawer() {
           >
             <MaterialIcons name="logout" size={20} color="#ba1a1a" />
             <Text className="font-label font-semibold text-error">
-              Đăng xuất
+              {t('auth.logout')}
             </Text>
           </TouchableOpacity>
         </View>

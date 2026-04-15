@@ -1,5 +1,6 @@
 import { Feather } from '@expo/vector-icons';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 interface ChatInputProps {
@@ -8,6 +9,7 @@ interface ChatInputProps {
 }
 
 export default function ChatInput({ onSend, disabled }: ChatInputProps) {
+  const { t } = useTranslation();
   const [message, setMessage] = useState('');
 
   const handleSend = () => {
@@ -36,7 +38,7 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
 
       {/* Text input */}
       <TextInput
-        placeholder="Nhập tin nhắn..."
+        placeholder={t('chat.typeMessage')}
         placeholderTextColor="#AAABAB"
         value={message}
         onChangeText={setMessage}

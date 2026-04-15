@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import StackHeader from '@/components/shared/headers/StackHeader';
 import {
@@ -21,18 +22,6 @@ import {
   type MyRankingSummaryItem,
 } from '@/lib/greenPointApi';
 
-const PERIOD_OPTIONS: { label: string; value: LeaderboardPeriod }[] = [
-  { label: 'Ngày', value: 'daily' },
-  { label: 'Tuần', value: 'weekly' },
-  { label: 'Tháng', value: 'monthly' },
-  { label: 'Năm', value: 'yearly' },
-];
-
-const ROLE_OPTIONS: { label: string; value: LeaderboardRole }[] = [
-  { label: 'Tất cả', value: 'ALL' },
-  { label: 'Người dùng', value: 'USER' },
-  { label: 'Cửa hàng', value: 'STORE' },
-];
 
 // Màu theme cho từng hạng
 const RANK_THEMES = {
@@ -53,6 +42,7 @@ function SummaryCard({
   title: string;
   item?: MyRankingSummaryItem;
 }) {
+  const { t } = useTranslation();
   return (
     <View className="flex-1 bg-white rounded-2xl p-3 border border-primary-T80">
       <Text className="font-label text-xs text-primary-T40 mb-1">{title}</Text>
@@ -65,11 +55,11 @@ function SummaryCard({
             #{item.rank}
           </Text>
           <Text className="font-body text-xs text-primary-T40">
-            {item.points} điểm
+            {item.points} {t('leaderboard.pointsUnit')}
           </Text>
         </>
       ) : (
-        <Text className="font-body text-xs text-primary-T50">Chưa có dữ liệu</Text>
+        <Text className="font-body text-xs text-primary-T50">{t('leaderboard.noData')}</Text>
       )}
     </View>
   );
@@ -117,6 +107,7 @@ function UserAvatar({
 }
 
 function LeaderboardRow({ item }: { item: LeaderboardEntry }) {
+  const { t } = useTranslation();
   const theme = getRankTheme(item.rank);
   const isTop3 = item.rank <= 3;
 
@@ -172,7 +163,7 @@ function LeaderboardRow({ item }: { item: LeaderboardEntry }) {
           {item.user.fullName}
         </Text>
         <Text style={{ color: theme.badge, fontSize: 11, marginTop: 1 }}>
-          {item.user.role === 'STORE' ? 'Cửa hàng' : 'Người dùng'}
+          {item.user.role === 'STORE' ? t('roles.STORE') : t('roles.USER')}
           {isTop3 && (
             <Text style={{ fontWeight: '700' }}>
               {item.rank === 1 ? '  🥇' : item.rank === 2 ? '  🥈' : '  🥉'}
@@ -187,7 +178,7 @@ function LeaderboardRow({ item }: { item: LeaderboardEntry }) {
           {item.points}
         </Text>
         <Text style={{ color: theme.text, fontSize: 11, opacity: 0.7 }}>
-          điểm
+          {t('leaderboard.pointsUnit')}
         </Text>
       </View>
     </View>
@@ -195,8 +186,22 @@ function LeaderboardRow({ item }: { item: LeaderboardEntry }) {
 }
 
 export default function LeaderboardScreen() {
+  const { t } = useTranslation();
   const [period, setPeriod] = useState<LeaderboardPeriod>('weekly');
   const [role, setRole] = useState<LeaderboardRole>('ALL');
+
+  const PERIOD_OPTIONS: { label: string; value: LeaderboardPeriod }[] = [
+    { label: t('leaderboard.periodDaily'), value: 'daily' },
+    { label: t('leaderboard.periodWeekly'), value: 'weekly' },
+    { label: t('leaderboard.periodMonthly'), value: 'monthly' },
+    { label: t('leaderboard.periodYearly'), value: 'yearly' },
+  ];
+
+  const ROLE_OPTIONS: { label: string; value: LeaderboardRole }[] = [
+    { label: t('leaderboard.roleAll'), value: 'ALL' },
+    { label: t('roles.USER'), value: 'USER' },
+    { label: t('roles.STORE'), value: 'STORE' },
+  ];
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -244,7 +249,7 @@ export default function LeaderboardScreen() {
 
   return (
     <View className="flex-1 bg-neutral-T100">
-      <StackHeader title="Bảng xếp hạng điểm xanh" />
+      <StackHeader title={t('leaderboard.greenPointsLeaderboard')} />
 
       <View className="px-4 pt-3 gap-3">
         {/* Period filter */}
@@ -301,16 +306,16 @@ export default function LeaderboardScreen() {
             className="font-sans text-sm text-primary-T20 mb-2"
             style={{ fontWeight: '700' }}
           >
-            Xếp hạng của bạn
+            {t('leaderboard.yourRank')}
           </Text>
           <View className="gap-2">
             <View className="flex-row gap-2">
-              <SummaryCard title="Theo ngày" item={mySummary.daily} />
-              <SummaryCard title="Theo tuần" item={mySummary.weekly} />
+              <SummaryCard title={t('leaderboard.summaryByDay')} item={mySummary.daily} />
+              <SummaryCard title={t('leaderboard.summaryByWeek')} item={mySummary.weekly} />
             </View>
             <View className="flex-row gap-2">
-              <SummaryCard title="Theo tháng" item={mySummary.monthly} />
-              <SummaryCard title="Theo năm" item={mySummary.yearly} />
+              <SummaryCard title={t('leaderboard.summaryByMonth')} item={mySummary.monthly} />
+              <SummaryCard title={t('leaderboard.summaryByYear')} item={mySummary.yearly} />
             </View>
           </View>
         </View>
@@ -335,21 +340,21 @@ export default function LeaderboardScreen() {
           ListHeaderComponent={
             entries.length > 0 ? (
               <Text className="font-label text-xs text-neutral-T50 mb-3">
-                Top {entries.length} người dùng xuất sắc nhất
+                {t('leaderboard.topNUsers', { count: entries.length })}
               </Text>
             ) : null
           }
           ListEmptyComponent={
             <View className="mt-10 items-center">
               <Text className="font-body text-neutral-T50">
-                Chưa có dữ liệu xếp hạng
+                {t('leaderboard.noRankingData')}
               </Text>
             </View>
           }
           ListFooterComponent={
             entries.length > 0 ? (
               <Text className="font-body text-xs text-neutral-T60 text-center mt-2">
-                Hiển thị top {entries.length} — Làm mới để cập nhật
+                {t('leaderboard.showingTop', { count: entries.length })}
               </Text>
             ) : null
           }

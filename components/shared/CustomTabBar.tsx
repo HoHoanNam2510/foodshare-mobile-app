@@ -1,5 +1,6 @@
 import { Feather } from '@expo/vector-icons';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -8,7 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 type FeatherIconName = React.ComponentProps<typeof Feather>['name'];
 
 interface Tab {
-  name: string;
+  labelKey: string;
   routeName: string;
   iconName: FeatherIconName;
 }
@@ -20,11 +21,11 @@ interface CustomTabBarProps {
 
 // ─── Tab Config (Giữ nguyên) ─────────────────────────────────────────────────
 const TABS: Tab[] = [
-  { name: 'Home', routeName: '/home', iconName: 'home' },
-  { name: 'Explore', routeName: '/explore', iconName: 'compass' },
-  { name: 'Add', routeName: 'ACTION_ADD', iconName: 'plus' },
-  { name: 'Post', routeName: '/post', iconName: 'file-text' },
-  { name: 'Chat', routeName: '/chat', iconName: 'message-circle' },
+  { labelKey: 'tabs.home', routeName: '/home', iconName: 'home' },
+  { labelKey: 'tabs.explore', routeName: '/explore', iconName: 'compass' },
+  { labelKey: 'common.add', routeName: 'ACTION_ADD', iconName: 'plus' },
+  { labelKey: 'profile.myPosts', routeName: '/post', iconName: 'file-text' },
+  { labelKey: 'tabs.chat', routeName: '/chat', iconName: 'message-circle' },
 ];
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -41,6 +42,7 @@ export default function CustomTabBar({
   onTabPress,
 }: CustomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const [internalIndex, setInternalIndex] = useState(0);
 
   const activeIndex =
@@ -88,7 +90,7 @@ export default function CustomTabBar({
               className="flex-col items-center active:opacity-70"
               style={{ gap: 4, minWidth: 48 }}
               accessibilityRole="button"
-              accessibilityLabel={tab.name}
+              accessibilityLabel={t(tab.labelKey)}
               accessibilityState={{ selected: isActive }}
             >
               <Feather
@@ -104,7 +106,7 @@ export default function CustomTabBar({
                   color: isActive ? PRIMARY_T40 : NEUTRAL_T50,
                 }}
               >
-                {tab.name}
+                {t(tab.labelKey)}
               </Text>
             </TouchableOpacity>
           );
