@@ -3,6 +3,7 @@ import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 import { MapPost } from './types';
+import { useTranslation } from 'react-i18next';
 
 interface PostPreviewCardProps {
   post: MapPost;
@@ -19,10 +20,11 @@ export default function PostPreviewCard({
   post,
   onViewDetails,
 }: PostPreviewCardProps) {
+  const { t } = useTranslation();
   const isFree = post.type === 'P2P_FREE';
   const imageUrl = post.images?.[0];
   const priceLabel = isFree
-    ? 'MIỄN PHÍ'
+    ? t('map.free')
     : `${post.price.toLocaleString('vi-VN')}đ`;
   const distanceLabel = formatDistance(post.distance);
 
@@ -60,7 +62,7 @@ export default function PostPreviewCard({
             className="text-secondary text-[10px] font-label uppercase tracking-widest"
             style={{ fontWeight: '700' }}
           >
-            {isFree ? 'Đồ ăn miễn phí' : 'Túi bí ẩn'}
+            {isFree ? t('map.freeFood') : t('map.mysteryBag')}
           </Text>
           <Text
             className="text-neutral-T10 font-sans mt-0.5"
@@ -95,7 +97,7 @@ export default function PostPreviewCard({
               className="text-primary-T30 text-xs font-label"
               style={{ fontWeight: '700' }}
             >
-              Xem chi tiết
+              {t('map.viewDetails')}
             </Text>
           </TouchableOpacity>
         </View>

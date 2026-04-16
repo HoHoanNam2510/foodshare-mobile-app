@@ -20,6 +20,7 @@ import type { Feature, Geometry, GeoJsonProperties } from 'geojson';
 
 import AddressAutocomplete from './AddressAutocomplete';
 import { reverseGeocode } from '@/lib/mapApi';
+import { useTranslation } from 'react-i18next';
 
 // HCM center fallback
 const HCM_CENTER: [number, number] = [106.6297, 10.8231];
@@ -47,6 +48,7 @@ export default function LocationPickerSheet({
   onConfirm,
   initialCoords,
 }: LocationPickerSheetProps) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const cameraRef = useRef<CameraRef>(null);
 
@@ -138,7 +140,7 @@ export default function LocationPickerSheet({
             <Ionicons name="close" size={24} color="#2B2C2C" />
           </TouchableOpacity>
           <Text className="font-sans font-bold text-base text-neutral-T10">
-            Chọn vị trí
+            {t('map.pickLocationHeader')}
           </Text>
           <View style={{ width: 24 }} />
         </View>
@@ -146,7 +148,7 @@ export default function LocationPickerSheet({
         {/* Autocomplete */}
         <View className="px-4 py-3 bg-neutral-T100 border-b border-neutral-T90">
           <AddressAutocomplete
-            placeholder="Tìm địa chỉ..."
+            placeholder={t('map.searchAddressPlaceholder')}
             onSelect={handleAutocompleteSelect}
             initialValue={address}
           />
@@ -208,7 +210,7 @@ export default function LocationPickerSheet({
             />
             <View className="flex-1">
               <Text className="font-label text-[10px] text-neutral-T50 uppercase tracking-wider mb-0.5">
-                Địa chỉ đã chọn
+                {t('map.selectedAddressLabel')}
               </Text>
               {resolving ? (
                 <ActivityIndicator size="small" color="#296C24" />
@@ -217,7 +219,7 @@ export default function LocationPickerSheet({
                   className="font-body text-sm text-neutral-T10"
                   numberOfLines={2}
                 >
-                  {address || 'Chưa xác định được địa chỉ'}
+                  {address || t('map.unknownAddress')}
                 </Text>
               )}
             </View>
@@ -230,7 +232,7 @@ export default function LocationPickerSheet({
             className="h-14 bg-primary-T40 rounded-2xl items-center justify-center"
           >
             <Text className="font-label font-semibold text-base text-neutral-T100">
-              Xác nhận vị trí
+              {t('map.confirmLocationBtn')}
             </Text>
           </TouchableOpacity>
         </View>

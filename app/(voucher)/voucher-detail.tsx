@@ -24,10 +24,12 @@ import VoucherStatusBadge from '@/components/voucher/VoucherStatusBadge';
 import { getVoucherMarketApi, redeemVoucherApi } from '@/lib/voucherApi';
 import type { IVoucher } from '@/lib/voucherApi';
 import { useAuthStore } from '@/stores/authStore';
+import { useTranslation } from 'react-i18next';
 
 export default function VoucherDetailScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const {
     id,
     source,
@@ -67,7 +69,7 @@ export default function VoucherDetailScreen() {
 
   const handleCopyCode = () => {
     if (!voucher) return;
-    Alert.alert('Mã voucher', voucher.code, [{ text: 'Đóng' }]);
+    Alert.alert(t('voucher.voucherCodeLabel'), voucher.code, [{ text: t('voucher.voucherCodeCopied') }]);
   };
 
   const handleRedeem = async () => {
@@ -78,14 +80,14 @@ export default function VoucherDetailScreen() {
       await redeemVoucherApi(voucher._id);
       setShowModal(false);
       await fetchProfile();
-      Alert.alert('Thành công! 🎉', 'Voucher đã được thêm vào ví của bạn.', [
+      Alert.alert(t('voucher.redeemSuccessTitle'), t('voucher.redeemSuccessMsg'), [
         { text: 'OK', onPress: () => router.back() },
       ]);
     } catch (e) {
       restoreGreenPoints(voucher.pointCost);
       Alert.alert(
-        'Lỗi',
-        e instanceof Error ? e.message : 'Không thể đổi voucher.'
+        t('voucher.errorAlert'),
+        e instanceof Error ? e.message : t('voucher.redeemError')
       );
     } finally {
       setIsRedeeming(false);
@@ -95,7 +97,7 @@ export default function VoucherDetailScreen() {
   if (isLoading) {
     return (
       <View className="flex-1 bg-neutral">
-        <StackHeader title="Chi tiết Voucher" />
+        <StackHeader title={t('voucher.voucherDetailTitle')} />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#296C24" />
         </View>
@@ -106,17 +108,17 @@ export default function VoucherDetailScreen() {
   if (!voucher) {
     return (
       <View className="flex-1 bg-neutral">
-        <StackHeader title="Chi tiết Voucher" />
+        <StackHeader title={t('voucher.voucherDetailTitle')} />
         <View className="flex-1 items-center justify-center px-8 gap-4">
           <Text className="font-body text-sm text-neutral-T50 text-center">
-            Không tìm thấy voucher này.
+            {t('voucher.notFoundDetail')}
           </Text>
           <TouchableOpacity
             onPress={() => router.back()}
             className="px-6 py-3 bg-primary-T40 rounded-xl"
           >
             <Text className="font-label font-semibold text-neutral-T100">
-              Quay lại
+              {t('voucher.backBtn', 'Quay lại')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -133,7 +135,7 @@ export default function VoucherDetailScreen() {
 
   return (
     <View className="flex-1 bg-neutral">
-      <StackHeader title="Chi tiết Voucher" />
+      <StackHeader title={t('voucher.voucherDetailTitle')} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -182,20 +184,20 @@ export default function VoucherDetailScreen() {
           style={styles.card}
         >
           <Text className="font-sans font-bold text-base text-neutral-T10">
-            Thông tin chi tiết
+            {t('voucher.voucherDetailsInfo')}
           </Text>
 
           <View className="gap-3">
             <DetailRow
-              label="Loại giảm giá"
+              label={t('voucher.discountTypeDetail')}
               value={
                 voucher.discountType === 'PERCENTAGE'
-                  ? 'Phần trăm'
-                  : 'Số tiền cố định'
+                  ? t('voucher.discountTypePercentage')
+                  : t('voucher.discountTypeFixed')
               }
             />
             <DetailRow
-              label="Giá trị"
+              label={t('voucher.discountValueDetail')}
               value={
                 voucher.discountType === 'PERCENTAGE'
                   ? `${voucher.discountValue}%`
@@ -204,7 +206,7 @@ export default function VoucherDetailScreen() {
             />
             <View className="flex-row items-center justify-between">
               <Text className="font-label text-sm text-neutral-T50">
-                Điểm cần đổi
+                {t('voucher.pointsCostDetail')}
               </Text>
               <VoucherPointCost
                 pointCost={voucher.pointCost}
@@ -214,7 +216,7 @@ export default function VoucherDetailScreen() {
             </View>
             <View className="gap-1">
               <Text className="font-label text-sm text-neutral-T50">
-                Số lượng còn lại
+                {t('voucher.remainingQuantityDetail')}
               </Text>
               <VoucherQuantityBar
                 remainingQuantity={voucher.remainingQuantity}
@@ -222,7 +224,7 @@ export default function VoucherDetailScreen() {
               />
             </View>
             <DetailRow
-              label="Hiệu lực"
+              label={t('voucher.validityPeriodDetail')}
               value={`${formatDate(voucher.validFrom)} – ${formatDate(voucher.validUntil)}`}
             />
           </View>
@@ -232,7 +234,7 @@ export default function VoucherDetailScreen() {
               <View className="h-px bg-neutral-T90" />
               <View className="gap-1">
                 <Text className="font-label text-sm text-neutral-T50">
-                  Mô tả
+                  {t('voucher.voucherDescriptionDetail')}
                 </Text>
                 <Text className="font-body text-sm text-neutral-T30 leading-5">
                   {voucher.description}
@@ -247,7 +249,7 @@ export default function VoucherDetailScreen() {
           <View className="flex-row items-center gap-2 px-4 py-3 bg-primary-T95 rounded-xl">
             <Text className="text-lg">🍃</Text>
             <Text className="font-label font-semibold text-sm text-primary-T30">
-              Điểm hiện tại của bạn:{' '}
+              {t('voucher.yourCurrentPoints')}{' '}
               <Text className="font-bold text-primary-T10">
                 {user.greenPoints.toLocaleString()}
               </Text>
@@ -281,7 +283,7 @@ export default function VoucherDetailScreen() {
                 canAfford ? 'text-neutral-T100' : 'text-neutral-T50'
               }`}
             >
-              {canAfford ? 'Đổi điểm lấy voucher' : 'Không đủ điểm để đổi'}
+              {canAfford ? t('voucher.redeemBtn') : t('voucher.notEnoughPointsBtn')}
             </Text>
           </TouchableOpacity>
         </View>

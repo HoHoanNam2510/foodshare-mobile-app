@@ -9,6 +9,7 @@ import VoucherExpiryTag from './VoucherExpiryTag';
 import VoucherPointCost from './VoucherPointCost';
 import VoucherQuantityBar from './VoucherQuantityBar';
 import VoucherStatusBadge from './VoucherStatusBadge';
+import { useTranslation } from 'react-i18next';
 
 type VoucherCardViewMode = 'market' | 'wallet' | 'store-manage';
 
@@ -42,6 +43,7 @@ export default function VoucherCard({
   onEditPress,
   onPress,
 }: VoucherCardProps) {
+  const { t } = useTranslation();
   const canAfford =
     userGreenPoints !== undefined
       ? userGreenPoints >= voucher.pointCost
@@ -120,7 +122,7 @@ export default function VoucherCard({
           {/* Store-manage: X/Y đã dùng label */}
           {viewMode === 'store-manage' && (
             <Text className="font-label text-xs text-neutral-T50">
-              {usedCount}/{voucher.totalQuantity} đã được đổi
+              {t('voucher.redeemedCountFormat', { used: usedCount, total: voucher.totalQuantity })}
             </Text>
           )}
 
@@ -144,7 +146,7 @@ export default function VoucherCard({
                   voucher.isActive ? 'text-primary-T30' : 'text-neutral-T50'
                 }`}
               >
-                {voucher.isActive ? 'ACTIVE' : 'INACTIVE'}
+                {voucher.isActive ? t('voucher.activeBadge') : t('voucher.inactiveBadge')}
               </Text>
             </View>
           )}
@@ -168,7 +170,7 @@ export default function VoucherCard({
                   canAfford ? 'text-neutral-T100' : 'text-neutral-T50'
                 }`}
               >
-                {canAfford ? 'Đổi ngay' : 'Không đủ điểm'}
+                {canAfford ? t('voucher.redeemNowBtn') : t('voucher.notEnoughPointsShortBtn')}
               </Text>
             </TouchableOpacity>
           )}
@@ -180,7 +182,7 @@ export default function VoucherCard({
               activeOpacity={0.8}
             >
               <Text className="font-label font-semibold text-sm text-neutral-T40">
-                Xem chi tiết
+                {t('voucher.viewDetailsBtn')}
               </Text>
             </TouchableOpacity>
           )}
@@ -196,7 +198,7 @@ export default function VoucherCard({
                   thumbColor={voucher.isActive ? '#296C24' : '#AAABAB'}
                 />
                 <Text className="font-label text-xs text-neutral-T50">
-                  {voucher.isActive ? 'Đang bật' : 'Đã tắt'}
+                  {voucher.isActive ? t('voucher.activeStatus') : t('voucher.inactiveStatus')}
                 </Text>
               </View>
 
@@ -208,7 +210,7 @@ export default function VoucherCard({
               >
                 <MaterialIcons name="edit" size={14} color="#944A00" />
                 <Text className="font-label font-semibold text-xs text-secondary-T40">
-                  Chỉnh sửa
+                  {t('voucher.editBtn')}
                 </Text>
               </TouchableOpacity>
             </View>

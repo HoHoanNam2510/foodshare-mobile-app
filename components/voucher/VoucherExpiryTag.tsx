@@ -1,6 +1,7 @@
 // components/voucher/VoucherExpiryTag.tsx
 import React from 'react';
 import { Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface VoucherExpiryTagProps {
   validUntil: string; // ISO date string
@@ -22,6 +23,7 @@ function formatDate(iso: string): string {
 }
 
 export default function VoucherExpiryTag({ validUntil }: VoucherExpiryTagProps) {
+  const { t } = useTranslation();
   const daysLeft = getDaysUntilExpiry(validUntil);
   const isExpiringSoon = daysLeft <= 3 && daysLeft > 0;
   const isExpired = daysLeft <= 0;
@@ -35,12 +37,12 @@ export default function VoucherExpiryTag({ validUntil }: VoucherExpiryTagProps) 
       )}
       <Text className={`font-label text-xs ${textColorClass}`}>
         {isExpired
-          ? 'Đã hết hạn'
-          : `Hết hạn: ${formatDate(validUntil)}`}
+          ? t('voucher.statusExpired')
+          : `${t('voucher.expiresAt')}${formatDate(validUntil)}`}
       </Text>
       {isExpiringSoon && (
         <Text className="font-label text-xs text-error">
-          (còn {daysLeft} ngày)
+          {t('voucher.expiresInDays', { days: daysLeft })}
         </Text>
       )}
     </View>

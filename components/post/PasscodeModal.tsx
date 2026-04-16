@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 
 const PASSCODE_LENGTH = 6;
 
@@ -31,6 +32,7 @@ export default function PasscodeModal({
   isLoading = false,
   deliveryMethod = null,
 }: PasscodeModalProps) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [digits, setDigits] = useState(Array(PASSCODE_LENGTH).fill(''));
   const [isResending, setIsResending] = useState(false);
@@ -84,8 +86,8 @@ export default function PasscodeModal({
 
   const deliveryHint =
     deliveryMethod === 'email'
-      ? 'We sent a 6-digit code to your email.'
-      : 'Please enter your secret pin to confirm and publish this meal listing.';
+      ? t('post.emailCodeHint')
+      : t('post.pinCodeHint');
 
   return (
     <Modal
@@ -110,7 +112,7 @@ export default function PasscodeModal({
           >
             <View className="items-center gap-2">
               <Text className="font-sans font-bold text-xl text-neutral-T10">
-                Confirm listing
+                {t('post.confirmListing')}
               </Text>
               <Text className="font-body text-sm text-neutral-T50 text-center leading-relaxed">
                 {deliveryHint}
@@ -145,7 +147,7 @@ export default function PasscodeModal({
                   <ActivityIndicator size="small" color="#296C24" />
                 ) : (
                   <Text className="font-label text-sm font-semibold text-primary-T40">
-                    Resend code
+                    {t('post.resendCode')}
                   </Text>
                 )}
               </TouchableOpacity>
@@ -157,7 +159,7 @@ export default function PasscodeModal({
                 onPress={handleCancel}
               >
                 <Text className="font-label font-semibold text-neutral-T50">
-                  Cancel
+                  {t('common.cancel')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -166,7 +168,7 @@ export default function PasscodeModal({
                 disabled={isLoading || digits.join('').length < PASSCODE_LENGTH}
               >
                 <Text className="font-label font-semibold text-neutral-T100">
-                  {isLoading ? 'Verifying...' : 'Verify'}
+                  {isLoading ? t('common.verifying', 'Verifying...') : t('common.verify', 'Verify')}
                 </Text>
               </TouchableOpacity>
             </View>

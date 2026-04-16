@@ -10,6 +10,7 @@ import {
 
 import { TYPE_FILTER_OPTIONS } from './mockData';
 import { SortOption, TypeFilter } from './types';
+import { useTranslation } from 'react-i18next';
 
 const SORT_OPTION_CONFIGS: { value: SortOption; labelKey: string; icon: string }[] = [
   { value: 'newest', labelKey: 'explore.sortNewest', icon: 'clock' },

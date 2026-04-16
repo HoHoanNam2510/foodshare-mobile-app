@@ -10,6 +10,7 @@ import ManagementHeader from '@/components/shared/headers/ManagementHeader';
 import PointHistoryItem from '@/components/voucher/PointHistoryItem';
 import { getPointHistoryApi } from '@/lib/greenPointApi';
 import type { IPointLog } from '@/lib/greenPointApi';
+import { useTranslation } from 'react-i18next';
 
 const PAGE_SIZE = 20;
 
@@ -23,6 +24,7 @@ export default function PointHistoryScreen() {
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const { t } = useTranslation();
 
   const loadHistory = useCallback(async (pageNum: number, append = false) => {
     if (pageNum === 1) setIsLoading(true);
@@ -35,7 +37,7 @@ export default function PointHistoryScreen() {
       setLogs((prev) => (append ? [...prev, ...newLogs] : newLogs));
       setHasMore(pageNum < pagination.totalPages);
     } catch (e) {
-      Alert.alert('Lỗi', 'Không thể tải lịch sử điểm.');
+      Alert.alert(t('voucher.errorAlert'), t('voucher.loadPointHistoryError'));
     } finally {
       setIsLoading(false);
       setIsFetchingMore(false);
@@ -56,7 +58,7 @@ export default function PointHistoryScreen() {
   return (
     <View className="flex-1 bg-neutral">
       <ManagementHeader
-        title="Lịch sử GreenPoints"
+        title={t('voucher.pointHistoryTitle')}
         onBack={() => router.back()}
       />
 
@@ -74,7 +76,7 @@ export default function PointHistoryScreen() {
         >
           <Text className="text-4xl">🍃</Text>
           <Text className="font-label text-xs font-semibold text-primary-T50 uppercase tracking-wider">
-            Điểm hiện tại
+            {t('voucher.currentPointsLabel')}
           </Text>
           {isLoading ? (
             <ActivityIndicator color="#296C24" />
@@ -83,7 +85,7 @@ export default function PointHistoryScreen() {
               {currentPoints.toLocaleString()}
             </Text>
           )}
-          <Text className="font-label text-xs text-primary-T50">điểm</Text>
+          <Text className="font-label text-xs text-primary-T50">{t('voucher.pointsUnit')}</Text>
         </View>
       </View>
 
@@ -92,7 +94,7 @@ export default function PointHistoryScreen() {
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
           <Text className="font-body text-sm text-neutral-T50">
-            Đang tải lịch sử...
+            {t('voucher.loadingHistory')}
           </Text>
         </View>
       ) : (
@@ -111,8 +113,8 @@ export default function PointHistoryScreen() {
             <View className="items-center justify-center py-20 gap-3">
               <MaterialIcons name="history" size={48} color="#C5C7C6" />
               <Text className="font-body text-sm text-neutral-T50 text-center">
-                Chưa có lịch sử điểm nào.{'\n'}
-                Hãy tham gia chia sẻ thực phẩm để tích điểm!
+                {t('voucher.emptyHistoryTitle')}{'\n'}
+                {t('voucher.emptyHistoryDesc')}
               </Text>
             </View>
           }
@@ -123,7 +125,7 @@ export default function PointHistoryScreen() {
               </View>
             ) : !hasMore && logs.length > 0 ? (
               <Text className="font-label text-xs text-neutral-T50 text-center py-4">
-                Đã hiển thị toàn bộ lịch sử
+                {t('voucher.endOfHistory')}
               </Text>
             ) : null
           }

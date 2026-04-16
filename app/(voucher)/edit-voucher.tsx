@@ -19,10 +19,12 @@ import {
   UpdateVoucherBody,
 } from '@/lib/voucherApi';
 import type { IVoucher } from '@/lib/voucherApi';
+import { useTranslation } from 'react-i18next';
 
 const EditVoucherScreen = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { t } = useTranslation();
 
   const [voucher, setVoucher] = useState<IVoucher | null>(null);
   const [fetching, setFetching] = useState(true);
@@ -41,7 +43,7 @@ const EditVoucherScreen = () => {
 
   useEffect(() => {
     if (!id) {
-      Alert.alert('Lỗi', 'Không tìm thấy ID voucher.');
+      Alert.alert(t('voucher.errorAlert'), t('voucher.voucherNotFound'));
       router.back();
       return;
     }
@@ -51,7 +53,7 @@ const EditVoucherScreen = () => {
         if (success) {
           const found = data.find((v) => v._id === id);
           if (!found) {
-            Alert.alert('Lỗi', 'Không tìm thấy voucher.');
+            Alert.alert(t('voucher.errorAlert'), t('voucher.voucherNotFound'));
             router.back();
             return;
           }
@@ -62,7 +64,7 @@ const EditVoucherScreen = () => {
         }
       } catch (error) {
         console.error('Edit voucher fetch error:', error);
-        Alert.alert('Lỗi', 'Không thể tải thông tin voucher.');
+        Alert.alert(t('voucher.errorAlert'), t('voucher.loadVoucherError'));
         router.back();
       } finally {
         setFetching(false);
@@ -73,7 +75,7 @@ const EditVoucherScreen = () => {
 
   const handleSave = useCallback(async () => {
     if (!title.trim()) {
-      Alert.alert('Lỗi', 'Tiêu đề không được để trống.');
+      Alert.alert(t('voucher.errorAlert'), t('voucher.titleRequired'));
       return;
     }
 
@@ -86,15 +88,15 @@ const EditVoucherScreen = () => {
       };
       const { success } = await storeUpdateVoucherApi(id as string, body);
       if (success) {
-        Alert.alert('Thành công', 'Voucher đã được cập nhật!', [
+        Alert.alert(t('voucher.successAlert'), t('voucher.updateVoucherSuccess'), [
           { text: 'OK', onPress: () => router.back() },
         ]);
       } else {
-        Alert.alert('Lỗi', 'Không thể cập nhật voucher. Vui lòng thử lại.');
+        Alert.alert(t('voucher.errorAlert'), t('voucher.updateVoucherFailed'));
       }
     } catch (error) {
       console.error('Edit voucher save error:', error);
-      Alert.alert('Lỗi', 'Có lỗi xảy ra khi cập nhật voucher.');
+      Alert.alert(t('voucher.errorAlert'), t('voucher.updateVoucherError'));
     } finally {
       setLoading(false);
     }
@@ -103,7 +105,7 @@ const EditVoucherScreen = () => {
   if (fetching) {
     return (
       <View className="flex-1 bg-neutral">
-        <StackHeader title="Chỉnh sửa Voucher" />
+        <StackHeader title={t('voucher.editVoucherTitle')} />
         <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color="#10b981" />
         </View>
@@ -115,7 +117,7 @@ const EditVoucherScreen = () => {
 
   return (
     <View className="flex-1 bg-neutral">
-      <StackHeader title="Chỉnh sửa Voucher" />
+      <StackHeader title={t('voucher.editVoucherTitle')} />
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
         <View className="p-6">
           {/* Warning banner — shown when voucher has been redeemed */}
@@ -123,7 +125,7 @@ const EditVoucherScreen = () => {
             <View className="bg-yellow-50 border border-yellow-300 rounded-xl p-4 mb-6 flex-row items-start gap-3">
               <Ionicons name="warning-outline" size={20} color="#d97706" />
               <Text className="text-sm text-yellow-800 flex-1 leading-5">
-                Một số trường không thể sửa vì đã có khách hàng đổi voucher này.
+                {t('voucher.editRedeemedWarning')}
               </Text>
             </View>
           )}
@@ -131,11 +133,11 @@ const EditVoucherScreen = () => {
           {/* Title */}
           <View className="mb-4">
             <Text className="text-sm font-medium text-foreground mb-2">
-              Tiêu đề <Text className="text-error">*</Text>
+              {t('voucher.titleLabel')} <Text className="text-error">*</Text>
             </Text>
             <TextInput
               className="border border-gray-300 rounded-lg px-4 py-3 text-base bg-white"
-              placeholder="VD: Giảm 20% đơn từ 100k"
+              placeholder={t('voucher.titlePlaceholder')}
               value={title}
               onChangeText={setTitle}
             />
@@ -144,11 +146,11 @@ const EditVoucherScreen = () => {
           {/* Description */}
           <View className="mb-4">
             <Text className="text-sm font-medium text-foreground mb-2">
-              Mô tả
+              {t('voucher.descriptionLabel')}
             </Text>
             <TextInput
               className="border border-gray-300 rounded-lg px-4 py-3 text-base bg-white h-24"
-              placeholder="Mô tả chi tiết ưu đãi..."
+              placeholder={t('voucher.descriptionPlaceholder')}
               multiline
               numberOfLines={4}
               value={description}
@@ -159,7 +161,7 @@ const EditVoucherScreen = () => {
           {/* Valid Until */}
           <View className="mb-6">
             <Text className="text-sm font-medium text-foreground mb-2">
-              Hết hạn <Text className="text-error">*</Text>
+              {t('voucher.validUntilLabel')} <Text className="text-error">*</Text>
             </Text>
             <TouchableOpacity
               className="border border-gray-300 rounded-lg px-4 py-3 bg-white"
@@ -190,11 +192,11 @@ const EditVoucherScreen = () => {
           {hasRedeemed && (
             <View className="mb-6 rounded-xl bg-neutral-50 border border-gray-200 p-4 gap-3">
               <Text className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
-                Trường chỉ đọc
+                {t('voucher.readOnlyFields')}
               </Text>
 
               <View>
-                <Text className="text-xs text-gray-400 mb-1">Mã voucher</Text>
+                <Text className="text-xs text-gray-400 mb-1">{t('voucher.codeLabel')}</Text>
                 <Text className="text-base font-semibold text-foreground">
                   {voucher.code}
                 </Text>
@@ -202,19 +204,19 @@ const EditVoucherScreen = () => {
 
               <View>
                 <Text className="text-xs text-gray-400 mb-1">
-                  Loại giảm giá
+                  {t('voucher.discountTypeLabel')}
                 </Text>
                 <Text className="text-base text-foreground">
                   {voucher.discountType === 'PERCENTAGE'
-                    ? 'Phần trăm (%)'
-                    : 'Cố định (đ)'}
+                    ? t('voucher.percentageLabel')
+                    : t('voucher.fixedAmountLabel')}
                 </Text>
               </View>
 
               <View className="flex-row gap-6">
                 <View>
                   <Text className="text-xs text-gray-400 mb-1">
-                    Giá trị giảm
+                    {t('voucher.discountValueLabel')}
                   </Text>
                   <Text className="text-base text-foreground">
                     {voucher.discountType === 'PERCENTAGE'
@@ -223,9 +225,9 @@ const EditVoucherScreen = () => {
                   </Text>
                 </View>
                 <View>
-                  <Text className="text-xs text-gray-400 mb-1">Điểm đổi</Text>
+                  <Text className="text-xs text-gray-400 mb-1">{t('voucher.pointCostLabel')}</Text>
                   <Text className="text-base text-foreground">
-                    {voucher.pointCost} điểm
+                    {voucher.pointCost} {t('voucher.pointsUnit')}
                   </Text>
                 </View>
               </View>
@@ -241,7 +243,7 @@ const EditVoucherScreen = () => {
             {loading ? (
               <ActivityIndicator color="white" />
             ) : (
-              <Text className="text-white text-lg font-bold">Lưu thay đổi</Text>
+              <Text className="text-white text-lg font-bold">{t('common.save')}</Text>
             )}
           </TouchableOpacity>
         </View>

@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 
 import ManagementHeader from '@/components/shared/headers/ManagementHeader';
 
@@ -18,15 +19,16 @@ import VoucherCard from '@/components/voucher/VoucherCard';
 import { getMyVouchersApi } from '@/lib/voucherApi';
 import type { IUserVoucher, VoucherStatusFilter } from '@/lib/voucherApi';
 
-const TABS: { label: string; value: VoucherStatusFilter }[] = [
-  { label: 'Chưa dùng', value: 'UNUSED' },
-  { label: 'Đã dùng', value: 'USED' },
-  { label: 'Hết hạn', value: 'EXPIRED' },
+const TABS = (t: any): { label: string; value: VoucherStatusFilter }[] => [
+  { label: t('voucher.statusUnused'), value: 'UNUSED' },
+  { label: t('voucher.statusUsed'), value: 'USED' },
+  { label: t('voucher.statusExpired'), value: 'EXPIRED' },
 ];
 
 export default function MyVouchersScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   const [activeTab, setActiveTab] = useState<VoucherStatusFilter>('UNUSED');
   const [userVouchers, setUserVouchers] = useState<IUserVoucher[]>([]);
@@ -38,11 +40,11 @@ export default function MyVouchersScreen() {
       const res = await getMyVouchersApi({ status });
       setUserVouchers(res.data);
     } catch (e) {
-      Alert.alert('Lỗi', 'Không thể tải ví voucher.');
+      Alert.alert(t('voucher.errorAlert'), t('voucher.loadWalletError'));
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [t]);
 
   // Refresh khi focus (VD: vừa đổi voucher từ market)
   useFocusEffect(
@@ -59,13 +61,13 @@ export default function MyVouchersScreen() {
   return (
     <View className="flex-1 bg-neutral">
       <ManagementHeader
-        title="Ví Voucher của tôi"
+        title={t('voucher.myVouchersTitle')}
         onBack={() => router.back()}
       />
 
       {/* ── Tab Bar ── */}
       <View className="flex-row m-4 bg-neutral-T95 rounded-xl p-1">
-        {TABS.map((tab) => (
+        {TABS(t).map((tab) => (
           <TouchableOpacity
             key={tab.value}
             onPress={() => handleTabChange(tab.value)}
@@ -103,7 +105,7 @@ export default function MyVouchersScreen() {
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
           <Text className="font-body text-sm text-neutral-T50">
-            Đang tải...
+            {t('common.loading')}
           </Text>
         </View>
       ) : (
@@ -121,8 +123,8 @@ export default function MyVouchersScreen() {
             <View className="items-center justify-center py-20 gap-3">
               <MaterialIcons name="wallet" size={48} color="#C5C7C6" />
               <Text className="font-body text-sm text-neutral-T50 text-center">
-                Bạn chưa có voucher nào trong mục này.{'\n'}
-                Hãy ghé Chợ Voucher để đổi điểm!
+                {t('voucher.emptyWalletTitle')}{'\n'}
+                {t('voucher.emptyWalletDesc')}
               </Text>
               <TouchableOpacity
                 onPress={() => router.push('/(voucher)/voucher-market' as any)}
@@ -130,7 +132,7 @@ export default function MyVouchersScreen() {
                 activeOpacity={0.85}
               >
                 <Text className="font-label font-semibold text-neutral-T100">
-                  Đến Chợ Voucher
+                  {t('voucher.goToMarket')}
                 </Text>
               </TouchableOpacity>
             </View>

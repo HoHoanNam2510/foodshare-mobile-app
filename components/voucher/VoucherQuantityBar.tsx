@@ -1,6 +1,7 @@
 // components/voucher/VoucherQuantityBar.tsx
 import React from 'react';
 import { Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface VoucherQuantityBarProps {
   remainingQuantity: number;
@@ -13,6 +14,7 @@ export default function VoucherQuantityBar({
   totalQuantity,
   showText = true,
 }: VoucherQuantityBarProps) {
+  const { t } = useTranslation();
   const percentage =
     totalQuantity > 0
       ? Math.max(0, Math.min(100, (remainingQuantity / totalQuantity) * 100))
@@ -30,7 +32,10 @@ export default function VoucherQuantityBar({
     <View className="gap-1">
       {showText && (
         <Text className="font-label text-xs text-neutral-T50">
-          Còn {remainingQuantity}/{totalQuantity}
+          {t('voucher.remainingVoucherFormat', {
+            remaining: remainingQuantity,
+            total: totalQuantity,
+          })}
         </Text>
       )}
       <View className="h-1.5 bg-neutral-T90 rounded-full overflow-hidden">

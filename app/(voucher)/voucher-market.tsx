@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 
 import ManagementHeader from '@/components/shared/headers/ManagementHeader';
 
@@ -24,22 +25,23 @@ import type {
 } from '@/lib/voucherApi';
 import { useAuthStore } from '@/stores/authStore';
 
-type SortLabel = 'Mới nhất' | 'Điểm tăng dần' | 'Điểm giảm dần';
+type SortLabel = 'voucher.sortNewest' | 'voucher.sortPointsAsc' | 'voucher.sortPointsDesc';
 const SORT_OPTIONS: { label: SortLabel; value: VoucherSortOption }[] = [
-  { label: 'Mới nhất', value: 'newest' },
-  { label: 'Điểm tăng dần', value: 'pointCost_asc' },
-  { label: 'Điểm giảm dần', value: 'pointCost_desc' },
+  { label: 'voucher.sortNewest', value: 'newest' },
+  { label: 'voucher.sortPointsAsc', value: 'pointCost_asc' },
+  { label: 'voucher.sortPointsDesc', value: 'pointCost_desc' },
 ];
 
 const FILTER_OPTIONS: { label: string; value: DiscountTypeFilter }[] = [
-  { label: 'Tất cả', value: 'ALL' },
-  { label: '% Phần trăm', value: 'PERCENTAGE' },
-  { label: 'Số tiền', value: 'FIXED_AMOUNT' },
+  { label: 'voucher.filterAll', value: 'ALL' },
+  { label: 'voucher.filterPercentage', value: 'PERCENTAGE' },
+  { label: 'voucher.filterFixed', value: 'FIXED_AMOUNT' },
 ];
 
 export default function VoucherMarketScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const deductGreenPoints = useAuthStore((s) => s.deductGreenPoints);
   const restoreGreenPoints = useAuthStore((s) => s.restoreGreenPoints);
@@ -68,11 +70,11 @@ export default function VoucherMarketScreen() {
       const res = await getVoucherMarketApi(params);
       setVouchers(res.data);
     } catch (e) {
-      Alert.alert('Lỗi', 'Không thể tải danh sách voucher.');
+      Alert.alert(t('voucher.errorAlert'), t('voucher.loadMarketError'));
     } finally {
       setIsLoading(false);
     }
-  }, [activeSort, activeFilter]);
+  }, [activeSort, activeFilter, t]);
 
   useEffect(() => {
     loadVouchers();
@@ -87,15 +89,15 @@ export default function VoucherMarketScreen() {
       await redeemVoucherApi(selectedVoucher._id);
       setSelectedVoucher(null);
       await fetchProfile();
-      Alert.alert('Thành công! 🎉', 'Voucher đã được thêm vào ví của bạn.');
+      Alert.alert(t('voucher.redeemSuccessTitle'), t('voucher.redeemSuccessMsg'));
       // Reload để cập nhật remainingQuantity
       loadVouchers();
     } catch (e) {
       // Rollback
       restoreGreenPoints(selectedVoucher.pointCost);
       Alert.alert(
-        'Lỗi',
-        e instanceof Error ? e.message : 'Không thể đổi voucher.'
+        t('voucher.errorAlert'),
+        e instanceof Error ? e.message : t('voucher.redeemError')
       );
     } finally {
       setIsRedeeming(false);
@@ -103,20 +105,20 @@ export default function VoucherMarketScreen() {
   };
 
   const currentSortLabel =
-    SORT_OPTIONS.find((o) => o.value === activeSort)?.label ?? 'Mới nhất';
+    SORT_OPTIONS.find((o) => o.value === activeSort)?.label ?? 'voucher.sortNewest';
 
   return (
     <View className="flex-1 bg-neutral">
-      <ManagementHeader title="Chợ Voucher" onBack={() => router.back()} />
+      <ManagementHeader title={t('voucher.marketTitle')} onBack={() => router.back()} />
 
       {/* ── Points Widget ── */}
       {user && (
         <View className="m-4 p-4 bg-primary-T95 rounded-xl flex-row items-center gap-2">
           <Text className="text-lg">🍃</Text>
           <Text className="font-label font-semibold text-sm text-primary-T30">
-            Điểm của bạn:{' '}
+            {t('voucher.pointsLabel')}{' '}
             <Text className="font-bold text-primary-T10">
-              {user.greenPoints.toLocaleString()} điểm
+              {user.greenPoints.toLocaleString()} {t('voucher.pointsUnit')}
             </Text>
           </Text>
         </View>
@@ -144,7 +146,7 @@ export default function VoucherMarketScreen() {
                     : 'text-neutral-T50'
                 }`}
               >
-                {opt.label}
+                {t(opt.label)}
               </Text>
             </TouchableOpacity>
           ))}
@@ -157,7 +159,7 @@ export default function VoucherMarketScreen() {
           >
             <MaterialIcons name="sort" size={14} color="#5C5F5E" />
             <Text className="font-label text-xs text-neutral-T50">
-              {currentSortLabel}
+              {t(currentSortLabel)}
             </Text>
           </TouchableOpacity>
         </View>
@@ -184,7 +186,7 @@ export default function VoucherMarketScreen() {
                       : 'text-neutral-T30'
                   }`}
                 >
-                  {opt.label}
+                  {t(opt.label)}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -197,7 +199,7 @@ export default function VoucherMarketScreen() {
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
           <Text className="font-body text-sm text-neutral-T50">
-            Đang tải voucher...
+            {t('voucher.loadingVouchers')}
           </Text>
         </View>
       ) : (
@@ -213,7 +215,7 @@ export default function VoucherMarketScreen() {
             <View className="items-center justify-center py-20 gap-3">
               <MaterialIcons name="local-offer" size={48} color="#C5C7C6" />
               <Text className="font-body text-sm text-neutral-T50 text-center">
-                Không có voucher nào phù hợp.{'\n'}Thử thay đổi bộ lọc nhé!
+                {t('voucher.emptyMarketTitle')}{'\n'}{t('voucher.emptyMarketDesc')}
               </Text>
             </View>
           }

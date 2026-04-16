@@ -16,7 +16,7 @@ Tracking i18n (VN ↔ EN) integration across all UI screens and components in `f
 | **Phase 2** | `(tabs)` screens + `components/home/` + `components/explore/`                                      | ✅ Done |
 | **Phase 3** | `(profile)` screens + `components/profile/` + shared components                                    | ✅ Done |
 | **Phase 4** | `(transaction)`, `(review)`, `(report)` screens + related components                               | ✅ Done |
-| **Phase 5** | `(voucher)` screens + `components/voucher/` + `components/map/`                                    | ⬜      |
+| **Phase 5** | `(voucher)` screens + `components/voucher/` + `components/map/`                                    | ✅ Done |
 
 ---
 
@@ -111,13 +111,13 @@ Tracking i18n (VN ↔ EN) integration across all UI screens and components in `f
 | File                           | Status |
 | ------------------------------ | ------ |
 | `(voucher)/_layout.tsx`        | ➖     |
-| `(voucher)/my-vouchers.tsx`    | ⬜     |
-| `(voucher)/voucher-market.tsx` | ⬜     |
-| `(voucher)/voucher-detail.tsx` | ⬜     |
-| `(voucher)/create-voucher.tsx` | ⬜     |
-| `(voucher)/edit-voucher.tsx`   | ⬜     |
-| `(voucher)/store-vouchers.tsx` | ⬜     |
-| `(voucher)/point-history.tsx`  | ⬜     |
+| `(voucher)/my-vouchers.tsx`    | ✅     |
+| `(voucher)/voucher-market.tsx` | ✅     |
+| `(voucher)/voucher-detail.tsx` | ✅     |
+| `(voucher)/create-voucher.tsx` | ✅     |
+| `(voucher)/edit-voucher.tsx`   | ✅     |
+| `(voucher)/store-vouchers.tsx` | ✅     |
+| `(voucher)/point-history.tsx`  | ✅     |
 
 ---
 
@@ -175,10 +175,10 @@ Tracking i18n (VN ↔ EN) integration across all UI screens and components in `f
 
 | File                          | Status |
 | ----------------------------- | ------ |
-| `post/CategoryPicker.tsx`     | ⬜     |
-| `post/ImagePickerSection.tsx` | ⬜     |
-| `post/QuantityStepper.tsx`    | ⬜     |
-| `post/PasscodeModal.tsx`      | ⬜     |
+| `post/CategoryPicker.tsx`     | ✅     |
+| `post/ImagePickerSection.tsx` | ✅     |
+| `post/QuantityStepper.tsx`    | ✅     |
+| `post/PasscodeModal.tsx`      | ✅     |
 
 ### components/chat/ — Phase 1 ✅
 
@@ -213,14 +213,14 @@ Tracking i18n (VN ↔ EN) integration across all UI screens and components in `f
 
 | File                               | Status |
 | ---------------------------------- | ------ |
-| `voucher/VoucherCard.tsx`          | ⬜     |
-| `voucher/VoucherStatusBadge.tsx`   | ⬜     |
-| `voucher/VoucherDiscountBadge.tsx` | ⬜     |
-| `voucher/VoucherExpiryTag.tsx`     | ⬜     |
-| `voucher/VoucherPointCost.tsx`     | ⬜     |
-| `voucher/VoucherQuantityBar.tsx`   | ⬜     |
-| `voucher/RedeemConfirmModal.tsx`   | ⬜     |
-| `voucher/PointHistoryItem.tsx`     | ⬜     |
+| `voucher/VoucherCard.tsx`          | ✅     |
+| `voucher/VoucherStatusBadge.tsx`   | ✅     |
+| `voucher/VoucherDiscountBadge.tsx` | ✅     |
+| `voucher/VoucherExpiryTag.tsx`     | ✅     |
+| `voucher/VoucherPointCost.tsx`     | ✅     |
+| `voucher/VoucherQuantityBar.tsx`   | ✅     |
+| `voucher/RedeemConfirmModal.tsx`   | ✅     |
+| `voucher/PointHistoryItem.tsx`     | ✅     |
 
 ### components/map/ — Phase 5
 
@@ -229,15 +229,15 @@ Tracking i18n (VN ↔ EN) integration across all UI screens and components in `f
 | `map/GoongMapView.tsx`                | ➖     |
 | `map/GoongMapView.android.tsx`        | ➖     |
 | `map/GoongMapView.ios.tsx`            | ➖     |
-| `map/LocationPickerSheet.tsx`         | ⬜     |
-| `map/LocationPickerSheet.android.tsx` | ⬜     |
-| `map/LocationPickerSheet.ios.tsx`     | ⬜     |
-| `map/AddressAutocomplete.tsx`         | ⬜     |
-| `map/RadiusFilter.tsx`                | ⬜     |
+| `map/LocationPickerSheet.tsx`         | ✅     |
+| `map/LocationPickerSheet.android.tsx` | ✅     |
+| `map/LocationPickerSheet.ios.tsx`     | ✅     |
+| `map/AddressAutocomplete.tsx`         | ✅     |
+| `map/RadiusFilter.tsx`                | ✅     |
 | `map/PostMarker.tsx`                  | ➖     |
 | `map/PostMarker.android.tsx`          | ➖     |
 | `map/PostMarker.ios.tsx`              | ➖     |
-| `map/PostPreviewCard.tsx`             | ⬜     |
+| `map/PostPreviewCard.tsx`             | ✅     |
 | `map/PostDetailMap.tsx`               | ➖     |
 | `map/PostDetailMap.android.tsx`       | ➖     |
 | `map/PostDetailMap.ios.tsx`           | ➖     |
@@ -258,15 +258,15 @@ Tracking i18n (VN ↔ EN) integration across all UI screens and components in `f
 | app/(transaction)  | 4      | 4      |
 | app/(review)       | 2      | 2      |
 | app/(report)       | 3      | 3      |
-| app/(voucher)      | 0      | 7      |
+| app/(voucher)      | 7      | 7      |
 | components/shared  | 5      | 5      |
 | components/auth    | 1      | 1      |
 | components/home    | 6      | 6      |
 | components/explore | 6      | 6      |
-| components/post    | 0      | 4      |
+| components/post    | 4      | 4      |
 | components/chat    | 2      | 2      |
 | components/profile | 8      | 8      |
 | components/review  | 1      | 1      |
-| components/voucher | 0      | 8      |
-| components/map     | 0      | 6      |
-| **Total**          | **52** | **66** |
+| components/voucher | 8      | 8      |
+| components/map     | 6      | 6      |
+| **Total**          | **77** | **77** |

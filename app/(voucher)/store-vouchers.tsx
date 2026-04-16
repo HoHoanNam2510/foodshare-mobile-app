@@ -18,11 +18,13 @@ import VoucherCard from '@/components/voucher/VoucherCard';
 import { storeGetMyVouchersApi, storeToggleVoucherApi } from '@/lib/voucherApi';
 import type { IVoucher } from '@/lib/voucherApi';
 import { useAuthStore } from '@/stores/authStore';
+import { useTranslation } from 'react-i18next';
 
 export default function StoreVouchersScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { user } = useAuthStore();
+  const { t } = useTranslation();
 
   const [vouchers, setVouchers] = useState<IVoucher[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +32,7 @@ export default function StoreVouchersScreen() {
 
   const fetchVouchers = useCallback(async () => {
     if (!user || user.role !== 'STORE') {
-      Alert.alert('Lỗi', 'Bạn cần là chủ cửa hàng để truy cập.');
+      Alert.alert(t('voucher.errorAlert'), t('voucher.storeOnlyAccess'));
       router.back();
       return;
     }
@@ -46,11 +48,11 @@ export default function StoreVouchersScreen() {
         );
       }
     } catch {
-      Alert.alert('Lỗi', 'Không thể tải danh sách voucher.');
+      Alert.alert(t('voucher.errorAlert'), t('voucher.loadMarketError'));
     } finally {
       setLoading(false);
     }
-  }, [user, router]);
+  }, [user, router, t]);
 
   useEffect(() => {
     fetchVouchers();
@@ -70,7 +72,7 @@ export default function StoreVouchersScreen() {
     } catch {
       updated[idx] = { ...updated[idx], isActive: !updated[idx].isActive };
       setVouchers([...updated]);
-      Alert.alert('Lỗi', 'Không thể cập nhật trạng thái voucher.');
+      Alert.alert(t('voucher.errorAlert'), t('voucher.toggleVoucherError'));
     }
   };
 
@@ -87,7 +89,7 @@ export default function StoreVouchersScreen() {
   return (
     <View className="flex-1 bg-neutral">
       <ManagementHeader
-        title="Voucher của tôi"
+        title={t('voucher.storeVouchersTitle')}
         onBack={() => router.back()}
         actions={[
           {
@@ -101,7 +103,7 @@ export default function StoreVouchersScreen() {
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
           <Text className="font-body text-sm text-neutral-T50">
-            Đang tải...
+            {t('common.loading')}
           </Text>
         </View>
       ) : (
@@ -122,8 +124,7 @@ export default function StoreVouchersScreen() {
             <View className="items-center justify-center py-20 gap-3">
               <MaterialIcons name="local-offer" size={48} color="#C5C7C6" />
               <Text className="font-body text-sm text-neutral-T50 text-center">
-                Chưa có voucher nào.{'\n'}Tạo voucher đầu tiên để thu hút khách
-                hàng!
+                {t('voucher.emptyStoreVouchersTitle')}{'\n'}{t('voucher.emptyStoreVouchersDesc')}
               </Text>
               <TouchableOpacity
                 onPress={() => router.push('/(voucher)/create-voucher' as any)}
@@ -131,7 +132,7 @@ export default function StoreVouchersScreen() {
                 activeOpacity={0.85}
               >
                 <Text className="font-label font-semibold text-neutral-T100">
-                  Tạo voucher
+                  {t('voucher.createVoucherBtn')}
                 </Text>
               </TouchableOpacity>
             </View>

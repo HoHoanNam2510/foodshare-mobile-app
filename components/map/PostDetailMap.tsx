@@ -9,6 +9,7 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 const GOONG_MAPTILES_KEY = process.env.EXPO_PUBLIC_GOONG_MAPTILES_KEY ?? '';
 const TILE_STYLE_URL = `https://tiles.goong.io/assets/goong_map_web.json?api_key=${GOONG_MAPTILES_KEY}`;
@@ -21,6 +22,7 @@ interface PostDetailMapProps {
 }
 
 export default function PostDetailMap({ coordinates, onDirections }: PostDetailMapProps) {
+  const { t } = useTranslation();
   return (
     <View
       className="bg-neutral-T100 rounded-2xl overflow-hidden"
@@ -85,7 +87,7 @@ export default function PostDetailMap({ coordinates, onDirections }: PostDetailM
       >
         <MaterialIcons name="directions" size={16} color="#fff" />
         <Text style={{ color: '#fff', fontSize: 12, fontWeight: '700', marginLeft: 4 }}>
-          Chỉ đường
+          {t('map.getDirections')}
         </Text>
       </TouchableOpacity>
     </View>

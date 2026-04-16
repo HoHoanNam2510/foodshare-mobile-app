@@ -15,6 +15,7 @@ import {
   fetchAutocomplete,
   fetchPlaceDetail,
 } from '@/lib/mapApi';
+import { useTranslation } from 'react-i18next';
 
 interface AddressAutocompleteProps {
   placeholder?: string;
@@ -23,10 +24,12 @@ interface AddressAutocompleteProps {
 }
 
 export default function AddressAutocomplete({
-  placeholder = 'Tìm địa chỉ...',
+  placeholder,
   onSelect,
   initialValue = '',
 }: AddressAutocompleteProps) {
+  const { t } = useTranslation();
+  const actualPlaceholder = placeholder || t('map.searchAddressPlaceholder');
   const [text, setText] = useState(initialValue);
   const [predictions, setPredictions] = useState<AutocompletePrediction[]>([]);
   const [loading, setLoading] = useState(false);
@@ -92,7 +95,7 @@ export default function AddressAutocomplete({
         <Ionicons name="search" size={18} color="#757777" />
         <TextInput
           className="flex-1 h-12 font-body text-base text-neutral-T10"
-          placeholder={placeholder}
+          placeholder={actualPlaceholder}
           placeholderTextColor="#AAABAB"
           value={text}
           onChangeText={search}

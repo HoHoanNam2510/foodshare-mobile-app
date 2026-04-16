@@ -3,6 +3,7 @@
  * Chạy: npx ts-node scripts/update-api-url.ts
  * Hoặc:  node -e "require('./scripts/update-api-url')"
  */
+/* eslint-env node */
 const os = require('os');
 const fs = require('fs');
 const path = require('path');

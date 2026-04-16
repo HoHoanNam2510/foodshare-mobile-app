@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 const CATEGORIES = [
   'Home cooked',
@@ -20,6 +21,7 @@ export default function CategoryPicker({
   selected,
   onSelect,
 }: CategoryPickerProps) {
+  const { t } = useTranslation();
   return (
     <ScrollView
       horizontal
@@ -41,7 +43,7 @@ export default function CategoryPicker({
               selected === cat ? 'text-primary-T30' : 'text-neutral-T50'
             }`}
           >
-            {cat}
+            {t(`post.categories.${cat}`, cat)}
           </Text>
         </TouchableOpacity>
       ))}

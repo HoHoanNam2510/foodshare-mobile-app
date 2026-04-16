@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback , useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -11,18 +11,19 @@ import {
   KeyboardAvoidingView,
   Keyboard,
 } from 'react-native';
-import { useEffect, useRef } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import DateTimePickerModal from '@/components/shared/DateTimePickerModal';
 import { useRouter } from 'expo-router';
 import StackHeader from '@/components/shared/headers/StackHeader';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '@/stores/authStore';
 import { storeCreateVoucherApi, CreateVoucherBody } from '@/lib/voucherApi';
+import { useTranslation } from 'react-i18next';
 
 const CreateVoucherScreen = () => {
   const router = useRouter();
   const { user } = useAuthStore();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -63,12 +64,12 @@ const CreateVoucherScreen = () => {
 
   const handleCreate = useCallback(async () => {
     if (!user || user.role !== 'STORE') {
-      Alert.alert('Lỗi', 'Chỉ chủ cửa hàng mới tạo được voucher.');
+      Alert.alert(t('voucher.errorAlert'), t('voucher.storeOnlyError'));
       return;
     }
 
     if (!title.trim()) {
-      Alert.alert('Lỗi', 'Tiêu đề không được để trống.');
+      Alert.alert(t('voucher.errorAlert'), t('voucher.titleRequired'));
       return;
     }
     if (
@@ -77,13 +78,13 @@ const CreateVoucherScreen = () => {
       parseInt(totalQuantity) <= 0
     ) {
       Alert.alert(
-        'Lỗi',
-        'Giá trị giảm giá, điểm đổi và số lượng phải lớn hơn 0.'
+        t('voucher.errorAlert'),
+        t('voucher.invalidValues')
       );
       return;
     }
     if (!code.trim()) {
-      Alert.alert('Lỗi', 'Mã voucher không được để trống.');
+      Alert.alert(t('voucher.errorAlert'), t('voucher.codeRequired'));
       return;
     }
 
@@ -102,15 +103,15 @@ const CreateVoucherScreen = () => {
       };
       const { success } = await storeCreateVoucherApi(body);
       if (success) {
-        Alert.alert('Thành công', 'Voucher đã được tạo!', [
+        Alert.alert(t('voucher.successAlert'), t('voucher.createVoucherSuccess'), [
           { text: 'OK', onPress: () => router.back() },
         ]);
       } else {
-        Alert.alert('Lỗi', 'Không thể tạo voucher. Vui lòng thử lại.');
+        Alert.alert(t('voucher.errorAlert'), t('voucher.createVoucherFailed'));
       }
     } catch (error) {
       console.error('Create voucher error:', error);
-      Alert.alert('Lỗi', 'Có lỗi xảy ra khi tạo voucher.');
+      Alert.alert(t('voucher.errorAlert'), t('voucher.createVoucherError'));
     } finally {
       setLoading(false);
     }
@@ -133,7 +134,7 @@ const CreateVoucherScreen = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View className="flex-1 bg-neutral">
-        <StackHeader title="Tạo Voucher mới" />
+        <StackHeader title={t('voucher.createVoucherTitle')} />
         <ScrollView
           ref={scrollViewRef}
           className="flex-1"
@@ -148,11 +149,11 @@ const CreateVoucherScreen = () => {
           {/* Title */}
           <View className="mb-4">
             <Text className="text-sm font-medium text-foreground mb-2">
-              Tiêu đề <Text className="text-error">*</Text>
+              {t('voucher.titleLabel')} <Text className="text-error">*</Text>
             </Text>
             <TextInput
               className="border border-gray-300 rounded-lg px-4 py-3 text-base bg-white"
-              placeholder="VD: Giảm 20% đơn từ 100k"
+              placeholder={t('voucher.titlePlaceholder')}
               value={title}
               onChangeText={setTitle}
             />
@@ -161,11 +162,11 @@ const CreateVoucherScreen = () => {
           {/* Description */}
           <View className="mb-4">
             <Text className="text-sm font-medium text-foreground mb-2">
-              Mô tả
+              {t('voucher.descriptionLabel')}
             </Text>
             <TextInput
               className="border border-gray-300 rounded-lg px-4 py-3 text-base bg-white h-24"
-              placeholder="Mô tả chi tiết ưu đãi..."
+              placeholder={t('voucher.descriptionPlaceholder')}
               multiline
               numberOfLines={4}
               value={description}
@@ -176,7 +177,7 @@ const CreateVoucherScreen = () => {
           {/* Discount Type */}
           <View className="mb-4">
             <Text className="text-sm font-medium text-foreground mb-2">
-              Loại giảm giá <Text className="text-error">*</Text>
+              {t('voucher.discountTypeLabel')} <Text className="text-error">*</Text>
             </Text>
             <View className="flex-row gap-3">
               <TouchableOpacity
@@ -194,7 +195,7 @@ const CreateVoucherScreen = () => {
                       : 'text-foreground'
                   }
                 >
-                  Phần trăm (%)
+                  {t('voucher.percentageLabel')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -212,7 +213,7 @@ const CreateVoucherScreen = () => {
                       : 'text-foreground'
                   }
                 >
-                  Cố định (đ)
+                  {t('voucher.fixedAmountLabel')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -221,13 +222,13 @@ const CreateVoucherScreen = () => {
           {/* Discount Value */}
           <View className="mb-4">
             <Text className="text-sm font-medium text-foreground mb-2">
-              Giá trị giảm {discountType === 'PERCENTAGE' ? '(%)' : '(VNĐ)'}{' '}
+              {t('voucher.discountValueLabel')} {discountType === 'PERCENTAGE' ? t('voucher.percentageSuffix') : t('voucher.fixedAmountSuffix')}{' '}
               <Text className="text-error">*</Text>
             </Text>
             <TextInput
               className="border border-gray-300 rounded-lg px-4 py-3 text-base bg-white"
               placeholder={
-                discountType === 'PERCENTAGE' ? 'VD: 20' : 'VD: 10000'
+                discountType === 'PERCENTAGE' ? t('voucher.percentagePlaceholder') : t('voucher.fixedAmountPlaceholder')
               }
               keyboardType="numeric"
               value={discountValue}
@@ -239,11 +240,11 @@ const CreateVoucherScreen = () => {
           <View className="flex-row gap-4 mb-4">
             <View className="flex-1">
               <Text className="text-sm font-medium text-foreground mb-2">
-                Điểm đổi <Text className="text-error">*</Text>
+                {t('voucher.pointCostLabel')} <Text className="text-error">*</Text>
               </Text>
               <TextInput
                 className="border border-gray-300 rounded-lg px-4 py-3 text-base bg-white"
-                placeholder="VD: 50"
+                placeholder={t('voucher.pointCostPlaceholder')}
                 keyboardType="numeric"
                 value={pointCost}
                 onChangeText={setPointCost}
@@ -251,11 +252,11 @@ const CreateVoucherScreen = () => {
             </View>
             <View className="flex-1">
               <Text className="text-sm font-medium text-foreground mb-2">
-                Số lượng <Text className="text-error">*</Text>
+                {t('voucher.quantityLabel')} <Text className="text-error">*</Text>
               </Text>
               <TextInput
                 className="border border-gray-300 rounded-lg px-4 py-3 text-base bg-white"
-                placeholder="VD: 100"
+                placeholder={t('voucher.quantityPlaceholder')}
                 keyboardType="numeric"
                 value={totalQuantity}
                 onChangeText={setTotalQuantity}
@@ -266,7 +267,7 @@ const CreateVoucherScreen = () => {
           {/* Valid Until */}
           <View className="mb-4">
             <Text className="text-sm font-medium text-foreground mb-2">
-              Hết hạn <Text className="text-error">*</Text>
+              {t('voucher.validUntilLabel')} <Text className="text-error">*</Text>
             </Text>
             <TouchableOpacity
               className="border border-gray-300 rounded-lg px-4 py-3 bg-white"
@@ -284,11 +285,11 @@ const CreateVoucherScreen = () => {
           {/* Code */}
           <View className="mb-8">
             <Text className="text-sm font-medium text-foreground mb-2">
-              Mã voucher <Text className="text-error">*</Text>
+              {t('voucher.codeLabel')} <Text className="text-error">*</Text>
             </Text>
             <TextInput
               className="border border-gray-300 rounded-lg px-4 py-3 text-base bg-white uppercase"
-              placeholder="VD: SALE20"
+              placeholder={t('voucher.codePlaceholder')}
               value={code}
               autoCapitalize="characters"
               onChangeText={(value) => setCode(value.toUpperCase())}
@@ -306,7 +307,7 @@ const CreateVoucherScreen = () => {
             {loading ? (
               <ActivityIndicator color="white" />
             ) : (
-              <Text className="text-white text-lg font-bold">Tạo Voucher</Text>
+              <Text className="text-white text-lg font-bold">{t('voucher.createVoucherBtn')}</Text>
             )}
           </TouchableOpacity>
         </View>

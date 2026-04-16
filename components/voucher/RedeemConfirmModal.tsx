@@ -11,6 +11,7 @@ import {
 
 import type { IVoucher } from '@/lib/voucherApi';
 import VoucherDiscountBadge from './VoucherDiscountBadge';
+import { useTranslation } from 'react-i18next';
 
 interface RedeemConfirmModalProps {
   visible: boolean;
@@ -29,6 +30,7 @@ export default function RedeemConfirmModal({
   onConfirm,
   onClose,
 }: RedeemConfirmModalProps) {
+  const { t } = useTranslation();
   if (!voucher) return null;
 
   const pointsAfter = Math.max(0, userCurrentPoints - voucher.pointCost);
@@ -52,7 +54,7 @@ export default function RedeemConfirmModal({
           >
             {/* Title */}
             <Text className="font-sans font-bold text-xl text-neutral-T10 text-center">
-              Xác nhận đổi điểm
+              {t('voucher.redeemConfirmTitle')}
             </Text>
 
             {/* Voucher Info */}
@@ -71,24 +73,24 @@ export default function RedeemConfirmModal({
             <View className="bg-neutral-T95 rounded-2xl p-4 gap-2">
               <View className="flex-row items-center justify-between">
                 <Text className="font-label text-sm text-neutral-T50">
-                  Bạn sẽ dùng:
+                  {t('voucher.youWillUse')}
                 </Text>
                 <View className="flex-row items-center gap-1">
                   <Text className="text-sm">🍃</Text>
                   <Text className="font-label font-semibold text-sm text-error">
-                    {voucher.pointCost.toLocaleString()} điểm
+                    {voucher.pointCost.toLocaleString()} {t('voucher.pointsUnit')}
                   </Text>
                 </View>
               </View>
               <View className="h-px bg-neutral-T90" />
               <View className="flex-row items-center justify-between">
                 <Text className="font-label text-sm text-neutral-T50">
-                  Điểm còn lại:
+                  {t('voucher.pointsRemaining')}
                 </Text>
                 <View className="flex-row items-center gap-1">
                   <Text className="text-sm">🍃</Text>
                   <Text className="font-label font-semibold text-sm text-primary-T40">
-                    {pointsAfter.toLocaleString()} điểm
+                    {pointsAfter.toLocaleString()} {t('voucher.pointsUnit')}
                   </Text>
                 </View>
               </View>
@@ -103,7 +105,7 @@ export default function RedeemConfirmModal({
                 activeOpacity={0.8}
               >
                 <Text className="font-label font-semibold text-neutral-T40">
-                  Huỷ
+                  {t('common.cancel')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -116,7 +118,7 @@ export default function RedeemConfirmModal({
                   <ActivityIndicator color="#fff" />
                 ) : (
                   <Text className="font-label font-semibold text-neutral-T100">
-                    Xác nhận đổi
+                    {t('voucher.confirmRedeemBtn')}
                   </Text>
                 )}
               </TouchableOpacity>

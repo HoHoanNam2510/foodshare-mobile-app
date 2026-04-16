@@ -1,6 +1,7 @@
 // components/voucher/VoucherPointCost.tsx
 import React from 'react';
 import { Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface VoucherPointCostProps {
   pointCost: number;
@@ -13,6 +14,7 @@ export default function VoucherPointCost({
   canAfford = true,
   userPoints,
 }: VoucherPointCostProps) {
+  const { t } = useTranslation();
   const pointsNeeded =
     !canAfford && userPoints !== undefined
       ? pointCost - userPoints
@@ -27,12 +29,12 @@ export default function VoucherPointCost({
             canAfford ? 'text-primary-T40' : 'text-error'
           }`}
         >
-          {pointCost.toLocaleString()} điểm
+          {pointCost.toLocaleString()} {t('voucher.pointsUnit')}
         </Text>
       </View>
       {!canAfford && pointsNeeded > 0 && (
         <Text className="font-label text-xs text-error">
-          Cần thêm {pointsNeeded.toLocaleString()} điểm
+          {t('voucher.pointsNeededFormat', { points: pointsNeeded.toLocaleString() })}
         </Text>
       )}
     </View>
