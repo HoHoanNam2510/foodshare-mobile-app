@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 const FILTER_CONFIGS = [
   { id: 'all', labelKey: 'home.filterAll', active: true },
   { id: 'food', labelKey: 'home.filterFood', active: false },
-  { id: 'nonfood', labelKey: 'home.filterNonfood', active: false },
   { id: 'veg', labelKey: 'home.filterVegetarian', active: false },
   { id: 'bakery', labelKey: 'home.filterBakery', active: false },
   { id: 'produce', labelKey: 'home.filterProduce', active: false },

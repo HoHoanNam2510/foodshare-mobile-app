@@ -13,69 +13,18 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import BadgesRow from '@/components/profile/BadgesRow';
 import ContactCard from '@/components/profile/ContactCard';
 import IdentityCard from '@/components/profile/IdentityCard';
 import ProfileActions from '@/components/profile/ProfileActions';
-import BadgesRow from '@/components/profile/BadgesRow';
 import MainHeader from '@/components/shared/headers/MainHeader';
-import RecentPosts from '@/components/profile/RecentPosts';
+import RecentPosts, { Post } from '@/components/profile/RecentPosts';
 import StoreDetailsCard from '@/components/profile/StoreDetailsCard';
 import VerificationCard from '@/components/profile/VerificationCard';
 import { useAuthStore } from '@/stores/authStore';
-import { getBadgeCatalogApi } from '@/lib/badgeApi';
 import type { IBadge } from '@/lib/badgeApi';
-
-// ─── MOCK LISTINGS (sẽ được thay thế khi có API posts) ───
-const MOCK_LISTINGS = [
-  {
-    id: '1',
-    title: 'Classic Rustic Loaf',
-    status: 'AVAILABLE',
-    image:
-      'https://images.unsplash.com/photo-1587486913049-53fc88980cfc?w=400&q=80',
-    price: '£4.50',
-  },
-  {
-    id: '2',
-    title: 'Butter Croissants',
-    status: 'BOOKED',
-    image:
-      'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400&q=80',
-    price: '£3.00',
-  },
-  {
-    id: '3',
-    title: 'Sourdough Batard',
-    status: 'PENDING_REVIEW',
-    image:
-      'https://images.unsplash.com/photo-1586444248902-2f64eddc13df?w=400&q=80',
-    price: '£5.00',
-  },
-  {
-    id: '4',
-    title: 'Walnut Rye',
-    status: 'OUT_OF_STOCK',
-    image:
-      'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&q=80',
-    price: '£6.00',
-  },
-  {
-    id: '5',
-    title: 'Seeded Baguette',
-    status: 'HIDDEN',
-    image:
-      'https://feastingisfun.com/wp-content/uploads/2017/08/B95BD866-9ACF-4CE6-AF76-9D1375912546-825x510.jpeg',
-    price: '£2.50',
-  },
-  {
-    id: '6',
-    title: 'Cinnamon Roll',
-    status: 'REJECTED',
-    image:
-      'https://images.unsplash.com/photo-1574085733277-851d9d856a3a?w=400&q=80',
-    price: '£3.50',
-  },
-];
+import { getMyPostsApi } from '@/lib/postApi';
+import { getBadgeCatalogApi } from '@/lib/badgeApi';
 
 // ─── MAIN COMPONENT ───
 export default function ProfileScreen() {
@@ -94,6 +43,9 @@ export default function ProfileScreen() {
   const [badgeUnlocked, setBadgeUnlocked] = useState(0);
   const [badgesLoading, setBadgesLoading] = useState(false);
 
+  // ── Posts state ──
+  const [myPosts, setMyPosts] = useState<Post[]>([]);
+
   // Fetch fresh profile data khi tab được focus
   useFocusEffect(
     useCallback(() => {
@@ -108,7 +60,28 @@ export default function ProfileScreen() {
         })
         .catch(() => {})
         .finally(() => setBadgesLoading(false));
-    }, [fetchProfile])
+
+      // Fetch user posts
+      getMyPostsApi()
+        .then((res) => {
+          if (res?.success && res.data) {
+            const formattedPosts: Post[] = res.data.map((p) => ({
+              id: p._id,
+              title: p.title,
+              status: p.status,
+              image: p.images?.[0] || '',
+              price:
+                p.type === 'P2P_FREE'
+                  ? t('common.free')
+                  : p.price
+                    ? `£${p.price.toLocaleString('en-GB')}`
+                    : '',
+            }));
+            setMyPosts(formattedPosts);
+          }
+        })
+        .catch(() => {});
+    }, [fetchProfile, t])
   );
 
   // Hiển thị modal thông báo KYC bị từ chối (1 lần mỗi session)
@@ -214,7 +187,9 @@ export default function ProfileScreen() {
       <MainHeader />
 
       <TouchableOpacity className="px-6 pt-3" onPress={() => router.back()}>
-        <Text className="font-bold text-slate-500 underline">{t('common.back')}</Text>
+        <Text className="font-bold text-slate-500 underline">
+          {t('common.back')}
+        </Text>
       </TouchableOpacity>
 
       <ScrollView
@@ -275,7 +250,7 @@ export default function ProfileScreen() {
             onSeeAll={() => router.push('/(profile)/badges' as any)}
           />
 
-          <RecentPosts posts={MOCK_LISTINGS} onSeeAll={() => {}} />
+          <RecentPosts posts={myPosts} />
 
           <ProfileActions
             onEditProfile={() => router.push('/(profile)/edit-profile')}

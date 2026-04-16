@@ -117,12 +117,26 @@ export interface IPostDetail {
   };
 }
 
-export async function getPostByIdApi(postId: string): Promise<{ success: boolean; data: IPostDetail }> {
+export async function getPostByIdApi(
+  postId: string
+): Promise<{ success: boolean; data: IPostDetail }> {
   try {
     const { data } = await api.get(`/posts/${postId}`);
     return data;
   } catch (error) {
     extractErrorMessage(error, 'Không thể tải bài đăng');
+  }
+}
+
+export async function getMyPostsApi(): Promise<{
+  success: boolean;
+  data: IPostDetail[];
+}> {
+  try {
+    const { data } = await api.get('/posts/me');
+    return data;
+  } catch (error) {
+    extractErrorMessage(error, 'Không lấy được danh sách bài đăng');
   }
 }
 

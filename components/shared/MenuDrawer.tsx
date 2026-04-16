@@ -171,27 +171,12 @@ export default function MenuDrawer() {
           >
             FoodShare
           </Text>
+          <View className="flex-1" />
           <TouchableOpacity
-            className="w-9 h-9 rounded-full bg-neutral-T95 items-center justify-center active:opacity-70 ml-3"
+            className="w-9 h-9 rounded-full bg-neutral-T95 items-center justify-center active:opacity-70"
             onPress={handleClose}
           >
             <Feather name="x" size={18} color="#191C1C" />
-          </TouchableOpacity>
-
-          {/* Language toggle (right-aligned, opposite side of close) */}
-          <View className="flex-1" />
-          <TouchableOpacity
-            className="flex-row items-center px-3 h-9 rounded-full bg-primary-T95 border border-primary-T90 active:opacity-70"
-            onPress={toggleLanguage}
-            accessibilityLabel="Toggle language"
-          >
-            <MaterialIcons name="language" size={16} color="#296C24" />
-            <Text
-              className="ml-1.5 font-label text-xs font-bold text-primary-T20"
-              style={{ letterSpacing: 0.5 }}
-            >
-              {language === 'vi' ? 'VI' : 'EN'}
-            </Text>
           </TouchableOpacity>
         </View>
 
@@ -226,6 +211,20 @@ export default function MenuDrawer() {
               </Text>
             </View>
           </View>
+          {/* Language toggle (right-aligned, opposite the avatar block) */}
+          <TouchableOpacity
+            className="flex-row items-center px-3 h-9 rounded-full bg-primary-T95 border border-primary-T90 active:opacity-70"
+            onPress={toggleLanguage}
+            accessibilityLabel="Toggle language"
+          >
+            <MaterialIcons name="language" size={16} color="#296C24" />
+            <Text
+              className="ml-1.5 font-label text-xs font-bold text-primary-T20"
+              style={{ letterSpacing: 0.5 }}
+            >
+              {language === 'vi' ? 'VI' : 'EN'}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* ── Divider ── */}
