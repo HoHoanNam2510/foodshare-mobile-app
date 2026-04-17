@@ -20,7 +20,11 @@ import MainHeader from '@/components/shared/headers/MainHeader';
 
 // ─── HELPERS ────────────────────────────────────────────────────────────────
 
-function formatTime(iso: string | undefined, yesterday: string, language: string): string {
+function formatTime(
+  iso: string | undefined,
+  yesterday: string,
+  language: string
+): string {
   if (!iso) return '';
   const date = new Date(iso);
   const now = new Date();
@@ -29,7 +33,10 @@ function formatTime(iso: string | undefined, yesterday: string, language: string
   const locale = language === 'vi' ? 'vi-VN' : 'en-US';
 
   if (diffDays === 0) {
-    return date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString(locale, {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   } else if (diffDays === 1) {
     return yesterday;
   } else if (diffDays < 7) {
@@ -211,7 +218,9 @@ export default function ChatListScreen() {
           {/* ── Section label ── */}
           <View className="flex-row justify-between items-center px-5 mb-3">
             <Text className="font-body-semibold text-[13px] text-neutral-T50">
-              {query ? t('chat.searchResultsFor', { query }) : t('chat.recentLabel')}
+              {query
+                ? t('chat.searchResultsFor', { query })
+                : t('chat.recentLabel')}
             </Text>
           </View>
 

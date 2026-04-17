@@ -15,7 +15,9 @@ import {
   View,
 } from 'react-native';
 import StackHeader from '@/components/shared/headers/StackHeader';
-import LocationPickerSheet, { PickedLocation } from '@/components/map/LocationPickerSheet';
+import LocationPickerSheet, {
+  PickedLocation,
+} from '@/components/map/LocationPickerSheet';
 import { pickImage } from '@/lib/imagePicker';
 import { reverseGeocode, updateUserLocation } from '@/lib/mapApi';
 import { updateProfileApi } from '@/lib/profileApi';
@@ -60,7 +62,9 @@ export default function EditProfile() {
   );
 
   // ── Location state ───
-  const [pickedLocation, setPickedLocation] = useState<PickedLocation | null>(null);
+  const [pickedLocation, setPickedLocation] = useState<PickedLocation | null>(
+    null
+  );
   const [showLocationPicker, setShowLocationPicker] = useState(false);
   const [locationLabel, setLocationLabel] = useState('');
 
@@ -138,7 +142,8 @@ export default function EditProfile() {
         router.back();
       }
     } catch (error: unknown) {
-      const msg = error instanceof Error ? error.message : t('profile.updateFailed');
+      const msg =
+        error instanceof Error ? error.message : t('profile.updateFailed');
       Alert.alert(t('common.error'), msg);
     } finally {
       setIsSaving(false);
@@ -220,7 +225,10 @@ export default function EditProfile() {
             />
 
             {/* ─── Contact Section ─── */}
-            <SectionLabel icon="contact-mail" label={t('profile.contactSection')} />
+            <SectionLabel
+              icon="contact-mail"
+              label={t('profile.contactSection')}
+            />
 
             <FormInput
               label={t('auth.email')}
@@ -257,7 +265,9 @@ export default function EditProfile() {
                   className="flex-1 font-body text-sm text-neutral-T10"
                   numberOfLines={1}
                 >
-                  {pickedLocation?.address || locationLabel || t('profile.locationNotSet')}
+                  {pickedLocation?.address ||
+                    locationLabel ||
+                    t('profile.locationNotSet')}
                 </Text>
                 <MaterialIcons name="chevron-right" size={20} color="#AAABAB" />
               </TouchableOpacity>
@@ -266,7 +276,10 @@ export default function EditProfile() {
             {/* ─── Store Section (only STORE role) ─── */}
             {isStore && (
               <>
-                <SectionLabel icon="storefront" label={t('profile.storeDetailsSection')} />
+                <SectionLabel
+                  icon="storefront"
+                  label={t('profile.storeDetailsSection')}
+                />
 
                 <FormInput
                   label={t('profile.businessNameLabel')}
@@ -305,12 +318,14 @@ export default function EditProfile() {
                   onChangeText={setBusinessAddress}
                   placeholder={t('profile.businessAddressLabel')}
                 />
-
               </>
             )}
 
             {/* ─── Bank Account (tất cả users) ─── */}
-            <SectionLabel icon="account-balance" label={t('profile.bankSection')} />
+            <SectionLabel
+              icon="account-balance"
+              label={t('profile.bankSection')}
+            />
             <Text className="font-body text-xs text-neutral-T50 -mt-2">
               {isStore ? t('profile.bankHintStore') : t('profile.bankHintUser')}
             </Text>
@@ -334,7 +349,6 @@ export default function EditProfile() {
               onChangeText={setBankAccountName}
               placeholder={t('profile.bankAccountNamePlaceholder')}
             />
-
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

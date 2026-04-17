@@ -22,7 +22,6 @@ import {
   type MyRankingSummaryItem,
 } from '@/lib/greenPointApi';
 
-
 // Màu theme cho từng hạng
 const RANK_THEMES = {
   1: { bg: '#FFF8E1', border: '#E0B100', badge: '#E0B100', text: '#7A5C00' },
@@ -32,7 +31,12 @@ const RANK_THEMES = {
 
 function getRankTheme(rank: number) {
   if (rank in RANK_THEMES) return RANK_THEMES[rank as keyof typeof RANK_THEMES];
-  return { bg: '#F0F8F0', border: '#A8D5A2', badge: '#296C24', text: '#1A4A17' };
+  return {
+    bg: '#F0F8F0',
+    border: '#A8D5A2',
+    badge: '#296C24',
+    text: '#1A4A17',
+  };
 }
 
 function SummaryCard({
@@ -59,7 +63,9 @@ function SummaryCard({
           </Text>
         </>
       ) : (
-        <Text className="font-body text-xs text-primary-T50">{t('leaderboard.noData')}</Text>
+        <Text className="font-body text-xs text-primary-T50">
+          {t('leaderboard.noData')}
+        </Text>
       )}
     </View>
   );
@@ -310,12 +316,24 @@ export default function LeaderboardScreen() {
           </Text>
           <View className="gap-2">
             <View className="flex-row gap-2">
-              <SummaryCard title={t('leaderboard.summaryByDay')} item={mySummary.daily} />
-              <SummaryCard title={t('leaderboard.summaryByWeek')} item={mySummary.weekly} />
+              <SummaryCard
+                title={t('leaderboard.summaryByDay')}
+                item={mySummary.daily}
+              />
+              <SummaryCard
+                title={t('leaderboard.summaryByWeek')}
+                item={mySummary.weekly}
+              />
             </View>
             <View className="flex-row gap-2">
-              <SummaryCard title={t('leaderboard.summaryByMonth')} item={mySummary.monthly} />
-              <SummaryCard title={t('leaderboard.summaryByYear')} item={mySummary.yearly} />
+              <SummaryCard
+                title={t('leaderboard.summaryByMonth')}
+                item={mySummary.monthly}
+              />
+              <SummaryCard
+                title={t('leaderboard.summaryByYear')}
+                item={mySummary.yearly}
+              />
             </View>
           </View>
         </View>
@@ -330,7 +348,11 @@ export default function LeaderboardScreen() {
           data={entries}
           keyExtractor={(item) => `${item.user._id}-${item.rank}`}
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 40 }}
+          contentContainerStyle={{
+            paddingHorizontal: 16,
+            paddingTop: 12,
+            paddingBottom: 40,
+          }}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}

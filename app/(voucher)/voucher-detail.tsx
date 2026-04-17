@@ -69,7 +69,9 @@ export default function VoucherDetailScreen() {
 
   const handleCopyCode = () => {
     if (!voucher) return;
-    Alert.alert(t('voucher.voucherCodeLabel'), voucher.code, [{ text: t('voucher.voucherCodeCopied') }]);
+    Alert.alert(t('voucher.voucherCodeLabel'), voucher.code, [
+      { text: t('voucher.voucherCodeCopied') },
+    ]);
   };
 
   const handleRedeem = async () => {
@@ -80,9 +82,11 @@ export default function VoucherDetailScreen() {
       await redeemVoucherApi(voucher._id);
       setShowModal(false);
       await fetchProfile();
-      Alert.alert(t('voucher.redeemSuccessTitle'), t('voucher.redeemSuccessMsg'), [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
+      Alert.alert(
+        t('voucher.redeemSuccessTitle'),
+        t('voucher.redeemSuccessMsg'),
+        [{ text: 'OK', onPress: () => router.back() }]
+      );
     } catch (e) {
       restoreGreenPoints(voucher.pointCost);
       Alert.alert(
@@ -283,7 +287,9 @@ export default function VoucherDetailScreen() {
                 canAfford ? 'text-neutral-T100' : 'text-neutral-T50'
               }`}
             >
-              {canAfford ? t('voucher.redeemBtn') : t('voucher.notEnoughPointsBtn')}
+              {canAfford
+                ? t('voucher.redeemBtn')
+                : t('voucher.notEnoughPointsBtn')}
             </Text>
           </TouchableOpacity>
         </View>

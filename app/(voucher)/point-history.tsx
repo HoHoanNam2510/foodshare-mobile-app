@@ -85,7 +85,9 @@ export default function PointHistoryScreen() {
               {currentPoints.toLocaleString()}
             </Text>
           )}
-          <Text className="font-label text-xs text-primary-T50">{t('voucher.pointsUnit')}</Text>
+          <Text className="font-label text-xs text-primary-T50">
+            {t('voucher.pointsUnit')}
+          </Text>
         </View>
       </View>
 
@@ -113,7 +115,8 @@ export default function PointHistoryScreen() {
             <View className="items-center justify-center py-20 gap-3">
               <MaterialIcons name="history" size={48} color="#C5C7C6" />
               <Text className="font-body text-sm text-neutral-T50 text-center">
-                {t('voucher.emptyHistoryTitle')}{'\n'}
+                {t('voucher.emptyHistoryTitle')}
+                {'\n'}
                 {t('voucher.emptyHistoryDesc')}
               </Text>
             </View>

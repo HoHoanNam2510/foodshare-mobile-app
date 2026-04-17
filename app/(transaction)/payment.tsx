@@ -23,7 +23,11 @@ const PAYMENT_TIMEOUT_SECONDS = 30 * 60; // 30 phút
 export default function PaymentScreen() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { postId, quantity: qtyStr, transactionId: resumeTxId } = useLocalSearchParams<{
+  const {
+    postId,
+    quantity: qtyStr,
+    transactionId: resumeTxId,
+  } = useLocalSearchParams<{
     postId?: string;
     quantity?: string;
     transactionId?: string; // resume mode: đơn đã tạo, chỉ cần lấy lại QR
@@ -34,7 +38,9 @@ export default function PaymentScreen() {
   const [post, setPost] = useState<IPostDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
-  const [transactionId, setTransactionId] = useState<string | null>(resumeTxId ?? null);
+  const [transactionId, setTransactionId] = useState<string | null>(
+    resumeTxId ?? null
+  );
   const [paymentInfo, setPaymentInfo] = useState<IPaymentInfo | null>(null);
   const [countdown, setCountdown] = useState(PAYMENT_TIMEOUT_SECONDS);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -47,7 +53,10 @@ export default function PaymentScreen() {
         const res = await getPostByIdApi(postId);
         setPost(res.data);
       } catch (e) {
-        Alert.alert(t('common.error'), e instanceof Error ? e.message : t('common.error'));
+        Alert.alert(
+          t('common.error'),
+          e instanceof Error ? e.message : t('common.error')
+        );
         router.back();
       } finally {
         if (!isResumeMode) setIsLoading(false);
@@ -71,7 +80,9 @@ export default function PaymentScreen() {
         }
       } catch (e: any) {
         const msg = e?.response?.data?.message ?? t('common.error');
-        Alert.alert(t('common.error'), msg, [{ text: 'OK', onPress: () => router.back() }]);
+        Alert.alert(t('common.error'), msg, [
+          { text: 'OK', onPress: () => router.back() },
+        ]);
       } finally {
         setIsLoading(false);
       }
@@ -116,7 +127,10 @@ export default function PaymentScreen() {
       setTransactionId(res.data._id);
       setPaymentInfo(res.data.paymentInfo);
     } catch (e) {
-      Alert.alert(t('common.error'), e instanceof Error ? e.message : t('common.error'));
+      Alert.alert(
+        t('common.error'),
+        e instanceof Error ? e.message : t('common.error')
+      );
     } finally {
       setIsCreating(false);
     }
@@ -167,7 +181,7 @@ export default function PaymentScreen() {
 
   const totalAmount = isResumeMode
     ? (paymentInfo?.amount ?? 0)
-    : (post!.price * quantity);
+    : post!.price * quantity;
 
   return (
     <View className="flex-1 bg-neutral-DEFAULT">
@@ -175,11 +189,19 @@ export default function PaymentScreen() {
 
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 24, gap: 16 }}
+        contentContainerStyle={{
+          paddingHorizontal: 20,
+          paddingTop: 16,
+          paddingBottom: 24,
+          gap: 16,
+        }}
         showsVerticalScrollIndicator={false}
       >
         {/* Order Summary */}
-        <View className="bg-neutral-T100 rounded-2xl p-4 flex-row gap-3" style={styles.card}>
+        <View
+          className="bg-neutral-T100 rounded-2xl p-4 flex-row gap-3"
+          style={styles.card}
+        >
           {post?.images?.[0] ? (
             <Image
               source={{ uri: post.images[0] }}
@@ -192,8 +214,13 @@ export default function PaymentScreen() {
             </View>
           )}
           <View className="flex-1 justify-center">
-            <Text className="font-sans font-bold text-base text-neutral-T10" numberOfLines={2}>
-              {post?.title ?? paymentInfo?.description ?? t('transaction.orderFallback')}
+            <Text
+              className="font-sans font-bold text-base text-neutral-T10"
+              numberOfLines={2}
+            >
+              {post?.title ??
+                paymentInfo?.description ??
+                t('transaction.orderFallback')}
             </Text>
             {!isResumeMode && post && (
               <Text className="font-body text-sm text-neutral-T50 mt-1">
@@ -238,7 +265,10 @@ export default function PaymentScreen() {
 
         {/* VietQR + Bank Info (after order created) */}
         {transactionId && paymentInfo && (
-          <View className="bg-neutral-T100 rounded-2xl p-4 gap-4" style={styles.card}>
+          <View
+            className="bg-neutral-T100 rounded-2xl p-4 gap-4"
+            style={styles.card}
+          >
             <Text className="font-sans font-bold text-base text-neutral-T10 text-center">
               {t('transaction.scanQRTransferTitle')}
             </Text>
@@ -255,21 +285,37 @@ export default function PaymentScreen() {
             {/* Divider */}
             <View className="flex-row items-center gap-3">
               <View className="flex-1 h-px bg-neutral-T85" />
-              <Text className="font-body text-xs text-neutral-T50">{t('transaction.orManualTransfer')}</Text>
+              <Text className="font-body text-xs text-neutral-T50">
+                {t('transaction.orManualTransfer')}
+              </Text>
               <View className="flex-1 h-px bg-neutral-T85" />
             </View>
 
             {/* Bank details */}
             <View className="gap-2">
-              <BankInfoRow label={t('transaction.bankLabel')} value={paymentInfo.bankName} />
-              <BankInfoRow label={t('transaction.accountNumberLabel')} value={paymentInfo.bankAccountNumber} copyable />
-              <BankInfoRow label={t('transaction.accountNameLabel')} value={paymentInfo.bankAccountName} />
+              <BankInfoRow
+                label={t('transaction.bankLabel')}
+                value={paymentInfo.bankName}
+              />
+              <BankInfoRow
+                label={t('transaction.accountNumberLabel')}
+                value={paymentInfo.bankAccountNumber}
+                copyable
+              />
+              <BankInfoRow
+                label={t('transaction.accountNameLabel')}
+                value={paymentInfo.bankAccountName}
+              />
               <BankInfoRow
                 label={t('transaction.amountLabel')}
                 value={`${paymentInfo.amount.toLocaleString('vi-VN')}đ`}
                 highlight
               />
-              <BankInfoRow label={t('transaction.transferRefLabel')} value={paymentInfo.description} copyable />
+              <BankInfoRow
+                label={t('transaction.transferRefLabel')}
+                value={paymentInfo.description}
+                copyable
+              />
             </View>
 
             <View className="bg-yellow-50 border border-yellow-200 rounded-xl p-3">
@@ -282,7 +328,10 @@ export default function PaymentScreen() {
 
         {/* No QR available fallback */}
         {transactionId && !paymentInfo && (
-          <View className="bg-neutral-T100 rounded-2xl p-4 items-center gap-3" style={styles.card}>
+          <View
+            className="bg-neutral-T100 rounded-2xl p-4 items-center gap-3"
+            style={styles.card}
+          >
             <MaterialIcons name="warning-amber" size={32} color="#944A00" />
             <Text className="font-body text-sm text-neutral-T30 text-center">
               {t('transaction.qrLoadError')}

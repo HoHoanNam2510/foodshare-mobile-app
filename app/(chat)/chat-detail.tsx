@@ -1,13 +1,24 @@
 import { useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ChatHeader from '@/components/chat/ChatHeader';
 import ChatInput from '@/components/chat/ChatInput';
 import MessageBubble, { Message } from '@/components/chat/MessageBubble';
-import { ChatMessage, getMessagesApi, markAsReadApi, sendMessageApi } from '@/lib/chatApi';
+import {
+  ChatMessage,
+  getMessagesApi,
+  markAsReadApi,
+  sendMessageApi,
+} from '@/lib/chatApi';
 import { connectSocket, joinRoom, leaveRoom } from '@/lib/socket';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -15,7 +26,10 @@ import { useAuthStore } from '@/stores/authStore';
 
 function formatTime(iso: string): string {
   const date = new Date(iso);
-  return date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+  return date.toLocaleTimeString('vi-VN', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }
 
 function toDisplayMessage(msg: ChatMessage, currentUserId: string): Message {
@@ -45,7 +59,8 @@ export default function ChatDetailScreen() {
   const [sending, setSending] = useState(false);
 
   const conversationId = params.conversationId;
-  const avatarUri = params.avatarUri || `https://i.pravatar.cc/150?u=${conversationId}`;
+  const avatarUri =
+    params.avatarUri || `https://i.pravatar.cc/150?u=${conversationId}`;
 
   // Load message history
   const loadMessages = useCallback(async () => {
@@ -86,7 +101,10 @@ export default function ChatDetailScreen() {
           return [...prev, toDisplayMessage(msg, user._id)];
         });
         // Scroll to bottom
-        setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
+        setTimeout(
+          () => scrollRef.current?.scrollToEnd({ animated: true }),
+          100
+        );
         // Mark as read when screen is open
         markAsReadApi(conversationId).catch(() => {});
       });
@@ -134,7 +152,9 @@ export default function ChatDetailScreen() {
           ref={scrollRef}
           className="flex-1 px-6 pt-4"
           showsVerticalScrollIndicator={false}
-          onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: false })}
+          onContentSizeChange={() =>
+            scrollRef.current?.scrollToEnd({ animated: false })
+          }
           contentContainerStyle={{ paddingBottom: 8 }}
         >
           {/* Date separator */}

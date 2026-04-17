@@ -130,7 +130,9 @@ export default function CreateReportScreen() {
 
   const totalImages = keptImageUrls.length + newLocalImages.length;
 
-  const targetLabel = targetType ? t(TARGET_TYPE_LABEL_KEY[targetType]) : t('report.targetUnknown');
+  const targetLabel = targetType
+    ? t(TARGET_TYPE_LABEL_KEY[targetType])
+    : t('report.targetUnknown');
 
   // ── Image handling ────────────────────────────────────────────────────────
 
@@ -162,7 +164,10 @@ export default function CreateReportScreen() {
       return;
     }
     if (totalImages === 0) {
-      Alert.alert(t('report.missingEvidenceTitle'), t('report.missingEvidenceMsg'));
+      Alert.alert(
+        t('report.missingEvidenceTitle'),
+        t('report.missingEvidenceMsg')
+      );
       return;
     }
 
@@ -185,11 +190,9 @@ export default function CreateReportScreen() {
           description: description.trim(),
           images: finalImages,
         });
-        Alert.alert(
-          t('report.updatedTitle'),
-          t('report.updatedMsg'),
-          [{ text: t('common.close'), onPress: () => router.back() }]
-        );
+        Alert.alert(t('report.updatedTitle'), t('report.updatedMsg'), [
+          { text: t('common.close'), onPress: () => router.back() },
+        ]);
       } else {
         await createReportApi({
           targetType,
@@ -198,11 +201,9 @@ export default function CreateReportScreen() {
           description: description.trim(),
           images: finalImages,
         });
-        Alert.alert(
-          t('report.sentTitle'),
-          t('report.sentMsg'),
-          [{ text: t('report.backMainBtn'), onPress: () => router.back() }]
-        );
+        Alert.alert(t('report.sentTitle'), t('report.sentMsg'), [
+          { text: t('report.backMainBtn'), onPress: () => router.back() },
+        ]);
       }
     } catch (err: any) {
       const msg: string =
@@ -234,7 +235,9 @@ export default function CreateReportScreen() {
         backgroundColor="transparent"
         translucent
       />
-      <StackHeader title={isEditMode ? t('report.editTitle') : t('report.createTitle')} />
+      <StackHeader
+        title={isEditMode ? t('report.editTitle') : t('report.createTitle')}
+      />
 
       <KeyboardAvoidingView
         className="flex-1"
@@ -391,7 +394,9 @@ export default function CreateReportScreen() {
                       description.trim().length < 10 ? '#C05621' : '#AAABAB',
                   }}
                 >
-                  {t('report.charMinCount', { count: description.trim().length })}
+                  {t('report.charMinCount', {
+                    count: description.trim().length,
+                  })}
                 </Text>
               </View>
             </View>

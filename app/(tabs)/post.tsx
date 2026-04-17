@@ -51,7 +51,14 @@ interface StatusConfig {
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 
 const STATUS_FILTER_IDS: (PostStatus | 'ALL')[] = [
-  'ALL', 'DRAFT', 'PENDING_REVIEW', 'AVAILABLE', 'BOOKED', 'OUT_OF_STOCK', 'HIDDEN', 'REJECTED',
+  'ALL',
+  'DRAFT',
+  'PENDING_REVIEW',
+  'AVAILABLE',
+  'BOOKED',
+  'OUT_OF_STOCK',
+  'HIDDEN',
+  'REJECTED',
 ];
 
 const STATUS_LABEL_KEYS: Record<PostStatus | 'ALL', string> = {
@@ -177,7 +184,9 @@ function PostCard({ post, onPress }: PostCardProps) {
         {/* Type chip — top left */}
         <View className="absolute top-3 left-3 bg-neutral-T10/70 px-2.5 py-1 rounded-full">
           <Text className="font-label text-[10px] font-semibold text-neutral-T100 uppercase tracking-wide">
-            {post.type === 'P2P_FREE' ? t('common.free') : t('post.b2cMysteryBag')}
+            {post.type === 'P2P_FREE'
+              ? t('common.free')
+              : t('post.b2cMysteryBag')}
           </Text>
         </View>
         {/* Status badge — top right */}
@@ -211,7 +220,8 @@ function PostCard({ post, onPress }: PostCardProps) {
             <View className="flex-row items-center gap-1.5">
               <Feather name="clock" size={13} color="#AAABAB" />
               <Text className="font-body text-xs text-neutral-T50">
-                {t('post.expiryPrefix')} {new Date(post.expiryDate).toLocaleDateString('vi-VN')}
+                {t('post.expiryPrefix')}{' '}
+                {new Date(post.expiryDate).toLocaleDateString('vi-VN')}
               </Text>
             </View>
           )}

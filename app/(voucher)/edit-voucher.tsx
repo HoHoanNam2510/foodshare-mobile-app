@@ -88,9 +88,11 @@ const EditVoucherScreen = () => {
       };
       const { success } = await storeUpdateVoucherApi(id as string, body);
       if (success) {
-        Alert.alert(t('voucher.successAlert'), t('voucher.updateVoucherSuccess'), [
-          { text: 'OK', onPress: () => router.back() },
-        ]);
+        Alert.alert(
+          t('voucher.successAlert'),
+          t('voucher.updateVoucherSuccess'),
+          [{ text: 'OK', onPress: () => router.back() }]
+        );
       } else {
         Alert.alert(t('voucher.errorAlert'), t('voucher.updateVoucherFailed'));
       }
@@ -161,7 +163,8 @@ const EditVoucherScreen = () => {
           {/* Valid Until */}
           <View className="mb-6">
             <Text className="text-sm font-medium text-foreground mb-2">
-              {t('voucher.validUntilLabel')} <Text className="text-error">*</Text>
+              {t('voucher.validUntilLabel')}{' '}
+              <Text className="text-error">*</Text>
             </Text>
             <TouchableOpacity
               className="border border-gray-300 rounded-lg px-4 py-3 bg-white"
@@ -196,7 +199,9 @@ const EditVoucherScreen = () => {
               </Text>
 
               <View>
-                <Text className="text-xs text-gray-400 mb-1">{t('voucher.codeLabel')}</Text>
+                <Text className="text-xs text-gray-400 mb-1">
+                  {t('voucher.codeLabel')}
+                </Text>
                 <Text className="text-base font-semibold text-foreground">
                   {voucher.code}
                 </Text>
@@ -225,7 +230,9 @@ const EditVoucherScreen = () => {
                   </Text>
                 </View>
                 <View>
-                  <Text className="text-xs text-gray-400 mb-1">{t('voucher.pointCostLabel')}</Text>
+                  <Text className="text-xs text-gray-400 mb-1">
+                    {t('voucher.pointCostLabel')}
+                  </Text>
                   <Text className="text-base text-foreground">
                     {voucher.pointCost} {t('voucher.pointsUnit')}
                   </Text>
@@ -243,7 +250,9 @@ const EditVoucherScreen = () => {
             {loading ? (
               <ActivityIndicator color="white" />
             ) : (
-              <Text className="text-white text-lg font-bold">{t('common.save')}</Text>
+              <Text className="text-white text-lg font-bold">
+                {t('common.save')}
+              </Text>
             )}
           </TouchableOpacity>
         </View>

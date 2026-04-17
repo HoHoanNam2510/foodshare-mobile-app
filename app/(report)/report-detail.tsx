@@ -67,7 +67,12 @@ const TARGET_TYPE_CONFIG: Record<
   ReportTargetType,
   { labelKey: string; icon: string; bg: string; text: string }
 > = {
-  POST: { labelKey: 'report.targetPost', icon: 'article', bg: '#EFF6FF', text: '#1D4ED8' },
+  POST: {
+    labelKey: 'report.targetPost',
+    icon: 'article',
+    bg: '#EFF6FF',
+    text: '#1D4ED8',
+  },
   USER: {
     labelKey: 'report.targetUser',
     icon: 'person',
@@ -80,7 +85,12 @@ const TARGET_TYPE_CONFIG: Record<
     bg: '#FFF7ED',
     text: '#C2410C',
   },
-  REVIEW: { labelKey: 'report.targetReview', icon: 'star', bg: '#FFFBEB', text: '#B45309' },
+  REVIEW: {
+    labelKey: 'report.targetReview',
+    icon: 'star',
+    bg: '#FFFBEB',
+    text: '#B45309',
+  },
 };
 
 const REASON_LABEL_KEY: Record<string, string> = {
@@ -206,9 +216,11 @@ export default function ReportDetailScreen() {
             setIsWithdrawing(true);
             try {
               await withdrawReportApi(reportId);
-              Alert.alert(t('report.withdrawnTitle'), t('report.withdrawnMsg'), [
-                { text: t('common.close'), onPress: () => router.back() },
-              ]);
+              Alert.alert(
+                t('report.withdrawnTitle'),
+                t('report.withdrawnMsg'),
+                [{ text: t('common.close'), onPress: () => router.back() }]
+              );
             } catch (err: any) {
               const msg: string =
                 err?.response?.data?.message ?? t('report.withdrawError');
@@ -225,7 +237,11 @@ export default function ReportDetailScreen() {
   if (!report) {
     return (
       <View className="flex-1 bg-neutral items-center justify-center">
-        <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor="transparent"
+          translucent
+        />
         <StackHeader title={t('report.detailTitle')} />
         <Text className="font-body text-sm text-neutral-T50 mt-8">
           {t('report.notFoundMsg')}
@@ -236,7 +252,9 @@ export default function ReportDetailScreen() {
 
   const statusCfg = STATUS_CONFIG[report.status];
   const targetCfg = TARGET_TYPE_CONFIG[report.targetType];
-  const reasonLabel = REASON_LABEL_KEY[report.reason] ? t(REASON_LABEL_KEY[report.reason]) : report.reason;
+  const reasonLabel = REASON_LABEL_KEY[report.reason]
+    ? t(REASON_LABEL_KEY[report.reason])
+    : report.reason;
   const reasonIcon = REASON_ICON[report.reason] ?? 'flag';
   const actionLabelKey = ACTION_LABEL_KEY[report.actionTaken];
   const actionLabel = actionLabelKey ? t(actionLabelKey) : null;
@@ -245,7 +263,11 @@ export default function ReportDetailScreen() {
 
   return (
     <View className="flex-1 bg-neutral">
-      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent
+      />
       <StackHeader title={t('report.detailTitle')} />
 
       {/* ── Lightbox ── */}
@@ -266,7 +288,10 @@ export default function ReportDetailScreen() {
               resizeMode="contain"
             />
           )}
-          <View className="absolute top-0 right-0 p-4" style={{ marginTop: insets.top }}>
+          <View
+            className="absolute top-0 right-0 p-4"
+            style={{ marginTop: insets.top }}
+          >
             <TouchableOpacity
               onPress={() => setLightboxIndex(null)}
               className="w-10 h-10 rounded-full bg-white/20 items-center justify-center"
@@ -280,7 +305,10 @@ export default function ReportDetailScreen() {
                 <View
                   key={i}
                   className="w-2 h-2 rounded-full"
-                  style={{ backgroundColor: i === lightboxIndex ? '#FFFFFF' : 'rgba(255,255,255,0.4)' }}
+                  style={{
+                    backgroundColor:
+                      i === lightboxIndex ? '#FFFFFF' : 'rgba(255,255,255,0.4)',
+                  }}
                 />
               ))}
             </View>
@@ -290,21 +318,32 @@ export default function ReportDetailScreen() {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: insets.bottom + 32, paddingTop: 8 }}
+        contentContainerStyle={{
+          paddingBottom: insets.bottom + 32,
+          paddingTop: 8,
+        }}
       >
         {/* ── Status Banner ── */}
         <View
           className="mx-4 mb-4 rounded-2xl p-4 flex-row items-center gap-3"
           style={[
             styles.card,
-            { backgroundColor: statusCfg.bg, borderWidth: 1, borderColor: statusCfg.border },
+            {
+              backgroundColor: statusCfg.bg,
+              borderWidth: 1,
+              borderColor: statusCfg.border,
+            },
           ]}
         >
           <View
             className="w-11 h-11 rounded-xl items-center justify-center"
             style={{ backgroundColor: statusCfg.text + '20' }}
           >
-            <MaterialIcons name={statusCfg.icon as any} size={22} color={statusCfg.text} />
+            <MaterialIcons
+              name={statusCfg.icon as any}
+              size={22}
+              color={statusCfg.text}
+            />
           </View>
           <View className="flex-1">
             <Text
@@ -315,7 +354,11 @@ export default function ReportDetailScreen() {
             </Text>
             <Text
               className="font-sans text-base mt-0.5"
-              style={{ fontFamily: 'Epilogue', fontWeight: '700', color: statusCfg.text }}
+              style={{
+                fontFamily: 'Epilogue',
+                fontWeight: '700',
+                color: statusCfg.text,
+              }}
             >
               {t(statusCfg.labelKey)}
             </Text>
@@ -334,10 +377,17 @@ export default function ReportDetailScreen() {
         </View>
 
         {/* ── Report Info Card ── */}
-        <View className="mx-4 mb-4 bg-neutral-T100 rounded-2xl p-4 gap-4" style={styles.card}>
+        <View
+          className="mx-4 mb-4 bg-neutral-T100 rounded-2xl p-4 gap-4"
+          style={styles.card}
+        >
           <SectionLabel label={t('report.infoSectionLabel')} />
 
-          <InfoRow icon={reasonIcon} label={t('report.violationReasonLabel')} value={reasonLabel} />
+          <InfoRow
+            icon={reasonIcon}
+            label={t('report.violationReasonLabel')}
+            value={reasonLabel}
+          />
 
           <View className="h-px bg-neutral-T90" />
 
@@ -352,7 +402,11 @@ export default function ReportDetailScreen() {
               <View className="h-px bg-neutral-T90" />
               <InfoRow
                 icon="event-available"
-                label={isDismissed ? t('report.dismissedDateLabel') : t('report.resolvedDateLabel')}
+                label={
+                  isDismissed
+                    ? t('report.dismissedDateLabel')
+                    : t('report.resolvedDateLabel')
+                }
                 value={formatDate(report.resolvedAt)}
               />
             </>
@@ -360,7 +414,10 @@ export default function ReportDetailScreen() {
         </View>
 
         {/* ── Description Card ── */}
-        <View className="mx-4 mb-4 bg-neutral-T100 rounded-2xl p-4 gap-3" style={styles.card}>
+        <View
+          className="mx-4 mb-4 bg-neutral-T100 rounded-2xl p-4 gap-3"
+          style={styles.card}
+        >
           <SectionLabel label={t('report.descSectionLabel')} />
           <Text className="font-body text-sm text-neutral-T10 leading-5">
             {report.description}
@@ -369,11 +426,16 @@ export default function ReportDetailScreen() {
 
         {/* ── Evidence Images ── */}
         {report.images.length > 0 && (
-          <View className="mx-4 mb-4 bg-neutral-T100 rounded-2xl p-4 gap-3" style={styles.card}>
+          <View
+            className="mx-4 mb-4 bg-neutral-T100 rounded-2xl p-4 gap-3"
+            style={styles.card}
+          >
             <View className="flex-row items-center justify-between">
               <SectionLabel label={t('report.evidenceSectionLabel')} />
               <Text className="font-label text-xs text-neutral-T50 -mt-2">
-                {t('report.evidenceCountLabel', { count: report.images.length })}
+                {t('report.evidenceCountLabel', {
+                  count: report.images.length,
+                })}
               </Text>
             </View>
             <ScrollView
@@ -426,7 +488,9 @@ export default function ReportDetailScreen() {
                 className="font-label font-semibold text-sm"
                 style={{ color: isDismissed ? '#DC2626' : '#15803D' }}
               >
-                {isDismissed ? t('report.dismissedReasonLabel') : t('report.resolvedResultLabel')}
+                {isDismissed
+                  ? t('report.dismissedReasonLabel')
+                  : t('report.resolvedResultLabel')}
               </Text>
             </View>
 
@@ -440,7 +504,10 @@ export default function ReportDetailScreen() {
             ) : (
               <Text
                 className="font-body text-sm italic"
-                style={{ color: isDismissed ? '#DC2626' : '#15803D', opacity: 0.7 }}
+                style={{
+                  color: isDismissed ? '#DC2626' : '#15803D',
+                  opacity: 0.7,
+                }}
               >
                 {t('report.noAdminNote')}
               </Text>
@@ -471,8 +538,16 @@ export default function ReportDetailScreen() {
         {/* ── Pending notice + actions ── */}
         {report.status === 'PENDING' && (
           <>
-            <View className="mx-4 mb-4 flex-row gap-3 p-4 bg-yellow-50 rounded-2xl border border-yellow-200" style={styles.card}>
-              <MaterialIcons name="hourglass-empty" size={18} color="#A16207" style={{ marginTop: 1 }} />
+            <View
+              className="mx-4 mb-4 flex-row gap-3 p-4 bg-yellow-50 rounded-2xl border border-yellow-200"
+              style={styles.card}
+            >
+              <MaterialIcons
+                name="hourglass-empty"
+                size={18}
+                color="#A16207"
+                style={{ marginTop: 1 }}
+              />
               <Text className="font-body text-sm text-yellow-800 flex-1 leading-5">
                 {t('report.pendingNotice')}
               </Text>
@@ -514,8 +589,16 @@ export default function ReportDetailScreen() {
 
         {/* ── Resubmit notice (DISMISSED) ── */}
         {isDismissed && (
-          <View className="mx-4 mb-4 flex-row gap-3 p-4 bg-primary-T95 rounded-2xl" style={styles.card}>
-            <MaterialIcons name="refresh" size={18} color="#296C24" style={{ marginTop: 1 }} />
+          <View
+            className="mx-4 mb-4 flex-row gap-3 p-4 bg-primary-T95 rounded-2xl"
+            style={styles.card}
+          >
+            <MaterialIcons
+              name="refresh"
+              size={18}
+              color="#296C24"
+              style={{ marginTop: 1 }}
+            />
             <Text className="font-body text-sm text-primary-T30 flex-1 leading-5">
               {t('report.dismissedResubmitNotice')}
             </Text>

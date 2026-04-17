@@ -1,4 +1,4 @@
-import React, { useState, useCallback , useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -77,10 +77,7 @@ const CreateVoucherScreen = () => {
       parseFloat(pointCost) <= 0 ||
       parseInt(totalQuantity) <= 0
     ) {
-      Alert.alert(
-        t('voucher.errorAlert'),
-        t('voucher.invalidValues')
-      );
+      Alert.alert(t('voucher.errorAlert'), t('voucher.invalidValues'));
       return;
     }
     if (!code.trim()) {
@@ -103,9 +100,11 @@ const CreateVoucherScreen = () => {
       };
       const { success } = await storeCreateVoucherApi(body);
       if (success) {
-        Alert.alert(t('voucher.successAlert'), t('voucher.createVoucherSuccess'), [
-          { text: 'OK', onPress: () => router.back() },
-        ]);
+        Alert.alert(
+          t('voucher.successAlert'),
+          t('voucher.createVoucherSuccess'),
+          [{ text: 'OK', onPress: () => router.back() }]
+        );
       } else {
         Alert.alert(t('voucher.errorAlert'), t('voucher.createVoucherFailed'));
       }
@@ -177,7 +176,8 @@ const CreateVoucherScreen = () => {
           {/* Discount Type */}
           <View className="mb-4">
             <Text className="text-sm font-medium text-foreground mb-2">
-              {t('voucher.discountTypeLabel')} <Text className="text-error">*</Text>
+              {t('voucher.discountTypeLabel')}{' '}
+              <Text className="text-error">*</Text>
             </Text>
             <View className="flex-row gap-3">
               <TouchableOpacity
@@ -222,13 +222,18 @@ const CreateVoucherScreen = () => {
           {/* Discount Value */}
           <View className="mb-4">
             <Text className="text-sm font-medium text-foreground mb-2">
-              {t('voucher.discountValueLabel')} {discountType === 'PERCENTAGE' ? t('voucher.percentageSuffix') : t('voucher.fixedAmountSuffix')}{' '}
+              {t('voucher.discountValueLabel')}{' '}
+              {discountType === 'PERCENTAGE'
+                ? t('voucher.percentageSuffix')
+                : t('voucher.fixedAmountSuffix')}{' '}
               <Text className="text-error">*</Text>
             </Text>
             <TextInput
               className="border border-gray-300 rounded-lg px-4 py-3 text-base bg-white"
               placeholder={
-                discountType === 'PERCENTAGE' ? t('voucher.percentagePlaceholder') : t('voucher.fixedAmountPlaceholder')
+                discountType === 'PERCENTAGE'
+                  ? t('voucher.percentagePlaceholder')
+                  : t('voucher.fixedAmountPlaceholder')
               }
               keyboardType="numeric"
               value={discountValue}
@@ -240,7 +245,8 @@ const CreateVoucherScreen = () => {
           <View className="flex-row gap-4 mb-4">
             <View className="flex-1">
               <Text className="text-sm font-medium text-foreground mb-2">
-                {t('voucher.pointCostLabel')} <Text className="text-error">*</Text>
+                {t('voucher.pointCostLabel')}{' '}
+                <Text className="text-error">*</Text>
               </Text>
               <TextInput
                 className="border border-gray-300 rounded-lg px-4 py-3 text-base bg-white"
@@ -252,7 +258,8 @@ const CreateVoucherScreen = () => {
             </View>
             <View className="flex-1">
               <Text className="text-sm font-medium text-foreground mb-2">
-                {t('voucher.quantityLabel')} <Text className="text-error">*</Text>
+                {t('voucher.quantityLabel')}{' '}
+                <Text className="text-error">*</Text>
               </Text>
               <TextInput
                 className="border border-gray-300 rounded-lg px-4 py-3 text-base bg-white"
@@ -267,7 +274,8 @@ const CreateVoucherScreen = () => {
           {/* Valid Until */}
           <View className="mb-4">
             <Text className="text-sm font-medium text-foreground mb-2">
-              {t('voucher.validUntilLabel')} <Text className="text-error">*</Text>
+              {t('voucher.validUntilLabel')}{' '}
+              <Text className="text-error">*</Text>
             </Text>
             <TouchableOpacity
               className="border border-gray-300 rounded-lg px-4 py-3 bg-white"
@@ -307,7 +315,9 @@ const CreateVoucherScreen = () => {
             {loading ? (
               <ActivityIndicator color="white" />
             ) : (
-              <Text className="text-white text-lg font-bold">{t('voucher.createVoucherBtn')}</Text>
+              <Text className="text-white text-lg font-bold">
+                {t('voucher.createVoucherBtn')}
+              </Text>
             )}
           </TouchableOpacity>
         </View>

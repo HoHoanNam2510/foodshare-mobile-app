@@ -15,7 +15,10 @@ import {
   View,
 } from 'react-native';
 
-import { ReceivedReviewCard, WrittenReviewCard } from '@/components/review/ReviewCard';
+import {
+  ReceivedReviewCard,
+  WrittenReviewCard,
+} from '@/components/review/ReviewCard';
 import ManagementHeader from '@/components/shared/headers/ManagementHeader';
 import {
   deleteMyReviewApi,
@@ -32,18 +35,37 @@ type TabKey = 'written' | 'received';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function AverageRatingBadge({ average, count }: { average: number; count: number }) {
+function AverageRatingBadge({
+  average,
+  count,
+}: {
+  average: number;
+  count: number;
+}) {
   const { t } = useTranslation();
   if (count === 0) return null;
   return (
-    <View className="mx-4 mb-3 bg-neutral-T100 rounded-2xl p-4 flex-row items-center gap-3" style={styles.card}>
+    <View
+      className="mx-4 mb-3 bg-neutral-T100 rounded-2xl p-4 flex-row items-center gap-3"
+      style={styles.card}
+    >
       <View className="w-14 h-14 rounded-xl bg-primary-T95 items-center justify-center">
-        <Text style={{ fontFamily: 'Epilogue', fontWeight: '800', fontSize: 20, color: '#296C24' }}>
+        <Text
+          style={{
+            fontFamily: 'Epilogue',
+            fontWeight: '800',
+            fontSize: 20,
+            color: '#296C24',
+          }}
+        >
           {average.toFixed(1)}
         </Text>
       </View>
       <View className="flex-1 gap-0.5">
-        <Text style={{ fontFamily: 'Epilogue', fontWeight: '700' }} className="text-sm text-neutral-T10">
+        <Text
+          style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
+          className="text-sm text-neutral-T10"
+        >
           {t('review.trustScoreTitle')}
         </Text>
         <Text className="font-body text-xs text-neutral-T50">
@@ -84,8 +106,12 @@ function EmptyState({ tab }: { tab: TabKey }) {
       <View className="w-16 h-16 rounded-2xl bg-primary-T95 items-center justify-center">
         <MaterialIcons name={cfg.icon} size={28} color="#296C24" />
       </View>
-      <Text className="font-sans font-bold text-base text-neutral-T10 text-center">{t(cfg.titleKey)}</Text>
-      <Text className="font-body text-sm text-neutral-T50 text-center leading-5">{t(cfg.bodyKey)}</Text>
+      <Text className="font-sans font-bold text-base text-neutral-T10 text-center">
+        {t(cfg.titleKey)}
+      </Text>
+      <Text className="font-body text-sm text-neutral-T50 text-center leading-5">
+        {t(cfg.bodyKey)}
+      </Text>
     </View>
   );
 }
@@ -130,20 +156,23 @@ export default function MyReviewsScreen() {
     }
   }, []);
 
-  const loadReceived = useCallback(async (isRefresh = false) => {
-    if (!myId) return;
-    if (isRefresh) setReceivedRefreshing(true);
-    setReceivedError(null);
-    try {
-      const res = await getUserReviewsApi(myId, { limit: 50 });
-      setReceived(res.data ?? []);
-    } catch {
-      setReceivedError(t('review.loadError'));
-    } finally {
-      setReceivedRefreshing(false);
-      setReceivedLoaded(true);
-    }
-  }, [myId]);
+  const loadReceived = useCallback(
+    async (isRefresh = false) => {
+      if (!myId) return;
+      if (isRefresh) setReceivedRefreshing(true);
+      setReceivedError(null);
+      try {
+        const res = await getUserReviewsApi(myId, { limit: 50 });
+        setReceived(res.data ?? []);
+      } catch {
+        setReceivedError(t('review.loadError'));
+      } finally {
+        setReceivedRefreshing(false);
+        setReceivedLoaded(true);
+      }
+    },
+    [myId]
+  );
 
   useEffect(() => {
     loadWritten();
@@ -159,60 +188,62 @@ export default function MyReviewsScreen() {
   // ── Delete handler ─────────────────────────────────────────────────────────
 
   const handleDelete = useCallback((reviewId: string) => {
-    Alert.alert(
-      t('review.withdrawTitle'),
-      t('review.withdrawConfirmMsg'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('review.withdrawBtn'),
-          style: 'destructive',
-          onPress: async () => {
-            setDeletingId(reviewId);
-            try {
-              await deleteMyReviewApi(reviewId);
-              setWritten((prev) => prev.filter((r) => r._id !== reviewId));
-              Alert.alert(t('review.withdrawnTitle'), t('review.withdrawnMsg'));
-            } catch {
-              Alert.alert(t('common.error'), t('review.withdrawError'));
-            } finally {
-              setDeletingId(null);
-            }
-          },
+    Alert.alert(t('review.withdrawTitle'), t('review.withdrawConfirmMsg'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('review.withdrawBtn'),
+        style: 'destructive',
+        onPress: async () => {
+          setDeletingId(reviewId);
+          try {
+            await deleteMyReviewApi(reviewId);
+            setWritten((prev) => prev.filter((r) => r._id !== reviewId));
+            Alert.alert(t('review.withdrawnTitle'), t('review.withdrawnMsg'));
+          } catch {
+            Alert.alert(t('common.error'), t('review.withdrawError'));
+          } finally {
+            setDeletingId(null);
+          }
         },
-      ]
-    );
+      },
+    ]);
   }, []);
 
   // ── Navigate to edit ───────────────────────────────────────────────────────
 
-  const handleEdit = useCallback((review: IWrittenReview) => {
-    router.push({
-      pathname: '/(review)/create-review',
-      params: {
-        reviewId: review._id,
-        existingRating: String(review.rating),
-        existingFeedback: review.feedback ?? '',
-        revieweeName:
-          typeof review.revieweeId === 'object'
-            ? (review.revieweeId as any).fullName
-            : '',
-      },
-    } as any);
-  }, [router]);
+  const handleEdit = useCallback(
+    (review: IWrittenReview) => {
+      router.push({
+        pathname: '/(review)/create-review',
+        params: {
+          reviewId: review._id,
+          existingRating: String(review.rating),
+          existingFeedback: review.feedback ?? '',
+          revieweeName:
+            typeof review.revieweeId === 'object'
+              ? (review.revieweeId as any).fullName
+              : '',
+        },
+      } as any);
+    },
+    [router]
+  );
 
   // ── Report handler ─────────────────────────────────────────────────────────
 
-  const handleReport = useCallback((reviewId: string, title: string) => {
-    router.push({
-      pathname: '/(report)/create-report',
-      params: {
-        targetType: 'REVIEW',
-        targetId: reviewId,
-        targetTitle: title,
-      },
-    } as any);
-  }, [router]);
+  const handleReport = useCallback(
+    (reviewId: string, title: string) => {
+      router.push({
+        pathname: '/(report)/create-report',
+        params: {
+          targetType: 'REVIEW',
+          targetId: reviewId,
+          targetTitle: title,
+        },
+      } as any);
+    },
+    [router]
+  );
 
   // ── Computed ───────────────────────────────────────────────────────────────
 
@@ -230,8 +261,15 @@ export default function MyReviewsScreen() {
 
   return (
     <View className="flex-1 bg-neutral">
-      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-      <ManagementHeader title={t('review.myReviewsTitle')} onBack={() => router.back()} />
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent
+      />
+      <ManagementHeader
+        title={t('review.myReviewsTitle')}
+        onBack={() => router.back()}
+      />
 
       {/* ── Tab Bar ── */}
       <View className="mx-4 mt-4 mb-3 bg-neutral-T95 rounded-xl p-1 flex-row">
@@ -255,7 +293,9 @@ export default function MyReviewsScreen() {
                 {tab.count > 0 && (
                   <View
                     className="px-1.5 py-0.5 rounded-full"
-                    style={{ backgroundColor: isActive ? '#296C24' : '#C8CACA' }}
+                    style={{
+                      backgroundColor: isActive ? '#296C24' : '#C8CACA',
+                    }}
                   >
                     <Text
                       className="font-label font-bold"
@@ -276,17 +316,23 @@ export default function MyReviewsScreen() {
         writtenLoading ? (
           <View className="flex-1 items-center justify-center gap-3">
             <ActivityIndicator size="large" color="#296C24" />
-            <Text className="font-body text-sm text-neutral-T50">{t('common.loading')}</Text>
+            <Text className="font-body text-sm text-neutral-T50">
+              {t('common.loading')}
+            </Text>
           </View>
         ) : writtenError ? (
           <View className="flex-1 items-center justify-center px-8 gap-4">
-            <Text className="font-body text-sm text-neutral-T50 text-center">{writtenError}</Text>
+            <Text className="font-body text-sm text-neutral-T50 text-center">
+              {writtenError}
+            </Text>
             <TouchableOpacity
               onPress={() => loadWritten()}
               className="px-6 py-3 bg-primary-T40 rounded-xl"
               activeOpacity={0.85}
             >
-              <Text className="font-label font-semibold text-neutral-T100">{t('common.retry')}</Text>
+              <Text className="font-label font-semibold text-neutral-T100">
+                {t('common.retry')}
+              </Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -297,13 +343,22 @@ export default function MyReviewsScreen() {
               <WrittenReviewCard
                 review={item}
                 onEdit={() => handleEdit(item)}
-                onDelete={deletingId === item._id ? () => {} : () => handleDelete(item._id)}
+                onDelete={
+                  deletingId === item._id
+                    ? () => {}
+                    : () => handleDelete(item._id)
+                }
               />
             )}
             ListEmptyComponent={<EmptyState tab="written" />}
             ListHeaderComponent={
               <View className="mx-4 mt-4 mb-3 p-3 bg-primary-T95 rounded-xl flex-row gap-2 items-start">
-                <MaterialIcons name="info-outline" size={15} color="#296C24" style={{ marginTop: 1 }} />
+                <MaterialIcons
+                  name="info-outline"
+                  size={15}
+                  color="#296C24"
+                  style={{ marginTop: 1 }}
+                />
                 <Text className="font-body text-xs text-primary-T30 flex-1 leading-4">
                   {t('review.editRecalcInfo')}
                 </Text>
@@ -323,17 +378,23 @@ export default function MyReviewsScreen() {
       ) : !receivedLoaded && !receivedError ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-sm text-neutral-T50">{t('common.loading')}</Text>
+          <Text className="font-body text-sm text-neutral-T50">
+            {t('common.loading')}
+          </Text>
         </View>
       ) : receivedError ? (
         <View className="flex-1 items-center justify-center px-8 gap-4">
-          <Text className="font-body text-sm text-neutral-T50 text-center">{receivedError}</Text>
+          <Text className="font-body text-sm text-neutral-T50 text-center">
+            {receivedError}
+          </Text>
           <TouchableOpacity
             onPress={() => loadReceived()}
             className="px-6 py-3 bg-primary-T40 rounded-xl"
             activeOpacity={0.85}
           >
-            <Text className="font-label font-semibold text-neutral-T100">{t('common.retry')}</Text>
+            <Text className="font-label font-semibold text-neutral-T100">
+              {t('common.retry')}
+            </Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -369,7 +430,11 @@ export default function MyReviewsScreen() {
               tintColor="#296C24"
             />
           }
-          contentContainerStyle={{ paddingTop: 12, paddingBottom: 40, flexGrow: 1 }}
+          contentContainerStyle={{
+            paddingTop: 12,
+            paddingBottom: 40,
+            flexGrow: 1,
+          }}
           showsVerticalScrollIndicator={false}
         />
       )}

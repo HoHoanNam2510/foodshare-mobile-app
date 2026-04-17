@@ -155,7 +155,8 @@ export default function RootLayout() {
         <BadgeUnlockToast
           badge={toastBadge}
           onDismiss={() => {
-            if (toastHideTimerRef.current) clearTimeout(toastHideTimerRef.current);
+            if (toastHideTimerRef.current)
+              clearTimeout(toastHideTimerRef.current);
             setToastBadge(null);
           }}
         />

@@ -44,7 +44,9 @@ export default function EditPost() {
 
   // ── Loading state ──
   const [isLoadingPost, setIsLoadingPost] = useState(true);
-  const [postType, setPostType] = useState<'P2P_FREE' | 'B2C_MYSTERY_BAG'>('P2P_FREE');
+  const [postType, setPostType] = useState<'P2P_FREE' | 'B2C_MYSTERY_BAG'>(
+    'P2P_FREE'
+  );
   const [originalImages, setOriginalImages] = useState<string[]>([]);
 
   // ── Form state ──
@@ -88,9 +90,11 @@ export default function EditPost() {
       setPickupEnd(new Date(p.pickupTime.end));
       setExpiryDate(new Date(p.expiryDate));
     } catch (e) {
-      Alert.alert(t('common.error'), e instanceof Error ? e.message : t('post.errorLoad'), [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
+      Alert.alert(
+        t('common.error'),
+        e instanceof Error ? e.message : t('post.errorLoad'),
+        [{ text: 'OK', onPress: () => router.back() }]
+      );
     } finally {
       setIsLoadingPost(false);
     }
@@ -105,7 +109,11 @@ export default function EditPost() {
     d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   const formatDate = (d: Date) =>
-    d.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' });
+    d.toLocaleDateString([], {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
 
   const getPickerValue = () => {
     if (activePicker === 'pickupStart') return pickupStart;
@@ -123,13 +131,25 @@ export default function EditPost() {
     if (!selected) return;
     if (activePicker === 'pickupStart') {
       setPickupStart(selected);
-      if (fieldErrors.pickupTime) setFieldErrors((e) => { const { pickupTime: _, ...rest } = e; return rest; });
+      if (fieldErrors.pickupTime)
+        setFieldErrors((e) => {
+          const { pickupTime: _, ...rest } = e;
+          return rest;
+        });
     } else if (activePicker === 'pickupEnd') {
       setPickupEnd(selected);
-      if (fieldErrors.pickupTime) setFieldErrors((e) => { const { pickupTime: _, ...rest } = e; return rest; });
+      if (fieldErrors.pickupTime)
+        setFieldErrors((e) => {
+          const { pickupTime: _, ...rest } = e;
+          return rest;
+        });
     } else if (activePicker === 'expiryDate') {
       setExpiryDate(selected);
-      if (fieldErrors.expiryDate) setFieldErrors((e) => { const { expiryDate: _, ...rest } = e; return rest; });
+      if (fieldErrors.expiryDate)
+        setFieldErrors((e) => {
+          const { expiryDate: _, ...rest } = e;
+          return rest;
+        });
     }
   };
 
@@ -137,7 +157,8 @@ export default function EditPost() {
     const errors: Record<string, string> = {};
     if (images.length === 0) errors.images = t('post.errorImages');
     if (!title.trim()) errors.title = t('post.errorTitleRequired');
-    if (isB2C && (!price || parseFloat(price) <= 0)) errors.price = t('post.errorPriceRequired');
+    if (isB2C && (!price || parseFloat(price) <= 0))
+      errors.price = t('post.errorPriceRequired');
     if (quantity < 1) errors.quantity = t('post.errorQuantityMin');
     if (pickupStart >= pickupEnd) errors.pickupTime = t('post.errorPickupTime');
     setFieldErrors(errors);
@@ -150,7 +171,9 @@ export default function EditPost() {
     try {
       // Upload new local images (file:// URIs), keep existing remote URLs
       const newLocalImages = images.filter((img) => !img.startsWith('http'));
-      const existingRemoteImages = images.filter((img) => img.startsWith('http'));
+      const existingRemoteImages = images.filter((img) =>
+        img.startsWith('http')
+      );
 
       let uploadedUrls: string[] = [];
       if (newLocalImages.length > 0) {
@@ -195,7 +218,10 @@ export default function EditPost() {
         setFieldErrors(errors);
         Alert.alert(t('post.validationError'), t('post.checkFields'));
       } else {
-        Alert.alert(t('common.error'), err instanceof Error ? err.message : t('common.error'));
+        Alert.alert(
+          t('common.error'),
+          err instanceof Error ? err.message : t('common.error')
+        );
       }
     } finally {
       setIsSubmitting(false);
@@ -238,7 +264,9 @@ export default function EditPost() {
                   className="h-14 bg-primary-T40 rounded-xl items-center justify-center shadow-sm active:opacity-80 mt-4"
                   onPress={() => setActivePicker(null)}
                 >
-                  <Text className="font-label font-semibold text-neutral-T100">{t('common.done')}</Text>
+                  <Text className="font-label font-semibold text-neutral-T100">
+                    {t('common.done')}
+                  </Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -251,9 +279,14 @@ export default function EditPost() {
   // ── Loading ──
   if (isLoadingPost) {
     return (
-      <SafeAreaView className="flex-1 bg-neutral items-center justify-center" edges={['top']}>
+      <SafeAreaView
+        className="flex-1 bg-neutral items-center justify-center"
+        edges={['top']}
+      >
         <ActivityIndicator size="large" color="#296C24" />
-        <Text className="font-body text-sm text-neutral-T50 mt-3">{t('common.loading')}</Text>
+        <Text className="font-body text-sm text-neutral-T50 mt-3">
+          {t('common.loading')}
+        </Text>
       </SafeAreaView>
     );
   }
@@ -290,11 +323,17 @@ export default function EditPost() {
               images={images}
               onImagesChange={(imgs) => {
                 setImages(imgs);
-                if (fieldErrors.images) setFieldErrors((e) => { const { images: _, ...rest } = e; return rest; });
+                if (fieldErrors.images)
+                  setFieldErrors((e) => {
+                    const { images: _, ...rest } = e;
+                    return rest;
+                  });
               }}
             />
             {fieldErrors.images && (
-              <Text className="text-xs text-red-500 font-label mt-1 ml-1">{fieldErrors.images}</Text>
+              <Text className="text-xs text-red-500 font-label mt-1 ml-1">
+                {fieldErrors.images}
+              </Text>
             )}
           </View>
 
@@ -302,13 +341,17 @@ export default function EditPost() {
           <View className="gap-6 mb-8">
             {/* Category */}
             <View className="gap-2">
-              <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">{t('post.category')}</Text>
+              <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
+                {t('post.category')}
+              </Text>
               <CategoryPicker selected={category} onSelect={setCategory} />
             </View>
 
             {/* Meal title */}
             <View className="gap-2">
-              <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">{t('post.title')}</Text>
+              <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
+                {t('post.title')}
+              </Text>
               <TextInput
                 className={`w-full h-14 px-4 rounded-xl bg-neutral-T95 border font-body text-base text-neutral-T10 ${fieldErrors.title ? 'border-red-500' : 'border-neutral-T90'}`}
                 placeholder={t('post.titlePlaceholder')}
@@ -316,17 +359,25 @@ export default function EditPost() {
                 value={title}
                 onChangeText={(text) => {
                   setTitle(text);
-                  if (fieldErrors.title) setFieldErrors((e) => { const { title: _, ...rest } = e; return rest; });
+                  if (fieldErrors.title)
+                    setFieldErrors((e) => {
+                      const { title: _, ...rest } = e;
+                      return rest;
+                    });
                 }}
               />
               {fieldErrors.title && (
-                <Text className="text-xs text-red-500 font-label ml-1">{fieldErrors.title}</Text>
+                <Text className="text-xs text-red-500 font-label ml-1">
+                  {fieldErrors.title}
+                </Text>
               )}
             </View>
 
             {/* Description */}
             <View className="gap-2">
-              <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">{t('post.description')}</Text>
+              <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
+                {t('post.description')}
+              </Text>
               <TextInput
                 className="w-full p-4 rounded-xl bg-neutral-T95 border border-neutral-T90 font-body text-base text-neutral-T10"
                 placeholder={t('post.descriptionPlaceholder')}
@@ -344,9 +395,13 @@ export default function EditPost() {
             <View className="flex-row gap-4">
               {isB2C && (
                 <View className="flex-1 gap-2">
-                  <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">{t('post.priceLabel')}</Text>
+                  <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
+                    {t('post.priceLabel')}
+                  </Text>
                   <View className="relative justify-center">
-                    <Text className="absolute left-4 font-label font-semibold text-neutral-T50 z-10">đ</Text>
+                    <Text className="absolute left-4 font-label font-semibold text-neutral-T50 z-10">
+                      đ
+                    </Text>
                     <TextInput
                       className={`w-full h-14 pl-8 pr-4 rounded-xl bg-neutral-T95 border font-body text-base text-neutral-T10 ${fieldErrors.price ? 'border-red-500' : 'border-neutral-T90'}`}
                       placeholder="0"
@@ -355,67 +410,99 @@ export default function EditPost() {
                       value={price}
                       onChangeText={(p) => {
                         setPrice(p);
-                        if (fieldErrors.price) setFieldErrors((e) => { const { price: _, ...rest } = e; return rest; });
+                        if (fieldErrors.price)
+                          setFieldErrors((e) => {
+                            const { price: _, ...rest } = e;
+                            return rest;
+                          });
                       }}
                     />
                   </View>
                   {fieldErrors.price && (
-                    <Text className="text-xs text-red-500 font-label ml-1">{fieldErrors.price}</Text>
+                    <Text className="text-xs text-red-500 font-label ml-1">
+                      {fieldErrors.price}
+                    </Text>
                   )}
                 </View>
               )}
               <View className="flex-1 gap-2">
-                <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">{t('post.quantity')}</Text>
+                <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
+                  {t('post.quantity')}
+                </Text>
                 <QuantityStepper value={quantity} onChange={setQuantity} />
               </View>
             </View>
           </View>
 
           {/* ── Pickup window ── */}
-          <View className={`rounded-2xl p-6 gap-4 mb-6 ${fieldErrors.pickupTime ? 'bg-red-50 border border-red-500' : 'bg-neutral-T95'}`}>
+          <View
+            className={`rounded-2xl p-6 gap-4 mb-6 ${fieldErrors.pickupTime ? 'bg-red-50 border border-red-500' : 'bg-neutral-T95'}`}
+          >
             <View className="flex-row items-center gap-2">
-              <MaterialIcons name="schedule" size={20} color={fieldErrors.pickupTime ? '#EF4444' : '#296C24'} />
-              <Text className="font-sans font-bold text-base text-neutral-T10">{t('post.pickupWindow')}</Text>
+              <MaterialIcons
+                name="schedule"
+                size={20}
+                color={fieldErrors.pickupTime ? '#EF4444' : '#296C24'}
+              />
+              <Text className="font-sans font-bold text-base text-neutral-T10">
+                {t('post.pickupWindow')}
+              </Text>
             </View>
             <View className="flex-row gap-4">
               <View className="flex-1 gap-1">
-                <Text className="text-[10px] font-label font-semibold tracking-wider text-neutral-T70 ml-1">{t('post.from')}</Text>
+                <Text className="text-[10px] font-label font-semibold tracking-wider text-neutral-T70 ml-1">
+                  {t('post.from')}
+                </Text>
                 <TouchableOpacity
                   className="h-12 px-4 rounded-xl bg-neutral-T100 border border-neutral-T90 flex-row items-center justify-between active:opacity-80"
                   onPress={() => openPicker('pickupStart', 'time')}
                 >
-                  <Text className="font-body font-semibold text-neutral-T10">{formatTime(pickupStart)}</Text>
+                  <Text className="font-body font-semibold text-neutral-T10">
+                    {formatTime(pickupStart)}
+                  </Text>
                   <MaterialIcons name="access-time" size={16} color="#AAABAB" />
                 </TouchableOpacity>
               </View>
               <View className="flex-1 gap-1">
-                <Text className="text-[10px] font-label font-semibold tracking-wider text-neutral-T70 ml-1">{t('post.to')}</Text>
+                <Text className="text-[10px] font-label font-semibold tracking-wider text-neutral-T70 ml-1">
+                  {t('post.to')}
+                </Text>
                 <TouchableOpacity
                   className="h-12 px-4 rounded-xl bg-neutral-T100 border border-neutral-T90 flex-row items-center justify-between active:opacity-80"
                   onPress={() => openPicker('pickupEnd', 'time')}
                 >
-                  <Text className="font-body font-semibold text-neutral-T10">{formatTime(pickupEnd)}</Text>
+                  <Text className="font-body font-semibold text-neutral-T10">
+                    {formatTime(pickupEnd)}
+                  </Text>
                   <MaterialIcons name="access-time" size={16} color="#AAABAB" />
                 </TouchableOpacity>
               </View>
             </View>
             {fieldErrors.pickupTime && (
-              <Text className="text-xs text-red-500 font-label ml-1">{fieldErrors.pickupTime}</Text>
+              <Text className="text-xs text-red-500 font-label ml-1">
+                {fieldErrors.pickupTime}
+              </Text>
             )}
           </View>
 
           {/* ── Expiry date ── */}
           <View className="gap-2 mb-6">
-            <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">{t('post.expiryDate')}</Text>
+            <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
+              {t('post.expiryDate')}
+            </Text>
             <TouchableOpacity
               className={`h-14 px-4 rounded-xl bg-neutral-T95 border flex-row items-center justify-between active:opacity-80 ${fieldErrors.expiryDate ? 'border-red-500' : 'border-neutral-T90'}`}
               onPress={() => openPicker('expiryDate', 'date')}
             >
-              <Text className="font-body text-base text-neutral-T10">{formatDate(expiryDate)}</Text>
+              <Text className="font-body text-base text-neutral-T10">
+                {formatDate(expiryDate)}
+              </Text>
               <MaterialIcons name="event" size={20} color="#AAABAB" />
             </TouchableOpacity>
             {fieldErrors.expiryDate && (
-              <Text className="text-xs text-red-500 font-label ml-1">{fieldErrors.expiryDate}</Text>
+              <Text className="text-xs text-red-500 font-label ml-1">
+                {fieldErrors.expiryDate}
+              </Text>
             )}
           </View>
         </ScrollView>
@@ -436,7 +523,9 @@ export default function EditPost() {
             onPress={() => router.back()}
           >
             <MaterialIcons name="close" size={18} color="#757777" />
-            <Text className="font-label font-medium text-sm text-neutral-T50">{t('common.cancel')}</Text>
+            <Text className="font-label font-medium text-sm text-neutral-T50">
+              {t('common.cancel')}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             className="flex-1 h-14 bg-primary-T40 rounded-xl items-center justify-center flex-row gap-2 shadow-sm active:opacity-80"
@@ -448,7 +537,9 @@ export default function EditPost() {
             ) : (
               <>
                 <MaterialIcons name="check" size={18} color="#FFFFFF" />
-                <Text className="font-label font-medium text-sm text-neutral-T100">{t('post.saveChanges')}</Text>
+                <Text className="font-label font-medium text-sm text-neutral-T100">
+                  {t('post.saveChanges')}
+                </Text>
               </>
             )}
           </TouchableOpacity>

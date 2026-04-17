@@ -86,35 +86,36 @@ export default function LoginScreen() {
   );
 
   // Đổi auth code → id_token rồi gửi lên backend
-  const exchangeGoogleCode = useCallback(async (code: string, codeVerifier: string) => {
-    setIsGoogleLoading(true);
-    try {
-      const tokenResult = await AuthSession.exchangeCodeAsync(
-        {
-          clientId: googleClientId,
-          code,
-          redirectUri: googleRedirectUri,
-          extraParams: { code_verifier: codeVerifier },
-        },
-        GOOGLE_DISCOVERY
-      );
+  const exchangeGoogleCode = useCallback(
+    async (code: string, codeVerifier: string) => {
+      setIsGoogleLoading(true);
+      try {
+        const tokenResult = await AuthSession.exchangeCodeAsync(
+          {
+            clientId: googleClientId,
+            code,
+            redirectUri: googleRedirectUri,
+            extraParams: { code_verifier: codeVerifier },
+          },
+          GOOGLE_DISCOVERY
+        );
 
-      if (!tokenResult.idToken) {
-        throw new Error('Không nhận được ID token từ Google');
+        if (!tokenResult.idToken) {
+          throw new Error('Không nhận được ID token từ Google');
+        }
+
+        await googleLogin(tokenResult.idToken);
+        router.replace('/(tabs)/home' as never);
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : t('errors.tryAgain');
+        Alert.alert(t('auth.googleLoginFailed'), message);
+      } finally {
+        setIsGoogleLoading(false);
       }
-
-      await googleLogin(tokenResult.idToken);
-      router.replace('/(tabs)/home' as never);
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : t('errors.tryAgain');
-      Alert.alert(t('auth.googleLoginFailed'), message);
-    } finally {
-      setIsGoogleLoading(false);
-    }
-  }, [googleClientId, googleRedirectUri, googleLogin, router]);
+    },
+    [googleClientId, googleRedirectUri, googleLogin, router]
+  );
 
   useEffect(() => {
     if (
@@ -136,9 +137,7 @@ export default function LoginScreen() {
       router.replace('/(tabs)/home' as never);
     } catch (error) {
       const message =
-        error instanceof Error
-          ? error.message
-          : t('errors.tryAgain');
+        error instanceof Error ? error.message : t('errors.tryAgain');
       Alert.alert(t('auth.loginFailed'), message);
     }
   };

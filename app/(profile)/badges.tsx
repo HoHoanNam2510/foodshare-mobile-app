@@ -118,11 +118,14 @@ function BadgeDetail({
 }) {
   const { t, i18n } = useTranslation();
   const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString(i18n.language === 'vi' ? 'vi-VN' : 'en-US', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
+    new Date(dateStr).toLocaleDateString(
+      i18n.language === 'vi' ? 'vi-VN' : 'en-US',
+      {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      }
+    );
 
   return (
     <View
@@ -174,7 +177,9 @@ function BadgeDetail({
                   badge.isUnlocked ? 'text-primary-T30' : 'text-neutral-T50'
                 }`}
               >
-                {badge.isUnlocked ? t('profile.badgeUnlocked') : t('profile.badgeLocked')}
+                {badge.isUnlocked
+                  ? t('profile.badgeUnlocked')
+                  : t('profile.badgeLocked')}
               </Text>
             </View>
           </View>

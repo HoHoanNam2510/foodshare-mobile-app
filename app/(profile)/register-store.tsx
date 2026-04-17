@@ -56,10 +56,15 @@ export default function RegisterStore() {
     if (missingFields.length > 0) {
       Alert.alert(
         t('profile.profileIncompleteTitle'),
-        t('profile.profileIncompleteMsg', { missing: missingFields.join(' và ') }),
+        t('profile.profileIncompleteMsg', {
+          missing: missingFields.join(' và '),
+        }),
         [
           { text: t('common.later'), style: 'cancel' },
-          { text: t('profile.updateNow'), onPress: () => router.push('/(profile)/edit-profile') },
+          {
+            text: t('profile.updateNow'),
+            onPress: () => router.push('/(profile)/edit-profile'),
+          },
         ]
       );
       return;
@@ -67,7 +72,10 @@ export default function RegisterStore() {
 
     // Validate required fields
     if (!businessName.trim()) {
-      Alert.alert(t('profile.missingInfoTitle'), t('profile.missingBusinessName'));
+      Alert.alert(
+        t('profile.missingInfoTitle'),
+        t('profile.missingBusinessName')
+      );
       return;
     }
     if (!openHours.trim() || !closeHours.trim()) {
@@ -75,7 +83,10 @@ export default function RegisterStore() {
       return;
     }
     if (!businessAddress.trim()) {
-      Alert.alert(t('profile.missingInfoTitle'), t('profile.missingBusinessAddress'));
+      Alert.alert(
+        t('profile.missingInfoTitle'),
+        t('profile.missingBusinessAddress')
+      );
       return;
     }
     if (kycDocuments.length === 0) {
@@ -101,8 +112,10 @@ export default function RegisterStore() {
       if (momoPhone.trim()) paymentInfo.momoPhone = momoPhone.trim();
       // if (zalopayPhone.trim()) paymentInfo.zalopayPhone = zalopayPhone.trim(); // TODO: Re-enable when ZaloPay is ready
       if (bankName.trim()) paymentInfo.bankName = bankName.trim();
-      if (bankAccountNumber.trim()) paymentInfo.bankAccountNumber = bankAccountNumber.trim();
-      if (bankAccountName.trim()) paymentInfo.bankAccountName = bankAccountName.trim();
+      if (bankAccountNumber.trim())
+        paymentInfo.bankAccountNumber = bankAccountNumber.trim();
+      if (bankAccountName.trim())
+        paymentInfo.bankAccountName = bankAccountName.trim();
 
       const res = await registerStoreApi({
         storeInfo: {
@@ -118,15 +131,15 @@ export default function RegisterStore() {
 
       if (res.success) {
         await fetchProfile();
-        Alert.alert(
-          t('common.success'),
-          t('profile.registerSuccessMsg'),
-          [{ text: 'OK', onPress: () => router.back() }]
-        );
+        Alert.alert(t('common.success'), t('profile.registerSuccessMsg'), [
+          { text: 'OK', onPress: () => router.back() },
+        ]);
       }
     } catch (error: unknown) {
       const msg =
-        error instanceof Error ? error.message : t('profile.registerStoreFailed');
+        error instanceof Error
+          ? error.message
+          : t('profile.registerStoreFailed');
       Alert.alert(t('common.error'), msg);
     } finally {
       setIsSubmitting(false);
@@ -163,7 +176,10 @@ export default function RegisterStore() {
             </View>
 
             {/* Store Details */}
-            <SectionLabel icon="storefront" label={t('profile.storeInfoSection')} />
+            <SectionLabel
+              icon="storefront"
+              label={t('profile.storeInfoSection')}
+            />
 
             <FormInput
               label={`${t('profile.businessNameLabel')} *`}
@@ -207,7 +223,10 @@ export default function RegisterStore() {
             />
 
             {/* KYC Documents */}
-            <SectionLabel icon="verified-user" label={t('profile.kycSection')} />
+            <SectionLabel
+              icon="verified-user"
+              label={t('profile.kycSection')}
+            />
 
             <Text className="font-body text-xs text-neutral-T50 -mt-2">
               {t('profile.kycHint')}
@@ -220,7 +239,10 @@ export default function RegisterStore() {
             />
 
             {/* Payment Info */}
-            <SectionLabel icon="account-balance" label={t('profile.paymentSection')} />
+            <SectionLabel
+              icon="account-balance"
+              label={t('profile.paymentSection')}
+            />
 
             <Text className="font-body text-xs text-neutral-T50 -mt-2">
               {t('profile.paymentHint')}

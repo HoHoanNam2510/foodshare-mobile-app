@@ -22,7 +22,13 @@ import {
 
 const RESULT_CONFIG: Record<
   'success' | 'pending' | 'failed',
-  { icon: keyof typeof MaterialIcons.glyphMap; color: string; bg: string; titleKey: string; subtitleKey: string }
+  {
+    icon: keyof typeof MaterialIcons.glyphMap;
+    color: string;
+    bg: string;
+    titleKey: string;
+    subtitleKey: string;
+  }
 > = {
   success: {
     icon: 'check-circle',
@@ -48,7 +54,9 @@ const RESULT_CONFIG: Record<
 };
 
 // Map transaction status to result status
-function getResultStatus(txnStatus?: TransactionStatus): 'success' | 'pending' | 'failed' {
+function getResultStatus(
+  txnStatus?: TransactionStatus
+): 'success' | 'pending' | 'failed' {
   switch (txnStatus) {
     case 'ESCROWED':
     case 'COMPLETED':
@@ -73,9 +81,9 @@ export default function PaymentResultScreen() {
   }>();
 
   const [transaction, setTransaction] = useState<ITransaction | null>(null);
-  const [resultStatus, setResultStatus] = useState<'success' | 'pending' | 'failed'>(
-    (initialStatus as any) ?? 'pending'
-  );
+  const [resultStatus, setResultStatus] = useState<
+    'success' | 'pending' | 'failed'
+  >((initialStatus as any) ?? 'pending');
   const [isPolling, setIsPolling] = useState(true);
   const [pollCount, setPollCount] = useState(0);
 
@@ -151,8 +159,14 @@ export default function PaymentResultScreen() {
 
         {/* Transaction Info */}
         {transaction && (
-          <View className="w-full bg-neutral-T100 rounded-2xl p-5 gap-3" style={styles.card}>
-            <InfoRow label={t('transaction.orderIdLabel')} value={`#${transaction._id.slice(-8)}`} />
+          <View
+            className="w-full bg-neutral-T100 rounded-2xl p-5 gap-3"
+            style={styles.card}
+          >
+            <InfoRow
+              label={t('transaction.orderIdLabel')}
+              value={`#${transaction._id.slice(-8)}`}
+            />
             {transaction.totalAmount != null && (
               <InfoRow
                 label={t('transaction.totalAmountLabel')}
@@ -160,7 +174,10 @@ export default function PaymentResultScreen() {
                 bold
               />
             )}
-            <InfoRow label={t('transaction.paymentMethodLabel')} value={transaction.paymentMethod} />
+            <InfoRow
+              label={t('transaction.paymentMethodLabel')}
+              value={transaction.paymentMethod}
+            />
             {transaction.verificationCode && resultStatus === 'success' && (
               <>
                 <View className="h-px bg-neutral-T90 my-1" />
@@ -204,7 +221,9 @@ export default function PaymentResultScreen() {
         <TouchableOpacity
           className="w-full bg-primary-T40 rounded-2xl items-center justify-center py-4"
           activeOpacity={0.85}
-          onPress={() => router.replace('/(transaction)/transaction-list' as any)}
+          onPress={() =>
+            router.replace('/(transaction)/transaction-list' as any)
+          }
         >
           <Text className="text-neutral-T100 font-sans font-bold text-base">
             {t('transaction.viewMyTransactionsBtn')}

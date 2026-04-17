@@ -25,7 +25,10 @@ import type {
 } from '@/lib/voucherApi';
 import { useAuthStore } from '@/stores/authStore';
 
-type SortLabel = 'voucher.sortNewest' | 'voucher.sortPointsAsc' | 'voucher.sortPointsDesc';
+type SortLabel =
+  | 'voucher.sortNewest'
+  | 'voucher.sortPointsAsc'
+  | 'voucher.sortPointsDesc';
 const SORT_OPTIONS: { label: SortLabel; value: VoucherSortOption }[] = [
   { label: 'voucher.sortNewest', value: 'newest' },
   { label: 'voucher.sortPointsAsc', value: 'pointCost_asc' },
@@ -89,7 +92,10 @@ export default function VoucherMarketScreen() {
       await redeemVoucherApi(selectedVoucher._id);
       setSelectedVoucher(null);
       await fetchProfile();
-      Alert.alert(t('voucher.redeemSuccessTitle'), t('voucher.redeemSuccessMsg'));
+      Alert.alert(
+        t('voucher.redeemSuccessTitle'),
+        t('voucher.redeemSuccessMsg')
+      );
       // Reload để cập nhật remainingQuantity
       loadVouchers();
     } catch (e) {
@@ -105,11 +111,15 @@ export default function VoucherMarketScreen() {
   };
 
   const currentSortLabel =
-    SORT_OPTIONS.find((o) => o.value === activeSort)?.label ?? 'voucher.sortNewest';
+    SORT_OPTIONS.find((o) => o.value === activeSort)?.label ??
+    'voucher.sortNewest';
 
   return (
     <View className="flex-1 bg-neutral">
-      <ManagementHeader title={t('voucher.marketTitle')} onBack={() => router.back()} />
+      <ManagementHeader
+        title={t('voucher.marketTitle')}
+        onBack={() => router.back()}
+      />
 
       {/* ── Points Widget ── */}
       {user && (
@@ -215,7 +225,9 @@ export default function VoucherMarketScreen() {
             <View className="items-center justify-center py-20 gap-3">
               <MaterialIcons name="local-offer" size={48} color="#C5C7C6" />
               <Text className="font-body text-sm text-neutral-T50 text-center">
-                {t('voucher.emptyMarketTitle')}{'\n'}{t('voucher.emptyMarketDesc')}
+                {t('voucher.emptyMarketTitle')}
+                {'\n'}
+                {t('voucher.emptyMarketDesc')}
               </Text>
             </View>
           }

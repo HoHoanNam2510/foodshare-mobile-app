@@ -124,7 +124,9 @@ export default function StoreVouchersScreen() {
             <View className="items-center justify-center py-20 gap-3">
               <MaterialIcons name="local-offer" size={48} color="#C5C7C6" />
               <Text className="font-body text-sm text-neutral-T50 text-center">
-                {t('voucher.emptyStoreVouchersTitle')}{'\n'}{t('voucher.emptyStoreVouchersDesc')}
+                {t('voucher.emptyStoreVouchersTitle')}
+                {'\n'}
+                {t('voucher.emptyStoreVouchersDesc')}
               </Text>
               <TouchableOpacity
                 onPress={() => router.push('/(voucher)/create-voucher' as any)}

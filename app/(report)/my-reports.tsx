@@ -16,38 +16,89 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ManagementHeader from '@/components/shared/headers/ManagementHeader';
-import { getMyReportsApi, type IReport, type ReportStatus, type ReportTargetType } from '@/lib/reportApi';
+import {
+  getMyReportsApi,
+  type IReport,
+  type ReportStatus,
+  type ReportTargetType,
+} from '@/lib/reportApi';
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
-const STATUS_CONFIG: Record<ReportStatus, { labelKey: string; bg: string; text: string; icon: string }> = {
-  PENDING:   { labelKey: 'report.statusPending',   bg: '#FEF9C3', text: '#A16207', icon: 'hourglass-empty' },
-  RESOLVED:  { labelKey: 'report.statusResolved',  bg: '#DCFCE7', text: '#15803D', icon: 'check-circle' },
-  DISMISSED: { labelKey: 'report.statusDismissed', bg: '#FEE2E2', text: '#DC2626', icon: 'cancel' },
-  WITHDRAWN: { labelKey: 'report.statusWithdrawn', bg: '#F3F4F6', text: '#6B7280', icon: 'undo' },
+const STATUS_CONFIG: Record<
+  ReportStatus,
+  { labelKey: string; bg: string; text: string; icon: string }
+> = {
+  PENDING: {
+    labelKey: 'report.statusPending',
+    bg: '#FEF9C3',
+    text: '#A16207',
+    icon: 'hourglass-empty',
+  },
+  RESOLVED: {
+    labelKey: 'report.statusResolved',
+    bg: '#DCFCE7',
+    text: '#15803D',
+    icon: 'check-circle',
+  },
+  DISMISSED: {
+    labelKey: 'report.statusDismissed',
+    bg: '#FEE2E2',
+    text: '#DC2626',
+    icon: 'cancel',
+  },
+  WITHDRAWN: {
+    labelKey: 'report.statusWithdrawn',
+    bg: '#F3F4F6',
+    text: '#6B7280',
+    icon: 'undo',
+  },
 };
 
-const TARGET_TYPE_CONFIG: Record<ReportTargetType, { labelKey: string; icon: string; bg: string; text: string }> = {
-  POST:        { labelKey: 'report.targetPost',        icon: 'article',        bg: '#EFF6FF', text: '#1D4ED8' },
-  USER:        { labelKey: 'report.targetUser',        icon: 'person',         bg: '#F5F3FF', text: '#7C3AED' },
-  TRANSACTION: { labelKey: 'report.targetTransaction', icon: 'receipt-long',   bg: '#FFF7ED', text: '#C2410C' },
-  REVIEW:      { labelKey: 'report.targetReview',      icon: 'star',           bg: '#FFFBEB', text: '#B45309' },
+const TARGET_TYPE_CONFIG: Record<
+  ReportTargetType,
+  { labelKey: string; icon: string; bg: string; text: string }
+> = {
+  POST: {
+    labelKey: 'report.targetPost',
+    icon: 'article',
+    bg: '#EFF6FF',
+    text: '#1D4ED8',
+  },
+  USER: {
+    labelKey: 'report.targetUser',
+    icon: 'person',
+    bg: '#F5F3FF',
+    text: '#7C3AED',
+  },
+  TRANSACTION: {
+    labelKey: 'report.targetTransaction',
+    icon: 'receipt-long',
+    bg: '#FFF7ED',
+    text: '#C2410C',
+  },
+  REVIEW: {
+    labelKey: 'report.targetReview',
+    icon: 'star',
+    bg: '#FFFBEB',
+    text: '#B45309',
+  },
 };
 
 const REASON_LABEL_KEY: Record<string, string> = {
-  FOOD_SAFETY:           'report.reasonFoodSafetyLabel',
-  SCAM:                  'report.reasonScamLabel',
+  FOOD_SAFETY: 'report.reasonFoodSafetyLabel',
+  SCAM: 'report.reasonScamLabel',
   INAPPROPRIATE_CONTENT: 'report.reasonInappropriateLabel',
-  NO_SHOW:               'report.reasonNoShowLabel',
-  OTHER:                 'report.reasonOtherLabel',
+  NO_SHOW: 'report.reasonNoShowLabel',
+  OTHER: 'report.reasonOtherLabel',
 };
 
 type FilterTab = 'ALL' | ReportStatus;
 
 const FILTER_TAB_KEYS: { key: FilterTab; labelKey: string }[] = [
-  { key: 'ALL',       labelKey: 'report.filterAll' },
-  { key: 'PENDING',   labelKey: 'report.statusPending' },
-  { key: 'RESOLVED',  labelKey: 'report.statusResolved' },
+  { key: 'ALL', labelKey: 'report.filterAll' },
+  { key: 'PENDING', labelKey: 'report.statusPending' },
+  { key: 'RESOLVED', labelKey: 'report.statusResolved' },
   { key: 'DISMISSED', labelKey: 'report.statusDismissed' },
   { key: 'WITHDRAWN', labelKey: 'report.statusWithdrawn' },
 ];
@@ -68,17 +119,30 @@ function StatusBadge({ status }: { status: ReportStatus }) {
   const { t } = useTranslation();
   const cfg = STATUS_CONFIG[status];
   return (
-    <View style={[styles.badge, { backgroundColor: cfg.bg }]} className="flex-row items-center gap-1">
+    <View
+      style={[styles.badge, { backgroundColor: cfg.bg }]}
+      className="flex-row items-center gap-1"
+    >
       <MaterialIcons name={cfg.icon as any} size={11} color={cfg.text} />
-      <Text style={[styles.badgeText, { color: cfg.text }]}>{t(cfg.labelKey).toUpperCase()}</Text>
+      <Text style={[styles.badgeText, { color: cfg.text }]}>
+        {t(cfg.labelKey).toUpperCase()}
+      </Text>
     </View>
   );
 }
 
-function ReportCard({ report, onPress }: { report: IReport; onPress: () => void }) {
+function ReportCard({
+  report,
+  onPress,
+}: {
+  report: IReport;
+  onPress: () => void;
+}) {
   const { t } = useTranslation();
   const targetCfg = TARGET_TYPE_CONFIG[report.targetType];
-  const reasonLabel = REASON_LABEL_KEY[report.reason] ? t(REASON_LABEL_KEY[report.reason]) : report.reason;
+  const reasonLabel = REASON_LABEL_KEY[report.reason]
+    ? t(REASON_LABEL_KEY[report.reason])
+    : report.reason;
   const isDismissed = report.status === 'DISMISSED';
 
   return (
@@ -96,8 +160,15 @@ function ReportCard({ report, onPress }: { report: IReport; onPress: () => void 
             className="flex-row items-center gap-1.5 px-2.5 py-1 rounded-lg"
             style={{ backgroundColor: targetCfg.bg }}
           >
-            <MaterialIcons name={targetCfg.icon as any} size={13} color={targetCfg.text} />
-            <Text className="font-label font-semibold text-xs" style={{ color: targetCfg.text }}>
+            <MaterialIcons
+              name={targetCfg.icon as any}
+              size={13}
+              color={targetCfg.text}
+            />
+            <Text
+              className="font-label font-semibold text-xs"
+              style={{ color: targetCfg.text }}
+            >
               {t(targetCfg.labelKey)}
             </Text>
           </View>
@@ -112,7 +183,10 @@ function ReportCard({ report, onPress }: { report: IReport; onPress: () => void 
           >
             {reasonLabel}
           </Text>
-          <Text className="font-body text-xs text-neutral-T50" numberOfLines={2}>
+          <Text
+            className="font-body text-xs text-neutral-T50"
+            numberOfLines={2}
+          >
             {report.description}
           </Text>
         </View>
@@ -147,7 +221,9 @@ function ReportCard({ report, onPress }: { report: IReport; onPress: () => void 
               className="font-label font-semibold text-xs"
               style={{ color: isDismissed ? '#DC2626' : '#15803D' }}
             >
-              {isDismissed ? t('report.dismissedReasonLabel') : t('report.resolvedResultLabel')}
+              {isDismissed
+                ? t('report.dismissedReasonLabel')
+                : t('report.resolvedResultLabel')}
             </Text>
           </View>
           <Text
@@ -171,7 +247,9 @@ function ReportCard({ report, onPress }: { report: IReport; onPress: () => void 
 
       {/* Tap hint */}
       <View className="mx-4 mb-3 flex-row items-center justify-end gap-1">
-        <Text className="font-body text-xs text-neutral-T70">{t('report.viewDetailHint')}</Text>
+        <Text className="font-body text-xs text-neutral-T70">
+          {t('report.viewDetailHint')}
+        </Text>
         <MaterialIcons name="chevron-right" size={14} color="#AAABAB" />
       </View>
     </TouchableOpacity>
@@ -180,12 +258,35 @@ function ReportCard({ report, onPress }: { report: IReport; onPress: () => void 
 
 function EmptyState({ filter }: { filter: FilterTab }) {
   const { t } = useTranslation();
-  const msgs: Record<FilterTab, { icon: string; titleKey: string; bodyKey: string }> = {
-    ALL:       { icon: 'flag',            titleKey: 'report.emptyAllTitle',      bodyKey: 'report.emptyAllBody' },
-    PENDING:   { icon: 'hourglass-empty', titleKey: 'report.emptyPendingTitle',  bodyKey: 'report.emptyPendingBody' },
-    RESOLVED:  { icon: 'check-circle',    titleKey: 'report.emptyResolvedTitle', bodyKey: '' },
-    DISMISSED: { icon: 'cancel',          titleKey: 'report.emptyDismissedTitle',bodyKey: '' },
-    WITHDRAWN: { icon: 'undo',            titleKey: 'report.emptyWithdrawnTitle',bodyKey: '' },
+  const msgs: Record<
+    FilterTab,
+    { icon: string; titleKey: string; bodyKey: string }
+  > = {
+    ALL: {
+      icon: 'flag',
+      titleKey: 'report.emptyAllTitle',
+      bodyKey: 'report.emptyAllBody',
+    },
+    PENDING: {
+      icon: 'hourglass-empty',
+      titleKey: 'report.emptyPendingTitle',
+      bodyKey: 'report.emptyPendingBody',
+    },
+    RESOLVED: {
+      icon: 'check-circle',
+      titleKey: 'report.emptyResolvedTitle',
+      bodyKey: '',
+    },
+    DISMISSED: {
+      icon: 'cancel',
+      titleKey: 'report.emptyDismissedTitle',
+      bodyKey: '',
+    },
+    WITHDRAWN: {
+      icon: 'undo',
+      titleKey: 'report.emptyWithdrawnTitle',
+      bodyKey: '',
+    },
   };
   const cfg = msgs[filter];
   return (
@@ -193,9 +294,13 @@ function EmptyState({ filter }: { filter: FilterTab }) {
       <View className="w-16 h-16 rounded-2xl bg-primary-T95 items-center justify-center">
         <MaterialIcons name={cfg.icon as any} size={28} color="#296C24" />
       </View>
-      <Text className="font-sans font-bold text-base text-neutral-T10 text-center">{t(cfg.titleKey)}</Text>
+      <Text className="font-sans font-bold text-base text-neutral-T10 text-center">
+        {t(cfg.titleKey)}
+      </Text>
       {cfg.bodyKey ? (
-        <Text className="font-body text-sm text-neutral-T50 text-center leading-5">{t(cfg.bodyKey)}</Text>
+        <Text className="font-body text-sm text-neutral-T50 text-center leading-5">
+          {t(cfg.bodyKey)}
+        </Text>
       ) : null}
     </View>
   );
@@ -233,16 +338,24 @@ export default function MyReportsScreen() {
     load();
   }, [load]);
 
-  const filtered = activeTab === 'ALL'
-    ? reports
-    : reports.filter((r) => r.status === activeTab);
+  const filtered =
+    activeTab === 'ALL'
+      ? reports
+      : reports.filter((r) => r.status === activeTab);
 
   const dismissedCount = reports.filter((r) => r.status === 'DISMISSED').length;
 
   return (
     <View className="flex-1 bg-neutral">
-      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-      <ManagementHeader title={t('report.myReportsTitle')} onBack={() => router.back()} />
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="transparent"
+        translucent
+      />
+      <ManagementHeader
+        title={t('report.myReportsTitle')}
+        onBack={() => router.back()}
+      />
 
       {/* ── Filter tabs ── */}
       <View className="mx-4 mt-4 mb-3 bg-neutral-T95 rounded-xl p-1 flex-row">
@@ -277,17 +390,23 @@ export default function MyReportsScreen() {
       {isLoading ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-sm text-neutral-T50">{t('common.loading')}</Text>
+          <Text className="font-body text-sm text-neutral-T50">
+            {t('common.loading')}
+          </Text>
         </View>
       ) : error ? (
         <View className="flex-1 items-center justify-center px-8 gap-4">
-          <Text className="font-body text-sm text-neutral-T50 text-center">{error}</Text>
+          <Text className="font-body text-sm text-neutral-T50 text-center">
+            {error}
+          </Text>
           <TouchableOpacity
             onPress={() => load()}
             className="px-6 py-3 bg-primary-T40 rounded-xl"
             activeOpacity={0.85}
           >
-            <Text className="font-label font-semibold text-neutral-T100">{t('common.retry')}</Text>
+            <Text className="font-label font-semibold text-neutral-T100">
+              {t('common.retry')}
+            </Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -295,16 +414,16 @@ export default function MyReportsScreen() {
           data={filtered}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
-              <ReportCard
-                report={item}
-                onPress={() =>
-                  router.push({
-                    pathname: '/(report)/report-detail',
-                    params: { reportJson: JSON.stringify(item) },
-                  } as any)
-                }
-              />
-            )}
+            <ReportCard
+              report={item}
+              onPress={() =>
+                router.push({
+                  pathname: '/(report)/report-detail',
+                  params: { reportJson: JSON.stringify(item) },
+                } as any)
+              }
+            />
+          )}
           ListEmptyComponent={<EmptyState filter={activeTab} />}
           refreshControl={
             <RefreshControl
@@ -313,7 +432,11 @@ export default function MyReportsScreen() {
               tintColor="#296C24"
             />
           }
-          contentContainerStyle={{ paddingTop: 4, paddingBottom: 40, flexGrow: 1 }}
+          contentContainerStyle={{
+            paddingTop: 4,
+            paddingBottom: 40,
+            flexGrow: 1,
+          }}
           showsVerticalScrollIndicator={false}
         />
       )}

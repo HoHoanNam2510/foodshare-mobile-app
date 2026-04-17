@@ -60,9 +60,7 @@ export default function RegisterScreen() {
       setShowVerifyModal(true);
     } catch (error) {
       const message =
-        error instanceof Error
-          ? error.message
-          : t('errors.tryAgain');
+        error instanceof Error ? error.message : t('errors.tryAgain');
       Alert.alert(t('auth.registerFailed'), message);
     }
   };

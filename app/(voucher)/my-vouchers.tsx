@@ -34,17 +34,20 @@ export default function MyVouchersScreen() {
   const [userVouchers, setUserVouchers] = useState<IUserVoucher[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const loadVouchers = useCallback(async (status: VoucherStatusFilter) => {
-    setIsLoading(true);
-    try {
-      const res = await getMyVouchersApi({ status });
-      setUserVouchers(res.data);
-    } catch (e) {
-      Alert.alert(t('voucher.errorAlert'), t('voucher.loadWalletError'));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [t]);
+  const loadVouchers = useCallback(
+    async (status: VoucherStatusFilter) => {
+      setIsLoading(true);
+      try {
+        const res = await getMyVouchersApi({ status });
+        setUserVouchers(res.data);
+      } catch (e) {
+        Alert.alert(t('voucher.errorAlert'), t('voucher.loadWalletError'));
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [t]
+  );
 
   // Refresh khi focus (VD: vừa đổi voucher từ market)
   useFocusEffect(
@@ -123,7 +126,8 @@ export default function MyVouchersScreen() {
             <View className="items-center justify-center py-20 gap-3">
               <MaterialIcons name="wallet" size={48} color="#C5C7C6" />
               <Text className="font-body text-sm text-neutral-T50 text-center">
-                {t('voucher.emptyWalletTitle')}{'\n'}
+                {t('voucher.emptyWalletTitle')}
+                {'\n'}
                 {t('voucher.emptyWalletDesc')}
               </Text>
               <TouchableOpacity

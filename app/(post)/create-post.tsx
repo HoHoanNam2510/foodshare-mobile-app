@@ -73,7 +73,9 @@ export default function CreatePost() {
   const [pickerMode, setPickerMode] = useState<PickerMode>('time');
 
   // ── Location state ──
-  const [pickedLocation, setPickedLocation] = useState<PickedLocation | null>(null);
+  const [pickedLocation, setPickedLocation] = useState<PickedLocation | null>(
+    null
+  );
   const [showLocationPicker, setShowLocationPicker] = useState(false);
 
   // ── Passcode / submit state ──
@@ -113,13 +115,25 @@ export default function CreatePost() {
     if (!selected) return;
     if (activePicker === 'pickupStart') {
       setPickupStart(selected);
-      if (fieldErrors.pickupTime) setFieldErrors((e) => { const { pickupTime: _, ...rest } = e; return rest; });
+      if (fieldErrors.pickupTime)
+        setFieldErrors((e) => {
+          const { pickupTime: _, ...rest } = e;
+          return rest;
+        });
     } else if (activePicker === 'pickupEnd') {
       setPickupEnd(selected);
-      if (fieldErrors.pickupTime) setFieldErrors((e) => { const { pickupTime: _, ...rest } = e; return rest; });
+      if (fieldErrors.pickupTime)
+        setFieldErrors((e) => {
+          const { pickupTime: _, ...rest } = e;
+          return rest;
+        });
     } else if (activePicker === 'expiryDate') {
       setExpiryDate(selected);
-      if (fieldErrors.expiryDate) setFieldErrors((e) => { const { expiryDate: _, ...rest } = e; return rest; });
+      if (fieldErrors.expiryDate)
+        setFieldErrors((e) => {
+          const { expiryDate: _, ...rest } = e;
+          return rest;
+        });
     }
   };
 
@@ -131,7 +145,10 @@ export default function CreatePost() {
         setDeliveryMethod(res.data.deliveryMethod);
         return true;
       }
-      Alert.alert(t('common.error'), res.message || t('post.errorSendPasscode'));
+      Alert.alert(
+        t('common.error'),
+        res.message || t('post.errorSendPasscode')
+      );
       return false;
     } catch (error) {
       const message =
@@ -317,7 +334,11 @@ export default function CreatePost() {
               images={images}
               onImagesChange={(imgs) => {
                 setImages(imgs);
-                if (fieldErrors.images) setFieldErrors((e) => { const { images: _, ...rest } = e; return rest; });
+                if (fieldErrors.images)
+                  setFieldErrors((e) => {
+                    const { images: _, ...rest } = e;
+                    return rest;
+                  });
               }}
             />
             {fieldErrors.images && (
@@ -349,7 +370,11 @@ export default function CreatePost() {
                 value={title}
                 onChangeText={(text) => {
                   setTitle(text);
-                  if (fieldErrors.title) setFieldErrors((e) => { const { title: _, ...rest } = e; return rest; });
+                  if (fieldErrors.title)
+                    setFieldErrors((e) => {
+                      const { title: _, ...rest } = e;
+                      return rest;
+                    });
                 }}
               />
               {fieldErrors.title && (
@@ -393,16 +418,24 @@ export default function CreatePost() {
                       value={price}
                       onChangeText={(p) => {
                         setPrice(p);
-                        if (fieldErrors.price) setFieldErrors((e) => { const { price: _, ...rest } = e; return rest; });
+                        if (fieldErrors.price)
+                          setFieldErrors((e) => {
+                            const { price: _, ...rest } = e;
+                            return rest;
+                          });
                       }}
                     />
                     <Text className="absolute right-4 font-label font-semibold text-neutral-T50 z-10">
                       ₫
                     </Text>
                   </View>
-                  {fieldErrors.price && (
+                  {fieldErrors.price ? (
                     <Text className="text-xs text-red-500 font-label ml-1">
                       {fieldErrors.price}
+                    </Text>
+                  ) : (
+                    <Text className="text-xs text-neutral-T50 font-label ml-1">
+                      {t('post.unitPriceHint')}
                     </Text>
                   )}
                 </View>
@@ -417,9 +450,15 @@ export default function CreatePost() {
           </View>
 
           {/* ── Khung giờ nhận hàng ── */}
-          <View className={`rounded-2xl p-6 gap-4 mb-6 ${fieldErrors.pickupTime ? 'bg-red-50 border border-red-500' : 'bg-neutral-T95'}`}>
+          <View
+            className={`rounded-2xl p-6 gap-4 mb-6 ${fieldErrors.pickupTime ? 'bg-red-50 border border-red-500' : 'bg-neutral-T95'}`}
+          >
             <View className="flex-row items-center gap-2">
-              <MaterialIcons name="schedule" size={20} color={fieldErrors.pickupTime ? '#EF4444' : '#296C24'} />
+              <MaterialIcons
+                name="schedule"
+                size={20}
+                color={fieldErrors.pickupTime ? '#EF4444' : '#296C24'}
+              />
               <Text className="font-sans font-bold text-base text-neutral-T10">
                 {t('post.pickupWindow')}
               </Text>
@@ -492,7 +531,11 @@ export default function CreatePost() {
               onPress={() => setShowLocationPicker(true)}
             >
               <View className="flex-row items-center gap-2 flex-1">
-                <MaterialIcons name="location-on" size={20} color={pickedLocation ? '#296C24' : '#AAABAB'} />
+                <MaterialIcons
+                  name="location-on"
+                  size={20}
+                  color={pickedLocation ? '#296C24' : '#AAABAB'}
+                />
                 <Text
                   className="font-body text-sm flex-1"
                   style={{ color: pickedLocation ? '#2B2C2C' : '#AAABAB' }}
