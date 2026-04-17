@@ -58,6 +58,7 @@ export default function PostDetailScreen() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isChatting, setIsChatting] = useState(false);
+  const [selectedQuantity, setSelectedQuantity] = useState(1);
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -66,6 +67,7 @@ export default function PostDetailScreen() {
     try {
       const res = await getPostByIdApi(id);
       setPost(res.data);
+      setSelectedQuantity(1); // reset on reload
     } catch (e) {
       setError(e instanceof Error ? e.message : t('post.errorLoad'));
     } finally {
@@ -85,20 +87,19 @@ export default function PostDetailScreen() {
     if (!post) return;
     setIsSubmitting(true);
     try {
-      await createRequestApi(post._id, 1);
-      Alert.alert(
-        t('post.requestSent'),
-        t('post.requestSentMsg'),
-        [
-          {
-            text: t('post.viewTransaction'),
-            onPress: () => router.push('/(transaction)/transaction-list' as any),
-          },
-          { text: 'OK', style: 'cancel' },
-        ]
-      );
+      await createRequestApi(post._id, selectedQuantity);
+      Alert.alert(t('post.requestSent'), t('post.requestSentMsg'), [
+        {
+          text: t('post.viewTransaction'),
+          onPress: () => router.push('/(transaction)/transaction-list' as any),
+        },
+        { text: 'OK', style: 'cancel' },
+      ]);
     } catch (e) {
-      Alert.alert(t('common.error'), e instanceof Error ? e.message : t('post.errorRequest'));
+      Alert.alert(
+        t('common.error'),
+        e instanceof Error ? e.message : t('post.errorRequest')
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -114,27 +115,26 @@ export default function PostDetailScreen() {
 
   const handleDeletePost = () => {
     if (!post) return;
-    Alert.alert(
-      t('post.confirmDeleteTitle'),
-      t('post.confirmDeleteMsg'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('common.delete'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await deletePostApi(post._id);
-              Alert.alert(t('common.success'), t('post.deleteSuccess'), [
-                { text: 'OK', onPress: () => router.back() },
-              ]);
-            } catch (e) {
-              Alert.alert(t('common.error'), e instanceof Error ? e.message : t('post.errorLoad'));
-            }
-          },
+    Alert.alert(t('post.confirmDeleteTitle'), t('post.confirmDeleteMsg'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('common.delete'),
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await deletePostApi(post._id);
+            Alert.alert(t('common.success'), t('post.deleteSuccess'), [
+              { text: 'OK', onPress: () => router.back() },
+            ]);
+          } catch (e) {
+            Alert.alert(
+              t('common.error'),
+              e instanceof Error ? e.message : t('post.errorLoad')
+            );
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handleChat = async () => {
@@ -161,10 +161,9 @@ export default function PostDetailScreen() {
 
   const handleBuyNow = () => {
     if (!post) return;
-    // Navigate to dedicated payment screen with method selection + payment flow
     router.push({
       pathname: '/(transaction)/payment',
-      params: { postId: post._id, quantity: '1' },
+      params: { postId: post._id, quantity: selectedQuantity.toString() },
     } as any);
   };
 
@@ -178,9 +177,14 @@ export default function PostDetailScreen() {
   // ── Loading ──
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-neutral items-center justify-center" edges={['top']}>
+      <SafeAreaView
+        className="flex-1 bg-neutral items-center justify-center"
+        edges={['top']}
+      >
         <ActivityIndicator size="large" color="#296C24" />
-        <Text className="font-body text-sm text-neutral-T50 mt-3">{t('common.loading')}</Text>
+        <Text className="font-body text-sm text-neutral-T50 mt-3">
+          {t('common.loading')}
+        </Text>
       </SafeAreaView>
     );
   }
@@ -188,7 +192,10 @@ export default function PostDetailScreen() {
   // ── Error ──
   if (error || !post) {
     return (
-      <SafeAreaView className="flex-1 bg-neutral items-center justify-center px-8 gap-4" edges={['top']}>
+      <SafeAreaView
+        className="flex-1 bg-neutral items-center justify-center px-8 gap-4"
+        edges={['top']}
+      >
         <Text className="font-body text-sm text-neutral-T50 text-center">
           {error ?? t('errors.notFound')}
         </Text>
@@ -197,7 +204,9 @@ export default function PostDetailScreen() {
           className="px-6 py-3 bg-primary-T40 rounded-xl"
           activeOpacity={0.85}
         >
-          <Text className="font-label font-semibold text-neutral-T100">{t('common.retry')}</Text>
+          <Text className="font-label font-semibold text-neutral-T100">
+            {t('common.retry')}
+          </Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -237,13 +246,19 @@ export default function PostDetailScreen() {
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100 }}
+        contentContainerStyle={{
+          paddingBottom: isAvailable && !isOwnPost ? (!isP2P ? 200 : 160) : 110,
+        }}
       >
         {/* ─── Hero Image ─── */}
         <View className="relative">
           <View className="w-full aspect-[4/3] bg-neutral-T90 overflow-hidden">
             {thumb ? (
-              <Image source={{ uri: thumb }} className="w-full h-full" resizeMode="cover" />
+              <Image
+                source={{ uri: thumb }}
+                className="w-full h-full"
+                resizeMode="cover"
+              />
             ) : (
               <View className="w-full h-full items-center justify-center">
                 <MaterialIcons name="fastfood" size={48} color="#AAABAB" />
@@ -255,10 +270,15 @@ export default function PostDetailScreen() {
           <View className="absolute -bottom-4 left-5 flex-row items-center gap-2 z-10">
             <View
               className="px-3 py-1.5 rounded-lg"
-              style={[styles.badge, { backgroundColor: isP2P ? '#296C24' : '#944A00' }]}
+              style={[
+                styles.badge,
+                { backgroundColor: isP2P ? '#296C24' : '#944A00' },
+              ]}
             >
               <Text className="text-neutral-T100 font-label font-bold text-xs tracking-wider uppercase">
-                {isP2P ? t('common.free') : `${post.price.toLocaleString('vi-VN')}đ`}
+                {isP2P
+                  ? t('common.free')
+                  : `${post.price.toLocaleString('vi-VN')}đ`}
               </Text>
             </View>
             <View
@@ -266,14 +286,21 @@ export default function PostDetailScreen() {
               style={styles.badge}
             >
               <Text className="text-primary-T30 font-label font-bold text-xs tracking-wider uppercase">
-                {post.status === 'AVAILABLE' ? t('post.available') : post.status === 'BOOKED' ? t('post.reserved') : post.status}
+                {post.status === 'AVAILABLE'
+                  ? t('post.available')
+                  : post.status === 'BOOKED'
+                    ? t('post.reserved')
+                    : post.status}
               </Text>
             </View>
           </View>
         </View>
 
         {/* ─── Content Card ─── */}
-        <View className="mx-4 mt-8 bg-neutral-T100 rounded-2xl overflow-hidden" style={styles.card}>
+        <View
+          className="mx-4 mt-8 bg-neutral-T100 rounded-2xl overflow-hidden"
+          style={styles.card}
+        >
           {/* Title + Meta */}
           <View className="px-5 pt-6 pb-4">
             <Text className="font-sans font-extrabold text-3xl leading-[34px] tracking-tight text-neutral-T10">
@@ -285,7 +312,10 @@ export default function PostDetailScreen() {
               </Text>
               <View className="w-1 h-1 rounded-full bg-neutral-T70" />
               <Text className="font-label text-xs text-neutral-T50 font-semibold uppercase tracking-wider">
-                {t('post.remainingCount', { remaining: post.remainingQuantity, total: post.totalQuantity })}
+                {t('post.remainingCount', {
+                  remaining: post.remainingQuantity,
+                  total: post.totalQuantity,
+                })}
               </Text>
             </View>
           </View>
@@ -303,7 +333,10 @@ export default function PostDetailScreen() {
                   style={styles.avatar}
                 />
               ) : (
-                <View className="w-11 h-11 rounded-full bg-primary-T95 items-center justify-center" style={styles.avatar}>
+                <View
+                  className="w-11 h-11 rounded-full bg-primary-T95 items-center justify-center"
+                  style={styles.avatar}
+                >
                   <MaterialIcons name="person" size={22} color="#296C24" />
                 </View>
               )}
@@ -342,7 +375,10 @@ export default function PostDetailScreen() {
         {/* ─── Info Cards ─── */}
         <View className="mx-4 mt-3 gap-3">
           {/* Pickup Window */}
-          <View className="bg-neutral-T100 rounded-2xl px-5 py-4 flex-row items-center gap-4" style={styles.card}>
+          <View
+            className="bg-neutral-T100 rounded-2xl px-5 py-4 flex-row items-center gap-4"
+            style={styles.card}
+          >
             <View className="w-10 h-10 rounded-xl bg-primary-T95 items-center justify-center">
               <MaterialIcons name="schedule" size={20} color="#296C24" />
             </View>
@@ -357,7 +393,10 @@ export default function PostDetailScreen() {
           </View>
 
           {/* Expiry */}
-          <View className="bg-neutral-T100 rounded-2xl px-5 py-4 flex-row items-center gap-4" style={styles.card}>
+          <View
+            className="bg-neutral-T100 rounded-2xl px-5 py-4 flex-row items-center gap-4"
+            style={styles.card}
+          >
             <View className="w-10 h-10 rounded-xl bg-secondary-T95 items-center justify-center">
               <MaterialIcons name="timer" size={20} color="#944A00" />
             </View>
@@ -433,71 +472,178 @@ export default function PostDetailScreen() {
               {isChatting ? (
                 <ActivityIndicator color="#296C24" />
               ) : (
-                <MaterialIcons name="chat-bubble-outline" size={22} color="#296C24" />
+                <MaterialIcons
+                  name="chat-bubble-outline"
+                  size={22}
+                  color="#296C24"
+                />
               )}
             </TouchableOpacity>
           </View>
         ) : isP2P ? (
-          // P2P — Request Item + Chat
-          <View className="flex-row gap-3 w-full">
-            <TouchableOpacity
-              className="flex-1 bg-primary-T40 rounded-2xl items-center justify-center py-4"
-              activeOpacity={0.85}
-              onPress={handleRequestItem}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text className="text-neutral-T100 font-sans font-black text-lg tracking-tight uppercase">
-                  {t('post.requestItem')}
+          // P2P — Quantity selector + Request Item + Chat
+          <View className="gap-3 w-full">
+            {/* Quantity selector row */}
+            <View className="flex-row items-center justify-between px-1">
+              <View className="flex-row items-center gap-2">
+                <Text className="font-label text-sm font-semibold text-neutral-T30">
+                  {t('post.selectQty')}
                 </Text>
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleChat}
-              disabled={isChatting}
-              activeOpacity={0.85}
-              className="w-14 bg-primary-T95 rounded-2xl items-center justify-center"
-            >
-              {isChatting ? (
-                <ActivityIndicator color="#296C24" />
-              ) : (
-                <MaterialIcons name="chat-bubble-outline" size={22} color="#296C24" />
-              )}
-            </TouchableOpacity>
+                <Text className="font-label text-xs text-neutral-T70">
+                  ({t('post.maxQty', { max: post.remainingQuantity })})
+                </Text>
+              </View>
+              <View className="flex-row items-center gap-3">
+                <TouchableOpacity
+                  onPress={() => setSelectedQuantity((q) => Math.max(1, q - 1))}
+                  activeOpacity={0.7}
+                  className="w-9 h-9 rounded-xl bg-neutral-T90 items-center justify-center"
+                >
+                  <MaterialIcons name="remove" size={18} color="#5C5F5E" />
+                </TouchableOpacity>
+                <Text className="font-sans font-bold text-lg text-neutral-T10 w-7 text-center">
+                  {selectedQuantity}
+                </Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    setSelectedQuantity((q) =>
+                      Math.min(post.remainingQuantity, q + 1)
+                    )
+                  }
+                  activeOpacity={0.7}
+                  className="w-9 h-9 rounded-xl bg-neutral-T90 items-center justify-center"
+                >
+                  <MaterialIcons name="add" size={18} color="#5C5F5E" />
+                </TouchableOpacity>
+              </View>
+            </View>
+            {/* Action buttons */}
+            <View className="flex-row gap-3">
+              <TouchableOpacity
+                className="flex-1 bg-primary-T40 rounded-2xl items-center justify-center py-4"
+                activeOpacity={0.85}
+                onPress={handleRequestItem}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text className="text-neutral-T100 font-sans font-black text-lg tracking-tight uppercase">
+                    {t('post.requestItem')}
+                  </Text>
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleChat}
+                disabled={isChatting}
+                activeOpacity={0.85}
+                className="w-14 bg-primary-T95 rounded-2xl items-center justify-center"
+              >
+                {isChatting ? (
+                  <ActivityIndicator color="#296C24" />
+                ) : (
+                  <MaterialIcons
+                    name="chat-bubble-outline"
+                    size={22}
+                    color="#296C24"
+                  />
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
         ) : (
-          // B2C — Buy Now + Chat
-          <View className="flex-row gap-3 w-full">
-            <TouchableOpacity
-              className="flex-1 rounded-2xl items-center justify-center py-4"
-              activeOpacity={0.85}
-              onPress={handleBuyNow}
-              disabled={isSubmitting}
-              style={styles.buyBtn}
-            >
-              {isSubmitting ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text className="text-neutral-T100 font-sans font-black text-lg tracking-tight uppercase">
-                  {t('post.buyNow', { price: post.price.toLocaleString('vi-VN') })}
+          // B2C — Quantity selector + price breakdown + Buy Now + Chat
+          <View className="gap-3 w-full">
+            {/* Quantity selector + price breakdown */}
+            <View className="flex-row items-center justify-between px-1">
+              <View className="flex-row items-center gap-2">
+                <Text className="font-label text-sm font-semibold text-neutral-T30">
+                  {t('post.selectQty')}
                 </Text>
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleChat}
-              disabled={isChatting}
-              activeOpacity={0.85}
-              className="w-14 rounded-2xl items-center justify-center"
-              style={{ backgroundColor: 'rgba(148,74,0,0.1)' }}
-            >
-              {isChatting ? (
-                <ActivityIndicator color="#944A00" />
-              ) : (
-                <MaterialIcons name="chat-bubble-outline" size={22} color="#944A00" />
-              )}
-            </TouchableOpacity>
+                <Text className="font-label text-xs text-neutral-T70">
+                  ({t('post.maxQty', { max: post.remainingQuantity })})
+                </Text>
+              </View>
+              <View className="flex-row items-center gap-3">
+                <TouchableOpacity
+                  onPress={() => setSelectedQuantity((q) => Math.max(1, q - 1))}
+                  activeOpacity={0.7}
+                  className="w-9 h-9 rounded-xl bg-neutral-T90 items-center justify-center"
+                >
+                  <MaterialIcons name="remove" size={18} color="#5C5F5E" />
+                </TouchableOpacity>
+                <Text className="font-sans font-bold text-lg text-neutral-T10 w-7 text-center">
+                  {selectedQuantity}
+                </Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    setSelectedQuantity((q) =>
+                      Math.min(post.remainingQuantity, q + 1)
+                    )
+                  }
+                  activeOpacity={0.7}
+                  className="w-9 h-9 rounded-xl bg-neutral-T90 items-center justify-center"
+                >
+                  <MaterialIcons name="add" size={18} color="#5C5F5E" />
+                </TouchableOpacity>
+              </View>
+            </View>
+            {/* Price summary row */}
+            <View className="flex-row items-center justify-between px-1">
+              <Text className="font-label text-sm text-neutral-T50">
+                {t('post.unitPrice')}:{' '}
+                <Text className="text-neutral-T30 font-semibold">
+                  {post.price.toLocaleString('vi-VN')}đ
+                </Text>
+                {'  ×  '}
+                <Text className="text-neutral-T30 font-semibold">
+                  {selectedQuantity}
+                </Text>
+              </Text>
+              <Text className="font-sans font-extrabold text-base text-secondary-T20">
+                {t('post.totalPrice')}:{' '}
+                {(post.price * selectedQuantity).toLocaleString('vi-VN')}đ
+              </Text>
+            </View>
+            {/* Action buttons */}
+            <View className="flex-row gap-3">
+              <TouchableOpacity
+                className="flex-1 rounded-2xl items-center justify-center py-4"
+                activeOpacity={0.85}
+                onPress={handleBuyNow}
+                disabled={isSubmitting}
+                style={styles.buyBtn}
+              >
+                {isSubmitting ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text className="text-neutral-T100 font-sans font-black text-lg tracking-tight uppercase">
+                    {t('post.buyNow', {
+                      price: (post.price * selectedQuantity).toLocaleString(
+                        'vi-VN'
+                      ),
+                    })}
+                  </Text>
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleChat}
+                disabled={isChatting}
+                activeOpacity={0.85}
+                className="w-14 rounded-2xl items-center justify-center"
+                style={{ backgroundColor: 'rgba(148,74,0,0.1)' }}
+              >
+                {isChatting ? (
+                  <ActivityIndicator color="#944A00" />
+                ) : (
+                  <MaterialIcons
+                    name="chat-bubble-outline"
+                    size={22}
+                    color="#944A00"
+                  />
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
         )}
       </View>
