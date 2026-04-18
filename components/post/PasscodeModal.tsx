@@ -94,18 +94,20 @@ export default function PasscodeModal({
       visible={visible}
       transparent
       animationType="slide"
+      statusBarTranslucent
       onRequestClose={handleCancel}
     >
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
-      <Pressable
-        className="flex-1 justify-end"
-        style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}
-        onPress={handleCancel}
-      >
-        <Pressable onPress={(e) => e.stopPropagation()}>
+      <View style={{ flex: 1 }}>
+        {/* Backdrop — taps outside to dismiss */}
+        <Pressable
+          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' }}
+          onPress={handleCancel}
+        />
+
+        {/* Sheet sits at the bottom, KAV only wraps the sheet */}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
           <View
             className="bg-neutral-T100 rounded-t-3xl px-8 pt-8 gap-6"
             style={{ paddingBottom: Math.max(insets.bottom, 24) + 16 }}
@@ -173,9 +175,8 @@ export default function PasscodeModal({
               </TouchableOpacity>
             </View>
           </View>
-        </Pressable>
-      </Pressable>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </View>
     </Modal>
   );
 }
