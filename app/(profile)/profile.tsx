@@ -4,10 +4,12 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Modal,
   Pressable,
   ScrollView,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -24,6 +26,7 @@ import VerificationCard from '@/components/profile/VerificationCard';
 import { useAuthStore } from '@/stores/authStore';
 import type { IBadge } from '@/lib/badgeApi';
 import { getMyPostsApi } from '@/lib/postApi';
+import { deleteAccountApi } from '@/lib/profileApi';
 import { getBadgeCatalogApi } from '@/lib/badgeApi';
 
 // ─── MAIN COMPONENT ───
@@ -32,10 +35,15 @@ export default function ProfileScreen() {
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const fetchProfile = useAuthStore((s) => s.fetchProfile);
+  const logout = useAuthStore((s) => s.logout);
 
   const [showRejectionModal, setShowRejectionModal] = useState(false);
-  // Track để chỉ show modal 1 lần mỗi session (không pop lại mỗi lần focus)
   const rejectionShownRef = useRef(false);
+
+  // ── Delete account state ──
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteEmailInput, setDeleteEmailInput] = useState('');
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   // ── Badge state ──
   const [badgeList, setBadgeList] = useState<IBadge[]>([]);
@@ -97,6 +105,25 @@ export default function ProfileScreen() {
       rejectionShownRef.current = true;
     }
   }, [user?.kycStatus, user?.kycDocuments?.length]);
+
+  const handleDeleteAccountConfirm = async () => {
+    if (!user || deleteEmailInput.trim().toLowerCase() !== user.email.toLowerCase()) {
+      Alert.alert(t('common.error'), t('profile.deleteAccountEmailMismatch'));
+      return;
+    }
+    setIsDeletingAccount(true);
+    try {
+      await deleteAccountApi();
+      setShowDeleteModal(false);
+      Alert.alert(t('common.success'), t('profile.deleteAccountContactAdmin'), [
+        { text: 'OK', onPress: () => logout() },
+      ]);
+    } catch (e) {
+      Alert.alert(t('common.error'), e instanceof Error ? e.message : t('profile.deleteAccountFailed'));
+    } finally {
+      setIsDeletingAccount(false);
+    }
+  };
 
   if (!user) {
     return (
@@ -184,6 +211,84 @@ export default function ProfileScreen() {
         </Pressable>
       </Modal>
 
+      {/* ── Delete Account Modal ── */}
+      <Modal
+        visible={showDeleteModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => !isDeletingAccount && setShowDeleteModal(false)}
+      >
+        <Pressable
+          className="flex-1 items-center justify-center"
+          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+          onPress={() => !isDeletingAccount && setShowDeleteModal(false)}
+        >
+          <Pressable onPress={(e) => e.stopPropagation()}>
+            <View
+              className="bg-neutral-T100 rounded-3xl mx-6 p-6 gap-4"
+              style={{ maxWidth: 360 }}
+            >
+              <View
+                className="w-14 h-14 rounded-2xl items-center justify-center self-center"
+                style={{ backgroundColor: 'rgba(220,38,38,0.1)' }}
+              >
+                <MaterialIcons name="delete-forever" size={28} color="#DC2626" />
+              </View>
+              <View className="gap-1">
+                <Text className="font-sans font-bold text-lg text-neutral-T10 text-center">
+                  {t('profile.deleteAccountTitle')}
+                </Text>
+                <Text className="font-body text-sm text-neutral-T50 text-center leading-5">
+                  {t('profile.deleteAccountWarning')}
+                </Text>
+              </View>
+              <View className="gap-1.5">
+                <Text className="font-label text-xs font-semibold text-neutral-T50 uppercase tracking-wider">
+                  {t('profile.deleteAccountConfirmMsg')}
+                </Text>
+                <TextInput
+                  value={deleteEmailInput}
+                  onChangeText={setDeleteEmailInput}
+                  placeholder={t('profile.deleteAccountEmailPlaceholder')}
+                  placeholderTextColor="#AAABAB"
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  editable={!isDeletingAccount}
+                  className="h-12 bg-neutral-T95 rounded-xl px-4 font-body text-sm text-neutral-T10 border border-neutral-T90"
+                />
+              </View>
+              <View className="gap-2">
+                <TouchableOpacity
+                  className="h-12 rounded-xl items-center justify-center"
+                  style={{ backgroundColor: isDeletingAccount ? 'rgba(220,38,38,0.3)' : '#DC2626' }}
+                  onPress={handleDeleteAccountConfirm}
+                  disabled={isDeletingAccount}
+                  activeOpacity={0.85}
+                >
+                  {isDeletingAccount ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text className="font-label font-semibold text-neutral-T100">
+                      {t('profile.deleteAccount')}
+                    </Text>
+                  )}
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className="h-12 rounded-xl bg-neutral-T95 items-center justify-center"
+                  onPress={() => { setShowDeleteModal(false); setDeleteEmailInput(''); }}
+                  disabled={isDeletingAccount}
+                  activeOpacity={0.8}
+                >
+                  <Text className="font-label font-semibold text-neutral-T50">
+                    {t('common.cancel')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
       <MainHeader />
 
       <TouchableOpacity className="px-6 pt-3" onPress={() => router.back()}>
@@ -257,6 +362,7 @@ export default function ProfileScreen() {
             onRegisterStore={() => router.push('/(profile)/register-store')}
             showRegisterStore={canRegisterStore}
             storeRegistrationPending={storeRegistrationPending}
+            onDeleteAccount={() => { setDeleteEmailInput(''); setShowDeleteModal(true); }}
           />
         </View>
       </ScrollView>

@@ -28,6 +28,7 @@ interface VoucherCardProps {
   // viewMode="store-manage"
   onToggleActive?: (voucherId: string) => void;
   onEditPress?: (voucherId: string) => void;
+  onDeletePress?: (voucherId: string) => void;
 
   // Callback chung — nhấn vào card
   onPress?: (voucherId: string) => void;
@@ -41,6 +42,7 @@ export default function VoucherCard({
   userVoucherStatus,
   onToggleActive,
   onEditPress,
+  onDeletePress,
   onPress,
 }: VoucherCardProps) {
   const { t } = useTranslation();
@@ -212,6 +214,16 @@ export default function VoucherCard({
                 <Text className="font-label font-semibold text-xs text-secondary-T40">
                   {t('voucher.editBtn')}
                 </Text>
+              </TouchableOpacity>
+
+              {/* Delete button */}
+              <TouchableOpacity
+                className="w-10 h-10 rounded-xl items-center justify-center"
+                style={{ backgroundColor: 'rgba(220,38,38,0.08)' }}
+                onPress={() => onDeletePress?.(voucher._id)}
+                activeOpacity={0.8}
+              >
+                <MaterialIcons name="delete-outline" size={18} color="#DC2626" />
               </TouchableOpacity>
             </View>
           )}

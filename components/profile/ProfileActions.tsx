@@ -8,6 +8,7 @@ interface ProfileActionsProps {
   onRegisterStore?: () => void;
   showRegisterStore?: boolean;
   storeRegistrationPending?: boolean;
+  onDeleteAccount?: () => void;
 }
 
 export default function ProfileActions({
@@ -15,6 +16,7 @@ export default function ProfileActions({
   onRegisterStore,
   showRegisterStore,
   storeRegistrationPending,
+  onDeleteAccount,
 }: ProfileActionsProps) {
   const { t } = useTranslation();
   return (
@@ -53,6 +55,18 @@ export default function ProfileActions({
         <MaterialIcons name="edit" size={20} color="#296C24" />
         <Text className="font-label font-semibold text-primary-T40">
           {t('profile.editProfile')}
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        className="h-14 rounded-xl flex-row items-center justify-center gap-2 active:scale-[0.98]"
+        style={{ backgroundColor: 'rgba(220,38,38,0.06)', borderWidth: 1, borderColor: 'rgba(220,38,38,0.2)' }}
+        onPress={onDeleteAccount}
+        activeOpacity={0.8}
+      >
+        <MaterialIcons name="delete-forever" size={20} color="#DC2626" />
+        <Text className="font-label font-semibold" style={{ color: '#DC2626' }}>
+          {t('profile.deleteAccount')}
         </Text>
       </TouchableOpacity>
     </View>

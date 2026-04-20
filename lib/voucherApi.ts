@@ -142,3 +142,10 @@ export async function storeToggleVoucherApi(
   const { data } = await api.patch(`/vouchers/${voucherId}/toggle`);
   return data;
 }
+
+export async function storeDeleteVoucherApi(
+  voucherId: string
+): Promise<{ success: boolean; message: string }> {
+  const { data } = await api.delete(`/vouchers/${voucherId}`);
+  return data;
+}

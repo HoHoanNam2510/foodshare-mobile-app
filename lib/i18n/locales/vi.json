@@ -437,7 +437,15 @@
     "badgesEmptyAll": "Không có huy hiệu nào.",
     "badgeNewUnlockToast": "🎉 Huy hiệu mới mở khóa!",
     "badgeGreenPointsEarned": "+{{points}} điểm xanh",
-    "recentPosts": "Bài đăng gần đây"
+    "recentPosts": "Bài đăng gần đây",
+    "deleteAccount": "Xóa tài khoản",
+    "deleteAccountTitle": "Xóa tài khoản",
+    "deleteAccountWarning": "Tất cả bài đăng của bạn sẽ bị ẩn. Giao dịch không bị ảnh hưởng. Liên hệ admin để khôi phục nếu cần.",
+    "deleteAccountConfirmMsg": "Nhập địa chỉ email của bạn để xác nhận. Thao tác này không thể hoàn tác.",
+    "deleteAccountEmailPlaceholder": "Địa chỉ email của bạn",
+    "deleteAccountEmailMismatch": "Email không đúng. Vui lòng thử lại.",
+    "deleteAccountFailed": "Không thể xóa tài khoản. Vui lòng thử lại.",
+    "deleteAccountContactAdmin": "Tài khoản đã xóa — liên hệ admin để khôi phục nếu cần."
   },
   "transaction": {
     "title": "Giao dịch",
@@ -875,6 +883,10 @@
     "editBtn": "Chỉnh sửa",
     "activeBadge": "ACTIVE",
     "inactiveBadge": "INACTIVE",
+    "deleteVoucherTitle": "Xóa voucher",
+    "deleteVoucherMsg": "Voucher sẽ bị ẩn. Người dùng đã đổi điểm vẫn có thể sử dụng. Tiếp tục?",
+    "deleteVoucherSuccess": "Voucher đã được xóa thành công.",
+    "deleteVoucherFailed": "Không thể xóa voucher. Vui lòng thử lại.",
     "redeemConfirmTitle": "Xác nhận đổi điểm",
     "youWillUse": "Bạn sẽ dùng:",
     "pointsRemaining": "Điểm còn lại:",

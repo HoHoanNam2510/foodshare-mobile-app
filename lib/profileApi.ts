@@ -92,3 +92,12 @@ export async function updateProfileApi(
     extractErrorMessage(error, 'Cập nhật hồ sơ thất bại');
   }
 }
+
+export async function deleteAccountApi(): Promise<{ success: boolean; message: string }> {
+  try {
+    const { data } = await api.delete<{ success: boolean; message: string }>('/users/me');
+    return data;
+  } catch (error) {
+    extractErrorMessage(error, 'Xóa tài khoản thất bại');
+  }
+}

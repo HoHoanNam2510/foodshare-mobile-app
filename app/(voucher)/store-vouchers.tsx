@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ManagementHeader from '@/components/shared/headers/ManagementHeader';
 
 import VoucherCard from '@/components/voucher/VoucherCard';
-import { storeGetMyVouchersApi, storeToggleVoucherApi } from '@/lib/voucherApi';
+import { storeDeleteVoucherApi, storeGetMyVouchersApi, storeToggleVoucherApi } from '@/lib/voucherApi';
 import type { IVoucher } from '@/lib/voucherApi';
 import { useAuthStore } from '@/stores/authStore';
 import { useTranslation } from 'react-i18next';
@@ -78,6 +78,29 @@ export default function StoreVouchersScreen() {
 
   const handleEdit = (voucherId: string) => {
     router.push(`/(voucher)/edit-voucher?id=${voucherId}` as any);
+  };
+
+  const handleDelete = (voucherId: string) => {
+    Alert.alert(
+      t('voucher.deleteVoucherTitle'),
+      t('voucher.deleteVoucherMsg'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('common.delete'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await storeDeleteVoucherApi(voucherId);
+              setVouchers((prev) => prev.filter((v) => v._id !== voucherId));
+              Alert.alert(t('common.success'), t('voucher.deleteVoucherSuccess'));
+            } catch {
+              Alert.alert(t('voucher.errorAlert'), t('voucher.deleteVoucherFailed'));
+            }
+          },
+        },
+      ]
+    );
   };
 
   const onRefresh = async () => {
@@ -145,6 +168,7 @@ export default function StoreVouchersScreen() {
               viewMode="store-manage"
               onToggleActive={handleToggle}
               onEditPress={handleEdit}
+              onDeletePress={handleDelete}
               onPress={() => {}}
             />
           )}

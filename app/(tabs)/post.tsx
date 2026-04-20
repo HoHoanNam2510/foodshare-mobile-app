@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
+  Alert,
   Image,
   RefreshControl,
   ScrollView,
@@ -15,6 +16,7 @@ import {
 } from 'react-native';
 
 import api from '@/lib/axios';
+import { deletePostApi } from '@/lib/postApi';
 import MainHeader from '@/components/shared/headers/MainHeader';
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
@@ -152,9 +154,10 @@ function StatusBadge({ status }: { status: PostStatus }) {
 interface PostCardProps {
   post: Post;
   onPress: () => void;
+  onLongPress?: () => void;
 }
 
-function PostCard({ post, onPress }: PostCardProps) {
+function PostCard({ post, onPress, onLongPress }: PostCardProps) {
   const { t } = useTranslation();
   const isDimmed =
     post.status === 'HIDDEN' ||
@@ -166,6 +169,8 @@ function PostCard({ post, onPress }: PostCardProps) {
     <TouchableOpacity
       activeOpacity={0.88}
       onPress={onPress}
+      onLongPress={onLongPress}
+      delayLongPress={400}
       className="bg-neutral-T100 rounded-2xl shadow-sm overflow-hidden active:scale-[0.98]"
     >
       {/* Image */}
@@ -252,6 +257,30 @@ export default function PostList() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<PostStatus | 'ALL'>('ALL');
   const [sortAsc, setSortAsc] = useState(false);
+
+  const handleDeletePost = useCallback(
+    (post: Post) => {
+      Alert.alert(t('post.confirmDeleteTitle'), t('post.confirmDeleteMsg'), [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('common.delete'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deletePostApi(post._id);
+              setPosts((prev) => prev.filter((p) => p._id !== post._id));
+            } catch (e) {
+              Alert.alert(
+                t('common.error'),
+                e instanceof Error ? e.message : t('post.errorLoadPosts')
+              );
+            }
+          },
+        },
+      ]);
+    },
+    [t]
+  );
 
   const load = useCallback(async (isRefresh = false) => {
     if (isRefresh) setIsRefreshing(true);
@@ -440,6 +469,7 @@ export default function PostList() {
                       params: { id: post._id },
                     })
                   }
+                  onLongPress={() => handleDeletePost(post)}
                 />
               ))
             )}

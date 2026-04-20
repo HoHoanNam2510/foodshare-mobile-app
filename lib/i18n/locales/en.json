@@ -437,7 +437,15 @@
     "badgesEmptyAll": "No badges.",
     "badgeNewUnlockToast": "🎉 New badge unlocked!",
     "badgeGreenPointsEarned": "+{{points}} green points",
-    "recentPosts": "Recent posts"
+    "recentPosts": "Recent posts",
+    "deleteAccount": "Delete account",
+    "deleteAccountTitle": "Delete account",
+    "deleteAccountWarning": "All your posts will be hidden. Transactions are not affected. Contact admin to restore if needed.",
+    "deleteAccountConfirmMsg": "Enter your email address to confirm. This action cannot be undone.",
+    "deleteAccountEmailPlaceholder": "Your email address",
+    "deleteAccountEmailMismatch": "Email does not match. Please try again.",
+    "deleteAccountFailed": "Could not delete account. Please try again.",
+    "deleteAccountContactAdmin": "Account deleted — contact admin to restore if needed."
   },
   "transaction": {
     "title": "Transaction",
@@ -875,6 +883,10 @@
     "editBtn": "Edit",
     "activeBadge": "ACTIVE",
     "inactiveBadge": "INACTIVE",
+    "deleteVoucherTitle": "Delete voucher",
+    "deleteVoucherMsg": "This voucher will be hidden. Users who already redeemed it can still use it. Continue?",
+    "deleteVoucherSuccess": "Voucher deleted successfully.",
+    "deleteVoucherFailed": "Could not delete voucher. Please try again.",
     "redeemConfirmTitle": "Confirm Redemption",
     "youWillUse": "You will use:",
     "pointsRemaining": "Points remaining:",
