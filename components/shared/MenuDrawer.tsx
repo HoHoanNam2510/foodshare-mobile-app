@@ -269,6 +269,11 @@ export default function MenuDrawer() {
             onPress={() => navigate('/(voucher)/my-vouchers')}
           />
           <MenuItem
+            icon="delete"
+            label={t('menu.myTrash')}
+            onPress={() => navigate('/(trash)/trash')}
+          />
+          <MenuItem
             icon="history"
             label={t('menu.pointHistory')}
             onPress={() => navigate('/(voucher)/point-history')}

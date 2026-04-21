@@ -123,7 +123,28 @@
     "manageVouchers": "Quản lý Voucher",
     "myVouchers": "Ví Voucher",
     "pointHistory": "Lịch sử điểm",
-    "leaderboard": "Bảng xếp hạng điểm xanh"
+    "leaderboard": "Bảng xếp hạng điểm xanh",
+    "myTrash": "Thùng rác"
+  },
+  "trash": {
+    "title": "Thùng rác của bạn",
+    "tabPosts": "Bài đăng",
+    "tabReviews": "Đánh giá",
+    "tabVouchers": "Voucher",
+    "emptyTitle": "Thùng rác trống",
+    "emptyBody": "Bạn chưa xóa dữ liệu nào. Các mục đã xóa sẽ xuất hiện tại đây.",
+    "infoBanner": "Dữ liệu trong thùng rác sẽ tự động bị xóa vĩnh viễn sau thời gian lưu trữ. Liên hệ admin nếu cần hỗ trợ.",
+    "deletedOn": "Đã xóa: {{date}}",
+    "restore": "Khôi phục",
+    "purge": "Xóa vĩnh viễn",
+    "restoreTitle": "Khôi phục?",
+    "restoreConfirm": "Dữ liệu này sẽ được khôi phục và hiển thị trở lại.",
+    "restoreSuccess": "Khôi phục thành công.",
+    "restoreError": "Khôi phục thất bại. Vui lòng thử lại.",
+    "purgeTitle": "Xóa vĩnh viễn?",
+    "purgeConfirm": "Hành động này KHÔNG THỂ HOÀN TÁC. Dữ liệu sẽ bị xóa hoàn toàn.",
+    "purgeError": "Xóa vĩnh viễn thất bại. Vui lòng thử lại.",
+    "loadError": "Không thể tải thùng rác. Vui lòng thử lại."
   },
   "home": {
     "hello": "Xin chào",

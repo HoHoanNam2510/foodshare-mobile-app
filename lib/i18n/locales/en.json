@@ -123,7 +123,28 @@
     "manageVouchers": "Manage vouchers",
     "myVouchers": "My vouchers",
     "pointHistory": "Point history",
-    "leaderboard": "Green points leaderboard"
+    "leaderboard": "Green points leaderboard",
+    "myTrash": "Trash"
+  },
+  "trash": {
+    "title": "Your trash",
+    "tabPosts": "Posts",
+    "tabReviews": "Reviews",
+    "tabVouchers": "Vouchers",
+    "emptyTitle": "Trash is empty",
+    "emptyBody": "You haven't deleted anything yet. Deleted items will appear here.",
+    "infoBanner": "Items in trash will be permanently deleted after the retention period. Contact admin if you need help.",
+    "deletedOn": "Deleted: {{date}}",
+    "restore": "Restore",
+    "purge": "Delete forever",
+    "restoreTitle": "Restore?",
+    "restoreConfirm": "This item will be restored and visible again.",
+    "restoreSuccess": "Restored successfully.",
+    "restoreError": "Restore failed. Please try again.",
+    "purgeTitle": "Delete forever?",
+    "purgeConfirm": "This action CANNOT BE UNDONE. The item will be permanently deleted.",
+    "purgeError": "Permanent delete failed. Please try again.",
+    "loadError": "Could not load trash. Please try again."
   },
   "home": {
     "hello": "Hello",
