@@ -141,9 +141,42 @@ function TransactionCard({
   const { t } = useTranslation();
   const post = tx.postId;
   const isP2P = tx.type === 'REQUEST';
-  const thumb = post.images?.[0];
   const canCancel =
     role === 'receiver' && tx.status === 'PENDING' && !!onCancel;
+
+  if (!post) {
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        activeOpacity={0.85}
+        style={styles.card}
+        className="bg-neutral-T100 rounded-2xl mx-4 mb-3 overflow-hidden"
+      >
+        <View className="flex-row p-4 gap-3 items-center">
+          <View
+            className="rounded-xl overflow-hidden bg-neutral-T95 items-center justify-center"
+            style={styles.thumb}
+          >
+            <MaterialIcons name="delete-outline" size={22} color="#AAABAB" />
+          </View>
+          <View className="flex-1 gap-1">
+            <View className="flex-row items-center gap-2">
+              <StatusBadge status={tx.status} />
+            </View>
+            <Text className="font-sans text-sm text-neutral-T50 italic leading-tight">
+              Bài đăng đã bị xóa
+            </Text>
+            <Text className="font-body text-xs text-neutral-T70">
+              {formatDate(tx.createdAt)}
+            </Text>
+          </View>
+          <MaterialIcons name="chevron-right" size={20} color="#AAABAB" />
+        </View>
+      </TouchableOpacity>
+    );
+  }
+
+  const thumb = post.images?.[0];
 
   return (
     <TouchableOpacity
@@ -273,7 +306,7 @@ function IncomingCard({
   const { t } = useTranslation();
   const post = tx.postId;
   const requester = tx.requesterId;
-  const thumb = post.images?.[0];
+  const thumb = post?.images?.[0];
   const isPending = tx.status === 'PENDING';
 
   return (
@@ -308,7 +341,7 @@ function IncomingCard({
             className="font-sans font-bold text-sm text-neutral-T10 leading-tight"
             numberOfLines={2}
           >
-            {post.title}
+            {post?.title ?? 'Bài đăng đã bị xóa'}
           </Text>
 
           {/* Requester row */}

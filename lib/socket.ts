@@ -37,3 +37,15 @@ export function joinRoom(conversationId: string): void {
 export function leaveRoom(conversationId: string): void {
   socket?.emit('leave-room', conversationId);
 }
+
+export function subscribeToNotifications(
+  onNotification: (notification: unknown) => void
+): () => void {
+  if (!socket) return () => {};
+
+  socket.on('new-notification', onNotification);
+
+  return () => {
+    socket?.off('new-notification', onNotification);
+  };
+}

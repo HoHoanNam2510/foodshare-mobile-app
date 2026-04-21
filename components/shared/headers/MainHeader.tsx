@@ -5,11 +5,13 @@ import { Feather } from '@expo/vector-icons';
 import BaseHeader from './BaseHeader';
 import { useMenuDrawerStore } from '@/stores/menuDrawerStore';
 import { useAuthStore } from '@/stores/authStore';
+import { useNotificationStore } from '@/stores/notificationStore';
 
 export default function MainHeader() {
   const router = useRouter();
   const openDrawer = useMenuDrawerStore((s) => s.open);
   const user = useAuthStore((s) => s.user);
+  const unreadCount = useNotificationStore((s) => s.unreadCount);
 
   return (
     <BaseHeader>
@@ -39,8 +41,18 @@ export default function MainHeader() {
 
         {/* Right: Notification + Profile */}
         <View className="flex-row items-center gap-2.5">
-          <TouchableOpacity className="w-10 h-10 rounded-full bg-neutral-T95 items-center justify-center active:opacity-80">
+          <TouchableOpacity
+            className="w-10 h-10 rounded-full bg-neutral-T95 items-center justify-center active:opacity-80"
+            onPress={() => router.push('/(notification)/notifications' as never)}
+          >
             <Feather name="bell" size={19} color="#191C1C" />
+            {unreadCount > 0 && (
+              <View className="absolute top-0.5 right-0.5 min-w-[16px] h-4 rounded-full bg-red-500 items-center justify-center px-0.5">
+                <Text className="text-white text-[9px] font-bold leading-none">
+                  {unreadCount > 99 ? '99+' : String(unreadCount)}
+                </Text>
+              </View>
+            )}
           </TouchableOpacity>
           <TouchableOpacity
             className="active:opacity-80"

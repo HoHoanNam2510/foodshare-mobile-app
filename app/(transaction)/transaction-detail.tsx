@@ -718,7 +718,7 @@ export default function TransactionDetailScreen() {
               {t('transaction.postSectionLabel')}
             </Text>
             <Text className="font-sans font-bold text-lg text-neutral-T10 leading-tight">
-              {post.title}
+              {post?.title ?? 'Bài đăng đã bị xóa'}
             </Text>
 
             <View className="flex-row gap-2 flex-wrap">
@@ -743,7 +743,8 @@ export default function TransactionDetailScreen() {
               {!isP2P && (
                 <View className="px-2 py-1 rounded-md bg-neutral-T95">
                   <Text className="font-label font-bold text-[10px] text-neutral-T50 uppercase tracking-wider">
-                    {(post.price * tx.quantity).toLocaleString('vi-VN')}đ
+                    {((post?.price ?? 0) * tx.quantity).toLocaleString('vi-VN')}
+                    đ
                   </Text>
                 </View>
               )}
@@ -1179,7 +1180,7 @@ export default function TransactionDetailScreen() {
                   params: {
                     targetType: 'TRANSACTION',
                     targetId: tx._id,
-                    targetTitle: post.title,
+                    targetTitle: post?.title ?? '',
                   },
                 } as any)
               }

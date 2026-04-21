@@ -22,9 +22,16 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useAuthStore } from '@/stores/authStore';
 import { useLanguageStore } from '@/stores/languageStore';
+import { useNotificationStore } from '@/stores/notificationStore';
 import MenuDrawer from '@/components/shared/MenuDrawer';
 import BadgeUnlockToast from '@/components/shared/BadgeUnlockToast';
 import { getBadgeCatalogApi, type IBadge } from '@/lib/badgeApi';
+import { connectSocket, subscribeToNotifications } from '@/lib/socket';
+import type { INotification } from '@/lib/notificationApi';
+import {
+  registerForPushNotificationsAsync,
+  savePushTokenToServer,
+} from '@/lib/pushNotifications';
 import '@/lib/i18n';
 import './global.css';
 
@@ -60,11 +67,15 @@ export default function RootLayout() {
   const token = useAuthStore((s) => s.token);
   const hydrateLanguage = useLanguageStore((s) => s.hydrate);
   const isLanguageHydrated = useLanguageStore((s) => s.isHydrated);
+  const addNotification = useNotificationStore((s) => s.addNotification);
+  const fetchUnreadCount = useNotificationStore((s) => s.fetchUnreadCount);
+  const resetNotifications = useNotificationStore((s) => s.reset);
 
   const [toastBadge, setToastBadge] = useState<IBadge | null>(null);
   const unlockedBadgeIdsRef = useRef<Set<string>>(new Set());
   const initialBadgeLoadDoneRef = useRef(false);
   const toastHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const checkNewBadgesRef = useRef<(() => Promise<void>) | null>(null);
 
   const [fontsLoaded, error] = useFonts({
     Epilogue: Epilogue_700Bold,
@@ -99,6 +110,7 @@ export default function RootLayout() {
     const checkNewBadges = async () => {
       try {
         const res = await getBadgeCatalogApi();
+
         const unlocked = res.data.badges.filter((b) => b.isUnlocked);
         const nextSet = new Set(unlocked.map((b) => b._id));
 
@@ -125,6 +137,7 @@ export default function RootLayout() {
       }
     };
 
+    checkNewBadgesRef.current = checkNewBadges;
     checkNewBadges();
 
     const sub = AppState.addEventListener('change', (state) => {
@@ -133,16 +146,59 @@ export default function RootLayout() {
       }
     });
 
-    const timer = setInterval(checkNewBadges, 45000);
-
     return () => {
       sub.remove();
-      clearInterval(timer);
       if (toastHideTimerRef.current) {
         clearTimeout(toastHideTimerRef.current);
       }
     };
   }, [token]);
+
+  // Socket connection + notification subscription
+  useEffect(() => {
+    if (!token) {
+      resetNotifications();
+      return;
+    }
+
+    let unsubscribe: (() => void) | undefined;
+
+    const setup = async () => {
+      try {
+        await connectSocket();
+        unsubscribe = subscribeToNotifications((raw) => {
+          const notification = raw as INotification;
+          addNotification(notification);
+          if (
+            notification.type === 'SYSTEM' &&
+            notification.title === 'Huy hiệu mới!'
+          ) {
+            checkNewBadgesRef.current?.();
+          }
+        });
+        fetchUnreadCount();
+
+        // Đăng ký Expo Push Token và lưu lên server
+        const pushToken = await registerForPushNotificationsAsync();
+        if (pushToken) {
+          await savePushTokenToServer(pushToken);
+        }
+      } catch {
+        // ignore socket/push errors
+      }
+    };
+
+    setup();
+
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') fetchUnreadCount();
+    });
+
+    return () => {
+      unsubscribe?.();
+      sub.remove();
+    };
+  }, [token, addNotification, fetchUnreadCount, resetNotifications]);
 
   if (!fontsLoaded || !isHydrated || !isLanguageHydrated) {
     return null;

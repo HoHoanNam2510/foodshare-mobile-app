@@ -80,6 +80,18 @@ module.exports = {
         'body-bold': ['BeVietnamPro-Bold', 'sans-serif'],
         label: ['"Plus Jakarta Sans"', '"Be Vietnam Pro"', 'sans-serif'],
       },
+      fontSize: {
+        // Semantic scale — dùng thay vì text-[Npx] tùy tiện
+        caption: ['11px', { lineHeight: '16px' }],   // timestamp, badge nhỏ
+        xs:      ['12px', { lineHeight: '18px' }],   // label phụ, helper text
+        sm:      ['14px', { lineHeight: '20px' }],   // body nhỏ
+        base:    ['16px', { lineHeight: '24px' }],   // body chính (default)
+        md:      ['17px', { lineHeight: '26px' }],   // body nhấn mạnh
+        lg:      ['18px', { lineHeight: '28px' }],   // sub-heading, header title
+        xl:      ['20px', { lineHeight: '28px' }],   // heading nhỏ
+        '2xl':   ['24px', { lineHeight: '32px' }],   // heading
+        '3xl':   ['28px', { lineHeight: '36px' }],   // hero heading
+      },
       borderRadius: {
         // SOFT ELEVATION: Bo góc mềm mại, thân thiện hơn
         sm: '0.375rem', // 6px  - Tags, small badges

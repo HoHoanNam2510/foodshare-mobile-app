@@ -24,7 +24,7 @@ export type PaymentMethod = 'FREE' | 'BANK_TRANSFER';
 
 export interface ITransaction {
   _id: string;
-  postId: ITransactionPost;  // populated
+  postId: ITransactionPost | null;  // populated; null if post was deleted
   requesterId: string | ITransactionRequester; // string in list, populated object in detail
   ownerId: string;            // ObjectId string — người cho / cửa hàng
   type: 'REQUEST' | 'ORDER';
