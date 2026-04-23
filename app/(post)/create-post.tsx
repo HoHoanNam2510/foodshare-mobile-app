@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Alert,
@@ -83,6 +83,11 @@ export default function CreatePost() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSendingPasscode, setIsSendingPasscode] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState<'email' | null>(null);
+  // Pre-upload: bắt đầu upload ảnh khi modal mở, không đợi đến khi user nhấn Verify
+  const [uploadedImageUrls, setUploadedImageUrls] = useState<string[] | null>(
+    null
+  );
+  const preUploadPromiseRef = useRef<Promise<string[]> | null>(null);
   // ── Field-level errors ──
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
@@ -192,6 +197,7 @@ export default function CreatePost() {
     const sent = await handleSendPasscode();
     if (sent) {
       setShowPasscode(true);
+      startPreUpload();
     }
   };
 
@@ -199,12 +205,42 @@ export default function CreatePost() {
     await handleSendPasscode();
   };
 
+  const startPreUpload = () => {
+    setUploadedImageUrls(null);
+    preUploadPromiseRef.current = uploadMultipleImages(images, 'posts')
+      .then((results) => {
+        const urls = results.map((r) => r.url);
+        setUploadedImageUrls(urls);
+        return urls;
+      })
+      .catch((err: unknown) => {
+        preUploadPromiseRef.current = null;
+        return Promise.reject(err);
+      });
+  };
+
   const handleVerify = async (passcode: string) => {
     setIsSubmitting(true);
     try {
-      // 1. Upload images to Cloudinary
-      const uploadResults = await uploadMultipleImages(images, 'posts');
-      const imageUrls = uploadResults.map((r) => r.url);
+      // 1. Upload images — dùng kết quả pre-upload nếu đã sẵn sàng
+      let imageUrls: string[];
+      if (uploadedImageUrls !== null) {
+        // Branch A: pre-upload hoàn tất trước khi user nhấn Verify
+        imageUrls = uploadedImageUrls;
+      } else if (preUploadPromiseRef.current !== null) {
+        // Branch B: pre-upload đang chạy — await phần còn lại
+        try {
+          imageUrls = await preUploadPromiseRef.current;
+        } catch {
+          // Pre-upload thất bại — fallback upload lại từ đầu
+          const uploadResults = await uploadMultipleImages(images, 'posts');
+          imageUrls = uploadResults.map((r) => r.url);
+        }
+      } else {
+        // Branch C: pre-upload chưa chạy hoặc đã bị reset
+        const uploadResults = await uploadMultipleImages(images, 'posts');
+        imageUrls = uploadResults.map((r) => r.url);
+      }
 
       // 2. Create post via API
       const res = await createPostApi({
@@ -253,6 +289,8 @@ export default function CreatePost() {
     } finally {
       setIsSubmitting(false);
       setShowPasscode(false);
+      setUploadedImageUrls(null);
+      preUploadPromiseRef.current = null;
     }
   };
 
@@ -603,7 +641,11 @@ export default function CreatePost() {
       {/* ── Passcode modal ── */}
       <PasscodeModal
         visible={showPasscode}
-        onCancel={() => setShowPasscode(false)}
+        onCancel={() => {
+          setShowPasscode(false);
+          setUploadedImageUrls(null);
+          preUploadPromiseRef.current = null;
+        }}
         onVerify={handleVerify}
         onResend={handleResendPasscode}
         isLoading={isSubmitting}

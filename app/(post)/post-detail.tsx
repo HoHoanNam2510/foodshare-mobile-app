@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  FlatList,
   Image,
   Linking,
   ScrollView,
@@ -12,6 +13,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  useWindowDimensions,
 } from 'react-native';
 import {
   SafeAreaView,
@@ -21,7 +23,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import { getPostByIdApi, deletePostApi, type IPostDetail } from '@/lib/postApi';
-import { createRequestApi } from '@/lib/transactionApi';
+import { createRequestApi, createOrderApi } from '@/lib/transactionApi';
 import { getOrCreateConversationApi } from '@/lib/chatApi';
 import { useAuthStore } from '@/stores/authStore';
 import StackHeader from '@/components/shared/headers/StackHeader';
@@ -59,6 +61,8 @@ export default function PostDetailScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isChatting, setIsChatting] = useState(false);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const { width: screenWidth } = useWindowDimensions();
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -67,7 +71,8 @@ export default function PostDetailScreen() {
     try {
       const res = await getPostByIdApi(id);
       setPost(res.data);
-      setSelectedQuantity(1); // reset on reload
+      setSelectedQuantity(1);
+      setActiveImageIndex(0);
     } catch (e) {
       setError(e instanceof Error ? e.message : t('post.errorLoad'));
     } finally {
@@ -159,12 +164,23 @@ export default function PostDetailScreen() {
     }
   };
 
-  const handleBuyNow = () => {
+  const handleBuyNow = async () => {
     if (!post) return;
-    router.push({
-      pathname: '/(transaction)/payment',
-      params: { postId: post._id, quantity: selectedQuantity.toString() },
-    } as any);
+    setIsSubmitting(true);
+    try {
+      const res = await createOrderApi(post._id, selectedQuantity);
+      router.push({
+        pathname: '/(transaction)/transaction-detail',
+        params: { id: res.data._id },
+      } as any);
+    } catch (e) {
+      Alert.alert(
+        t('common.error'),
+        e instanceof Error ? e.message : t('post.errorRequest')
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleDirections = () => {
@@ -212,7 +228,7 @@ export default function PostDetailScreen() {
     );
   }
 
-  const thumb = post.images?.[0];
+  const images = post.images ?? [];
   const owner = post.ownerId;
 
   const handleReport = () => {
@@ -250,21 +266,47 @@ export default function PostDetailScreen() {
           paddingBottom: isAvailable && !isOwnPost ? (!isP2P ? 200 : 160) : 110,
         }}
       >
-        {/* ─── Hero Image ─── */}
+        {/* ─── Hero Images ─── */}
         <View className="relative">
-          <View className="w-full aspect-[4/3] bg-neutral-T90 overflow-hidden">
-            {thumb ? (
-              <Image
-                source={{ uri: thumb }}
-                className="w-full h-full"
-                resizeMode="cover"
-              />
-            ) : (
-              <View className="w-full h-full items-center justify-center">
-                <MaterialIcons name="fastfood" size={48} color="#AAABAB" />
-              </View>
-            )}
-          </View>
+          {images.length > 0 ? (
+            <FlatList
+              data={images}
+              keyExtractor={(_, i) => i.toString()}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              style={{ height: screenWidth * (3 / 4) }}
+              onMomentumScrollEnd={(e) => {
+                const idx = Math.round(
+                  e.nativeEvent.contentOffset.x / screenWidth
+                );
+                setActiveImageIndex(idx);
+              }}
+              renderItem={({ item }) => (
+                <Image
+                  source={{ uri: item }}
+                  style={{ width: screenWidth, height: screenWidth * (3 / 4) }}
+                  resizeMode="cover"
+                />
+              )}
+            />
+          ) : (
+            <View
+              style={{ height: screenWidth * (3 / 4) }}
+              className="w-full bg-neutral-T90 items-center justify-center"
+            >
+              <MaterialIcons name="fastfood" size={48} color="#AAABAB" />
+            </View>
+          )}
+
+          {/* Image counter badge */}
+          {images.length > 1 && (
+            <View className="absolute top-3 right-3 bg-black/50 px-2.5 py-1 rounded-full">
+              <Text className="text-neutral-T100 font-label text-xs font-semibold">
+                {activeImageIndex + 1} / {images.length}
+              </Text>
+            </View>
+          )}
 
           {/* Type + Status Badges */}
           <View className="absolute -bottom-4 left-5 flex-row items-center gap-2 z-10">
