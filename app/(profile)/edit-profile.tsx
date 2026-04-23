@@ -54,6 +54,7 @@ export default function EditProfile() {
 
   // Payment info — bank account cho cả STORE (nhận giải ngân) và USER (nhận hoàn tiền)
   const [bankName, setBankName] = useState(user?.paymentInfo?.bankName ?? '');
+  const [bankCode, setBankCode] = useState(user?.paymentInfo?.bankCode ?? '');
   const [bankAccountNumber, setBankAccountNumber] = useState(
     user?.paymentInfo?.bankAccountNumber ?? ''
   );
@@ -126,6 +127,7 @@ export default function EditProfile() {
       // Lưu tài khoản ngân hàng cho tất cả user roles (STORE để nhận giải ngân, USER để nhận hoàn tiền)
       payload.paymentInfo = {
         bankName: bankName.trim() || undefined,
+        bankCode: bankCode.trim() || undefined,
         bankAccountNumber: bankAccountNumber.trim() || undefined,
         bankAccountName: bankAccountName.trim() || undefined,
       };
@@ -335,6 +337,12 @@ export default function EditProfile() {
               value={bankName}
               onChangeText={setBankName}
               placeholder={t('profile.bankNamePlaceholder')}
+            />
+            <FormInput
+              label={t('profile.bankCodeLabel')}
+              value={bankCode}
+              onChangeText={setBankCode}
+              placeholder={t('profile.bankCodePlaceholder')}
             />
             <FormInput
               label={t('profile.bankAccountNumberLabel')}

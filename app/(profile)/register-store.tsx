@@ -40,6 +40,7 @@ export default function RegisterStore() {
   const [momoPhone, setMomoPhone] = useState('');
   // const [zalopayPhone, setZalopayPhone] = useState(''); // TODO: Re-enable when ZaloPay is ready
   const [bankName, setBankName] = useState('');
+  const [bankCode, setBankCode] = useState('');
   const [bankAccountNumber, setBankAccountNumber] = useState('');
   const [bankAccountName, setBankAccountName] = useState('');
 
@@ -112,6 +113,7 @@ export default function RegisterStore() {
       if (momoPhone.trim()) paymentInfo.momoPhone = momoPhone.trim();
       // if (zalopayPhone.trim()) paymentInfo.zalopayPhone = zalopayPhone.trim(); // TODO: Re-enable when ZaloPay is ready
       if (bankName.trim()) paymentInfo.bankName = bankName.trim();
+      if (bankCode.trim()) paymentInfo.bankCode = bankCode.trim();
       if (bankAccountNumber.trim())
         paymentInfo.bankAccountNumber = bankAccountNumber.trim();
       if (bankAccountName.trim())
@@ -270,6 +272,13 @@ export default function RegisterStore() {
               value={bankName}
               onChangeText={setBankName}
               placeholder={t('profile.bankNamePlaceholder')}
+            />
+
+            <FormInput
+              label={t('profile.bankCodeLabel')}
+              value={bankCode}
+              onChangeText={setBankCode}
+              placeholder={t('profile.bankCodePlaceholder')}
             />
 
             <FormInput

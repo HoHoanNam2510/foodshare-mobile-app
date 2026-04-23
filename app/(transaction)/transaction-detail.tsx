@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Alert,
+  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -25,7 +26,7 @@ import QRCode from 'react-native-qrcode-svg';
 
 import {
   cancelRequestApi,
-  fileDisputeApi,
+  confirmReceiptApi,
   getTransactionByIdApi,
   scanQrApi,
   type ITransaction,
@@ -53,12 +54,6 @@ const STATUS_CONFIG: Record<
     text: '#1D4ED8',
     icon: 'check-circle',
   },
-  ESCROWED: {
-    labelKey: 'transaction.statusEscrowed',
-    bg: '#F3E8FF',
-    text: '#7E22CE',
-    icon: 'lock',
-  },
   COMPLETED: {
     labelKey: 'transaction.statusCompleted',
     bg: '#DCFCE7',
@@ -76,18 +71,6 @@ const STATUS_CONFIG: Record<
     bg: '#FEE2E2',
     text: '#DC2626',
     icon: 'block',
-  },
-  REFUNDED: {
-    labelKey: 'transaction.statusRefunded',
-    bg: '#FFF7ED',
-    text: '#C2410C',
-    icon: 'replay',
-  },
-  DISPUTED: {
-    labelKey: 'transaction.statusDisputed',
-    bg: '#FFF1F2',
-    text: '#BE123C',
-    icon: 'report-problem',
   },
 };
 
@@ -526,10 +509,7 @@ export default function TransactionDetailScreen() {
   const [error, setError] = useState<string | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
   const [isChatting, setIsChatting] = useState(false);
-  const [showDisputeModal, setShowDisputeModal] = useState(false);
-  const [disputeReason, setDisputeReason] = useState('');
-  const [isDisputing, setIsDisputing] = useState(false);
-  const [disputeError, setDisputeError] = useState('');
+  const [isConfirming, setIsConfirming] = useState(false);
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -762,13 +742,6 @@ export default function TransactionDetailScreen() {
               label={t('transaction.paymentLabel')}
               value={tx.paymentMethod}
             />
-            {tx.expiredAt && (
-              <InfoRow
-                icon="schedule"
-                label={t('transaction.paymentExpiryLabel')}
-                value={formatDate(tx.expiredAt)}
-              />
-            )}
           </View>
 
           {/* ── Role badge ── */}
@@ -836,154 +809,111 @@ export default function TransactionDetailScreen() {
           {isP2P && <StatusTimeline status={tx.status} />}
 
           {/* ── QR Section (only when ACCEPTED) ── */}
-          {showQrSection && isDonor && tx.verificationCode && (
+          {showQrSection && isP2P && isDonor && tx.verificationCode && (
             <DonorQrSection verificationCode={tx.verificationCode} />
           )}
 
-          {showQrSection && isReceiver && (
+          {showQrSection && isP2P && isReceiver && (
             <ReceiverScanSection transactionId={tx._id} onCompleted={load} />
           )}
 
-          {/* ── B2C ESCROWED: Buyer verification + dispute ── */}
-          {tx.status === 'ESCROWED' &&
-            !isP2P &&
-            isReceiver &&
-            tx.verificationCode && (
-              <View
-                style={styles.card}
-                className="bg-neutral-T100 rounded-2xl p-5 gap-4"
-              >
-                <View className="gap-1">
-                  <Text className="font-sans font-bold text-base text-neutral-T10">
-                    {t('transaction.b2cPickupCodeTitle')}
-                  </Text>
-                  <Text className="font-body text-xs text-neutral-T50 leading-4">
-                    {t('transaction.b2cPickupCodeDesc')}
-                  </Text>
-                </View>
-                <View className="bg-primary-T95 border border-primary-T70 rounded-xl px-6 py-4 items-center">
-                  <Text
-                    className="font-body font-bold text-xl text-primary-T30 tracking-widest text-center"
-                    selectable
-                  >
-                    {tx.verificationCode.slice(-8).toUpperCase()}
-                  </Text>
-                </View>
-              </View>
-            )}
-
-          {tx.status === 'ESCROWED' && !isP2P && isDonor && (
-            <ReceiverScanSection transactionId={tx._id} onCompleted={load} />
-          )}
-
-          {/* ── Dispute button for buyer on ESCROWED B2C orders ── */}
-          {tx.status === 'ESCROWED' && !isP2P && isReceiver && (
+          {/* ── B2C ACCEPTED: Buyer — VietQR to scan with banking app ── */}
+          {tx.status === 'ACCEPTED' && !isP2P && isReceiver && tx.paymentQR && (
             <View
               style={styles.card}
-              className="bg-neutral-T100 rounded-2xl p-5 gap-3"
+              className="bg-neutral-T100 rounded-2xl p-5 gap-4"
+            >
+              <View className="gap-1">
+                <Text className="font-sans font-bold text-base text-neutral-T10">
+                  {t('transaction.b2cPayQRTitle')}
+                </Text>
+                <Text className="font-body text-xs text-neutral-T50 leading-4">
+                  {t('transaction.b2cPayQRDesc')}
+                </Text>
+              </View>
+              <View className="items-center py-2">
+                <Image
+                  source={{ uri: tx.paymentQR }}
+                  style={{ width: 220, height: 220 }}
+                  resizeMode="contain"
+                />
+              </View>
+              <View className="bg-blue-50 border border-blue-200 rounded-xl p-3 flex-row items-start gap-2">
+                <MaterialIcons
+                  name="info-outline"
+                  size={16}
+                  color="#1D4ED8"
+                  style={{ marginTop: 1 }}
+                />
+                <Text className="font-body text-xs text-blue-800 flex-1 leading-5">
+                  {t('transaction.b2cPayQRNote')}
+                </Text>
+              </View>
+            </View>
+          )}
+
+          {/* ── B2C ACCEPTED: Store — confirm receipt button ── */}
+          {tx.status === 'ACCEPTED' && !isP2P && isDonor && (
+            <View
+              style={styles.card}
+              className="bg-neutral-T100 rounded-2xl p-5 gap-4"
             >
               <View className="flex-row items-center gap-3">
-                <View className="w-10 h-10 rounded-xl bg-rose-50 items-center justify-center">
+                <View className="w-10 h-10 rounded-xl bg-primary-T95 items-center justify-center">
                   <MaterialIcons
-                    name="report-problem"
+                    name="account-balance-wallet"
                     size={20}
-                    color="#BE123C"
+                    color="#296C24"
                   />
                 </View>
                 <View className="flex-1">
                   <Text className="font-sans font-bold text-sm text-neutral-T10">
-                    {t('transaction.issueSectionTitle')}
+                    {t('transaction.b2cConfirmReceiptTitle')}
                   </Text>
                   <Text className="font-body text-xs text-neutral-T50 mt-0.5 leading-4">
-                    {t('transaction.issueSectionDesc')}
+                    {t('transaction.b2cConfirmReceiptDesc')}
                   </Text>
                 </View>
               </View>
               <TouchableOpacity
-                onPress={() => {
-                  setDisputeReason('');
-                  setDisputeError('');
-                  setShowDisputeModal(true);
+                onPress={async () => {
+                  setIsConfirming(true);
+                  try {
+                    await confirmReceiptApi(tx._id);
+                    Alert.alert(
+                      t('transaction.confirmReceiptSuccessTitle'),
+                      t('transaction.confirmReceiptSuccessMsg'),
+                      [{ text: 'OK', onPress: load }]
+                    );
+                  } catch (e: any) {
+                    Alert.alert(
+                      t('common.error'),
+                      e?.response?.data?.message ?? t('common.error')
+                    );
+                  } finally {
+                    setIsConfirming(false);
+                  }
                 }}
-                activeOpacity={0.8}
-                className="h-11 border border-rose-200 rounded-xl flex-row items-center justify-center gap-2"
-                style={{ backgroundColor: '#FFF1F2' }}
+                disabled={isConfirming}
+                activeOpacity={0.85}
+                className="h-14 bg-primary-T40 rounded-xl flex-row items-center justify-center gap-2"
+                style={styles.primaryBtn}
               >
-                <MaterialIcons
-                  name="report-problem"
-                  size={16}
-                  color="#BE123C"
-                />
-                <Text
-                  className="font-label font-semibold text-sm"
-                  style={{ color: '#BE123C' }}
-                >
-                  {t('transaction.fileDisputeBtn')}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
-
-          {/* ── Disputed info ── */}
-          {tx.status === 'DISPUTED' && tx.disputeReason && (
-            <View
-              style={styles.card}
-              className="bg-neutral-T100 rounded-2xl p-5 gap-3"
-            >
-              <View className="flex-row items-center gap-3">
-                <View className="w-10 h-10 rounded-xl bg-rose-50 items-center justify-center">
-                  <MaterialIcons
-                    name="report-problem"
-                    size={20}
-                    color="#BE123C"
-                  />
-                </View>
-                <View className="flex-1">
-                  <Text className="font-sans font-bold text-sm text-neutral-T10">
-                    {t('transaction.disputedTitle')}
-                  </Text>
-                  <Text className="font-body text-xs text-neutral-T50 mt-0.5 leading-4">
-                    {t('transaction.disputedDesc')}
-                  </Text>
-                </View>
-              </View>
-              <View className="bg-rose-50 rounded-xl p-4">
-                <Text className="font-label text-[10px] text-neutral-T50 uppercase tracking-wider mb-1">
-                  {t('transaction.disputeReasonLabel')}
-                </Text>
-                <Text className="font-body text-sm text-neutral-T10">
-                  {tx.disputeReason}
-                </Text>
-              </View>
-            </View>
-          )}
-
-          {/* ── Refund info ── */}
-          {tx.status === 'REFUNDED' && (
-            <View
-              style={styles.card}
-              className="bg-neutral-T100 rounded-2xl p-5 gap-3"
-            >
-              <View className="flex-row items-center gap-3">
-                <View className="w-10 h-10 rounded-xl bg-orange-50 items-center justify-center">
-                  <MaterialIcons name="replay" size={20} color="#C2410C" />
-                </View>
-                <View className="flex-1">
-                  <Text className="font-sans font-bold text-sm text-neutral-T10">
-                    {t('transaction.refundedTitle')}
-                  </Text>
-                  {tx.refundReason && (
-                    <Text className="font-body text-xs text-neutral-T50 mt-0.5 leading-4">
-                      {tx.refundReason}
+                {isConfirming ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <>
+                    <MaterialIcons
+                      name="check-circle-outline"
+                      size={22}
+                      color="#FFFFFF"
+                    />
+                    <Text className="font-label font-bold text-base text-neutral-T100">
+                      {t('transaction.confirmReceiptBtn')}
                     </Text>
-                  )}
-                </View>
-              </View>
-              {tx.refundedAt && (
-                <Text className="font-body text-xs text-neutral-T50">
-                  {t('transaction.refundedAtLabel')} {formatDate(tx.refundedAt)}
-                </Text>
-              )}
+                  </>
+                )}
+              </TouchableOpacity>
             </View>
           )}
 
@@ -1034,7 +964,7 @@ export default function TransactionDetailScreen() {
             </View>
           )}
 
-          {/* PENDING state — B2C: chờ chuyển khoản */}
+          {/* PENDING state — B2C: chờ store xác nhận đơn */}
           {tx.status === 'PENDING' && isReceiver && !isP2P && (
             <View
               style={styles.card}
@@ -1042,11 +972,7 @@ export default function TransactionDetailScreen() {
             >
               <View className="flex-row items-center gap-3">
                 <View className="w-10 h-10 rounded-xl bg-amber-50 items-center justify-center">
-                  <MaterialIcons
-                    name="account-balance"
-                    size={20}
-                    color="#B45309"
-                  />
+                  <MaterialIcons name="store" size={20} color="#B45309" />
                 </View>
                 <View className="flex-1">
                   <Text className="font-sans font-bold text-sm text-neutral-T10">
@@ -1057,33 +983,6 @@ export default function TransactionDetailScreen() {
                   </Text>
                 </View>
               </View>
-              {tx.expiredAt && (
-                <View className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 flex-row items-center gap-2">
-                  <MaterialIcons name="schedule" size={15} color="#B45309" />
-                  <Text className="font-body text-xs text-amber-800">
-                    {t('transaction.expiresLabel')} {formatDate(tx.expiredAt)}
-                  </Text>
-                </View>
-              )}
-              <TouchableOpacity
-                onPress={() =>
-                  router.push({
-                    pathname: '/(transaction)/payment',
-                    params: { transactionId: tx._id },
-                  } as any)
-                }
-                activeOpacity={0.85}
-                className="h-12 rounded-xl flex-row items-center justify-center gap-2"
-                style={{ backgroundColor: '#296C24' }}
-              >
-                <MaterialIcons name="qr-code" size={18} color="#FFFFFF" />
-                <Text
-                  className="font-label font-bold text-base"
-                  style={{ color: '#FFFFFF' }}
-                >
-                  {t('transaction.continuePaymentBtn')}
-                </Text>
-              </TouchableOpacity>
               <TouchableOpacity
                 onPress={handleCancelOrder}
                 disabled={isCancelling}
@@ -1201,106 +1100,6 @@ export default function TransactionDetailScreen() {
           )}
         </View>
       </ScrollView>
-
-      {/* ── Dispute modal ── */}
-      <Modal
-        visible={showDisputeModal}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowDisputeModal(false)}
-      >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          className="flex-1 justify-end"
-        >
-          <View
-            className="flex-1"
-            style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}
-          >
-            <TouchableOpacity
-              className="flex-1"
-              onPress={() => setShowDisputeModal(false)}
-            />
-            <View
-              style={styles.bottomSheet}
-              className="bg-neutral-T100 rounded-t-3xl px-6 pt-5 pb-8 gap-5"
-            >
-              <View className="w-10 h-1 rounded-full bg-neutral-T80 self-center" />
-
-              <View className="gap-1">
-                <Text className="font-sans font-bold text-lg text-neutral-T10">
-                  {t('transaction.disputeModalTitle')}
-                </Text>
-                <Text className="font-body text-sm text-neutral-T50">
-                  {t('transaction.disputeModalDesc')}
-                </Text>
-              </View>
-
-              <View className="gap-2">
-                <TextInput
-                  value={disputeReason}
-                  onChangeText={(t) => {
-                    setDisputeReason(t);
-                    setDisputeError('');
-                  }}
-                  placeholder={t('transaction.disputePlaceholder')}
-                  placeholderTextColor="#AAABAB"
-                  multiline
-                  numberOfLines={4}
-                  textAlignVertical="top"
-                  className="bg-neutral-T95 rounded-xl px-4 py-3 font-body text-neutral-T10 border border-neutral-T90"
-                  style={[
-                    { minHeight: 100 },
-                    disputeError ? styles.inputError : undefined,
-                  ]}
-                />
-                {!!disputeError && (
-                  <Text className="font-body text-xs text-red-500">
-                    {disputeError}
-                  </Text>
-                )}
-              </View>
-
-              <TouchableOpacity
-                onPress={async () => {
-                  if (disputeReason.trim().length < 10) {
-                    setDisputeError(t('transaction.disputeMinCharsError'));
-                    return;
-                  }
-                  setIsDisputing(true);
-                  try {
-                    await fileDisputeApi(tx._id, disputeReason.trim());
-                    setShowDisputeModal(false);
-                    Alert.alert(
-                      t('transaction.disputeSentTitle'),
-                      t('transaction.disputeSentMsg'),
-                      [{ text: 'OK', onPress: load }]
-                    );
-                  } catch (e: any) {
-                    setDisputeError(
-                      e?.response?.data?.message ?? t('common.error')
-                    );
-                  } finally {
-                    setIsDisputing(false);
-                  }
-                }}
-                disabled={isDisputing}
-                activeOpacity={0.85}
-                className="h-14 rounded-xl items-center justify-center"
-                style={{ backgroundColor: '#BE123C' }}
-              >
-                {isDisputing ? (
-                  <ActivityIndicator color="#FFFFFF" />
-                ) : (
-                  <Text className="font-label font-bold text-base text-neutral-T100">
-                    {t('transaction.sendDisputeBtn')}
-                  </Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
     </View>
   );
 }

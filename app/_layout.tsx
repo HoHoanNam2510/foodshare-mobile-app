@@ -31,9 +31,13 @@ import type { INotification } from '@/lib/notificationApi';
 import {
   registerForPushNotificationsAsync,
   savePushTokenToServer,
+  setupNotificationHandler,
 } from '@/lib/pushNotifications';
+
 import '@/lib/i18n';
 import './global.css';
+
+setupNotificationHandler();
 
 // Tắt chế độ cảnh báo Strict Mode
 configureReanimatedLogger({

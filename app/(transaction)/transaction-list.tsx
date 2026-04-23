@@ -30,20 +30,14 @@ import {
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-const ACTIVE_STATUSES: TransactionStatus[] = [
-  'PENDING',
-  'ACCEPTED',
-  'ESCROWED',
-];
+const ACTIVE_STATUSES: TransactionStatus[] = ['PENDING', 'ACCEPTED'];
 const HISTORY_STATUSES: TransactionStatus[] = [
   'COMPLETED',
   'CANCELLED',
   'REJECTED',
-  'REFUNDED',
-  'DISPUTED',
 ];
 // Trạng thái donor hiển thị trong tab "Đang diễn ra" (đã xác nhận, chờ giao nhận)
-const DONOR_ACTIVE_STATUSES: TransactionStatus[] = ['ACCEPTED', 'ESCROWED'];
+const DONOR_ACTIVE_STATUSES: TransactionStatus[] = ['ACCEPTED'];
 
 const STATUS_CONFIG: Record<
   TransactionStatus,
@@ -59,11 +53,6 @@ const STATUS_CONFIG: Record<
     bg: '#DBEAFE',
     text: '#1D4ED8',
   },
-  ESCROWED: {
-    labelKey: 'transaction.statusEscrowed',
-    bg: '#F3E8FF',
-    text: '#7E22CE',
-  },
   COMPLETED: {
     labelKey: 'transaction.statusCompleted',
     bg: '#DCFCE7',
@@ -78,16 +67,6 @@ const STATUS_CONFIG: Record<
     labelKey: 'transaction.statusRejected',
     bg: '#FEE2E2',
     text: '#DC2626',
-  },
-  REFUNDED: {
-    labelKey: 'transaction.statusRefunded',
-    bg: '#FFF7ED',
-    text: '#C2410C',
-  },
-  DISPUTED: {
-    labelKey: 'transaction.statusDisputed',
-    bg: '#FFF1F2',
-    text: '#BE123C',
   },
 };
 
@@ -475,20 +454,23 @@ export default function TransactionListScreen() {
 
   const [activeTab, setActiveTab] = useState<TabKey>('active');
 
-  const loadReceiver = useCallback(async (isRefresh = false) => {
-    if (isRefresh) setIsRefreshing(true);
-    else setIsLoading(true);
-    setError(null);
-    try {
-      const res = await getMyTransactionsApi();
-      setTransactions(res.data);
-    } catch {
-      setError(t('review.loadError'));
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, []);
+  const loadReceiver = useCallback(
+    async (isRefresh = false) => {
+      if (isRefresh) setIsRefreshing(true);
+      else setIsLoading(true);
+      setError(null);
+      try {
+        const res = await getMyTransactionsApi();
+        setTransactions(res.data);
+      } catch {
+        setError(t('review.loadError'));
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
+    },
+    [t]
+  );
 
   const loadOwner = useCallback(async () => {
     setOwnerLoading(true);
@@ -502,7 +484,7 @@ export default function TransactionListScreen() {
       setOwnerLoading(false);
       setOwnerLoaded(true);
     }
-  }, []);
+  }, [t]);
 
   // Load both datasets on mount
   useEffect(() => {
@@ -525,16 +507,16 @@ export default function TransactionListScreen() {
             ? t('transaction.requestAcceptedMsg')
             : t('transaction.requestRejectedMsg')
         );
-      } catch (e) {
+      } catch (e: any) {
         Alert.alert(
           t('common.error'),
-          e instanceof Error ? e.message : t('common.error')
+          e?.response?.data?.message ?? t('common.error')
         );
       } finally {
         setRespondingId(null);
       }
     },
-    [loadOwner, loadReceiver]
+    [loadOwner, loadReceiver, t]
   );
 
   const handleCancel = useCallback(
@@ -556,7 +538,7 @@ export default function TransactionListScreen() {
         setCancellingId(null);
       }
     },
-    [loadReceiver]
+    [loadReceiver, t]
   );
 
   const navigateToDetail = useCallback(

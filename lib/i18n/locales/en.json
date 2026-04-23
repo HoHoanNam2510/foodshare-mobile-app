@@ -400,6 +400,8 @@
     "businessAddressLabel": "Business address",
     "bankNameLabel": "Bank name",
     "bankNamePlaceholder": "E.g. Vietcombank, MB Bank...",
+    "bankCodeLabel": "Bank code (BIN / Short name)",
+    "bankCodePlaceholder": "E.g. 970436 or VCB",
     "bankAccountNumberLabel": "Account number",
     "bankAccountNameLabel": "Account holder name",
     "bankAccountNamePlaceholder": "E.g. NGUYEN VAN A",
@@ -624,7 +626,15 @@
     "showCodeAtStore": "Show this code at the store when picking up",
     "checkAgainBtn": "Check again",
     "viewMyTransactionsBtn": "View my transactions",
-    "backHomeBtn": "Back to home"
+    "backHomeBtn": "Back to home",
+    "b2cPayQRTitle": "Payment QR Code",
+    "b2cPayQRDesc": "Buyer uses banking app to scan this code",
+    "b2cPayQRNote": "Note: Transfer the exact amount and content for correct recording",
+    "b2cConfirmReceiptTitle": "Confirm payment",
+    "b2cConfirmReceiptDesc": "Please confirm when you have received the transfer from the buyer",
+    "confirmReceiptBtn": "Payment received",
+    "confirmReceiptSuccessTitle": "Success",
+    "confirmReceiptSuccessMsg": "Payment confirmed successfully"
   },
   "review": {
     "title": "Reviews",

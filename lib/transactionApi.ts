@@ -14,11 +14,8 @@ export type TransactionStatus =
   | 'PENDING'
   | 'ACCEPTED'
   | 'REJECTED'
-  | 'ESCROWED'
   | 'COMPLETED'
-  | 'CANCELLED'
-  | 'REFUNDED'
-  | 'DISPUTED';
+  | 'CANCELLED';
 
 export type PaymentMethod = 'FREE' | 'BANK_TRANSFER';
 
@@ -31,14 +28,9 @@ export interface ITransaction {
   quantity: number;
   status: TransactionStatus;
   paymentMethod: PaymentMethod;
-  paymentTransId?: string;
   totalAmount?: number;
   verificationCode?: string;
-  expiredAt?: string;
-  pickupDeadline?: string;
-  refundReason?: string;
-  refundedAt?: string;
-  disputeReason?: string;
+  paymentQR?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -101,25 +93,12 @@ export async function createRequestApi(
 }
 
 // ── POST /api/transactions/orders ───────────────────────────────────────────
-// Người mua đặt túi mù (B2C)
-
-export interface IPaymentInfo {
-  qrDataURL: string;
-  bankName: string;
-  bankAccountNumber: string;
-  bankAccountName: string;
-  amount: number;
-  description: string;
-}
-
-export interface IOrderWithPayment extends ITransaction {
-  paymentInfo: IPaymentInfo | null;
-}
+// Người mua đặt túi mù (B2C) — tạo đơn PENDING, không kèm VietQR
 
 export async function createOrderApi(
   postId: string,
   quantity: number
-): Promise<{ success: boolean; message: string; data: IOrderWithPayment }> {
+): Promise<{ success: boolean; message: string; data: ITransaction }> {
   const { data } = await api.post('/transactions/orders', { postId, quantity });
   return data;
 }
@@ -160,13 +139,12 @@ export async function scanQrApi(verificationCode: string): Promise<{
   return data;
 }
 
-// ── PATCH /api/transactions/:id/dispute ───────────────────────────────────
-// Buyer khiếu nại đơn hàng B2C đang ESCROWED
+// ── PATCH /api/transactions/:id/confirm-receipt ───────────────────────────
+// Store xác nhận đã nhận tiền → COMPLETED
 
-export async function fileDisputeApi(
-  transactionId: string,
-  reason: string
+export async function confirmReceiptApi(
+  transactionId: string
 ): Promise<{ success: boolean; message: string; data: ITransaction }> {
-  const { data } = await api.patch(`/transactions/${transactionId}/dispute`, { reason });
+  const { data } = await api.patch(`/transactions/${transactionId}/confirm-receipt`);
   return data;
 }
