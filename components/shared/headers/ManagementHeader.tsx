@@ -21,19 +21,19 @@ export default function ManagementHeader({
 }: ManagementHeaderProps) {
   return (
     <BaseHeader>
-      <View className="flex-row items-center justify-between flex-1">
+      <View className="flex-1 flex-row items-center justify-between">
         {/* Left: Back button (optional) + Title ExtraBold */}
-        <View className="flex-row items-center gap-3 flex-1">
+        <View className="flex-1 flex-row items-center gap-3">
           {onBack && (
             <TouchableOpacity
-              className="w-10 h-10 rounded-full bg-neutral-T95 items-center justify-center active:opacity-80"
+              className="bg-neutral-T95 h-10 w-10 items-center justify-center rounded-full active:opacity-80"
               onPress={onBack}
             >
               <Feather name="arrow-left" size={20} color="#191C1C" />
             </TouchableOpacity>
           )}
           <Text
-            className="text-xl flex-1"
+            className="flex-1 text-xl"
             style={{ fontFamily: 'Epilogue', fontWeight: '800' }}
             numberOfLines={1}
           >
@@ -46,7 +46,7 @@ export default function ManagementHeader({
           {actions.map((action, index) => (
             <TouchableOpacity
               key={index}
-              className="w-10 h-10 rounded-full bg-neutral-T95 items-center justify-center active:opacity-80"
+              className="bg-neutral-T95 h-10 w-10 items-center justify-center rounded-full active:opacity-80"
               onPress={action.onPress}
             >
               <Feather name={action.icon as any} size={20} color="#191C1C" />

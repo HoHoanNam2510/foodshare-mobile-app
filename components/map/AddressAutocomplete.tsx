@@ -83,7 +83,7 @@ export default function AddressAutocomplete({
     <View>
       {/* Input */}
       <View
-        className="flex-row items-center bg-neutral-T100 rounded-2xl px-4 gap-2"
+        className="bg-neutral-T100 flex-row items-center gap-2 rounded-2xl px-4"
         style={{
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 2 },
@@ -94,7 +94,7 @@ export default function AddressAutocomplete({
       >
         <Ionicons name="search" size={18} color="#757777" />
         <TextInput
-          className="flex-1 h-12 font-body text-base text-neutral-T10"
+          className="font-body text-neutral-T10 h-12 flex-1 text-base"
           placeholder={actualPlaceholder}
           placeholderTextColor="#AAABAB"
           value={text}
@@ -103,7 +103,12 @@ export default function AddressAutocomplete({
         />
         {loading && <ActivityIndicator size="small" color="#296C24" />}
         {!loading && text.length > 0 && (
-          <TouchableOpacity onPress={() => { setText(''); setPredictions([]); }}>
+          <TouchableOpacity
+            onPress={() => {
+              setText('');
+              setPredictions([]);
+            }}
+          >
             <Ionicons name="close-circle" size={18} color="#AAABAB" />
           </TouchableOpacity>
         )}
@@ -112,7 +117,7 @@ export default function AddressAutocomplete({
       {/* Dropdown */}
       {predictions.length > 0 && (
         <View
-          className="bg-neutral-T100 rounded-2xl mt-1 overflow-hidden"
+          className="bg-neutral-T100 mt-1 overflow-hidden rounded-2xl"
           style={{
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 4 },
@@ -130,7 +135,7 @@ export default function AddressAutocomplete({
               <TouchableOpacity
                 activeOpacity={0.75}
                 onPress={() => handleSelect(item)}
-                className={`px-4 py-3 flex-row items-start gap-3 ${index > 0 ? 'border-t border-neutral-T90' : ''}`}
+                className={`flex-row items-start gap-3 px-4 py-3 ${index > 0 ? 'border-neutral-T90 border-t' : ''}`}
               >
                 <Ionicons
                   name="location-outline"
@@ -142,13 +147,13 @@ export default function AddressAutocomplete({
                   {item.structured_formatting ? (
                     <>
                       <Text
-                        className="font-label font-semibold text-sm text-neutral-T10"
+                        className="font-label text-neutral-T10 text-sm font-semibold"
                         numberOfLines={1}
                       >
                         {item.structured_formatting.main_text}
                       </Text>
                       <Text
-                        className="font-body text-xs text-neutral-T50 mt-0.5"
+                        className="font-body text-neutral-T50 mt-0.5 text-xs"
                         numberOfLines={1}
                       >
                         {item.structured_formatting.secondary_text}
@@ -156,7 +161,7 @@ export default function AddressAutocomplete({
                     </>
                   ) : (
                     <Text
-                      className="font-body text-sm text-neutral-T10"
+                      className="font-body text-neutral-T10 text-sm"
                       numberOfLines={2}
                     >
                       {item.description}

@@ -229,7 +229,7 @@ export default function CreateReportScreen() {
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <View className="flex-1 bg-neutral">
+    <View className="bg-neutral flex-1">
       <StatusBar
         barStyle="dark-content"
         backgroundColor="transparent"
@@ -251,33 +251,33 @@ export default function CreateReportScreen() {
         >
           {/* ── Target Info ── */}
           <View
-            className="mx-4 mt-4 bg-neutral-T100 rounded-2xl p-4 gap-2"
+            className="bg-neutral-T100 mx-4 mt-4 gap-2 rounded-2xl p-4"
             style={styles.card}
           >
             <View className="flex-row items-center gap-2">
-              <View className="w-7 h-7 rounded-lg bg-secondary-T95 items-center justify-center">
+              <View className="bg-secondary-T95 h-7 w-7 items-center justify-center rounded-lg">
                 <MaterialIcons name="flag" size={15} color="#C05621" />
               </View>
-              <Text className="font-label font-semibold text-sm text-neutral-T50">
+              <Text className="font-label text-neutral-T50 text-sm font-semibold">
                 {t('report.targetSectionLabel')}
               </Text>
             </View>
             <View className="flex-row items-center gap-2">
-              <View className="px-2.5 py-1 rounded-lg bg-neutral-T95">
-                <Text className="font-label font-semibold text-xs text-neutral-T30">
+              <View className="bg-neutral-T95 rounded-lg px-2.5 py-1">
+                <Text className="font-label text-neutral-T30 text-xs font-semibold">
                   {targetLabel}
                 </Text>
               </View>
               {targetTitle ? (
                 <Text
-                  className="font-body text-sm text-neutral-T10 flex-1"
+                  className="font-body text-neutral-T10 flex-1 text-sm"
                   numberOfLines={1}
                 >
                   {targetTitle}
                 </Text>
               ) : (
                 <Text
-                  className="font-body text-xs text-neutral-T50 flex-1"
+                  className="font-body text-neutral-T50 flex-1 text-xs"
                   numberOfLines={1}
                 >
                   ID: {targetId}
@@ -289,16 +289,16 @@ export default function CreateReportScreen() {
           {/* ── Reason Selector ── */}
           <View className="mx-4 mt-4 gap-2">
             <Text
-              className="text-base text-neutral-T10"
+              className="text-neutral-T10 text-base"
               style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
             >
               {t('report.reasonTitle')}
             </Text>
-            <Text className="font-body text-sm text-neutral-T50 -mt-1">
+            <Text className="font-body text-neutral-T50 -mt-1 text-sm">
               {t('report.reasonHint')}
             </Text>
 
-            <View className="gap-2 mt-1">
+            <View className="mt-1 gap-2">
               {REASON_OPTIONS.map((option) => {
                 const isSelected = selectedReason === option.value;
                 return (
@@ -306,11 +306,11 @@ export default function CreateReportScreen() {
                     key={option.value}
                     activeOpacity={0.8}
                     onPress={() => setSelectedReason(option.value)}
-                    className="bg-neutral-T100 rounded-2xl p-4 flex-row items-center gap-3"
+                    className="bg-neutral-T100 flex-row items-center gap-3 rounded-2xl p-4"
                     style={[styles.card, isSelected && styles.cardSelected]}
                   >
                     <View
-                      className="w-10 h-10 rounded-xl items-center justify-center"
+                      className="h-10 w-10 items-center justify-center rounded-xl"
                       style={{
                         backgroundColor: isSelected ? '#296C24' : '#F0F4F0',
                       }}
@@ -323,20 +323,20 @@ export default function CreateReportScreen() {
                     </View>
                     <View className="flex-1 gap-0.5">
                       <Text
-                        className="font-label text-sm text-neutral-T10"
+                        className="font-label text-neutral-T10 text-sm"
                         style={{ fontWeight: isSelected ? '700' : '600' }}
                       >
                         {t(option.labelKey)}
                       </Text>
                       <Text
-                        className="font-body text-xs text-neutral-T50"
+                        className="font-body text-neutral-T50 text-xs"
                         numberOfLines={1}
                       >
                         {t(option.descKey)}
                       </Text>
                     </View>
                     <View
-                      className="w-5 h-5 rounded-full border-2 items-center justify-center"
+                      className="h-5 w-5 items-center justify-center rounded-full border-2"
                       style={{
                         borderColor: isSelected ? '#296C24' : '#C8CACA',
                         backgroundColor: isSelected ? '#296C24' : 'transparent',
@@ -355,12 +355,12 @@ export default function CreateReportScreen() {
           {/* ── Description ── */}
           <View className="mx-4 mt-5 gap-2">
             <Text
-              className="text-base text-neutral-T10"
+              className="text-neutral-T10 text-base"
               style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
             >
               {t('report.descriptionTitle')}
             </Text>
-            <Text className="font-body text-sm text-neutral-T50 -mt-1">
+            <Text className="font-body text-neutral-T50 -mt-1 text-sm">
               {t('report.descriptionHint')}
             </Text>
             <View
@@ -386,7 +386,7 @@ export default function CreateReportScreen() {
                 ]}
                 className="text-neutral-T10 text-sm"
               />
-              <View className="px-4 pb-3 flex-row justify-end">
+              <View className="flex-row justify-end px-4 pb-3">
                 <Text
                   className="font-label text-xs"
                   style={{
@@ -407,16 +407,16 @@ export default function CreateReportScreen() {
             <View className="flex-row items-center justify-between">
               <View className="gap-0.5">
                 <Text
-                  className="text-base text-neutral-T10"
+                  className="text-neutral-T10 text-base"
                   style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
                 >
                   {t('report.evidenceTitle')}
                 </Text>
-                <Text className="font-body text-sm text-neutral-T50">
+                <Text className="font-body text-neutral-T50 text-sm">
                   {t('report.evidenceRequired', { max: MAX_IMAGES })}
                 </Text>
               </View>
-              <Text className="font-label font-semibold text-xs text-neutral-T50">
+              <Text className="font-label text-neutral-T50 text-xs font-semibold">
                 {totalImages}/{MAX_IMAGES}
               </Text>
             </View>
@@ -428,12 +428,12 @@ export default function CreateReportScreen() {
             >
               {totalImages < MAX_IMAGES && (
                 <TouchableOpacity
-                  className="w-28 h-28 rounded-2xl border border-dashed border-neutral-T80 bg-neutral-T95 items-center justify-center gap-1 active:opacity-80"
+                  className="border-neutral-T80 bg-neutral-T95 h-28 w-28 items-center justify-center gap-1 rounded-2xl border border-dashed active:opacity-80"
                   onPress={handleAddImage}
                   disabled={isSubmitting}
                 >
                   <MaterialIcons name="add-a-photo" size={26} color="#296C24" />
-                  <Text className="font-label text-xs font-semibold text-primary-T40">
+                  <Text className="font-label text-primary-T40 text-xs font-semibold">
                     {t('report.addPhotoBtn')}
                   </Text>
                 </TouchableOpacity>
@@ -442,22 +442,22 @@ export default function CreateReportScreen() {
               {keptImageUrls.map((url, index) => (
                 <View
                   key={`kept-${url}-${index}`}
-                  className="w-28 h-28 rounded-2xl overflow-hidden shadow-sm"
+                  className="h-28 w-28 overflow-hidden rounded-2xl shadow-sm"
                 >
                   <Image
                     source={{ uri: url }}
-                    className="w-full h-full"
+                    className="h-full w-full"
                     resizeMode="cover"
                   />
                   {/* "Saved" badge */}
-                  <View className="absolute bottom-1.5 left-1.5 bg-primary-T40/80 rounded px-1.5 py-0.5">
-                    <Text className="text-white text-[9px] font-bold">
+                  <View className="bg-primary-T40/80 absolute bottom-1.5 left-1.5 rounded px-1.5 py-0.5">
+                    <Text className="text-[9px] font-bold text-white">
                       {t('report.savedBadge')}
                     </Text>
                   </View>
                   {!isSubmitting && (
                     <TouchableOpacity
-                      className="absolute top-2 right-2 w-6 h-6 bg-black/40 rounded-full items-center justify-center active:opacity-80"
+                      className="absolute right-2 top-2 h-6 w-6 items-center justify-center rounded-full bg-black/40 active:opacity-80"
                       onPress={() => handleRemoveKeptImage(index)}
                     >
                       <MaterialIcons name="close" size={14} color="white" />
@@ -469,21 +469,21 @@ export default function CreateReportScreen() {
               {newLocalImages.map((uri, index) => (
                 <View
                   key={`new-${uri}-${index}`}
-                  className="w-28 h-28 rounded-2xl overflow-hidden shadow-sm"
+                  className="h-28 w-28 overflow-hidden rounded-2xl shadow-sm"
                 >
                   <Image
                     source={{ uri }}
-                    className="w-full h-full"
+                    className="h-full w-full"
                     resizeMode="cover"
                   />
                   {uploadingIndex === index && (
-                    <View className="absolute inset-0 bg-black/50 items-center justify-center">
+                    <View className="absolute inset-0 items-center justify-center bg-black/50">
                       <ActivityIndicator size="small" color="#FFFFFF" />
                     </View>
                   )}
                   {!isSubmitting && (
                     <TouchableOpacity
-                      className="absolute top-2 right-2 w-6 h-6 bg-black/40 rounded-full items-center justify-center active:opacity-80"
+                      className="absolute right-2 top-2 h-6 w-6 items-center justify-center rounded-full bg-black/40 active:opacity-80"
                       onPress={() => handleRemoveNewImage(index)}
                     >
                       <MaterialIcons name="close" size={14} color="white" />
@@ -495,14 +495,14 @@ export default function CreateReportScreen() {
           </View>
 
           {/* ── Policy note ── */}
-          <View className="mx-4 mt-4 flex-row gap-2 p-3 bg-red-100 rounded-xl">
+          <View className="mx-4 mt-4 flex-row gap-2 rounded-xl bg-red-100 p-3">
             <MaterialIcons
               name="info-outline"
               size={16}
               color="#ba1a1a"
               style={{ marginTop: 1 }}
             />
-            <Text className="font-body text-xs text-error flex-1 leading-4">
+            <Text className="font-body text-error flex-1 text-xs leading-4">
               {t('report.policyNote')}
             </Text>
           </View>
@@ -511,14 +511,14 @@ export default function CreateReportScreen() {
 
       {/* ── Submit Button ── */}
       <View
-        className="absolute bottom-0 left-0 right-0 bg-neutral-T100 px-4 pt-3 border-t border-neutral-T90"
+        className="bg-neutral-T100 border-neutral-T90 absolute bottom-0 left-0 right-0 border-t px-4 pt-3"
         style={{ paddingBottom: insets.bottom + 12 }}
       >
         <TouchableOpacity
           onPress={handleSubmit}
           disabled={!canSubmit}
           activeOpacity={0.85}
-          className="h-14 rounded-xl items-center justify-center flex-row gap-2"
+          className="h-14 flex-row items-center justify-center gap-2 rounded-xl"
           style={{ backgroundColor: canSubmit ? '#296C24' : '#E0E0E0' }}
         >
           {isSubmitting ? (
@@ -531,7 +531,7 @@ export default function CreateReportScreen() {
                 color={canSubmit ? '#FFFFFF' : '#AAABAB'}
               />
               <Text
-                className="font-label font-semibold text-base"
+                className="font-label text-base font-semibold"
                 style={{ color: canSubmit ? '#FFFFFF' : '#AAABAB' }}
               >
                 {isEditMode ? t('report.saveBtn') : t('report.submitBtn')}

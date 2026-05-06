@@ -20,10 +20,10 @@ const PrivacyField = ({ icon, label, value, isHidden }: PrivacyFieldProps) => {
     <View className="flex-row items-center gap-4">
       <MaterialIcons name={icon} size={22} color="#944A00" />
       <View className="flex-1">
-        <Text className="font-label text-[10px] text-neutral-T50 font-semibold uppercase">
+        <Text className="font-label text-neutral-T50 text-[10px] font-semibold uppercase">
           {label}
         </Text>
-        <Text className="font-body text-sm text-neutral-T10" numberOfLines={1}>
+        <Text className="font-body text-neutral-T10 text-sm" numberOfLines={1}>
           {isHidden ? maskedValue : value}
         </Text>
       </View>
@@ -65,23 +65,23 @@ export default function ContactCard({
       : undefined);
 
   return (
-    <View className="bg-neutral-T100 rounded-2xl shadow-sm p-6 gap-5">
+    <View className="bg-neutral-T100 gap-5 rounded-2xl p-6 shadow-sm">
       {isIncomplete && (
         <SectionIncompleteBadge message={t('profile.contactIncompleteMsg')} />
       )}
       {/* Section header */}
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-3">
-          <View className="w-10 h-10 bg-secondary-T95 rounded-xl items-center justify-center">
+          <View className="bg-secondary-T95 h-10 w-10 items-center justify-center rounded-xl">
             <MaterialIcons name="contact-mail" size={20} color="#944A00" />
           </View>
-          <Text className="font-sans font-bold text-lg text-neutral-T10">
+          <Text className="text-neutral-T10 font-sans text-lg font-bold">
             {t('profile.contactTitle')}
           </Text>
         </View>
         <TouchableOpacity
           onPress={() => setHideAll(!hideAll)}
-          className="active:opacity-70 p-1"
+          className="p-1 active:opacity-70"
         >
           <MaterialIcons
             name={hideAll ? 'visibility-off' : 'visibility'}

@@ -17,11 +17,13 @@ export default function MapPreviewCard({
   const { t } = useTranslation();
   const isFree = post.type === 'P2P_FREE';
   const imageUrl = post.images?.[0];
-  const priceLabel = isFree ? t('common.free').toUpperCase() : `${post.price.toLocaleString('vi-VN')}đ`;
+  const priceLabel = isFree
+    ? t('common.free').toUpperCase()
+    : `${post.price.toLocaleString('vi-VN')}đ`;
 
   return (
     <View
-      className="bg-neutral-T100 rounded-3xl p-3 flex-row gap-3"
+      className="bg-neutral-T100 flex-row gap-3 rounded-3xl p-3"
       style={{
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 6 },
@@ -31,7 +33,7 @@ export default function MapPreviewCard({
       }}
     >
       {/* Thumbnail */}
-      <View className="w-22 h-22 rounded-2xl overflow-hidden flex-shrink-0">
+      <View className="w-22 h-22 flex-shrink-0 overflow-hidden rounded-2xl">
         {imageUrl ? (
           <Image
             source={{ uri: imageUrl }}
@@ -51,7 +53,7 @@ export default function MapPreviewCard({
         <View>
           <View className="flex-row items-start justify-between">
             <Text
-              className="text-secondary text-[10px] font-label uppercase tracking-widest"
+              className="text-secondary font-label text-[10px] uppercase tracking-widest"
               style={{ fontWeight: '700' }}
             >
               {isFree ? t('explore.filterFreeFood') : t('explore.surpriseBag')}
@@ -59,23 +61,23 @@ export default function MapPreviewCard({
             <Ionicons name="heart" size={16} color="#983F6A" />
           </View>
           <Text
-            className="text-neutral-T10 font-sans mt-0.5"
+            className="text-neutral-T10 mt-0.5 font-sans"
             style={{ fontSize: 15, fontWeight: '700', lineHeight: 20 }}
             numberOfLines={2}
           >
             {post.title}
           </Text>
           {post.distance && (
-            <View className="flex-row items-center gap-1 mt-1">
+            <View className="mt-1 flex-row items-center gap-1">
               <Ionicons name="location-outline" size={12} color="#757777" />
-              <Text className="text-neutral-T50 text-xs font-label">
+              <Text className="text-neutral-T50 font-label text-xs">
                 {t('explore.distanceAway', { dist: post.distance })}
               </Text>
             </View>
           )}
         </View>
 
-        <View className="flex-row items-center justify-between mt-2">
+        <View className="mt-2 flex-row items-center justify-between">
           <Text
             className={`font-sans ${isFree ? 'text-primary-T40' : 'text-secondary'}`}
             style={{ fontSize: 16, fontWeight: '700' }}
@@ -85,10 +87,10 @@ export default function MapPreviewCard({
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={onViewDetails}
-            className="bg-primary-T90 px-3 py-1.5 rounded-xl"
+            className="bg-primary-T90 rounded-xl px-3 py-1.5"
           >
             <Text
-              className="text-primary-T30 text-xs font-label"
+              className="text-primary-T30 font-label text-xs"
               style={{ fontWeight: '700' }}
             >
               {t('explore.viewDetails')}

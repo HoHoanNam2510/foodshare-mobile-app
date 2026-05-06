@@ -13,14 +13,14 @@ export default function ProfileHeader({ onSettingsPress }: ProfileHeaderProps) {
   const router = useRouter();
 
   return (
-    <View className="flex-row items-center gap-4 px-6 h-16 bg-neutral-T100 shadow-sm">
+    <View className="bg-neutral-T100 h-16 flex-row items-center gap-4 px-6 shadow-sm">
       <TouchableOpacity
-        className="active:opacity-70 p-1"
+        className="p-1 active:opacity-70"
         onPress={() => router.back()}
       >
         <MaterialIcons name="arrow-back" size={24} color="#757777" />
       </TouchableOpacity>
-      <Text className="font-sans font-bold text-lg text-primary-T40">
+      <Text className="text-primary-T40 font-sans text-lg font-bold">
         {t('profile.title')}
       </Text>
       {/* <TouchableOpacity

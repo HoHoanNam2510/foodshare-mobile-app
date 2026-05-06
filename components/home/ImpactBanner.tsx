@@ -6,23 +6,23 @@ import { useTranslation } from 'react-i18next';
 export default function ImpactBanner() {
   const { t } = useTranslation();
   return (
-    <View className="mx-5 mt-8 mb-6 bg-primary-T40 rounded-2xl px-5 py-5 overflow-hidden shadow-md">
+    <View className="bg-primary-T40 mx-5 mb-6 mt-8 overflow-hidden rounded-2xl px-5 py-5 shadow-md">
       {/* Decorative elements */}
       <View
-        className="absolute -top-4 -right-4 w-20 h-20 bg-primary-T30/30 rounded-xl"
+        className="bg-primary-T30/30 absolute -right-4 -top-4 h-20 w-20 rounded-xl"
         style={{ transform: [{ rotate: '15deg' }] }}
       />
       <View
-        className="absolute bottom-2 right-10 w-10 h-10 bg-primary-T50/25 rounded-lg"
+        className="bg-primary-T50/25 absolute bottom-2 right-10 h-10 w-10 rounded-lg"
         style={{ transform: [{ rotate: '-10deg' }] }}
       />
 
-      <View className="flex-row items-center gap-2 mb-3">
-        <View className="bg-secondary-T80 w-9 h-9 rounded-full items-center justify-center">
+      <View className="mb-3 flex-row items-center gap-2">
+        <View className="bg-secondary-T80 h-9 w-9 items-center justify-center rounded-full">
           <Ionicons name="flash" size={18} color="#296C24" />
         </View>
         <Text
-          className="text-lg font-sans text-neutral-T100"
+          className="text-neutral-T100 font-sans text-lg"
           style={{ fontWeight: '700' }}
         >
           {t('home.impactTitle')}
@@ -37,12 +37,12 @@ export default function ImpactBanner() {
         ].map((stat, i) => (
           <View key={i} className="items-center">
             <Text
-              className="text-xl font-sans text-neutral-T100"
+              className="text-neutral-T100 font-sans text-xl"
               style={{ fontWeight: '800' }}
             >
               {stat.value}
             </Text>
-            <Text className="text-xs font-body text-neutral-T95/80 mt-0.5">
+            <Text className="font-body text-neutral-T95/80 mt-0.5 text-xs">
               {stat.label}
             </Text>
           </View>

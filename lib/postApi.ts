@@ -84,7 +84,9 @@ export async function createPostApi(
   payload: CreatePostPayload
 ): Promise<CreatePostResponse> {
   try {
-    const { data } = await api.post<CreatePostResponse>('/posts', payload, { timeout: 30000 });
+    const { data } = await api.post<CreatePostResponse>('/posts', payload, {
+      timeout: 30000,
+    });
     return data;
   } catch (error) {
     extractErrorMessage(error, 'Tạo bài đăng thất bại');

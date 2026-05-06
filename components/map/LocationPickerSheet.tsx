@@ -108,10 +108,7 @@ export default function LocationPickerSheet({
     resolveAddress(coords[1], coords[0]);
   };
 
-  const handleAutocompleteSelect = (
-    addr: string,
-    coords: [number, number]
-  ) => {
+  const handleAutocompleteSelect = (addr: string, coords: [number, number]) => {
     setPinCoords(coords);
     setAddress(addr);
     // @ts-ignore — flyTo exists at runtime
@@ -130,23 +127,23 @@ export default function LocationPickerSheet({
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      <View className="flex-1 bg-neutral">
+      <View className="bg-neutral flex-1">
         {/* Header */}
         <View
-          className="flex-row items-center justify-between px-5 bg-neutral-T100"
+          className="bg-neutral-T100 flex-row items-center justify-between px-5"
           style={{ paddingTop: insets.top + 12, paddingBottom: 12 }}
         >
           <TouchableOpacity onPress={onClose} activeOpacity={0.7}>
             <Ionicons name="close" size={24} color="#2B2C2C" />
           </TouchableOpacity>
-          <Text className="font-sans font-bold text-base text-neutral-T10">
+          <Text className="text-neutral-T10 font-sans text-base font-bold">
             {t('map.pickLocationHeader')}
           </Text>
           <View style={{ width: 24 }} />
         </View>
 
         {/* Autocomplete */}
-        <View className="px-4 py-3 bg-neutral-T100 border-b border-neutral-T90">
+        <View className="bg-neutral-T100 border-neutral-T90 border-b px-4 py-3">
           <AddressAutocomplete
             placeholder={t('map.searchAddressPlaceholder')}
             onSelect={handleAutocompleteSelect}
@@ -179,7 +176,9 @@ export default function LocationPickerSheet({
               coordinate={pinCoords}
               draggable
               onDragEnd={(feature: any) => {
-                const geo = feature?.geometry as { coordinates?: number[] } | undefined;
+                const geo = feature?.geometry as
+                  | { coordinates?: number[] }
+                  | undefined;
                 const coords = geo?.coordinates;
                 if (coords && coords.length >= 2) {
                   const newCoords: [number, number] = [coords[0], coords[1]];
@@ -197,11 +196,11 @@ export default function LocationPickerSheet({
 
         {/* Footer */}
         <View
-          className="bg-neutral-T100 px-5 pt-4 border-t border-neutral-T90"
+          className="bg-neutral-T100 border-neutral-T90 border-t px-5 pt-4"
           style={{ paddingBottom: Math.max(insets.bottom, 16) + 4 }}
         >
           {/* Selected address */}
-          <View className="flex-row items-start gap-2 mb-4">
+          <View className="mb-4 flex-row items-start gap-2">
             <Ionicons
               name="location-outline"
               size={18}
@@ -209,14 +208,14 @@ export default function LocationPickerSheet({
               style={{ marginTop: 2 }}
             />
             <View className="flex-1">
-              <Text className="font-label text-[10px] text-neutral-T50 uppercase tracking-wider mb-0.5">
+              <Text className="font-label text-neutral-T50 mb-0.5 text-[10px] uppercase tracking-wider">
                 {t('map.selectedAddressLabel')}
               </Text>
               {resolving ? (
                 <ActivityIndicator size="small" color="#296C24" />
               ) : (
                 <Text
-                  className="font-body text-sm text-neutral-T10"
+                  className="font-body text-neutral-T10 text-sm"
                   numberOfLines={2}
                 >
                   {address || t('map.unknownAddress')}
@@ -229,9 +228,9 @@ export default function LocationPickerSheet({
             activeOpacity={0.85}
             onPress={handleConfirm}
             disabled={resolving}
-            className="h-14 bg-primary-T40 rounded-2xl items-center justify-center"
+            className="bg-primary-T40 h-14 items-center justify-center rounded-2xl"
           >
-            <Text className="font-label font-semibold text-base text-neutral-T100">
+            <Text className="font-label text-neutral-T100 text-base font-semibold">
               {t('map.confirmLocationBtn')}
             </Text>
           </TouchableOpacity>

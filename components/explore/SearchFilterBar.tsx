@@ -12,10 +12,18 @@ import { TYPE_FILTER_OPTIONS } from './mockData';
 import { SortOption, TypeFilter } from './types';
 import { useTranslation } from 'react-i18next';
 
-const SORT_OPTION_CONFIGS: { value: SortOption; labelKey: string; icon: string }[] = [
+const SORT_OPTION_CONFIGS: {
+  value: SortOption;
+  labelKey: string;
+  icon: string;
+}[] = [
   { value: 'newest', labelKey: 'explore.sortNewest', icon: 'clock' },
   { value: 'closest', labelKey: 'explore.sortClosest', icon: 'navigation' },
-  { value: 'expiring', labelKey: 'explore.sortExpiring', icon: 'alert-triangle' },
+  {
+    value: 'expiring',
+    labelKey: 'explore.sortExpiring',
+    icon: 'alert-triangle',
+  },
 ];
 
 interface SearchFilterBarProps {
@@ -45,13 +53,14 @@ export default function SearchFilterBar({
   };
 
   const activeSortLabelKey =
-    SORT_OPTION_CONFIGS.find((o) => o.value === sortOption)?.labelKey ?? 'explore.sortNewest';
+    SORT_OPTION_CONFIGS.find((o) => o.value === sortOption)?.labelKey ??
+    'explore.sortNewest';
 
   return (
     <View className="gap-3">
       {/* ── Search input ── */}
       <View
-        className="bg-neutral-T100 flex-row items-center px-3 py-5 rounded-xl gap-2"
+        className="bg-neutral-T100 flex-row items-center gap-2 rounded-xl px-3 py-5"
         style={{
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 1 },
@@ -62,7 +71,7 @@ export default function SearchFilterBar({
       >
         <Feather name="search" size={20} color="#757777" />
         <TextInput
-          className="flex-1 font-label text-neutral-T10"
+          className="font-label text-neutral-T10 flex-1"
           placeholder={t('explore.searchPlaceholder')}
           placeholderTextColor="#AAABAB"
           value={searchText}
@@ -84,10 +93,10 @@ export default function SearchFilterBar({
               key={filter}
               onPress={() => onFilterChange(filter)}
               activeOpacity={0.8}
-              className={`px-4 py-2 rounded-full ${
+              className={`rounded-full px-4 py-2 ${
                 isActive
                   ? 'bg-primary-T40'
-                  : 'bg-neutral-T100 border border-neutral-T90'
+                  : 'bg-neutral-T100 border-neutral-T90 border'
               }`}
               style={
                 isActive
@@ -116,12 +125,14 @@ export default function SearchFilterBar({
 
       {/* ── Sort row ── */}
       <View className="flex-row items-center gap-2">
-        <Text className="text-neutral-T50 text-sm font-label">{t('explore.sort')}:</Text>
+        <Text className="text-neutral-T50 font-label text-sm">
+          {t('explore.sort')}:
+        </Text>
 
         <TouchableOpacity
           onPress={() => setSortOpen((prev) => !prev)}
           activeOpacity={0.8}
-          className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary-T90 border border-secondary-T70"
+          className="bg-secondary-T90 border-secondary-T70 flex-row items-center gap-1.5 rounded-full border px-3 py-1.5"
         >
           <Text
             className="text-secondary font-label text-sm"
@@ -140,7 +151,7 @@ export default function SearchFilterBar({
       {/* ── Sort dropdown panel ── */}
       {sortOpen && (
         <View
-          className="bg-neutral-T100 rounded-2xl overflow-hidden border border-neutral-T90"
+          className="bg-neutral-T100 border-neutral-T90 overflow-hidden rounded-2xl border"
           style={{
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 4 },
@@ -160,7 +171,9 @@ export default function SearchFilterBar({
                 }}
                 activeOpacity={0.7}
                 className={`flex-row items-center justify-between px-4 py-3 ${
-                  index < SORT_OPTION_CONFIGS.length - 1 ? 'border-b border-neutral-T95' : ''
+                  index < SORT_OPTION_CONFIGS.length - 1
+                    ? 'border-neutral-T95 border-b'
+                    : ''
                 } ${isSelected ? 'bg-secondary-T95' : ''}`}
               >
                 <View className="flex-row items-center gap-2">

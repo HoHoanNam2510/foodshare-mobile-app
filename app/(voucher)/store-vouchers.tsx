@@ -15,7 +15,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ManagementHeader from '@/components/shared/headers/ManagementHeader';
 
 import VoucherCard from '@/components/voucher/VoucherCard';
-import { storeDeleteVoucherApi, storeGetMyVouchersApi, storeToggleVoucherApi } from '@/lib/voucherApi';
+import {
+  storeDeleteVoucherApi,
+  storeGetMyVouchersApi,
+  storeToggleVoucherApi,
+} from '@/lib/voucherApi';
 import type { IVoucher } from '@/lib/voucherApi';
 import { useAuthStore } from '@/stores/authStore';
 import { useTranslation } from 'react-i18next';
@@ -93,9 +97,15 @@ export default function StoreVouchersScreen() {
             try {
               await storeDeleteVoucherApi(voucherId);
               setVouchers((prev) => prev.filter((v) => v._id !== voucherId));
-              Alert.alert(t('common.success'), t('voucher.deleteVoucherSuccess'));
+              Alert.alert(
+                t('common.success'),
+                t('voucher.deleteVoucherSuccess')
+              );
             } catch {
-              Alert.alert(t('voucher.errorAlert'), t('voucher.deleteVoucherFailed'));
+              Alert.alert(
+                t('voucher.errorAlert'),
+                t('voucher.deleteVoucherFailed')
+              );
             }
           },
         },
@@ -110,7 +120,7 @@ export default function StoreVouchersScreen() {
   };
 
   return (
-    <View className="flex-1 bg-neutral">
+    <View className="bg-neutral flex-1">
       <ManagementHeader
         title={t('voucher.storeVouchersTitle')}
         onBack={() => router.back()}
@@ -125,7 +135,7 @@ export default function StoreVouchersScreen() {
       {loading ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-sm text-neutral-T50">
+          <Text className="font-body text-neutral-T50 text-sm">
             {t('common.loading')}
           </Text>
         </View>
@@ -144,19 +154,19 @@ export default function StoreVouchersScreen() {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           ListEmptyComponent={
-            <View className="items-center justify-center py-20 gap-3">
+            <View className="items-center justify-center gap-3 py-20">
               <MaterialIcons name="local-offer" size={48} color="#C5C7C6" />
-              <Text className="font-body text-sm text-neutral-T50 text-center">
+              <Text className="font-body text-neutral-T50 text-center text-sm">
                 {t('voucher.emptyStoreVouchersTitle')}
                 {'\n'}
                 {t('voucher.emptyStoreVouchersDesc')}
               </Text>
               <TouchableOpacity
                 onPress={() => router.push('/(voucher)/create-voucher' as any)}
-                className="px-6 py-3 bg-primary-T40 rounded-xl"
+                className="bg-primary-T40 rounded-xl px-6 py-3"
                 activeOpacity={0.85}
               >
-                <Text className="font-label font-semibold text-neutral-T100">
+                <Text className="font-label text-neutral-T100 font-semibold">
                   {t('voucher.createVoucherBtn')}
                 </Text>
               </TouchableOpacity>

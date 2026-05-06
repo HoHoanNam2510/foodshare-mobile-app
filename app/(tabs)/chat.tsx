@@ -74,21 +74,21 @@ function ChatCard({
     <TouchableOpacity
       activeOpacity={0.8}
       onPress={onPress}
-      className="mx-5 mb-3 bg-neutral-T100 rounded-2xl px-4 py-3.5 flex-row items-center shadow-sm active:opacity-80"
+      className="bg-neutral-T100 mx-5 mb-3 flex-row items-center rounded-2xl px-4 py-3.5 shadow-sm active:opacity-80"
     >
       {/* Avatar */}
       <View className="relative mr-3.5">
         <Image
           source={{ uri: avatarUri }}
-          className="w-[54px] h-[54px] rounded-full"
+          className="h-[54px] w-[54px] rounded-full"
         />
       </View>
 
       {/* Text content */}
       <View className="flex-1 justify-center">
-        <View className="flex-row justify-between items-baseline mb-1">
+        <View className="mb-1 flex-row items-baseline justify-between">
           <Text
-            className="font-body text-[15px] text-neutral-T10 flex-1 mr-2"
+            className="font-body text-neutral-T10 mr-2 flex-1 text-[15px]"
             style={{ fontWeight: hasUnread ? '700' : '400' }}
             numberOfLines={1}
           >
@@ -102,9 +102,9 @@ function ChatCard({
           </Text>
         </View>
 
-        <View className="flex-row justify-between items-center">
+        <View className="flex-row items-center justify-between">
           <Text
-            className={`font-body text-[13px] flex-1 mr-2 ${hasUnread ? 'text-neutral-T30' : 'text-neutral-T50'}`}
+            className={`font-body mr-2 flex-1 text-[13px] ${hasUnread ? 'text-neutral-T30' : 'text-neutral-T50'}`}
             style={{ fontWeight: hasUnread ? '500' : '400' }}
             numberOfLines={1}
           >
@@ -112,9 +112,9 @@ function ChatCard({
           </Text>
 
           {hasUnread ? (
-            <View className="min-w-[20px] h-5 bg-primary-T40 rounded-full items-center justify-center px-1.5">
+            <View className="bg-primary-T40 h-5 min-w-[20px] items-center justify-center rounded-full px-1.5">
               <Text
-                className="font-label text-[10px] text-neutral-T100"
+                className="font-label text-neutral-T100 text-[10px]"
                 style={{ fontWeight: '700' }}
               >
                 {unread}
@@ -168,7 +168,7 @@ export default function ChatListScreen() {
     : conversations;
 
   return (
-    <View className="flex-1 bg-neutral">
+    <View className="bg-neutral flex-1">
       <StatusBar
         barStyle="dark-content"
         backgroundColor="transparent"
@@ -178,14 +178,14 @@ export default function ChatListScreen() {
 
       {/* ── Search Bar ── */}
       <View className="px-5 py-3">
-        <View className="flex-row items-center bg-neutral-T100 rounded-xl px-4 py-5 shadow-sm border border-neutral-T90">
+        <View className="bg-neutral-T100 border-neutral-T90 flex-row items-center rounded-xl border px-4 py-5 shadow-sm">
           <Feather name="search" size={18} color="#AAABAB" />
           <TextInput
             placeholder={t('chat.searchPlaceholder')}
             placeholderTextColor="#AAABAB"
             value={query}
             onChangeText={setQuery}
-            className="flex-1 ml-2.5 font-body text-[14px] text-neutral-T10"
+            className="font-body text-neutral-T10 ml-2.5 flex-1 text-[14px]"
           />
           {query.length > 0 && (
             <TouchableOpacity onPress={() => setQuery('')} activeOpacity={0.7}>
@@ -216,8 +216,8 @@ export default function ChatListScreen() {
           }
         >
           {/* ── Section label ── */}
-          <View className="flex-row justify-between items-center px-5 mb-3">
-            <Text className="font-body-semibold text-[13px] text-neutral-T50">
+          <View className="mb-3 flex-row items-center justify-between px-5">
+            <Text className="font-body-semibold text-neutral-T50 text-[13px]">
               {query
                 ? t('chat.searchResultsFor', { query })
                 : t('chat.recentLabel')}
@@ -247,17 +247,17 @@ export default function ChatListScreen() {
               );
             })
           ) : (
-            <View className="items-center mt-16 px-8">
-              <View className="w-16 h-16 bg-neutral-T95 rounded-full items-center justify-center mb-4">
+            <View className="mt-16 items-center px-8">
+              <View className="bg-neutral-T95 mb-4 h-16 w-16 items-center justify-center rounded-full">
                 <Feather name="message-circle" size={28} color="#AAABAB" />
               </View>
               <Text
-                className="font-body text-[15px] text-neutral-T10 mb-1"
+                className="font-body text-neutral-T10 mb-1 text-[15px]"
                 style={{ fontWeight: '700' }}
               >
                 {query ? t('chat.noResultsTitle') : t('chat.noChats')}
               </Text>
-              <Text className="font-body text-[13px] text-neutral-T50 text-center">
+              <Text className="font-body text-neutral-T50 text-center text-[13px]">
                 {query ? t('chat.noResultsHint') : t('chat.startFromPost')}
               </Text>
             </View>

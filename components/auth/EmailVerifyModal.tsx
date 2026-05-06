@@ -107,16 +107,17 @@ export default function EmailVerifyModal({
         >
           <Pressable onPress={(e) => e.stopPropagation()}>
             <View
-              className="bg-neutral-T100 rounded-t-3xl px-8 pt-8 gap-6"
+              className="bg-neutral-T100 gap-6 rounded-t-3xl px-8 pt-8"
               style={{ paddingBottom: Math.max(insets.bottom, 24) + 16 }}
             >
               <View className="items-center gap-2">
-                <Text className="font-sans font-bold text-xl text-neutral-T10">
+                <Text className="text-neutral-T10 font-sans text-xl font-bold">
                   {t('auth.verifyTitle')}
                 </Text>
-                <Text className="font-body text-sm text-neutral-T50 text-center leading-relaxed">
-                  {t('auth.verifyCodeSentTo')}{'\n'}
-                  <Text className="font-semibold text-neutral-T30">
+                <Text className="font-body text-neutral-T50 text-center text-sm leading-relaxed">
+                  {t('auth.verifyCodeSentTo')}
+                  {'\n'}
+                  <Text className="text-neutral-T30 font-semibold">
                     {maskedEmail}
                   </Text>
                 </Text>
@@ -127,7 +128,7 @@ export default function EmailVerifyModal({
                   <TextInput
                     key={index}
                     ref={refs[index]}
-                    className="w-12 h-14 text-center text-2xl font-sans font-bold bg-neutral-T95 rounded-xl border border-neutral-T90 text-neutral-T10"
+                    className="bg-neutral-T95 border-neutral-T90 text-neutral-T10 h-14 w-12 rounded-xl border text-center font-sans text-2xl font-bold"
                     maxLength={1}
                     keyboardType="numeric"
                     secureTextEntry
@@ -149,7 +150,7 @@ export default function EmailVerifyModal({
                   {isResending ? (
                     <ActivityIndicator size="small" color="#296C24" />
                   ) : (
-                    <Text className="font-label text-sm font-semibold text-primary-T40">
+                    <Text className="font-label text-primary-T40 text-sm font-semibold">
                       {t('auth.resendCode')}
                     </Text>
                   )}
@@ -158,21 +159,19 @@ export default function EmailVerifyModal({
 
               <View className="flex-row gap-3">
                 <TouchableOpacity
-                  className="flex-1 h-14 rounded-xl bg-neutral-T95 items-center justify-center active:opacity-80"
+                  className="bg-neutral-T95 h-14 flex-1 items-center justify-center rounded-xl active:opacity-80"
                   onPress={handleCancel}
                 >
-                  <Text className="font-label font-semibold text-neutral-T50">
+                  <Text className="font-label text-neutral-T50 font-semibold">
                     {t('common.cancel')}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className="flex-1 h-14 rounded-xl bg-primary-T40 items-center justify-center shadow-sm active:opacity-80"
+                  className="bg-primary-T40 h-14 flex-1 items-center justify-center rounded-xl shadow-sm active:opacity-80"
                   onPress={handleVerify}
-                  disabled={
-                    isLoading || digits.join('').length < CODE_LENGTH
-                  }
+                  disabled={isLoading || digits.join('').length < CODE_LENGTH}
                 >
-                  <Text className="font-label font-semibold text-neutral-T100">
+                  <Text className="font-label text-neutral-T100 font-semibold">
                     {isLoading ? t('auth.verifying') : t('auth.verify')}
                   </Text>
                 </TouchableOpacity>

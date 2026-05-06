@@ -135,7 +135,7 @@ function formatDate(iso: string) {
 function SectionLabel({ label }: { label: string }) {
   return (
     <Text
-      className="text-xs text-neutral-T50 uppercase tracking-wider mb-2"
+      className="text-neutral-T50 mb-2 text-xs uppercase tracking-wider"
       style={{ fontFamily: 'BeVietnamPro-SemiBold' }}
     >
       {label}
@@ -154,12 +154,12 @@ function InfoRow({
 }) {
   return (
     <View className="flex-row items-center gap-3">
-      <View className="w-8 h-8 rounded-lg bg-neutral-T95 items-center justify-center">
+      <View className="bg-neutral-T95 h-8 w-8 items-center justify-center rounded-lg">
         <MaterialIcons name={icon as any} size={16} color="#757777" />
       </View>
       <View className="flex-1">
-        <Text className="font-body text-xs text-neutral-T50">{label}</Text>
-        <Text className="font-label font-semibold text-sm text-neutral-T10 mt-0.5">
+        <Text className="font-body text-neutral-T50 text-xs">{label}</Text>
+        <Text className="font-label text-neutral-T10 mt-0.5 text-sm font-semibold">
           {value}
         </Text>
       </View>
@@ -236,14 +236,14 @@ export default function ReportDetailScreen() {
 
   if (!report) {
     return (
-      <View className="flex-1 bg-neutral items-center justify-center">
+      <View className="bg-neutral flex-1 items-center justify-center">
         <StatusBar
           barStyle="dark-content"
           backgroundColor="transparent"
           translucent
         />
         <StackHeader title={t('report.detailTitle')} />
-        <Text className="font-body text-sm text-neutral-T50 mt-8">
+        <Text className="font-body text-neutral-T50 mt-8 text-sm">
           {t('report.notFoundMsg')}
         </Text>
       </View>
@@ -262,7 +262,7 @@ export default function ReportDetailScreen() {
   const isResolved = report.status === 'RESOLVED';
 
   return (
-    <View className="flex-1 bg-neutral">
+    <View className="bg-neutral flex-1">
       <StatusBar
         barStyle="dark-content"
         backgroundColor="transparent"
@@ -278,7 +278,7 @@ export default function ReportDetailScreen() {
         onRequestClose={() => setLightboxIndex(null)}
       >
         <Pressable
-          className="flex-1 bg-black items-center justify-center"
+          className="flex-1 items-center justify-center bg-black"
           onPress={() => setLightboxIndex(null)}
         >
           {lightboxIndex !== null && report.images[lightboxIndex] && (
@@ -289,12 +289,12 @@ export default function ReportDetailScreen() {
             />
           )}
           <View
-            className="absolute top-0 right-0 p-4"
+            className="absolute right-0 top-0 p-4"
             style={{ marginTop: insets.top }}
           >
             <TouchableOpacity
               onPress={() => setLightboxIndex(null)}
-              className="w-10 h-10 rounded-full bg-white/20 items-center justify-center"
+              className="h-10 w-10 items-center justify-center rounded-full bg-white/20"
             >
               <MaterialIcons name="close" size={20} color="#FFFFFF" />
             </TouchableOpacity>
@@ -304,7 +304,7 @@ export default function ReportDetailScreen() {
               {report.images.map((_, i) => (
                 <View
                   key={i}
-                  className="w-2 h-2 rounded-full"
+                  className="h-2 w-2 rounded-full"
                   style={{
                     backgroundColor:
                       i === lightboxIndex ? '#FFFFFF' : 'rgba(255,255,255,0.4)',
@@ -325,7 +325,7 @@ export default function ReportDetailScreen() {
       >
         {/* ── Status Banner ── */}
         <View
-          className="mx-4 mb-4 rounded-2xl p-4 flex-row items-center gap-3"
+          className="mx-4 mb-4 flex-row items-center gap-3 rounded-2xl p-4"
           style={[
             styles.card,
             {
@@ -336,7 +336,7 @@ export default function ReportDetailScreen() {
           ]}
         >
           <View
-            className="w-11 h-11 rounded-xl items-center justify-center"
+            className="h-11 w-11 items-center justify-center rounded-xl"
             style={{ backgroundColor: statusCfg.text + '20' }}
           >
             <MaterialIcons
@@ -347,13 +347,13 @@ export default function ReportDetailScreen() {
           </View>
           <View className="flex-1">
             <Text
-              className="font-label font-semibold text-xs uppercase tracking-wider"
+              className="font-label text-xs font-semibold uppercase tracking-wider"
               style={{ color: statusCfg.text + 'CC' }}
             >
               {t('report.statusSectionLabel')}
             </Text>
             <Text
-              className="font-sans text-base mt-0.5"
+              className="mt-0.5 font-sans text-base"
               style={{
                 fontFamily: 'Epilogue',
                 fontWeight: '700',
@@ -364,11 +364,11 @@ export default function ReportDetailScreen() {
             </Text>
           </View>
           <View
-            className="px-3 py-1.5 rounded-lg"
+            className="rounded-lg px-3 py-1.5"
             style={{ backgroundColor: targetCfg.bg }}
           >
             <Text
-              className="font-label font-semibold text-xs"
+              className="font-label text-xs font-semibold"
               style={{ color: targetCfg.text }}
             >
               {t(targetCfg.labelKey)}
@@ -378,7 +378,7 @@ export default function ReportDetailScreen() {
 
         {/* ── Report Info Card ── */}
         <View
-          className="mx-4 mb-4 bg-neutral-T100 rounded-2xl p-4 gap-4"
+          className="bg-neutral-T100 mx-4 mb-4 gap-4 rounded-2xl p-4"
           style={styles.card}
         >
           <SectionLabel label={t('report.infoSectionLabel')} />
@@ -389,7 +389,7 @@ export default function ReportDetailScreen() {
             value={reasonLabel}
           />
 
-          <View className="h-px bg-neutral-T90" />
+          <View className="bg-neutral-T90 h-px" />
 
           <InfoRow
             icon="event"
@@ -399,7 +399,7 @@ export default function ReportDetailScreen() {
 
           {report.resolvedAt && (
             <>
-              <View className="h-px bg-neutral-T90" />
+              <View className="bg-neutral-T90 h-px" />
               <InfoRow
                 icon="event-available"
                 label={
@@ -415,11 +415,11 @@ export default function ReportDetailScreen() {
 
         {/* ── Description Card ── */}
         <View
-          className="mx-4 mb-4 bg-neutral-T100 rounded-2xl p-4 gap-3"
+          className="bg-neutral-T100 mx-4 mb-4 gap-3 rounded-2xl p-4"
           style={styles.card}
         >
           <SectionLabel label={t('report.descSectionLabel')} />
-          <Text className="font-body text-sm text-neutral-T10 leading-5">
+          <Text className="font-body text-neutral-T10 text-sm leading-5">
             {report.description}
           </Text>
         </View>
@@ -427,12 +427,12 @@ export default function ReportDetailScreen() {
         {/* ── Evidence Images ── */}
         {report.images.length > 0 && (
           <View
-            className="mx-4 mb-4 bg-neutral-T100 rounded-2xl p-4 gap-3"
+            className="bg-neutral-T100 mx-4 mb-4 gap-3 rounded-2xl p-4"
             style={styles.card}
           >
             <View className="flex-row items-center justify-between">
               <SectionLabel label={t('report.evidenceSectionLabel')} />
-              <Text className="font-label text-xs text-neutral-T50 -mt-2">
+              <Text className="font-label text-neutral-T50 -mt-2 text-xs">
                 {t('report.evidenceCountLabel', {
                   count: report.images.length,
                 })}
@@ -454,8 +454,8 @@ export default function ReportDetailScreen() {
                     style={styles.thumbnail}
                     resizeMode="cover"
                   />
-                  <View className="absolute bottom-1.5 right-1.5 bg-black/40 rounded px-1.5 py-0.5">
-                    <Text className="text-white text-[9px] font-bold">
+                  <View className="absolute bottom-1.5 right-1.5 rounded bg-black/40 px-1.5 py-0.5">
+                    <Text className="text-[9px] font-bold text-white">
                       {index + 1}/{report.images.length}
                     </Text>
                   </View>
@@ -468,7 +468,7 @@ export default function ReportDetailScreen() {
         {/* ── Resolution Card (RESOLVED or DISMISSED) ── */}
         {(isResolved || isDismissed) && (
           <View
-            className="mx-4 mb-4 rounded-2xl p-4 gap-3"
+            className="mx-4 mb-4 gap-3 rounded-2xl p-4"
             style={[
               styles.card,
               {
@@ -485,7 +485,7 @@ export default function ReportDetailScreen() {
                 color={isDismissed ? '#DC2626' : '#15803D'}
               />
               <Text
-                className="font-label font-semibold text-sm"
+                className="font-label text-sm font-semibold"
                 style={{ color: isDismissed ? '#DC2626' : '#15803D' }}
               >
                 {isDismissed
@@ -516,7 +516,7 @@ export default function ReportDetailScreen() {
             {/* Action taken */}
             {actionLabel && (
               <View
-                className="flex-row items-center gap-2 p-3 rounded-xl"
+                className="flex-row items-center gap-2 rounded-xl p-3"
                 style={{ backgroundColor: isDismissed ? '#FEE2E2' : '#DCFCE7' }}
               >
                 <MaterialIcons
@@ -525,7 +525,7 @@ export default function ReportDetailScreen() {
                   color={isDismissed ? '#DC2626' : '#15803D'}
                 />
                 <Text
-                  className="font-label font-semibold text-xs flex-1"
+                  className="font-label flex-1 text-xs font-semibold"
                   style={{ color: isDismissed ? '#DC2626' : '#15803D' }}
                 >
                   {t('report.actionLabel')} {actionLabel}
@@ -539,7 +539,7 @@ export default function ReportDetailScreen() {
         {report.status === 'PENDING' && (
           <>
             <View
-              className="mx-4 mb-4 flex-row gap-3 p-4 bg-yellow-50 rounded-2xl border border-yellow-200"
+              className="mx-4 mb-4 flex-row gap-3 rounded-2xl border border-yellow-200 bg-yellow-50 p-4"
               style={styles.card}
             >
               <MaterialIcons
@@ -548,7 +548,7 @@ export default function ReportDetailScreen() {
                 color="#A16207"
                 style={{ marginTop: 1 }}
               />
-              <Text className="font-body text-sm text-yellow-800 flex-1 leading-5">
+              <Text className="font-body flex-1 text-sm leading-5 text-yellow-800">
                 {t('report.pendingNotice')}
               </Text>
             </View>
@@ -556,18 +556,18 @@ export default function ReportDetailScreen() {
             {/* Edit / Withdraw buttons — only while PENDING */}
             <View className="mx-4 mb-4 flex-row gap-3">
               <TouchableOpacity
-                className="flex-1 h-12 rounded-xl bg-neutral-T95 border border-neutral-T80 flex-row items-center justify-center gap-2"
+                className="bg-neutral-T95 border-neutral-T80 h-12 flex-1 flex-row items-center justify-center gap-2 rounded-xl border"
                 activeOpacity={0.8}
                 onPress={handleEdit}
               >
                 <MaterialIcons name="edit" size={18} color="#296C24" />
-                <Text className="font-label font-semibold text-sm text-primary-T40">
+                <Text className="font-label text-primary-T40 text-sm font-semibold">
                   {t('report.editReportBtn')}
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                className="flex-1 h-12 rounded-xl bg-red-50 border border-red-200 flex-row items-center justify-center gap-2"
+                className="h-12 flex-1 flex-row items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50"
                 activeOpacity={0.8}
                 onPress={handleWithdraw}
                 disabled={isWithdrawing}
@@ -577,7 +577,7 @@ export default function ReportDetailScreen() {
                 ) : (
                   <>
                     <MaterialIcons name="undo" size={18} color="#DC2626" />
-                    <Text className="font-label font-semibold text-sm text-error">
+                    <Text className="font-label text-error text-sm font-semibold">
                       {t('report.withdrawBtn')}
                     </Text>
                   </>
@@ -590,7 +590,7 @@ export default function ReportDetailScreen() {
         {/* ── Resubmit notice (DISMISSED) ── */}
         {isDismissed && (
           <View
-            className="mx-4 mb-4 flex-row gap-3 p-4 bg-primary-T95 rounded-2xl"
+            className="bg-primary-T95 mx-4 mb-4 flex-row gap-3 rounded-2xl p-4"
             style={styles.card}
           >
             <MaterialIcons
@@ -599,7 +599,7 @@ export default function ReportDetailScreen() {
               color="#296C24"
               style={{ marginTop: 1 }}
             />
-            <Text className="font-body text-sm text-primary-T30 flex-1 leading-5">
+            <Text className="font-body text-primary-T30 flex-1 text-sm leading-5">
               {t('report.dismissedResubmitNotice')}
             </Text>
           </View>

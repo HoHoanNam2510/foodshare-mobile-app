@@ -210,7 +210,7 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <View className="flex-1 bg-neutral">
+      <View className="bg-neutral flex-1">
         <Slot />
         <BadgeUnlockToast
           badge={toastBadge}

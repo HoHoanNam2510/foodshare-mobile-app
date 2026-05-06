@@ -112,15 +112,15 @@ function InfoRow({
   value: string;
 }) {
   return (
-    <View className="flex-row items-center gap-3 py-3 border-b border-neutral-T90">
-      <View className="w-8 h-8 rounded-lg bg-neutral-T95 items-center justify-center">
+    <View className="border-neutral-T90 flex-row items-center gap-3 border-b py-3">
+      <View className="bg-neutral-T95 h-8 w-8 items-center justify-center rounded-lg">
         <MaterialIcons name={icon as any} size={16} color="#757777" />
       </View>
       <View className="flex-1">
-        <Text className="font-label text-[10px] text-neutral-T50 uppercase tracking-wider">
+        <Text className="font-label text-neutral-T50 text-[10px] uppercase tracking-wider">
           {label}
         </Text>
-        <Text className="font-body font-semibold text-sm text-neutral-T10 mt-0.5">
+        <Text className="font-body text-neutral-T10 mt-0.5 text-sm font-semibold">
           {value}
         </Text>
       </View>
@@ -134,16 +134,16 @@ function StatusTimeline({ status }: { status: TransactionStatus }) {
   const isCancelledOrRejected = status === 'CANCELLED' || status === 'REJECTED';
 
   return (
-    <View style={styles.card} className="bg-neutral-T100 rounded-2xl p-5 gap-3">
-      <Text className="font-label font-semibold text-xs text-neutral-T50 uppercase tracking-wider">
+    <View style={styles.card} className="bg-neutral-T100 gap-3 rounded-2xl p-5">
+      <Text className="font-label text-neutral-T50 text-xs font-semibold uppercase tracking-wider">
         {t('transaction.progressTitle')}
       </Text>
       {isCancelledOrRejected ? (
         <View className="flex-row items-center gap-3">
-          <View className="w-8 h-8 rounded-full bg-red-100 items-center justify-center">
+          <View className="h-8 w-8 items-center justify-center rounded-full bg-red-100">
             <MaterialIcons name="close" size={16} color="#DC2626" />
           </View>
-          <Text className="font-body font-semibold text-sm text-red-600">
+          <Text className="font-body text-sm font-semibold text-red-600">
             {t(STATUS_CONFIG[status].labelKey)}
           </Text>
         </View>
@@ -157,7 +157,7 @@ function StatusTimeline({ status }: { status: TransactionStatus }) {
                 {/* Dot + line */}
                 <View className="items-center" style={{ width: 32 }}>
                   <View
-                    className="w-8 h-8 rounded-full items-center justify-center"
+                    className="h-8 w-8 items-center justify-center rounded-full"
                     style={{ backgroundColor: done ? '#296C24' : '#E5E7EB' }}
                   >
                     <MaterialIcons
@@ -168,7 +168,7 @@ function StatusTimeline({ status }: { status: TransactionStatus }) {
                   </View>
                   {!isLast && (
                     <View
-                      className="w-0.5 flex-1 my-1"
+                      className="my-1 w-0.5 flex-1"
                       style={{
                         backgroundColor:
                           i < currentStep ? '#296C24' : '#E5E7EB',
@@ -178,9 +178,9 @@ function StatusTimeline({ status }: { status: TransactionStatus }) {
                   )}
                 </View>
                 {/* Label */}
-                <View className="pb-4 justify-center">
+                <View className="justify-center pb-4">
                   <Text
-                    className="font-body font-semibold text-sm"
+                    className="font-body text-sm font-semibold"
                     style={{ color: done ? '#191C1C' : '#9CA3AF' }}
                   >
                     {t(step.labelKey)}
@@ -200,12 +200,12 @@ function StatusTimeline({ status }: { status: TransactionStatus }) {
 function DonorQrSection({ verificationCode }: { verificationCode: string }) {
   const { t } = useTranslation();
   return (
-    <View style={styles.card} className="bg-neutral-T100 rounded-2xl p-5 gap-4">
+    <View style={styles.card} className="bg-neutral-T100 gap-4 rounded-2xl p-5">
       <View className="gap-1">
-        <Text className="font-sans font-bold text-base text-neutral-T10">
+        <Text className="text-neutral-T10 font-sans text-base font-bold">
           {t('transaction.qrVerifyTitle')}
         </Text>
-        <Text className="font-body text-xs text-neutral-T50 leading-4">
+        <Text className="font-body text-neutral-T50 text-xs leading-4">
           {t('transaction.qrVerifyDesc')}
         </Text>
       </View>
@@ -214,7 +214,7 @@ function DonorQrSection({ verificationCode }: { verificationCode: string }) {
       <View className="items-center py-2">
         <View
           style={styles.qrContainer}
-          className="bg-white rounded-2xl p-5 items-center gap-4"
+          className="items-center gap-4 rounded-2xl bg-white p-5"
         >
           <View style={styles.qrCornerTL} />
           <View style={styles.qrCornerTR} />
@@ -231,12 +231,12 @@ function DonorQrSection({ verificationCode }: { verificationCode: string }) {
       </View>
 
       {/* Text code for manual input */}
-      <View className="bg-neutral-T95 rounded-xl p-4 gap-2">
-        <Text className="font-label text-[10px] text-neutral-T50 uppercase tracking-wider text-center">
+      <View className="bg-neutral-T95 gap-2 rounded-xl p-4">
+        <Text className="font-label text-neutral-T50 text-center text-[10px] uppercase tracking-wider">
           {t('transaction.orReadCode')}
         </Text>
         <Text
-          className="font-body font-semibold text-sm text-neutral-T10 text-center leading-5"
+          className="font-body text-neutral-T10 text-center text-sm font-semibold leading-5"
           selectable
         >
           {verificationCode}
@@ -329,13 +329,13 @@ function ReceiverScanSection({
     <>
       <View
         style={styles.card}
-        className="bg-neutral-T100 rounded-2xl p-5 gap-4"
+        className="bg-neutral-T100 gap-4 rounded-2xl p-5"
       >
         <View className="gap-1">
-          <Text className="font-sans font-bold text-base text-neutral-T10">
+          <Text className="text-neutral-T10 font-sans text-base font-bold">
             {t('transaction.scanVerifyTitle')}
           </Text>
-          <Text className="font-body text-xs text-neutral-T50 leading-4">
+          <Text className="font-body text-neutral-T50 text-xs leading-4">
             {t('transaction.scanVerifyDesc')}
           </Text>
         </View>
@@ -344,7 +344,7 @@ function ReceiverScanSection({
           onPress={handleScanPress}
           activeOpacity={0.85}
           disabled={isSubmitting}
-          className="h-14 bg-primary-T40 rounded-xl flex-row items-center justify-center gap-2"
+          className="bg-primary-T40 h-14 flex-row items-center justify-center gap-2 rounded-xl"
           style={styles.primaryBtn}
         >
           {isSubmitting ? (
@@ -352,7 +352,7 @@ function ReceiverScanSection({
           ) : (
             <>
               <MaterialIcons name="qr-code-scanner" size={22} color="#FFFFFF" />
-              <Text className="font-label font-bold text-base text-neutral-T100">
+              <Text className="font-label text-neutral-T100 text-base font-bold">
                 {t('transaction.scanQRBtn')}
               </Text>
             </>
@@ -362,10 +362,10 @@ function ReceiverScanSection({
         <TouchableOpacity
           onPress={() => setShowManualModal(true)}
           activeOpacity={0.8}
-          className="h-12 border border-neutral-T80 rounded-xl flex-row items-center justify-center gap-2"
+          className="border-neutral-T80 h-12 flex-row items-center justify-center gap-2 rounded-xl border"
         >
           <MaterialIcons name="keyboard" size={18} color="#757777" />
-          <Text className="font-label font-semibold text-sm text-neutral-T50">
+          <Text className="font-label text-neutral-T50 text-sm font-semibold">
             {t('transaction.enterManualBtn')}
           </Text>
         </TouchableOpacity>
@@ -391,7 +391,7 @@ function ReceiverScanSection({
           >
             <TouchableOpacity
               onPress={() => setShowCameraModal(false)}
-              className="m-4 w-10 h-10 rounded-full bg-black/50 items-center justify-center"
+              className="m-4 h-10 w-10 items-center justify-center rounded-full bg-black/50"
             >
               <MaterialIcons name="close" size={22} color="#FFFFFF" />
             </TouchableOpacity>
@@ -411,7 +411,7 @@ function ReceiverScanSection({
             className="items-center justify-center"
           >
             <View style={styles.scanFrame} />
-            <Text className="text-white font-body text-sm mt-6 text-center px-8">
+            <Text className="font-body mt-6 px-8 text-center text-sm text-white">
               {t('transaction.cameraHint')}
             </Text>
           </View>
@@ -439,15 +439,15 @@ function ReceiverScanSection({
             />
             <View
               style={styles.bottomSheet}
-              className="bg-neutral-T100 rounded-t-3xl px-6 pt-5 pb-8 gap-5"
+              className="bg-neutral-T100 gap-5 rounded-t-3xl px-6 pb-8 pt-5"
             >
-              <View className="w-10 h-1 rounded-full bg-neutral-T80 self-center" />
+              <View className="bg-neutral-T80 h-1 w-10 self-center rounded-full" />
 
               <View className="gap-1">
-                <Text className="font-sans font-bold text-lg text-neutral-T10">
+                <Text className="text-neutral-T10 font-sans text-lg font-bold">
                   {t('transaction.enterCodeTitle')}
                 </Text>
-                <Text className="font-body text-sm text-neutral-T50">
+                <Text className="font-body text-neutral-T50 text-sm">
                   {t('transaction.enterCodeDesc')}
                 </Text>
               </View>
@@ -463,7 +463,7 @@ function ReceiverScanSection({
                   placeholderTextColor="#AAABAB"
                   autoCapitalize="none"
                   autoCorrect={false}
-                  className="bg-neutral-T95 rounded-xl px-4 h-14 font-body text-neutral-T10 border border-neutral-T90"
+                  className="bg-neutral-T95 font-body text-neutral-T10 border-neutral-T90 h-14 rounded-xl border px-4"
                   style={inputError ? styles.inputError : undefined}
                 />
                 {!!inputError && (
@@ -477,13 +477,13 @@ function ReceiverScanSection({
                 onPress={handleManualSubmit}
                 disabled={isSubmitting}
                 activeOpacity={0.85}
-                className="h-14 bg-primary-T40 rounded-xl items-center justify-center"
+                className="bg-primary-T40 h-14 items-center justify-center rounded-xl"
                 style={styles.primaryBtn}
               >
                 {isSubmitting ? (
                   <ActivityIndicator color="#FFFFFF" />
                 ) : (
-                  <Text className="font-label font-bold text-base text-neutral-T100">
+                  <Text className="font-label text-neutral-T100 text-base font-bold">
                     {t('common.confirm')}
                   </Text>
                 )}
@@ -530,7 +530,7 @@ export default function TransactionDetailScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-neutral">
+      <View className="bg-neutral flex-1">
         <StackHeader title={t('transaction.transactionDetail')} />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#296C24" />
@@ -541,18 +541,18 @@ export default function TransactionDetailScreen() {
 
   if (error || !transaction) {
     return (
-      <View className="flex-1 bg-neutral">
+      <View className="bg-neutral flex-1">
         <StackHeader title={t('transaction.transactionDetail')} />
-        <View className="flex-1 items-center justify-center px-8 gap-4">
-          <Text className="font-body text-sm text-neutral-T50 text-center">
+        <View className="flex-1 items-center justify-center gap-4 px-8">
+          <Text className="font-body text-neutral-T50 text-center text-sm">
             {error ?? t('transaction.notFound')}
           </Text>
           <TouchableOpacity
             onPress={load}
-            className="px-6 py-3 bg-primary-T40 rounded-xl"
+            className="bg-primary-T40 rounded-xl px-6 py-3"
             activeOpacity={0.85}
           >
-            <Text className="font-label font-semibold text-neutral-T100">
+            <Text className="font-label text-neutral-T100 font-semibold">
               {t('common.retry')}
             </Text>
           </TouchableOpacity>
@@ -664,11 +664,11 @@ export default function TransactionDetailScreen() {
 
   const statusBadge = (
     <View
-      className="px-3 py-1 rounded-full"
+      className="rounded-full px-3 py-1"
       style={{ backgroundColor: cfg.bg }}
     >
       <Text
-        className="font-label font-bold text-xs"
+        className="font-label text-xs font-bold"
         style={{ color: cfg.text }}
       >
         {t(cfg.labelKey).toUpperCase()}
@@ -677,7 +677,7 @@ export default function TransactionDetailScreen() {
   );
 
   return (
-    <View className="flex-1 bg-neutral">
+    <View className="bg-neutral flex-1">
       <StackHeader
         title={t('transaction.transactionDetail')}
         rightElement={statusBadge}
@@ -688,26 +688,26 @@ export default function TransactionDetailScreen() {
         contentContainerStyle={{ paddingBottom: 40 }}
         className="flex-1"
       >
-        <View className="px-4 gap-3 pt-4">
+        <View className="gap-3 px-4 pt-4">
           {/* ── Post Info Card ── */}
           <View
             style={styles.card}
-            className="bg-neutral-T100 rounded-2xl p-5 gap-3"
+            className="bg-neutral-T100 gap-3 rounded-2xl p-5"
           >
-            <Text className="font-label font-semibold text-[10px] text-neutral-T50 uppercase tracking-wider">
+            <Text className="font-label text-neutral-T50 text-[10px] font-semibold uppercase tracking-wider">
               {t('transaction.postSectionLabel')}
             </Text>
-            <Text className="font-sans font-bold text-lg text-neutral-T10 leading-tight">
+            <Text className="text-neutral-T10 font-sans text-lg font-bold leading-tight">
               {post?.title ?? 'Bài đăng đã bị xóa'}
             </Text>
 
-            <View className="flex-row gap-2 flex-wrap">
+            <View className="flex-row flex-wrap gap-2">
               <View
-                className="px-2 py-1 rounded-md"
+                className="rounded-md px-2 py-1"
                 style={{ backgroundColor: isP2P ? '#DCFCE7' : '#FEF3C7' }}
               >
                 <Text
-                  className="font-label font-bold text-[10px] uppercase tracking-wider"
+                  className="font-label text-[10px] font-bold uppercase tracking-wider"
                   style={{ color: isP2P ? '#15803D' : '#92400E' }}
                 >
                   {isP2P
@@ -715,14 +715,14 @@ export default function TransactionDetailScreen() {
                     : t('transaction.b2cMysteryLabel')}
                 </Text>
               </View>
-              <View className="px-2 py-1 rounded-md bg-neutral-T95">
-                <Text className="font-label font-bold text-[10px] text-neutral-T50 uppercase tracking-wider">
+              <View className="bg-neutral-T95 rounded-md px-2 py-1">
+                <Text className="font-label text-neutral-T50 text-[10px] font-bold uppercase tracking-wider">
                   {t('transaction.qtyLabel')} {tx.quantity}
                 </Text>
               </View>
               {!isP2P && (
-                <View className="px-2 py-1 rounded-md bg-neutral-T95">
-                  <Text className="font-label font-bold text-[10px] text-neutral-T50 uppercase tracking-wider">
+                <View className="bg-neutral-T95 rounded-md px-2 py-1">
+                  <Text className="font-label text-neutral-T50 text-[10px] font-bold uppercase tracking-wider">
                     {((post?.price ?? 0) * tx.quantity).toLocaleString('vi-VN')}
                     đ
                   </Text>
@@ -730,7 +730,7 @@ export default function TransactionDetailScreen() {
               )}
             </View>
 
-            <View className="h-px bg-neutral-T90" />
+            <View className="bg-neutral-T90 h-px" />
 
             <InfoRow
               icon="event"
@@ -747,10 +747,10 @@ export default function TransactionDetailScreen() {
           {/* ── Role badge ── */}
           <View
             style={styles.card}
-            className="bg-neutral-T100 rounded-2xl px-5 py-4 flex-row items-center gap-3"
+            className="bg-neutral-T100 flex-row items-center gap-3 rounded-2xl px-5 py-4"
           >
             <View
-              className="w-10 h-10 rounded-xl items-center justify-center"
+              className="h-10 w-10 items-center justify-center rounded-xl"
               style={{ backgroundColor: isDonor ? '#DCFCE7' : '#EFF6FF' }}
             >
               <MaterialIcons
@@ -760,10 +760,10 @@ export default function TransactionDetailScreen() {
               />
             </View>
             <View>
-              <Text className="font-label text-[10px] text-neutral-T50 uppercase tracking-wider">
+              <Text className="font-label text-neutral-T50 text-[10px] uppercase tracking-wider">
                 {t('transaction.yourRoleLabel')}
               </Text>
-              <Text className="font-sans font-bold text-sm text-neutral-T10 mt-0.5">
+              <Text className="text-neutral-T10 mt-0.5 font-sans text-sm font-bold">
                 {isDonor
                   ? t('transaction.donorRoleFull')
                   : isReceiver
@@ -776,12 +776,12 @@ export default function TransactionDetailScreen() {
           {/* ── Contact other party ── */}
           <TouchableOpacity
             style={styles.card}
-            className="bg-neutral-T100 rounded-2xl px-5 py-4 flex-row items-center gap-3"
+            className="bg-neutral-T100 flex-row items-center gap-3 rounded-2xl px-5 py-4"
             activeOpacity={0.8}
             onPress={handleChat}
             disabled={isChatting}
           >
-            <View className="w-10 h-10 rounded-xl bg-primary-T95 items-center justify-center">
+            <View className="bg-primary-T95 h-10 w-10 items-center justify-center rounded-xl">
               <MaterialIcons
                 name="chat-bubble-outline"
                 size={20}
@@ -789,10 +789,10 @@ export default function TransactionDetailScreen() {
               />
             </View>
             <View className="flex-1">
-              <Text className="font-label text-[10px] text-neutral-T50 uppercase tracking-wider">
+              <Text className="font-label text-neutral-T50 text-[10px] uppercase tracking-wider">
                 {t('transaction.contactSectionLabel')}
               </Text>
-              <Text className="font-sans font-bold text-sm text-neutral-T10 mt-0.5">
+              <Text className="text-neutral-T10 mt-0.5 font-sans text-sm font-bold">
                 {isDonor
                   ? t('transaction.msgWithReceiver')
                   : t('transaction.msgWithDonor')}
@@ -821,13 +821,13 @@ export default function TransactionDetailScreen() {
           {tx.status === 'ACCEPTED' && !isP2P && isReceiver && tx.paymentQR && (
             <View
               style={styles.card}
-              className="bg-neutral-T100 rounded-2xl p-5 gap-4"
+              className="bg-neutral-T100 gap-4 rounded-2xl p-5"
             >
               <View className="gap-1">
-                <Text className="font-sans font-bold text-base text-neutral-T10">
+                <Text className="text-neutral-T10 font-sans text-base font-bold">
                   {t('transaction.b2cPayQRTitle')}
                 </Text>
-                <Text className="font-body text-xs text-neutral-T50 leading-4">
+                <Text className="font-body text-neutral-T50 text-xs leading-4">
                   {t('transaction.b2cPayQRDesc')}
                 </Text>
               </View>
@@ -838,14 +838,14 @@ export default function TransactionDetailScreen() {
                   resizeMode="contain"
                 />
               </View>
-              <View className="bg-blue-50 border border-blue-200 rounded-xl p-3 flex-row items-start gap-2">
+              <View className="flex-row items-start gap-2 rounded-xl border border-blue-200 bg-blue-50 p-3">
                 <MaterialIcons
                   name="info-outline"
                   size={16}
                   color="#1D4ED8"
                   style={{ marginTop: 1 }}
                 />
-                <Text className="font-body text-xs text-blue-800 flex-1 leading-5">
+                <Text className="font-body flex-1 text-xs leading-5 text-blue-800">
                   {t('transaction.b2cPayQRNote')}
                 </Text>
               </View>
@@ -856,10 +856,10 @@ export default function TransactionDetailScreen() {
           {tx.status === 'ACCEPTED' && !isP2P && isDonor && (
             <View
               style={styles.card}
-              className="bg-neutral-T100 rounded-2xl p-5 gap-4"
+              className="bg-neutral-T100 gap-4 rounded-2xl p-5"
             >
               <View className="flex-row items-center gap-3">
-                <View className="w-10 h-10 rounded-xl bg-primary-T95 items-center justify-center">
+                <View className="bg-primary-T95 h-10 w-10 items-center justify-center rounded-xl">
                   <MaterialIcons
                     name="account-balance-wallet"
                     size={20}
@@ -867,10 +867,10 @@ export default function TransactionDetailScreen() {
                   />
                 </View>
                 <View className="flex-1">
-                  <Text className="font-sans font-bold text-sm text-neutral-T10">
+                  <Text className="text-neutral-T10 font-sans text-sm font-bold">
                     {t('transaction.b2cConfirmReceiptTitle')}
                   </Text>
-                  <Text className="font-body text-xs text-neutral-T50 mt-0.5 leading-4">
+                  <Text className="font-body text-neutral-T50 mt-0.5 text-xs leading-4">
                     {t('transaction.b2cConfirmReceiptDesc')}
                   </Text>
                 </View>
@@ -896,7 +896,7 @@ export default function TransactionDetailScreen() {
                 }}
                 disabled={isConfirming}
                 activeOpacity={0.85}
-                className="h-14 bg-primary-T40 rounded-xl flex-row items-center justify-center gap-2"
+                className="bg-primary-T40 h-14 flex-row items-center justify-center gap-2 rounded-xl"
                 style={styles.primaryBtn}
               >
                 {isConfirming ? (
@@ -908,7 +908,7 @@ export default function TransactionDetailScreen() {
                       size={22}
                       color="#FFFFFF"
                     />
-                    <Text className="font-label font-bold text-base text-neutral-T100">
+                    <Text className="font-label text-neutral-T100 text-base font-bold">
                       {t('transaction.confirmReceiptBtn')}
                     </Text>
                   </>
@@ -921,10 +921,10 @@ export default function TransactionDetailScreen() {
           {tx.status === 'PENDING' && isReceiver && isP2P && (
             <View
               style={styles.card}
-              className="bg-neutral-T100 rounded-2xl p-5 gap-4"
+              className="bg-neutral-T100 gap-4 rounded-2xl p-5"
             >
               <View className="flex-row items-center gap-3">
-                <View className="w-10 h-10 rounded-xl bg-yellow-50 items-center justify-center">
+                <View className="h-10 w-10 items-center justify-center rounded-xl bg-yellow-50">
                   <MaterialIcons
                     name="hourglass-empty"
                     size={20}
@@ -932,10 +932,10 @@ export default function TransactionDetailScreen() {
                   />
                 </View>
                 <View className="flex-1">
-                  <Text className="font-sans font-bold text-sm text-neutral-T10">
+                  <Text className="text-neutral-T10 font-sans text-sm font-bold">
                     {t('transaction.pendingDonorWaitTitle')}
                   </Text>
-                  <Text className="font-body text-xs text-neutral-T50 mt-0.5 leading-4">
+                  <Text className="font-body text-neutral-T50 mt-0.5 text-xs leading-4">
                     {t('transaction.pendingDonorWaitDesc')}
                   </Text>
                 </View>
@@ -944,7 +944,7 @@ export default function TransactionDetailScreen() {
                 onPress={handleCancelRequest}
                 disabled={isCancelling}
                 activeOpacity={0.8}
-                className="h-11 border border-red-200 rounded-xl flex-row items-center justify-center gap-2"
+                className="h-11 flex-row items-center justify-center gap-2 rounded-xl border border-red-200"
                 style={{ backgroundColor: '#FEF2F2' }}
               >
                 {isCancelling ? (
@@ -953,7 +953,7 @@ export default function TransactionDetailScreen() {
                   <>
                     <MaterialIcons name="cancel" size={16} color="#DC2626" />
                     <Text
-                      className="font-label font-semibold text-sm"
+                      className="font-label text-sm font-semibold"
                       style={{ color: '#DC2626' }}
                     >
                       {t('transaction.cancelRequest')}
@@ -968,17 +968,17 @@ export default function TransactionDetailScreen() {
           {tx.status === 'PENDING' && isReceiver && !isP2P && (
             <View
               style={styles.card}
-              className="bg-neutral-T100 rounded-2xl p-5 gap-4"
+              className="bg-neutral-T100 gap-4 rounded-2xl p-5"
             >
               <View className="flex-row items-center gap-3">
-                <View className="w-10 h-10 rounded-xl bg-amber-50 items-center justify-center">
+                <View className="h-10 w-10 items-center justify-center rounded-xl bg-amber-50">
                   <MaterialIcons name="store" size={20} color="#B45309" />
                 </View>
                 <View className="flex-1">
-                  <Text className="font-sans font-bold text-sm text-neutral-T10">
+                  <Text className="text-neutral-T10 font-sans text-sm font-bold">
                     {t('transaction.pendingB2CWaitTitle')}
                   </Text>
-                  <Text className="font-body text-xs text-neutral-T50 mt-0.5 leading-4">
+                  <Text className="font-body text-neutral-T50 mt-0.5 text-xs leading-4">
                     {t('transaction.pendingB2CWaitDesc')}
                   </Text>
                 </View>
@@ -987,7 +987,7 @@ export default function TransactionDetailScreen() {
                 onPress={handleCancelOrder}
                 disabled={isCancelling}
                 activeOpacity={0.8}
-                className="h-11 border border-red-200 rounded-xl flex-row items-center justify-center gap-2"
+                className="h-11 flex-row items-center justify-center gap-2 rounded-xl border border-red-200"
                 style={{ backgroundColor: '#FEF2F2' }}
               >
                 {isCancelling ? (
@@ -996,7 +996,7 @@ export default function TransactionDetailScreen() {
                   <>
                     <MaterialIcons name="cancel" size={16} color="#DC2626" />
                     <Text
-                      className="font-label font-semibold text-sm"
+                      className="font-label text-sm font-semibold"
                       style={{ color: '#DC2626' }}
                     >
                       {t('transaction.cancelOrderBtn')}
@@ -1010,16 +1010,16 @@ export default function TransactionDetailScreen() {
           {tx.status === 'PENDING' && isDonor && (
             <View
               style={styles.card}
-              className="bg-neutral-T100 rounded-2xl p-5 flex-row items-center gap-3"
+              className="bg-neutral-T100 flex-row items-center gap-3 rounded-2xl p-5"
             >
-              <View className="w-10 h-10 rounded-xl bg-blue-50 items-center justify-center">
+              <View className="h-10 w-10 items-center justify-center rounded-xl bg-blue-50">
                 <MaterialIcons name="inbox" size={20} color="#1D4ED8" />
               </View>
               <View className="flex-1">
-                <Text className="font-sans font-bold text-sm text-neutral-T10">
+                <Text className="text-neutral-T10 font-sans text-sm font-bold">
                   {t('transaction.pendingForDonorTitle')}
                 </Text>
-                <Text className="font-body text-xs text-neutral-T50 mt-0.5 leading-4">
+                <Text className="font-body text-neutral-T50 mt-0.5 text-xs leading-4">
                   {t('transaction.pendingForDonorDesc')}
                 </Text>
               </View>
@@ -1030,7 +1030,7 @@ export default function TransactionDetailScreen() {
           {tx.status === 'COMPLETED' && (isDonor || isReceiver) && (
             <TouchableOpacity
               style={styles.card}
-              className="bg-primary-T95 rounded-2xl px-5 py-4 flex-row items-center gap-3"
+              className="bg-primary-T95 flex-row items-center gap-3 rounded-2xl px-5 py-4"
               activeOpacity={0.8}
               onPress={() => {
                 const otherId = isDonor
@@ -1052,14 +1052,14 @@ export default function TransactionDetailScreen() {
                 } as any);
               }}
             >
-              <View className="w-10 h-10 rounded-xl bg-primary-T40 items-center justify-center">
+              <View className="bg-primary-T40 h-10 w-10 items-center justify-center rounded-xl">
                 <MaterialIcons name="star" size={20} color="#FFFFFF" />
               </View>
               <View className="flex-1">
-                <Text className="font-sans font-bold text-sm text-primary-T10">
+                <Text className="text-primary-T10 font-sans text-sm font-bold">
                   {t('transaction.reviewCTATitle')}
                 </Text>
-                <Text className="font-body text-xs text-primary-T30 mt-0.5 leading-4">
+                <Text className="font-body text-primary-T30 mt-0.5 text-xs leading-4">
                   {t('transaction.reviewCTADesc')}
                 </Text>
               </View>
@@ -1071,7 +1071,7 @@ export default function TransactionDetailScreen() {
           {(isDonor || isReceiver) && (
             <TouchableOpacity
               style={styles.card}
-              className="bg-neutral-T100 rounded-2xl px-5 py-4 flex-row items-center gap-3"
+              className="bg-neutral-T100 flex-row items-center gap-3 rounded-2xl px-5 py-4"
               activeOpacity={0.8}
               onPress={() =>
                 router.push({
@@ -1084,14 +1084,14 @@ export default function TransactionDetailScreen() {
                 } as any)
               }
             >
-              <View className="w-10 h-10 rounded-xl bg-neutral-T95 items-center justify-center">
+              <View className="bg-neutral-T95 h-10 w-10 items-center justify-center rounded-xl">
                 <MaterialIcons name="flag" size={20} color="#757777" />
               </View>
               <View className="flex-1">
-                <Text className="font-label text-[10px] text-neutral-T50 uppercase tracking-wider">
+                <Text className="font-label text-neutral-T50 text-[10px] uppercase tracking-wider">
                   {t('transaction.reportSectionLabel')}
                 </Text>
-                <Text className="font-sans font-bold text-sm text-neutral-T10 mt-0.5">
+                <Text className="text-neutral-T10 mt-0.5 font-sans text-sm font-bold">
                   {t('transaction.reportTransactionTitle')}
                 </Text>
               </View>

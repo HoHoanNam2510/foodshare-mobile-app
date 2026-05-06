@@ -34,7 +34,7 @@ export default function TabLayout() {
 
   return (
     // FIX TÀNG HÌNH NỀN: Đổi bg-surface thành bg-neutral
-    <View className="flex-1 bg-neutral">
+    <View className="bg-neutral flex-1">
       {/* Slot chứa nội dung các màn hình con nằm trong thư mục (tabs) */}
       <View className="flex-1">
         <Slot />

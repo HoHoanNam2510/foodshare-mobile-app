@@ -18,10 +18,13 @@ interface PostDetailMapProps {
   onDirections: () => void;
 }
 
-export default function PostDetailMap({ coordinates, onDirections }: PostDetailMapProps) {
+export default function PostDetailMap({
+  coordinates,
+  onDirections,
+}: PostDetailMapProps) {
   return (
     <View
-      className="bg-neutral-T100 rounded-2xl overflow-hidden"
+      className="bg-neutral-T100 overflow-hidden rounded-2xl"
       style={{
         height: 180,
         shadowColor: '#000',
@@ -83,7 +86,14 @@ export default function PostDetailMap({ coordinates, onDirections }: PostDetailM
         }}
       >
         <MaterialIcons name="directions" size={16} color="#fff" />
-        <Text style={{ color: '#fff', fontSize: 12, fontWeight: '700', marginLeft: 4 }}>
+        <Text
+          style={{
+            color: '#fff',
+            fontSize: 12,
+            fontWeight: '700',
+            marginLeft: 4,
+          }}
+        >
           Chỉ đường
         </Text>
       </TouchableOpacity>

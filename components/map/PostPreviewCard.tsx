@@ -30,7 +30,7 @@ export default function PostPreviewCard({
 
   return (
     <View
-      className="bg-neutral-T100 rounded-3xl p-3 flex-row gap-3"
+      className="bg-neutral-T100 flex-row gap-3 rounded-3xl p-3"
       style={{
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 6 },
@@ -40,7 +40,7 @@ export default function PostPreviewCard({
       }}
     >
       {/* Thumbnail */}
-      <View className="w-22 h-22 rounded-2xl overflow-hidden flex-shrink-0">
+      <View className="w-22 h-22 flex-shrink-0 overflow-hidden rounded-2xl">
         {imageUrl ? (
           <Image
             source={{ uri: imageUrl }}
@@ -59,29 +59,29 @@ export default function PostPreviewCard({
       <View className="flex-1 justify-between py-0.5">
         <View>
           <Text
-            className="text-secondary text-[10px] font-label uppercase tracking-widest"
+            className="text-secondary font-label text-[10px] uppercase tracking-widest"
             style={{ fontWeight: '700' }}
           >
             {isFree ? t('map.freeFood') : t('map.mysteryBag')}
           </Text>
           <Text
-            className="text-neutral-T10 font-sans mt-0.5"
+            className="text-neutral-T10 mt-0.5 font-sans"
             style={{ fontSize: 15, fontWeight: '700', lineHeight: 20 }}
             numberOfLines={2}
           >
             {post.title}
           </Text>
           {distanceLabel && (
-            <View className="flex-row items-center gap-1 mt-1">
+            <View className="mt-1 flex-row items-center gap-1">
               <Ionicons name="location-outline" size={12} color="#757777" />
-              <Text className="text-neutral-T50 text-xs font-label">
+              <Text className="text-neutral-T50 font-label text-xs">
                 {distanceLabel}
               </Text>
             </View>
           )}
         </View>
 
-        <View className="flex-row items-center justify-between mt-2">
+        <View className="mt-2 flex-row items-center justify-between">
           <Text
             className={`font-sans ${isFree ? 'text-primary-T40' : 'text-secondary'}`}
             style={{ fontSize: 16, fontWeight: '700' }}
@@ -91,10 +91,10 @@ export default function PostPreviewCard({
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={onViewDetails}
-            className="bg-primary-T90 px-3 py-1.5 rounded-xl"
+            className="bg-primary-T90 rounded-xl px-3 py-1.5"
           >
             <Text
-              className="text-primary-T30 text-xs font-label"
+              className="text-primary-T30 font-label text-xs"
               style={{ fontWeight: '700' }}
             >
               {t('map.viewDetails')}

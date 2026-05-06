@@ -16,16 +16,18 @@ export default function QuantityStepper({
   max = 99,
 }: QuantityStepperProps) {
   return (
-    <View className="flex-row items-center justify-between h-14 px-2 rounded-xl bg-neutral-T95 border border-neutral-T90">
+    <View className="bg-neutral-T95 border-neutral-T90 h-14 flex-row items-center justify-between rounded-xl border px-2">
       <TouchableOpacity
-        className="w-10 h-10 rounded-lg items-center justify-center active:opacity-80"
+        className="h-10 w-10 items-center justify-center rounded-lg active:opacity-80"
         onPress={() => onChange(Math.max(min, value - 1))}
       >
         <MaterialIcons name="remove" size={20} color="#5C5F5E" />
       </TouchableOpacity>
-      <Text className="font-sans font-bold text-lg text-neutral-T10">{value}</Text>
+      <Text className="text-neutral-T10 font-sans text-lg font-bold">
+        {value}
+      </Text>
       <TouchableOpacity
-        className="w-10 h-10 rounded-lg items-center justify-center active:opacity-80"
+        className="h-10 w-10 items-center justify-center rounded-lg active:opacity-80"
         onPress={() => onChange(Math.min(max, value + 1))}
       >
         <MaterialIcons name="add" size={20} color="#5C5F5E" />

@@ -245,10 +245,10 @@ export default function EditPost() {
         >
           <Pressable onPress={(e) => e.stopPropagation()}>
             <View
-              className="bg-neutral-T100 rounded-t-3xl px-6 pt-4 pb-6"
+              className="bg-neutral-T100 rounded-t-3xl px-6 pb-6 pt-4"
               style={{ paddingBottom: Math.max(insets.bottom, 24) + 8 }}
             >
-              <View className="w-10 h-1 bg-neutral-T80 rounded-full self-center mb-2" />
+              <View className="bg-neutral-T80 mb-2 h-1 w-10 self-center rounded-full" />
               <View style={{ overflow: 'hidden', alignSelf: 'center' }}>
                 <DateTimePicker
                   value={getPickerValue()}
@@ -261,10 +261,10 @@ export default function EditPost() {
               </View>
               {Platform.OS === 'ios' && (
                 <TouchableOpacity
-                  className="h-14 bg-primary-T40 rounded-xl items-center justify-center shadow-sm active:opacity-80 mt-4"
+                  className="bg-primary-T40 mt-4 h-14 items-center justify-center rounded-xl shadow-sm active:opacity-80"
                   onPress={() => setActivePicker(null)}
                 >
-                  <Text className="font-label font-semibold text-neutral-T100">
+                  <Text className="font-label text-neutral-T100 font-semibold">
                     {t('common.done')}
                   </Text>
                 </TouchableOpacity>
@@ -280,11 +280,11 @@ export default function EditPost() {
   if (isLoadingPost) {
     return (
       <SafeAreaView
-        className="flex-1 bg-neutral items-center justify-center"
+        className="bg-neutral flex-1 items-center justify-center"
         edges={['top']}
       >
         <ActivityIndicator size="large" color="#296C24" />
-        <Text className="font-body text-sm text-neutral-T50 mt-3">
+        <Text className="font-body text-neutral-T50 mt-3 text-sm">
           {t('common.loading')}
         </Text>
       </SafeAreaView>
@@ -292,12 +292,12 @@ export default function EditPost() {
   }
 
   return (
-    <View className="flex-1 bg-neutral">
+    <View className="bg-neutral flex-1">
       <StackHeader
         title={t('post.editPost')}
         rightElement={
-          <View className="bg-neutral-T95 px-3 py-1.5 rounded-full">
-            <Text className="font-label text-[10px] font-semibold text-neutral-T50 uppercase tracking-wider">
+          <View className="bg-neutral-T95 rounded-full px-3 py-1.5">
+            <Text className="font-label text-neutral-T50 text-[10px] font-semibold uppercase tracking-wider">
               {isB2C ? t('post.b2cMysteryBag') : t('common.free')}
             </Text>
           </View>
@@ -331,17 +331,17 @@ export default function EditPost() {
               }}
             />
             {fieldErrors.images && (
-              <Text className="text-xs text-red-500 font-label mt-1 ml-1">
+              <Text className="font-label ml-1 mt-1 text-xs text-red-500">
                 {fieldErrors.images}
               </Text>
             )}
           </View>
 
           {/* ── Form fields ── */}
-          <View className="gap-6 mb-8">
+          <View className="mb-8 gap-6">
             {/* Category */}
             <View className="gap-2">
-              <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
+              <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
                 {t('post.category')}
               </Text>
               <CategoryPicker selected={category} onSelect={setCategory} />
@@ -349,11 +349,11 @@ export default function EditPost() {
 
             {/* Meal title */}
             <View className="gap-2">
-              <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
+              <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
                 {t('post.title')}
               </Text>
               <TextInput
-                className={`w-full h-14 px-4 rounded-xl bg-neutral-T95 border font-body text-base text-neutral-T10 ${fieldErrors.title ? 'border-red-500' : 'border-neutral-T90'}`}
+                className={`bg-neutral-T95 font-body text-neutral-T10 h-14 w-full rounded-xl border px-4 text-base ${fieldErrors.title ? 'border-red-500' : 'border-neutral-T90'}`}
                 placeholder={t('post.titlePlaceholder')}
                 placeholderTextColor="#AAABAB"
                 value={title}
@@ -367,7 +367,7 @@ export default function EditPost() {
                 }}
               />
               {fieldErrors.title && (
-                <Text className="text-xs text-red-500 font-label ml-1">
+                <Text className="font-label ml-1 text-xs text-red-500">
                   {fieldErrors.title}
                 </Text>
               )}
@@ -375,11 +375,11 @@ export default function EditPost() {
 
             {/* Description */}
             <View className="gap-2">
-              <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
+              <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
                 {t('post.description')}
               </Text>
               <TextInput
-                className="w-full p-4 rounded-xl bg-neutral-T95 border border-neutral-T90 font-body text-base text-neutral-T10"
+                className="bg-neutral-T95 border-neutral-T90 font-body text-neutral-T10 w-full rounded-xl border p-4 text-base"
                 placeholder={t('post.descriptionPlaceholder')}
                 placeholderTextColor="#AAABAB"
                 multiline
@@ -395,15 +395,15 @@ export default function EditPost() {
             <View className="flex-row gap-4">
               {isB2C && (
                 <View className="flex-1 gap-2">
-                  <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
+                  <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
                     {t('post.priceLabel')}
                   </Text>
                   <View className="relative justify-center">
-                    <Text className="absolute left-4 font-label font-semibold text-neutral-T50 z-10">
+                    <Text className="font-label text-neutral-T50 absolute left-4 z-10 font-semibold">
                       đ
                     </Text>
                     <TextInput
-                      className={`w-full h-14 pl-8 pr-4 rounded-xl bg-neutral-T95 border font-body text-base text-neutral-T10 ${fieldErrors.price ? 'border-red-500' : 'border-neutral-T90'}`}
+                      className={`bg-neutral-T95 font-body text-neutral-T10 h-14 w-full rounded-xl border pl-8 pr-4 text-base ${fieldErrors.price ? 'border-red-500' : 'border-neutral-T90'}`}
                       placeholder="0"
                       placeholderTextColor="#AAABAB"
                       keyboardType="decimal-pad"
@@ -419,14 +419,14 @@ export default function EditPost() {
                     />
                   </View>
                   {fieldErrors.price && (
-                    <Text className="text-xs text-red-500 font-label ml-1">
+                    <Text className="font-label ml-1 text-xs text-red-500">
                       {fieldErrors.price}
                     </Text>
                   )}
                 </View>
               )}
               <View className="flex-1 gap-2">
-                <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
+                <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
                   {t('post.quantity')}
                 </Text>
                 <QuantityStepper value={quantity} onChange={setQuantity} />
@@ -436,7 +436,7 @@ export default function EditPost() {
 
           {/* ── Pickup window ── */}
           <View
-            className={`rounded-2xl p-6 gap-4 mb-6 ${fieldErrors.pickupTime ? 'bg-red-50 border border-red-500' : 'bg-neutral-T95'}`}
+            className={`mb-6 gap-4 rounded-2xl p-6 ${fieldErrors.pickupTime ? 'border border-red-500 bg-red-50' : 'bg-neutral-T95'}`}
           >
             <View className="flex-row items-center gap-2">
               <MaterialIcons
@@ -444,34 +444,34 @@ export default function EditPost() {
                 size={20}
                 color={fieldErrors.pickupTime ? '#EF4444' : '#296C24'}
               />
-              <Text className="font-sans font-bold text-base text-neutral-T10">
+              <Text className="text-neutral-T10 font-sans text-base font-bold">
                 {t('post.pickupWindow')}
               </Text>
             </View>
             <View className="flex-row gap-4">
               <View className="flex-1 gap-1">
-                <Text className="text-[10px] font-label font-semibold tracking-wider text-neutral-T70 ml-1">
+                <Text className="font-label text-neutral-T70 ml-1 text-[10px] font-semibold tracking-wider">
                   {t('post.from')}
                 </Text>
                 <TouchableOpacity
-                  className="h-12 px-4 rounded-xl bg-neutral-T100 border border-neutral-T90 flex-row items-center justify-between active:opacity-80"
+                  className="bg-neutral-T100 border-neutral-T90 h-12 flex-row items-center justify-between rounded-xl border px-4 active:opacity-80"
                   onPress={() => openPicker('pickupStart', 'time')}
                 >
-                  <Text className="font-body font-semibold text-neutral-T10">
+                  <Text className="font-body text-neutral-T10 font-semibold">
                     {formatTime(pickupStart)}
                   </Text>
                   <MaterialIcons name="access-time" size={16} color="#AAABAB" />
                 </TouchableOpacity>
               </View>
               <View className="flex-1 gap-1">
-                <Text className="text-[10px] font-label font-semibold tracking-wider text-neutral-T70 ml-1">
+                <Text className="font-label text-neutral-T70 ml-1 text-[10px] font-semibold tracking-wider">
                   {t('post.to')}
                 </Text>
                 <TouchableOpacity
-                  className="h-12 px-4 rounded-xl bg-neutral-T100 border border-neutral-T90 flex-row items-center justify-between active:opacity-80"
+                  className="bg-neutral-T100 border-neutral-T90 h-12 flex-row items-center justify-between rounded-xl border px-4 active:opacity-80"
                   onPress={() => openPicker('pickupEnd', 'time')}
                 >
-                  <Text className="font-body font-semibold text-neutral-T10">
+                  <Text className="font-body text-neutral-T10 font-semibold">
                     {formatTime(pickupEnd)}
                   </Text>
                   <MaterialIcons name="access-time" size={16} color="#AAABAB" />
@@ -479,28 +479,28 @@ export default function EditPost() {
               </View>
             </View>
             {fieldErrors.pickupTime && (
-              <Text className="text-xs text-red-500 font-label ml-1">
+              <Text className="font-label ml-1 text-xs text-red-500">
                 {fieldErrors.pickupTime}
               </Text>
             )}
           </View>
 
           {/* ── Expiry date ── */}
-          <View className="gap-2 mb-6">
-            <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
+          <View className="mb-6 gap-2">
+            <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
               {t('post.expiryDate')}
             </Text>
             <TouchableOpacity
-              className={`h-14 px-4 rounded-xl bg-neutral-T95 border flex-row items-center justify-between active:opacity-80 ${fieldErrors.expiryDate ? 'border-red-500' : 'border-neutral-T90'}`}
+              className={`bg-neutral-T95 h-14 flex-row items-center justify-between rounded-xl border px-4 active:opacity-80 ${fieldErrors.expiryDate ? 'border-red-500' : 'border-neutral-T90'}`}
               onPress={() => openPicker('expiryDate', 'date')}
             >
-              <Text className="font-body text-base text-neutral-T10">
+              <Text className="font-body text-neutral-T10 text-base">
                 {formatDate(expiryDate)}
               </Text>
               <MaterialIcons name="event" size={20} color="#AAABAB" />
             </TouchableOpacity>
             {fieldErrors.expiryDate && (
-              <Text className="text-xs text-red-500 font-label ml-1">
+              <Text className="font-label ml-1 text-xs text-red-500">
                 {fieldErrors.expiryDate}
               </Text>
             )}
@@ -510,7 +510,7 @@ export default function EditPost() {
 
       {/* ── Fixed footer ── */}
       <View
-        className="absolute bottom-0 left-0 right-0 bg-neutral-T100 border-t border-neutral-T90"
+        className="bg-neutral-T100 border-neutral-T90 absolute bottom-0 left-0 right-0 border-t"
         style={{
           paddingBottom: Math.max(insets.bottom, 16),
           paddingTop: 16,
@@ -519,16 +519,16 @@ export default function EditPost() {
       >
         <View className="flex-row gap-4">
           <TouchableOpacity
-            className="flex-1 h-14 bg-neutral-T95 rounded-xl items-center justify-center flex-row gap-2 active:opacity-80"
+            className="bg-neutral-T95 h-14 flex-1 flex-row items-center justify-center gap-2 rounded-xl active:opacity-80"
             onPress={() => router.back()}
           >
             <MaterialIcons name="close" size={18} color="#757777" />
-            <Text className="font-label font-medium text-sm text-neutral-T50">
+            <Text className="font-label text-neutral-T50 text-sm font-medium">
               {t('common.cancel')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="flex-1 h-14 bg-primary-T40 rounded-xl items-center justify-center flex-row gap-2 shadow-sm active:opacity-80"
+            className="bg-primary-T40 h-14 flex-1 flex-row items-center justify-center gap-2 rounded-xl shadow-sm active:opacity-80"
             onPress={handleSave}
             disabled={isSubmitting}
           >
@@ -537,7 +537,7 @@ export default function EditPost() {
             ) : (
               <>
                 <MaterialIcons name="check" size={18} color="#FFFFFF" />
-                <Text className="font-label font-medium text-sm text-neutral-T100">
+                <Text className="font-label text-neutral-T100 text-sm font-medium">
                   {t('post.saveChanges')}
                 </Text>
               </>

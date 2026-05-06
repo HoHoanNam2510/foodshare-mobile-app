@@ -56,7 +56,7 @@ const P2PCard = ({ item }: { item: P2PItem }) => {
   return (
     <TouchableOpacity
       activeOpacity={0.9}
-      className="bg-neutral-T100 rounded-2xl overflow-hidden flex-1 shadow-sm active:opacity-90"
+      className="bg-neutral-T100 flex-1 overflow-hidden rounded-2xl shadow-sm active:opacity-90"
     >
       <View className="relative">
         <Image
@@ -67,14 +67,14 @@ const P2PCard = ({ item }: { item: P2PItem }) => {
         />
         {item.badge && (
           <View
-            className={`absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full ${
+            className={`absolute left-2.5 top-2.5 rounded-full px-2.5 py-1 ${
               item.badgeType === 'expiring'
                 ? 'bg-secondary-T40'
                 : 'bg-neutral-T100/90'
             }`}
           >
             <Text
-              className={`text-[10px] font-label ${
+              className={`font-label text-[10px] ${
                 item.badgeType === 'expiring'
                   ? 'text-neutral-T100'
                   : 'text-primary-T40'
@@ -87,21 +87,21 @@ const P2PCard = ({ item }: { item: P2PItem }) => {
         )}
       </View>
 
-      <View className="px-3 pt-3 pb-3.5">
+      <View className="px-3 pb-3.5 pt-3">
         <Text
-          className="text-[15px] font-body text-neutral-T10 leading-snug"
+          className="font-body text-neutral-T10 text-[15px] leading-snug"
           style={{ fontWeight: '600' }}
           numberOfLines={1}
         >
           {item.name}
         </Text>
-        <View className="flex-row items-center gap-2 mt-2">
+        <View className="mt-2 flex-row items-center gap-2">
           <Image
             source={{ uri: item.avatar }}
-            className="w-5 h-5 rounded-full"
+            className="h-5 w-5 rounded-full"
           />
           <Text
-            className="text-xs font-body text-neutral-T50"
+            className="font-body text-neutral-T50 text-xs"
             numberOfLines={1}
           >
             {item.user} · {item.distance}
@@ -121,16 +121,16 @@ export default function FreshlyShared() {
 
   return (
     <View className="mt-8 px-5">
-      <View className="flex-row items-center justify-between mb-4">
+      <View className="mb-4 flex-row items-center justify-between">
         <Text
-          className="text-xl font-sans text-neutral-T10"
+          className="text-neutral-T10 font-sans text-xl"
           style={{ fontWeight: '700', letterSpacing: -0.3 }}
         >
           {t('home.freshlySharedTitle')}
         </Text>
         <TouchableOpacity className="flex-row items-center gap-1 active:opacity-70">
           <Text
-            className="text-sm font-body text-primary-T40"
+            className="font-body text-primary-T40 text-sm"
             style={{ fontWeight: '600' }}
           >
             {t('common.seeAll')}

@@ -22,26 +22,27 @@ function formatDate(iso: string): string {
   });
 }
 
-export default function VoucherExpiryTag({ validUntil }: VoucherExpiryTagProps) {
+export default function VoucherExpiryTag({
+  validUntil,
+}: VoucherExpiryTagProps) {
   const { t } = useTranslation();
   const daysLeft = getDaysUntilExpiry(validUntil);
   const isExpiringSoon = daysLeft <= 3 && daysLeft > 0;
   const isExpired = daysLeft <= 0;
 
-  const textColorClass = isExpired || isExpiringSoon ? 'text-error' : 'text-neutral-T50';
+  const textColorClass =
+    isExpired || isExpiringSoon ? 'text-error' : 'text-neutral-T50';
 
   return (
     <View className="flex-row items-center gap-1">
-      {isExpiringSoon && (
-        <Text className="text-xs">⚠️</Text>
-      )}
+      {isExpiringSoon && <Text className="text-xs">⚠️</Text>}
       <Text className={`font-label text-xs ${textColorClass}`}>
         {isExpired
           ? t('voucher.statusExpired')
           : `${t('voucher.expiresAt')}${formatDate(validUntil)}`}
       </Text>
       {isExpiringSoon && (
-        <Text className="font-label text-xs text-error">
+        <Text className="font-label text-error text-xs">
           {t('voucher.expiresInDays', { days: daysLeft })}
         </Text>
       )}

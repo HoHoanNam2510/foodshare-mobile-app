@@ -12,7 +12,12 @@ interface VerificationCardProps {
 
 const KYC_BADGE: Record<
   KycStatus,
-  { containerClass: string; textClass: string; labelKey: string; bgStyle?: object }
+  {
+    containerClass: string;
+    textClass: string;
+    labelKey: string;
+    bgStyle?: object;
+  }
 > = {
   VERIFIED: {
     containerClass: 'bg-primary-T95',
@@ -40,14 +45,14 @@ export default function VerificationCard({
   const badge = KYC_BADGE[kycStatus];
 
   return (
-    <View className="bg-neutral-T100 rounded-2xl shadow-sm p-6 gap-5">
+    <View className="bg-neutral-T100 gap-5 rounded-2xl p-6 shadow-sm">
       {/* Section header */}
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-3">
-          <View className="w-10 h-10 bg-primary-T95 rounded-xl items-center justify-center">
+          <View className="bg-primary-T95 h-10 w-10 items-center justify-center rounded-xl">
             <MaterialIcons name="verified-user" size={20} color="#296C24" />
           </View>
-          <Text className="font-sans font-bold text-lg text-neutral-T10">
+          <Text className="text-neutral-T10 font-sans text-lg font-bold">
             {t('profile.verificationTitle')}
           </Text>
         </View>
@@ -66,9 +71,9 @@ export default function VerificationCard({
 
       {/* Trạng thái PENDING: hiển thị thông báo chờ */}
       {kycStatus === 'PENDING' && (
-        <View className="bg-secondary-T95 border border-secondary-T70 rounded-xl p-3 flex-row gap-2 items-start">
+        <View className="bg-secondary-T95 border-secondary-T70 flex-row items-start gap-2 rounded-xl border p-3">
           <MaterialIcons name="schedule" size={16} color="#6B5E00" />
-          <Text className="font-body text-xs text-secondary-T30 flex-1 leading-5">
+          <Text className="font-body text-secondary-T30 flex-1 text-xs leading-5">
             {t('profile.verificationPendingMsg')}
           </Text>
         </View>
@@ -77,11 +82,11 @@ export default function VerificationCard({
       {/* Trạng thái REJECTED: hiển thị cảnh báo */}
       {kycStatus === 'REJECTED' && (
         <View
-          className="rounded-xl p-3 flex-row gap-2 items-start"
+          className="flex-row items-start gap-2 rounded-xl p-3"
           style={{ backgroundColor: 'rgba(186,26,26,0.08)' }}
         >
           <MaterialIcons name="error-outline" size={16} color="#ba1a1a" />
-          <Text className="font-body text-xs text-error flex-1 leading-5">
+          <Text className="font-body text-error flex-1 text-xs leading-5">
             {t('profile.verificationRejectedMsg')}
           </Text>
         </View>
@@ -96,11 +101,11 @@ export default function VerificationCard({
         {kycDocuments.map((doc) => (
           <View
             key={doc}
-            className="w-32 h-20 rounded-xl overflow-hidden shadow-sm"
+            className="h-20 w-32 overflow-hidden rounded-xl shadow-sm"
           >
             <Image
               source={{ uri: doc }}
-              className="w-full h-full"
+              className="h-full w-full"
               resizeMode="cover"
               style={{ opacity: 0.7 }}
             />

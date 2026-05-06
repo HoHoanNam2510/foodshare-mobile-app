@@ -59,11 +59,11 @@ export default function ExploreListView({
 
       {/* Empty state */}
       {!loading && posts.length === 0 && (
-        <View className="items-center py-12 gap-2">
+        <View className="items-center gap-2 py-12">
           <Text className="text-neutral-T50 font-sans text-base">
             {t('explore.noPostsTitle')}
           </Text>
-          <Text className="text-neutral-T70 font-label text-sm text-center">
+          <Text className="text-neutral-T70 font-label text-center text-sm">
             {t('explore.noPostsHint')}
           </Text>
         </View>

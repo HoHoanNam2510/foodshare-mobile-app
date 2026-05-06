@@ -16,7 +16,9 @@ type PendingEntry = {
 type Queues = Partial<Record<SupportedLanguage, Map<string, PendingEntry[]>>>;
 
 const queues: Queues = {};
-const timers: Partial<Record<SupportedLanguage, ReturnType<typeof setTimeout>>> = {};
+const timers: Partial<
+  Record<SupportedLanguage, ReturnType<typeof setTimeout>>
+> = {};
 
 function cacheKey(target: SupportedLanguage, text: string) {
   return `${CACHE_PREFIX}${target}:${text}`;

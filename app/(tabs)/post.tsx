@@ -132,7 +132,7 @@ function StatusBadge({ status }: { status: PostStatus }) {
   const config = STATUS_CONFIG[status];
   return (
     <View
-      className={`flex-row items-center gap-1 px-2.5 py-1 rounded-full ${config.bgClass}`}
+      className={`flex-row items-center gap-1 rounded-full px-2.5 py-1 ${config.bgClass}`}
     >
       <View
         style={{
@@ -171,39 +171,39 @@ function PostCard({ post, onPress, onLongPress }: PostCardProps) {
       onPress={onPress}
       onLongPress={onLongPress}
       delayLongPress={400}
-      className="bg-neutral-T100 rounded-2xl shadow-sm overflow-hidden active:scale-[0.98]"
+      className="bg-neutral-T100 overflow-hidden rounded-2xl shadow-sm active:scale-[0.98]"
     >
       {/* Image */}
-      <View className="relative w-full h-44 bg-neutral-T90">
+      <View className="bg-neutral-T90 relative h-44 w-full">
         {imageUrl ? (
           <Image
             source={{ uri: imageUrl }}
-            className={`w-full h-full ${isDimmed ? 'opacity-50' : ''}`}
+            className={`h-full w-full ${isDimmed ? 'opacity-50' : ''}`}
             resizeMode="cover"
           />
         ) : (
-          <View className="w-full h-full bg-neutral-T95 items-center justify-center">
+          <View className="bg-neutral-T95 h-full w-full items-center justify-center">
             <Feather name="image" size={32} color="#AAABAB" />
           </View>
         )}
         {/* Type chip — top left */}
-        <View className="absolute top-3 left-3 bg-neutral-T10/70 px-2.5 py-1 rounded-full">
-          <Text className="font-label text-[10px] font-semibold text-neutral-T100 uppercase tracking-wide">
+        <View className="bg-neutral-T10/70 absolute left-3 top-3 rounded-full px-2.5 py-1">
+          <Text className="font-label text-neutral-T100 text-[10px] font-semibold uppercase tracking-wide">
             {post.type === 'P2P_FREE'
               ? t('common.free')
               : t('post.b2cMysteryBag')}
           </Text>
         </View>
         {/* Status badge — top right */}
-        <View className="absolute top-3 right-3">
+        <View className="absolute right-3 top-3">
           <StatusBadge status={post.status} />
         </View>
       </View>
 
       {/* Body */}
-      <View className="px-4 pt-3 pb-4 gap-2">
+      <View className="gap-2 px-4 pb-4 pt-3">
         <Text
-          className={`text-base font-sans font-extrabold tracking-tight ${
+          className={`font-sans text-base font-extrabold tracking-tight ${
             isDimmed ? 'text-neutral-T50' : 'text-neutral-T10'
           }`}
           numberOfLines={2}
@@ -215,7 +215,7 @@ function PostCard({ post, onPress, onLongPress }: PostCardProps) {
         <View className="flex-row items-center gap-4">
           <View className="flex-row items-center gap-1.5">
             <Feather name="tag" size={13} color="#AAABAB" />
-            <Text className="font-body text-xs text-neutral-T50">
+            <Text className="font-body text-neutral-T50 text-xs">
               {post.type === 'P2P_FREE'
                 ? t('common.free')
                 : `${post.price.toLocaleString('vi-VN')}đ`}
@@ -224,7 +224,7 @@ function PostCard({ post, onPress, onLongPress }: PostCardProps) {
           {post.expiryDate && (
             <View className="flex-row items-center gap-1.5">
               <Feather name="clock" size={13} color="#AAABAB" />
-              <Text className="font-body text-xs text-neutral-T50">
+              <Text className="font-body text-neutral-T50 text-xs">
                 {t('post.expiryPrefix')}{' '}
                 {new Date(post.expiryDate).toLocaleDateString('vi-VN')}
               </Text>
@@ -235,7 +235,7 @@ function PostCard({ post, onPress, onLongPress }: PostCardProps) {
         {/* Created at */}
         <View className="flex-row items-center gap-1.5 pt-0.5">
           <Feather name="calendar" size={12} color="#C5C7C6" />
-          <Text className="font-label text-[11px] text-neutral-T70">
+          <Text className="font-label text-neutral-T70 text-[11px]">
             {formatDate(post.createdAt)}
           </Text>
         </View>
@@ -323,7 +323,7 @@ export default function PostList() {
   }, [posts, searchQuery, activeFilter, sortAsc]);
 
   return (
-    <View className="flex-1 bg-neutral">
+    <View className="bg-neutral flex-1">
       <StatusBar
         barStyle="dark-content"
         backgroundColor="transparent"
@@ -332,15 +332,15 @@ export default function PostList() {
       <MainHeader />
 
       {/* ── Search bar ── */}
-      <View className="bg-neutral-T100 p-3 flex-row items-center gap-3">
-        <View className="flex-1 flex-row items-center bg-neutral-T95 rounded-xl px-3 gap-2 border border-neutral-T90 h-11">
+      <View className="bg-neutral-T100 flex-row items-center gap-3 p-3">
+        <View className="bg-neutral-T95 border-neutral-T90 h-11 flex-1 flex-row items-center gap-2 rounded-xl border px-3">
           <Feather name="search" size={16} color="#AAABAB" />
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder={t('post.searchByTitle')}
             placeholderTextColor="#AAABAB"
-            className="flex-1 font-body text-sm text-neutral-T10 h-full"
+            className="font-body text-neutral-T10 h-full flex-1 text-sm"
             returnKeyType="search"
           />
           {searchQuery.length > 0 && (
@@ -355,7 +355,7 @@ export default function PostList() {
         <TouchableOpacity
           onPress={() => setSortAsc((prev) => !prev)}
           activeOpacity={0.8}
-          className="w-11 h-11 rounded-full bg-neutral-T95 items-center justify-center border border-neutral-T90 active:opacity-70"
+          className="bg-neutral-T95 border-neutral-T90 h-11 w-11 items-center justify-center rounded-full border active:opacity-70"
         >
           <Feather
             name={sortAsc ? 'arrow-up' : 'arrow-down'}
@@ -366,7 +366,7 @@ export default function PostList() {
       </View>
 
       {/* ── Filter Bar ── */}
-      <View className="bg-neutral-T100 border-b border-neutral-T90 px-3 overflow-hidden">
+      <View className="bg-neutral-T100 border-neutral-T90 overflow-hidden border-b px-3">
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -382,10 +382,10 @@ export default function PostList() {
                 key={id}
                 onPress={() => setActiveFilter(id as PostStatus | 'ALL')}
                 activeOpacity={0.8}
-                className={`px-4 py-2 rounded-full active:scale-95 ${
+                className={`rounded-full px-4 py-2 active:scale-95 ${
                   isActive
                     ? 'bg-primary-T40'
-                    : 'bg-neutral-T95 border border-neutral-T90'
+                    : 'bg-neutral-T95 border-neutral-T90 border'
                 }`}
               >
                 <Text
@@ -405,21 +405,21 @@ export default function PostList() {
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-sm text-neutral-T50 mt-3">
+          <Text className="font-body text-neutral-T50 mt-3 text-sm">
             {t('common.loading')}
           </Text>
         </View>
       ) : error ? (
-        <View className="flex-1 items-center justify-center px-8 gap-4">
-          <Text className="font-body text-sm text-neutral-T50 text-center">
+        <View className="flex-1 items-center justify-center gap-4 px-8">
+          <Text className="font-body text-neutral-T50 text-center text-sm">
             {error}
           </Text>
           <TouchableOpacity
             onPress={() => load()}
-            className="px-6 py-3 bg-primary-T40 rounded-xl"
+            className="bg-primary-T40 rounded-xl px-6 py-3"
             activeOpacity={0.85}
           >
-            <Text className="font-label font-semibold text-neutral-T100">
+            <Text className="font-label text-neutral-T100 font-semibold">
               {t('common.retry')}
             </Text>
           </TouchableOpacity>
@@ -427,8 +427,8 @@ export default function PostList() {
       ) : (
         <>
           {/* Result count */}
-          <View className="px-4 pt-4 pb-2">
-            <Text className="font-label text-xs text-neutral-T70">
+          <View className="px-4 pb-2 pt-4">
+            <Text className="font-label text-neutral-T70 text-xs">
               {t('post.postCount', { count: displayedPosts.length })}
             </Text>
           </View>
@@ -450,11 +450,11 @@ export default function PostList() {
             }
           >
             {displayedPosts.length === 0 ? (
-              <View className="items-center justify-center py-20 gap-3">
-                <View className="w-16 h-16 rounded-full bg-neutral-T95 items-center justify-center">
+              <View className="items-center justify-center gap-3 py-20">
+                <View className="bg-neutral-T95 h-16 w-16 items-center justify-center rounded-full">
                   <Feather name="inbox" size={28} color="#AAABAB" />
                 </View>
-                <Text className="font-body text-sm text-neutral-T50 text-center">
+                <Text className="font-body text-neutral-T50 text-center text-sm">
                   {t('post.noPostsFound')}
                 </Text>
               </View>

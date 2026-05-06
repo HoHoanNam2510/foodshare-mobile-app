@@ -38,7 +38,9 @@ export const getMyConversationsApi = () =>
   api.get<{ success: boolean; data: Conversation[] }>('/chat/conversations');
 
 export const getOrCreateConversationApi = (receiverId: string) =>
-  api.post<{ success: boolean; data: Conversation }>('/chat/conversations', { receiverId });
+  api.post<{ success: boolean; data: Conversation }>('/chat/conversations', {
+    receiverId,
+  });
 
 export const getMessagesApi = (conversationId: string, page = 1) =>
   api.get<{ success: boolean; data: ChatMessage[] }>(

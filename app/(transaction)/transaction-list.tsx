@@ -129,11 +129,11 @@ function TransactionCard({
         onPress={onPress}
         activeOpacity={0.85}
         style={styles.card}
-        className="bg-neutral-T100 rounded-2xl mx-4 mb-3 overflow-hidden"
+        className="bg-neutral-T100 mx-4 mb-3 overflow-hidden rounded-2xl"
       >
-        <View className="flex-row p-4 gap-3 items-center">
+        <View className="flex-row items-center gap-3 p-4">
           <View
-            className="rounded-xl overflow-hidden bg-neutral-T95 items-center justify-center"
+            className="bg-neutral-T95 items-center justify-center overflow-hidden rounded-xl"
             style={styles.thumb}
           >
             <MaterialIcons name="delete-outline" size={22} color="#AAABAB" />
@@ -142,10 +142,10 @@ function TransactionCard({
             <View className="flex-row items-center gap-2">
               <StatusBadge status={tx.status} />
             </View>
-            <Text className="font-sans text-sm text-neutral-T50 italic leading-tight">
+            <Text className="text-neutral-T50 font-sans text-sm italic leading-tight">
               Bài đăng đã bị xóa
             </Text>
-            <Text className="font-body text-xs text-neutral-T70">
+            <Text className="font-body text-neutral-T70 text-xs">
               {formatDate(tx.createdAt)}
             </Text>
           </View>
@@ -162,11 +162,11 @@ function TransactionCard({
       onPress={onPress}
       activeOpacity={0.85}
       style={styles.card}
-      className="bg-neutral-T100 rounded-2xl mx-4 mb-3 overflow-hidden"
+      className="bg-neutral-T100 mx-4 mb-3 overflow-hidden rounded-2xl"
     >
-      <View className="flex-row p-4 gap-3">
+      <View className="flex-row gap-3 p-4">
         <View
-          className="rounded-xl overflow-hidden bg-neutral-T95"
+          className="bg-neutral-T95 overflow-hidden rounded-xl"
           style={styles.thumb}
         >
           {thumb ? (
@@ -183,13 +183,13 @@ function TransactionCard({
         </View>
 
         <View className="flex-1 gap-1">
-          <View className="flex-row items-center gap-2 flex-wrap">
+          <View className="flex-row flex-wrap items-center gap-2">
             <View
-              className="px-2 py-0.5 rounded-md"
+              className="rounded-md px-2 py-0.5"
               style={{ backgroundColor: isP2P ? '#DCFCE7' : '#FEF3C7' }}
             >
               <Text
-                className="font-label font-bold text-[9px] uppercase tracking-wider"
+                className="font-label text-[9px] font-bold uppercase tracking-wider"
                 style={{ color: isP2P ? '#15803D' : '#92400E' }}
               >
                 {isP2P ? 'P2P' : 'B2C'}
@@ -198,13 +198,13 @@ function TransactionCard({
             <StatusBadge status={tx.status} />
             {/* Role badge */}
             <View
-              className="px-2 py-0.5 rounded-md"
+              className="rounded-md px-2 py-0.5"
               style={{
                 backgroundColor: role === 'donor' ? '#DCFCE7' : '#EFF6FF',
               }}
             >
               <Text
-                className="font-label font-bold text-[9px] uppercase tracking-wider"
+                className="font-label text-[9px] font-bold uppercase tracking-wider"
                 style={{ color: role === 'donor' ? '#15803D' : '#1D4ED8' }}
               >
                 {role === 'donor'
@@ -215,21 +215,21 @@ function TransactionCard({
           </View>
 
           <Text
-            className="font-sans font-bold text-sm text-neutral-T10 leading-tight"
+            className="text-neutral-T10 font-sans text-sm font-bold leading-tight"
             numberOfLines={2}
           >
             {post.title}
           </Text>
 
-          <View className="flex-row items-center justify-between mt-1">
-            <Text className="font-body text-xs text-neutral-T50">
+          <View className="mt-1 flex-row items-center justify-between">
+            <Text className="font-body text-neutral-T50 text-xs">
               {isP2P
                 ? t('common.free')
                 : `${post.price.toLocaleString('vi-VN')}đ`}
               {'  ·  '}
               {t('transaction.qtyLabel')} {tx.quantity}
             </Text>
-            <Text className="font-body text-xs text-neutral-T70">
+            <Text className="font-body text-neutral-T70 text-xs">
               {formatDate(tx.createdAt)}
             </Text>
           </View>
@@ -247,14 +247,14 @@ function TransactionCard({
             onPress={onCancel}
             disabled={isCancelling}
             activeOpacity={0.8}
-            className="h-10 rounded-xl border border-red-200 items-center justify-center flex-row gap-1.5"
+            className="h-10 flex-row items-center justify-center gap-1.5 rounded-xl border border-red-200"
             style={{ backgroundColor: '#FEF2F2' }}
           >
             {isCancelling ? (
               <ActivityIndicator size="small" color="#DC2626" />
             ) : (
               <Text
-                className="font-label font-semibold text-sm"
+                className="font-label text-sm font-semibold"
                 style={{ color: '#DC2626' }}
               >
                 {t('transaction.cancelRequest')}
@@ -293,12 +293,12 @@ function IncomingCard({
       onPress={onPress}
       activeOpacity={isPending ? 1 : 0.85}
       style={styles.card}
-      className="bg-neutral-T100 rounded-2xl mx-4 mb-3 overflow-hidden"
+      className="bg-neutral-T100 mx-4 mb-3 overflow-hidden rounded-2xl"
     >
-      <View className="flex-row p-4 gap-3">
+      <View className="flex-row gap-3 p-4">
         {/* Thumbnail */}
         <View
-          className="rounded-xl overflow-hidden bg-neutral-T95"
+          className="bg-neutral-T95 overflow-hidden rounded-xl"
           style={styles.thumb}
         >
           {thumb ? (
@@ -317,7 +317,7 @@ function IncomingCard({
         {/* Info */}
         <View className="flex-1 gap-1">
           <Text
-            className="font-sans font-bold text-sm text-neutral-T10 leading-tight"
+            className="text-neutral-T10 font-sans text-sm font-bold leading-tight"
             numberOfLines={2}
           >
             {post?.title ?? 'Bài đăng đã bị xóa'}
@@ -328,24 +328,24 @@ function IncomingCard({
             {requester.avatar ? (
               <Image
                 source={{ uri: requester.avatar }}
-                className="w-4 h-4 rounded-full"
+                className="h-4 w-4 rounded-full"
               />
             ) : (
-              <View className="w-4 h-4 rounded-full bg-primary-T95 items-center justify-center">
+              <View className="bg-primary-T95 h-4 w-4 items-center justify-center rounded-full">
                 <MaterialIcons name="person" size={10} color="#296C24" />
               </View>
             )}
             <Text
-              className="font-body text-xs text-neutral-T50"
+              className="font-body text-neutral-T50 text-xs"
               numberOfLines={1}
             >
               {requester.fullName}
             </Text>
           </View>
 
-          <View className="flex-row items-center justify-between mt-0.5">
+          <View className="mt-0.5 flex-row items-center justify-between">
             <StatusBadge status={tx.status} />
-            <Text className="font-body text-xs text-neutral-T70">
+            <Text className="font-body text-neutral-T70 text-xs">
               {formatDate(tx.createdAt)}
             </Text>
           </View>
@@ -364,12 +364,12 @@ function IncomingCard({
           <TouchableOpacity
             onPress={() => onRespond(tx._id, 'REJECT')}
             disabled={isResponding}
-            className="flex-1 h-10 rounded-xl border border-red-200 items-center justify-center"
+            className="h-10 flex-1 items-center justify-center rounded-xl border border-red-200"
             style={{ backgroundColor: '#FEF2F2' }}
             activeOpacity={0.8}
           >
             <Text
-              className="font-label font-semibold text-sm"
+              className="font-label text-sm font-semibold"
               style={{ color: '#DC2626' }}
             >
               {t('transaction.reject')}
@@ -378,13 +378,13 @@ function IncomingCard({
           <TouchableOpacity
             onPress={() => onRespond(tx._id, 'ACCEPT')}
             disabled={isResponding}
-            className="flex-1 h-10 rounded-xl bg-primary-T40 items-center justify-center"
+            className="bg-primary-T40 h-10 flex-1 items-center justify-center rounded-xl"
             activeOpacity={0.8}
           >
             {isResponding ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
-              <Text className="font-label font-semibold text-sm text-neutral-T100">
+              <Text className="font-label text-neutral-T100 text-sm font-semibold">
                 {t('transaction.accept')}
               </Text>
             )}
@@ -416,14 +416,14 @@ function EmptyState({ tab }: { tab: TabKey }) {
   };
   const cfg = configs[tab];
   return (
-    <View className="flex-1 items-center justify-center py-24 px-8 gap-3">
-      <View className="w-16 h-16 rounded-2xl bg-primary-T95 items-center justify-center">
+    <View className="flex-1 items-center justify-center gap-3 px-8 py-24">
+      <View className="bg-primary-T95 h-16 w-16 items-center justify-center rounded-2xl">
         <MaterialIcons name={cfg.icon} size={28} color="#296C24" />
       </View>
-      <Text className="font-sans font-bold text-base text-neutral-T10 text-center">
+      <Text className="text-neutral-T10 text-center font-sans text-base font-bold">
         {t(cfg.titleKey)}
       </Text>
-      <Text className="font-body text-sm text-neutral-T50 text-center leading-5">
+      <Text className="font-body text-neutral-T50 text-center text-sm leading-5">
         {t(cfg.bodyKey)}
       </Text>
     </View>
@@ -581,7 +581,7 @@ export default function TransactionListScreen() {
   ];
 
   return (
-    <View className="flex-1 bg-neutral">
+    <View className="bg-neutral flex-1">
       <StatusBar
         barStyle="dark-content"
         backgroundColor="transparent"
@@ -593,17 +593,17 @@ export default function TransactionListScreen() {
       />
 
       {/* ── Tab Bar ── */}
-      <View className="flex-row mx-4 mt-4 mb-3 bg-neutral-T95 rounded-xl p-1">
+      <View className="bg-neutral-T95 mx-4 mb-3 mt-4 flex-row rounded-xl p-1">
         {tabs.map((tab) => (
           <TouchableOpacity
             key={tab.key}
             onPress={() => setActiveTab(tab.key)}
             activeOpacity={0.8}
-            className="flex-1 py-2.5 rounded-lg items-center"
+            className="flex-1 items-center rounded-lg py-2.5"
             style={activeTab === tab.key ? styles.tabActive : undefined}
           >
             <Text
-              className="font-label font-semibold text-xs"
+              className="font-label text-xs font-semibold"
               style={{ color: activeTab === tab.key ? '#296C24' : '#757777' }}
             >
               {tab.label}
@@ -617,21 +617,21 @@ export default function TransactionListScreen() {
         ownerLoading && !ownerLoaded ? (
           <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" color="#296C24" />
-            <Text className="font-body text-sm text-neutral-T50 mt-3">
+            <Text className="font-body text-neutral-T50 mt-3 text-sm">
               {t('common.loading')}
             </Text>
           </View>
         ) : ownerError ? (
-          <View className="flex-1 items-center justify-center px-8 gap-4">
-            <Text className="font-body text-sm text-neutral-T50 text-center">
+          <View className="flex-1 items-center justify-center gap-4 px-8">
+            <Text className="font-body text-neutral-T50 text-center text-sm">
               {ownerError}
             </Text>
             <TouchableOpacity
               onPress={loadOwner}
-              className="px-6 py-3 bg-primary-T40 rounded-xl"
+              className="bg-primary-T40 rounded-xl px-6 py-3"
               activeOpacity={0.85}
             >
-              <Text className="font-label font-semibold text-neutral-T100">
+              <Text className="font-label text-neutral-T100 font-semibold">
                 {t('common.retry')}
               </Text>
             </TouchableOpacity>
@@ -667,21 +667,21 @@ export default function TransactionListScreen() {
       ) : isLoading ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-sm text-neutral-T50 mt-3">
+          <Text className="font-body text-neutral-T50 mt-3 text-sm">
             {t('common.loading')}
           </Text>
         </View>
       ) : error ? (
-        <View className="flex-1 items-center justify-center px-8 gap-4">
-          <Text className="font-body text-sm text-neutral-T50 text-center">
+        <View className="flex-1 items-center justify-center gap-4 px-8">
+          <Text className="font-body text-neutral-T50 text-center text-sm">
             {error}
           </Text>
           <TouchableOpacity
             onPress={() => loadReceiver()}
-            className="px-6 py-3 bg-primary-T40 rounded-xl"
+            className="bg-primary-T40 rounded-xl px-6 py-3"
             activeOpacity={0.85}
           >
-            <Text className="font-label font-semibold text-neutral-T100">
+            <Text className="font-label text-neutral-T100 font-semibold">
               Thử lại
             </Text>
           </TouchableOpacity>

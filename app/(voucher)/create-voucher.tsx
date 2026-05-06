@@ -132,7 +132,7 @@ const CreateVoucherScreen = () => {
       className="flex-1"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <View className="flex-1 bg-neutral">
+      <View className="bg-neutral flex-1">
         <StackHeader title={t('voucher.createVoucherTitle')} />
         <ScrollView
           ref={scrollViewRef}
@@ -147,11 +147,11 @@ const CreateVoucherScreen = () => {
         >
           {/* Title */}
           <View className="mb-4">
-            <Text className="text-sm font-medium text-foreground mb-2">
+            <Text className="text-foreground mb-2 text-sm font-medium">
               {t('voucher.titleLabel')} <Text className="text-error">*</Text>
             </Text>
             <TextInput
-              className="border border-gray-300 rounded-lg px-4 py-3 text-base bg-white"
+              className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
               placeholder={t('voucher.titlePlaceholder')}
               value={title}
               onChangeText={setTitle}
@@ -160,11 +160,11 @@ const CreateVoucherScreen = () => {
 
           {/* Description */}
           <View className="mb-4">
-            <Text className="text-sm font-medium text-foreground mb-2">
+            <Text className="text-foreground mb-2 text-sm font-medium">
               {t('voucher.descriptionLabel')}
             </Text>
             <TextInput
-              className="border border-gray-300 rounded-lg px-4 py-3 text-base bg-white h-24"
+              className="h-24 rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
               placeholder={t('voucher.descriptionPlaceholder')}
               multiline
               numberOfLines={4}
@@ -175,23 +175,23 @@ const CreateVoucherScreen = () => {
 
           {/* Discount Type */}
           <View className="mb-4">
-            <Text className="text-sm font-medium text-foreground mb-2">
+            <Text className="text-foreground mb-2 text-sm font-medium">
               {t('voucher.discountTypeLabel')}{' '}
               <Text className="text-error">*</Text>
             </Text>
             <View className="flex-row gap-3">
               <TouchableOpacity
-                className={`flex-1 py-3 rounded-lg items-center border ${
+                className={`flex-1 items-center rounded-lg border py-3 ${
                   discountType === 'PERCENTAGE'
                     ? 'bg-primary border-primary'
-                    : 'bg-white border-gray-300'
+                    : 'border-gray-300 bg-white'
                 }`}
                 onPress={() => setDiscountType('PERCENTAGE')}
               >
                 <Text
                   className={
                     discountType === 'PERCENTAGE'
-                      ? 'text-white font-semibold'
+                      ? 'font-semibold text-white'
                       : 'text-foreground'
                   }
                 >
@@ -199,17 +199,17 @@ const CreateVoucherScreen = () => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                className={`flex-1 py-3 rounded-lg items-center border ${
+                className={`flex-1 items-center rounded-lg border py-3 ${
                   discountType === 'FIXED_AMOUNT'
                     ? 'bg-primary border-primary'
-                    : 'bg-white border-gray-300'
+                    : 'border-gray-300 bg-white'
                 }`}
                 onPress={() => setDiscountType('FIXED_AMOUNT')}
               >
                 <Text
                   className={
                     discountType === 'FIXED_AMOUNT'
-                      ? 'text-white font-semibold'
+                      ? 'font-semibold text-white'
                       : 'text-foreground'
                   }
                 >
@@ -221,7 +221,7 @@ const CreateVoucherScreen = () => {
 
           {/* Discount Value */}
           <View className="mb-4">
-            <Text className="text-sm font-medium text-foreground mb-2">
+            <Text className="text-foreground mb-2 text-sm font-medium">
               {t('voucher.discountValueLabel')}{' '}
               {discountType === 'PERCENTAGE'
                 ? t('voucher.percentageSuffix')
@@ -229,7 +229,7 @@ const CreateVoucherScreen = () => {
               <Text className="text-error">*</Text>
             </Text>
             <TextInput
-              className="border border-gray-300 rounded-lg px-4 py-3 text-base bg-white"
+              className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
               placeholder={
                 discountType === 'PERCENTAGE'
                   ? t('voucher.percentagePlaceholder')
@@ -242,14 +242,14 @@ const CreateVoucherScreen = () => {
           </View>
 
           {/* Point Cost & Quantity */}
-          <View className="flex-row gap-4 mb-4">
+          <View className="mb-4 flex-row gap-4">
             <View className="flex-1">
-              <Text className="text-sm font-medium text-foreground mb-2">
+              <Text className="text-foreground mb-2 text-sm font-medium">
                 {t('voucher.pointCostLabel')}{' '}
                 <Text className="text-error">*</Text>
               </Text>
               <TextInput
-                className="border border-gray-300 rounded-lg px-4 py-3 text-base bg-white"
+                className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
                 placeholder={t('voucher.pointCostPlaceholder')}
                 keyboardType="numeric"
                 value={pointCost}
@@ -257,12 +257,12 @@ const CreateVoucherScreen = () => {
               />
             </View>
             <View className="flex-1">
-              <Text className="text-sm font-medium text-foreground mb-2">
+              <Text className="text-foreground mb-2 text-sm font-medium">
                 {t('voucher.quantityLabel')}{' '}
                 <Text className="text-error">*</Text>
               </Text>
               <TextInput
-                className="border border-gray-300 rounded-lg px-4 py-3 text-base bg-white"
+                className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
                 placeholder={t('voucher.quantityPlaceholder')}
                 keyboardType="numeric"
                 value={totalQuantity}
@@ -273,16 +273,16 @@ const CreateVoucherScreen = () => {
 
           {/* Valid Until */}
           <View className="mb-4">
-            <Text className="text-sm font-medium text-foreground mb-2">
+            <Text className="text-foreground mb-2 text-sm font-medium">
               {t('voucher.validUntilLabel')}{' '}
               <Text className="text-error">*</Text>
             </Text>
             <TouchableOpacity
-              className="border border-gray-300 rounded-lg px-4 py-3 bg-white"
+              className="rounded-lg border border-gray-300 bg-white px-4 py-3"
               onPress={() => setActiveValidUntilPicker(true)}
             >
               <View className="flex-row items-center justify-between">
-                <Text className="text-base text-foreground">
+                <Text className="text-foreground text-base">
                   {validUntil.toLocaleDateString('vi-VN')}
                 </Text>
                 <Ionicons name="calendar-outline" size={20} color="#6b7280" />
@@ -292,11 +292,11 @@ const CreateVoucherScreen = () => {
 
           {/* Code */}
           <View className="mb-8">
-            <Text className="text-sm font-medium text-foreground mb-2">
+            <Text className="text-foreground mb-2 text-sm font-medium">
               {t('voucher.codeLabel')} <Text className="text-error">*</Text>
             </Text>
             <TextInput
-              className="border border-gray-300 rounded-lg px-4 py-3 text-base bg-white uppercase"
+              className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-base uppercase"
               placeholder={t('voucher.codePlaceholder')}
               value={code}
               autoCapitalize="characters"
@@ -308,14 +308,14 @@ const CreateVoucherScreen = () => {
         {/* Fixed Bottom Submit Button */}
         <View className="px-6 pb-6">
           <TouchableOpacity
-            className="bg-primary py-4 rounded-xl items-center"
+            className="bg-primary items-center rounded-xl py-4"
             onPress={handleCreate}
             disabled={loading}
           >
             {loading ? (
               <ActivityIndicator color="white" />
             ) : (
-              <Text className="text-white text-lg font-bold">
+              <Text className="text-lg font-bold text-white">
                 {t('voucher.createVoucherBtn')}
               </Text>
             )}

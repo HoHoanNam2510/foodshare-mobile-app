@@ -93,9 +93,14 @@ export async function updateProfileApi(
   }
 }
 
-export async function deleteAccountApi(): Promise<{ success: boolean; message: string }> {
+export async function deleteAccountApi(): Promise<{
+  success: boolean;
+  message: string;
+}> {
   try {
-    const { data } = await api.delete<{ success: boolean; message: string }>('/users/me');
+    const { data } = await api.delete<{ success: boolean; message: string }>(
+      '/users/me'
+    );
     return data;
   } catch (error) {
     extractErrorMessage(error, 'Xóa tài khoản thất bại');

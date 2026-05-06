@@ -12,7 +12,9 @@ export default function SectionLabel({ icon, label }: SectionLabelProps) {
   return (
     <View className="flex-row items-center gap-3 pt-2">
       <MaterialIcons name={icon} size={20} color="#296C24" />
-      <Text className="font-sans font-bold text-base text-neutral-T10">{label}</Text>
+      <Text className="text-neutral-T10 font-sans text-base font-bold">
+        {label}
+      </Text>
     </View>
   );
 }

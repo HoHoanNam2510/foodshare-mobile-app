@@ -166,13 +166,17 @@ export default function BadgeUnlockToast({
                   <Text
                     style={{ color: '#A8E6A1', fontSize: 11, marginTop: 3 }}
                   >
-                    {t('profile.badgeGreenPointsEarned', { points: displayBadge.pointReward })}
+                    {t('profile.badgeGreenPointsEarned', {
+                      points: displayBadge.pointReward,
+                    })}
                   </Text>
                 )}
               </View>
 
               {/* Tap-to-dismiss hint */}
-              <Text style={{ color: '#A8E6A180', fontSize: 16, paddingLeft: 4 }}>
+              <Text
+                style={{ color: '#A8E6A180', fontSize: 16, paddingLeft: 4 }}
+              >
                 ✕
               </Text>
             </View>

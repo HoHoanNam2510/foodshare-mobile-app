@@ -14,7 +14,9 @@ export interface MapPostsParams {
   type?: 'P2P_FREE' | 'B2C_MYSTERY_BAG';
 }
 
-export async function fetchMapPosts(params: MapPostsParams): Promise<MapPost[]> {
+export async function fetchMapPosts(
+  params: MapPostsParams
+): Promise<MapPost[]> {
   const query: Record<string, string> = {
     lng: String(params.lng),
     lat: String(params.lat),

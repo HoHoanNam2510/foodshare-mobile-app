@@ -143,7 +143,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <View className="flex-1 bg-neutral-T100">
+    <View className="bg-neutral-T100 flex-1">
       {/* Gradient header background */}
       <LinearGradient
         colors={['#ABF59C', '#FFDCC6', '#FFFFFF']}
@@ -170,7 +170,7 @@ export default function LoginScreen() {
             keyboardShouldPersistTaps="handled"
           >
             {/* Logo */}
-            <View className="items-center mt-6 mb-4">
+            <View className="mb-4 mt-6 items-center">
               <Image
                 source={require('../../assets/images/logo.png')}
                 style={{ width: 220, height: 88 }}
@@ -179,12 +179,12 @@ export default function LoginScreen() {
             </View>
 
             {/* White card */}
-            <View className="flex-1 bg-neutral-T100 rounded-t-3xl px-7 pt-10 shadow-md">
+            <View className="bg-neutral-T100 flex-1 rounded-t-3xl px-7 pt-10 shadow-md">
               {/* Heading */}
-              <Text className="font-sans text-3xl font-bold text-neutral-T10 text-center mb-1">
+              <Text className="text-neutral-T10 mb-1 text-center font-sans text-3xl font-bold">
                 {t('auth.welcomeBack')}
               </Text>
-              <Text className="font-body text-sm text-neutral-T50 text-center mb-8">
+              <Text className="font-body text-neutral-T50 mb-8 text-center text-sm">
                 {t('auth.loginSubtitle')}
               </Text>
 
@@ -193,7 +193,7 @@ export default function LoginScreen() {
                 activeOpacity={0.8}
                 disabled={isGoogleLoading}
                 onPress={() => promptAsync()}
-                className="flex-row items-center justify-center bg-neutral-T100 h-14 rounded-xl mb-6 shadow-sm"
+                className="bg-neutral-T100 mb-6 h-14 flex-row items-center justify-center rounded-xl shadow-sm"
               >
                 {isGoogleLoading ? (
                   <ActivityIndicator color="#296C24" />
@@ -206,7 +206,7 @@ export default function LoginScreen() {
                       style={{ width: 24, height: 24 }}
                       className="mr-3"
                     />
-                    <Text className="font-body font-semibold text-base text-neutral-T10">
+                    <Text className="font-body text-neutral-T10 text-base font-semibold">
                       {t('auth.continueWithGoogle')}
                     </Text>
                   </>
@@ -214,19 +214,19 @@ export default function LoginScreen() {
               </TouchableOpacity>
 
               {/* Divider */}
-              <View className="flex-row items-center mb-6">
-                <View className="flex-1 h-[1px] bg-neutral-T90" />
-                <Text className="font-label text-xs text-neutral-T70 px-4">
+              <View className="mb-6 flex-row items-center">
+                <View className="bg-neutral-T90 h-[1px] flex-1" />
+                <Text className="font-label text-neutral-T70 px-4 text-xs">
                   {t('auth.or')}
                 </Text>
-                <View className="flex-1 h-[1px] bg-neutral-T90" />
+                <View className="bg-neutral-T90 h-[1px] flex-1" />
               </View>
 
               {/* Form */}
               <View className="gap-5">
                 {/* Email */}
                 <View className="gap-2">
-                  <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
+                  <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
                     {t('auth.email')}
                   </Text>
                   <TextInput
@@ -237,23 +237,23 @@ export default function LoginScreen() {
                     autoCorrect={false}
                     value={email}
                     onChangeText={setEmail}
-                    className="font-body text-base text-neutral-T10 bg-neutral-T95 rounded-xl h-14 px-4 border border-neutral-T90"
+                    className="font-body text-neutral-T10 bg-neutral-T95 border-neutral-T90 h-14 rounded-xl border px-4 text-base"
                   />
                 </View>
 
                 {/* Password */}
                 <View className="gap-2">
-                  <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
+                  <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
                     {t('auth.password')}
                   </Text>
-                  <View className="flex-row items-center bg-neutral-T95 rounded-xl h-14 px-4 border border-neutral-T90">
+                  <View className="bg-neutral-T95 border-neutral-T90 h-14 flex-row items-center rounded-xl border px-4">
                     <TextInput
                       placeholder={t('auth.passwordPlaceholder')}
                       placeholderTextColor="#AAABAB"
                       secureTextEntry={!showPassword}
                       value={password}
                       onChangeText={setPassword}
-                      className="font-body text-base text-neutral-T10 flex-1"
+                      className="font-body text-neutral-T10 flex-1 text-base"
                     />
                     <TouchableOpacity
                       onPress={() => setShowPassword(!showPassword)}
@@ -270,9 +270,9 @@ export default function LoginScreen() {
               </View>
 
               {/* Forgot password */}
-              <View className="flex-row justify-end mt-3 mb-8">
+              <View className="mb-8 mt-3 flex-row justify-end">
                 <TouchableOpacity>
-                  <Text className="font-label text-sm font-semibold text-primary-T40">
+                  <Text className="font-label text-primary-T40 text-sm font-semibold">
                     {t('auth.forgotPassword')}
                   </Text>
                 </TouchableOpacity>
@@ -283,25 +283,25 @@ export default function LoginScreen() {
                 activeOpacity={0.8}
                 onPress={handleLogin}
                 disabled={isLoading}
-                className="bg-primary-T40 h-14 rounded-xl items-center justify-center shadow-sm active:opacity-80"
+                className="bg-primary-T40 h-14 items-center justify-center rounded-xl shadow-sm active:opacity-80"
               >
                 {isLoading ? (
                   <ActivityIndicator color="#FFFFFF" />
                 ) : (
-                  <Text className="font-label font-semibold text-base text-neutral-T100">
+                  <Text className="font-label text-neutral-T100 text-base font-semibold">
                     {t('auth.login')}
                   </Text>
                 )}
               </TouchableOpacity>
 
               {/* Register link */}
-              <View className="flex-row justify-center mt-6 pb-8">
-                <Text className="font-body text-sm text-neutral-T50">
+              <View className="mt-6 flex-row justify-center pb-8">
+                <Text className="font-body text-neutral-T50 text-sm">
                   {t('auth.dontHaveAccount')}{' '}
                 </Text>
                 <Link href="/(auth)/register" asChild>
                   <TouchableOpacity>
-                    <Text className="font-body text-sm font-bold text-primary-T40">
+                    <Text className="font-body text-primary-T40 text-sm font-bold">
                       {t('auth.register')}
                     </Text>
                   </TouchableOpacity>

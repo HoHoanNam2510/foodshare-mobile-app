@@ -23,13 +23,14 @@ export default function GoongMapView({ onUserLocation }: GoongMapViewProps) {
   }, []);
 
   return (
-    <View className="flex-1 items-center justify-center bg-neutral-T90">
+    <View className="bg-neutral-T90 flex-1 items-center justify-center">
       <Ionicons name="map-outline" size={52} color="#9CA3AF" />
-      <Text className="font-sans font-bold text-base text-neutral-T30 mt-4 text-center">
+      <Text className="text-neutral-T30 mt-4 text-center font-sans text-base font-bold">
         Bản đồ chưa hỗ trợ trên iOS
       </Text>
-      <Text className="font-body text-sm text-neutral-T50 mt-2 text-center px-10 leading-5">
-        Tạm thời chưa hỗ trợ dịch vụ bản đồ trên thiết bị iOS. Vui lòng sử dụng Android để trải nghiệm tính năng này.
+      <Text className="font-body text-neutral-T50 mt-2 px-10 text-center text-sm leading-5">
+        Tạm thời chưa hỗ trợ dịch vụ bản đồ trên thiết bị iOS. Vui lòng sử dụng
+        Android để trải nghiệm tính năng này.
       </Text>
     </View>
   );

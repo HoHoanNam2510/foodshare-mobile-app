@@ -17,7 +17,7 @@ export default function ViewToggle({
   const { t } = useTranslation();
   return (
     <View
-      className="bg-neutral-T100 p-1.5 rounded-full flex-row items-center"
+      className="bg-neutral-T100 flex-row items-center rounded-full p-1.5"
       style={{
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
@@ -30,7 +30,7 @@ export default function ViewToggle({
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => onViewChange('list')}
-        className={`flex-row items-center gap-1.5 px-5 py-2.5 rounded-full ${
+        className={`flex-row items-center gap-1.5 rounded-full px-5 py-2.5 ${
           activeView === 'list' ? 'bg-primary-T40' : ''
         }`}
       >
@@ -40,7 +40,7 @@ export default function ViewToggle({
           color={activeView === 'list' ? '#fff' : '#5C5F5E'}
         />
         <Text
-          className={`text-sm font-label ${
+          className={`font-label text-sm ${
             activeView === 'list' ? 'text-neutral-T100' : 'text-neutral-T40'
           }`}
           style={{ fontWeight: activeView === 'list' ? '600' : '500' }}
@@ -53,7 +53,7 @@ export default function ViewToggle({
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => onViewChange('map')}
-        className={`flex-row items-center gap-1.5 px-5 py-2.5 rounded-full ${
+        className={`flex-row items-center gap-1.5 rounded-full px-5 py-2.5 ${
           activeView === 'map' ? 'bg-primary-T40' : ''
         }`}
       >
@@ -63,7 +63,7 @@ export default function ViewToggle({
           color={activeView === 'map' ? '#fff' : '#5C5F5E'}
         />
         <Text
-          className={`text-sm font-label ${
+          className={`font-label text-sm ${
             activeView === 'map' ? 'text-neutral-T100' : 'text-neutral-T40'
           }`}
           style={{ fontWeight: activeView === 'map' ? '600' : '500' }}

@@ -11,7 +11,11 @@ interface PostMarkerProps {
   onPress: (postId: string) => void;
 }
 
-export default function PostMarker({ post, isActive, onPress }: PostMarkerProps) {
+export default function PostMarker({
+  post,
+  isActive,
+  onPress,
+}: PostMarkerProps) {
   const [lng, lat] = post.location.coordinates;
   const isFree = post.type === 'P2P_FREE';
 
@@ -24,7 +28,7 @@ export default function PostMarker({ post, isActive, onPress }: PostMarkerProps)
       <TouchableOpacity activeOpacity={0.85} onPress={() => onPress(post._id)}>
         {isFree ? (
           <View
-            className={`p-2.5 rounded-full ${isActive ? 'bg-primary-T40' : 'bg-neutral-T100'}`}
+            className={`rounded-full p-2.5 ${isActive ? 'bg-primary-T40' : 'bg-neutral-T100'}`}
             style={{
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 3 },
@@ -41,7 +45,7 @@ export default function PostMarker({ post, isActive, onPress }: PostMarkerProps)
           </View>
         ) : (
           <View
-            className={`px-3 py-1.5 rounded-full ${isActive ? 'bg-secondary' : 'bg-neutral-T100'}`}
+            className={`rounded-full px-3 py-1.5 ${isActive ? 'bg-secondary' : 'bg-neutral-T100'}`}
             style={{
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 3 },
@@ -51,7 +55,7 @@ export default function PostMarker({ post, isActive, onPress }: PostMarkerProps)
             }}
           >
             <Text
-              className={`text-xs font-label font-bold ${isActive ? 'text-neutral-T100' : 'text-secondary'}`}
+              className={`font-label text-xs font-bold ${isActive ? 'text-neutral-T100' : 'text-secondary'}`}
             >
               {post.price.toLocaleString('vi-VN')}đ
             </Text>

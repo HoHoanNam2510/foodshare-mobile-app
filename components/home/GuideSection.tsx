@@ -14,10 +14,12 @@ export default function GuideSection() {
   const { t } = useTranslation();
   return (
     <View className="mt-8">
-      <View className="px-5 mb-1">
-        <Text className="text-sm font-body text-neutral-T50">{t('home.guideSubtitle')}</Text>
+      <View className="mb-1 px-5">
+        <Text className="font-body text-neutral-T50 text-sm">
+          {t('home.guideSubtitle')}
+        </Text>
         <Text
-          className="text-xl font-sans text-neutral-T10 mt-1"
+          className="text-neutral-T10 mt-1 font-sans text-xl"
           style={{ fontWeight: '700', letterSpacing: -0.3 }}
         >
           {t('home.guideTitle')}
@@ -36,12 +38,12 @@ export default function GuideSection() {
           {GUIDE_CARD_CONFIGS.map((card, index) => (
             <TouchableOpacity
               key={card.id}
-              className={`bg-neutral-T100 rounded-2xl p-4 justify-between shadow-sm active:opacity-80 ${
+              className={`bg-neutral-T100 justify-between rounded-2xl p-4 shadow-sm active:opacity-80 ${
                 index < GUIDE_CARD_CONFIGS.length - 1 ? 'mr-2.5' : ''
               }`}
               style={{ width: 140, height: 120 }}
             >
-              <View className="w-10 h-10 rounded-xl bg-primary-T95 items-center justify-center">
+              <View className="bg-primary-T95 h-10 w-10 items-center justify-center rounded-xl">
                 <MaterialCommunityIcons
                   name={card.icon as any}
                   size={22}
@@ -49,7 +51,7 @@ export default function GuideSection() {
                 />
               </View>
               <Text
-                className="text-sm font-body text-neutral-T10 mt-2 leading-snug"
+                className="font-body text-neutral-T10 mt-2 text-sm leading-snug"
                 style={{ fontWeight: '600' }}
               >
                 {t(card.labelKey)}

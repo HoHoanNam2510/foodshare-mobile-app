@@ -55,18 +55,18 @@ export default function IdentityCard({
   const year = new Date(createdAt).getFullYear();
 
   return (
-    <View className="bg-neutral-T100 rounded-2xl shadow-sm p-6 gap-4">
+    <View className="bg-neutral-T100 gap-4 rounded-2xl p-6 shadow-sm">
       {isIncomplete && (
         <SectionIncompleteBadge message={t('profile.missingAvatarMsg')} />
       )}
       <View className="flex-row items-center gap-6">
         {/* Avatar */}
         <View className="relative">
-          <View className="w-24 h-24 rounded-full overflow-hidden border border-neutral-T80 bg-neutral-T95 items-center justify-center">
+          <View className="border-neutral-T80 bg-neutral-T95 h-24 w-24 items-center justify-center overflow-hidden rounded-full border">
             {avatar ? (
               <Image
                 source={{ uri: avatar }}
-                className="w-full h-full"
+                className="h-full w-full"
                 resizeMode="cover"
               />
             ) : (
@@ -75,7 +75,7 @@ export default function IdentityCard({
           </View>
           {/* Role badge */}
           <View
-            className={`absolute -bottom-1 -right-1 ${ROLE_BADGE[role].containerClass} px-3 py-1 rounded-full border border-neutral-T100`}
+            className={`absolute -bottom-1 -right-1 ${ROLE_BADGE[role].containerClass} border-neutral-T100 rounded-full border px-3 py-1`}
           >
             <Text
               className={`font-label text-[10px] font-bold ${ROLE_BADGE[role].textClass}`}
@@ -87,11 +87,11 @@ export default function IdentityCard({
 
         {/* Name + since */}
         <View className="flex-1">
-          <Text className="font-sans font-bold text-2xl text-neutral-T10">
+          <Text className="text-neutral-T10 font-sans text-2xl font-bold">
             {fullName}
           </Text>
-          <View className="flex-row items-center gap-2 mt-1">
-            <Text className="text-sm font-label text-neutral-T50">
+          <View className="mt-1 flex-row items-center gap-2">
+            <Text className="font-label text-neutral-T50 text-sm">
               {t('profile.since', { year })}
             </Text>
             {status === 'ACTIVE' && (
@@ -104,24 +104,24 @@ export default function IdentityCard({
       {/* Stats */}
       <View className="flex-row gap-3 pt-2">
         <TouchableOpacity
-          className="flex-1 bg-neutral-T95 rounded-xl p-4 active:opacity-70"
+          className="bg-neutral-T95 flex-1 rounded-xl p-4 active:opacity-70"
           onPress={onGreenPointsPress}
           activeOpacity={onGreenPointsPress ? 0.7 : 1}
           disabled={!onGreenPointsPress}
         >
-          <Text className="font-label text-[10px] font-semibold text-neutral-T50 tracking-wider uppercase">
+          <Text className="font-label text-neutral-T50 text-[10px] font-semibold uppercase tracking-wider">
             {t('profile.greenPoints')}
           </Text>
-          <Text className="font-sans font-bold text-primary-T40 text-xl mt-1">
+          <Text className="text-primary-T40 mt-1 font-sans text-xl font-bold">
             {greenPoints.toLocaleString()}
           </Text>
         </TouchableOpacity>
-        <View className="flex-1 bg-neutral-T95 rounded-xl p-4">
-          <Text className="font-label text-[10px] font-semibold text-neutral-T50 tracking-wider uppercase">
+        <View className="bg-neutral-T95 flex-1 rounded-xl p-4">
+          <Text className="font-label text-neutral-T50 text-[10px] font-semibold uppercase tracking-wider">
             {t('profile.ratingLabel')}
           </Text>
-          <View className="flex-row items-center gap-1 mt-1">
-            <Text className="font-sans font-bold text-secondary-T40 text-xl">
+          <View className="mt-1 flex-row items-center gap-1">
+            <Text className="text-secondary-T40 font-sans text-xl font-bold">
               {averageRating}
             </Text>
             <MaterialIcons name="star" size={18} color="#944A00" />

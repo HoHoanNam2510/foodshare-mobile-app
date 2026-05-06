@@ -30,11 +30,11 @@ export default function ImagePickerSection({
 
   return (
     <View className="gap-3">
-      <View className="flex-row justify-between items-center">
-        <Text className="font-label font-semibold text-sm text-neutral-T50">
+      <View className="flex-row items-center justify-between">
+        <Text className="font-label text-neutral-T50 text-sm font-semibold">
           {t('post.photos')}
         </Text>
-        <Text className="font-label text-xs text-neutral-T70">
+        <Text className="font-label text-neutral-T70 text-xs">
           {images.length}/{maxImages}
         </Text>
       </View>
@@ -45,11 +45,11 @@ export default function ImagePickerSection({
       >
         {images.length < maxImages && (
           <TouchableOpacity
-            className="w-28 h-28 rounded-2xl border border-dashed border-neutral-T80 bg-neutral-T95 items-center justify-center gap-1 active:opacity-80"
+            className="border-neutral-T80 bg-neutral-T95 h-28 w-28 items-center justify-center gap-1 rounded-2xl border border-dashed active:opacity-80"
             onPress={handleAddPhoto}
           >
             <MaterialIcons name="add-a-photo" size={28} color="#296C24" />
-            <Text className="font-label text-xs font-semibold text-primary-T40">
+            <Text className="font-label text-primary-T40 text-xs font-semibold">
               {t('post.addPhoto')}
             </Text>
           </TouchableOpacity>
@@ -57,22 +57,22 @@ export default function ImagePickerSection({
         {images.map((uri, index) => (
           <View
             key={`${uri}-${index}`}
-            className="w-28 h-28 rounded-2xl overflow-hidden shadow-sm"
+            className="h-28 w-28 overflow-hidden rounded-2xl shadow-sm"
           >
             <Image
               source={{ uri }}
-              className="w-full h-full"
+              className="h-full w-full"
               resizeMode="cover"
             />
             {index === 0 && (
-              <View className="absolute top-2 left-2 bg-primary-T40 px-2 py-0.5 rounded-full">
-                <Text className="font-label font-bold text-[10px] text-neutral-T100 uppercase tracking-wider">
+              <View className="bg-primary-T40 absolute left-2 top-2 rounded-full px-2 py-0.5">
+                <Text className="font-label text-neutral-T100 text-[10px] font-bold uppercase tracking-wider">
                   {t('post.cover')}
                 </Text>
               </View>
             )}
             <TouchableOpacity
-              className="absolute top-2 right-2 w-6 h-6 bg-black/40 rounded-full items-center justify-center active:opacity-80"
+              className="absolute right-2 top-2 h-6 w-6 items-center justify-center rounded-full bg-black/40 active:opacity-80"
               onPress={() => handleRemove(index)}
             >
               <MaterialIcons name="close" size={14} color="white" />

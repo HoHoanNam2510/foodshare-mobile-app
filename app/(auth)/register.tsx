@@ -105,7 +105,7 @@ export default function RegisterScreen() {
   };
 
   return (
-    <View className="flex-1 bg-neutral-T100">
+    <View className="bg-neutral-T100 flex-1">
       {/* Gradient header background */}
       <LinearGradient
         colors={['#ABF59C', '#FFDCC6', '#FFFFFF']}
@@ -127,14 +127,14 @@ export default function RegisterScreen() {
           className="flex-1"
         >
           {/* Header with back button */}
-          <View className="flex-row items-center px-6 mt-2 mb-2">
+          <View className="mb-2 mt-2 flex-row items-center px-6">
             <TouchableOpacity
               onPress={() => router.back()}
-              className="w-10 h-10 rounded-full bg-neutral-T100 items-center justify-center shadow-sm active:opacity-80"
+              className="bg-neutral-T100 h-10 w-10 items-center justify-center rounded-full shadow-sm active:opacity-80"
             >
               <Feather name="arrow-left" size={20} color="#191C1C" />
             </TouchableOpacity>
-            <View className="flex-1 items-center mr-10">
+            <View className="mr-10 flex-1 items-center">
               <Image
                 source={require('../../assets/images/logo.png')}
                 style={{ width: 180, height: 72 }}
@@ -149,17 +149,17 @@ export default function RegisterScreen() {
             keyboardShouldPersistTaps="handled"
           >
             {/* White card */}
-            <View className="flex-1 bg-neutral-T100 rounded-t-3xl px-7 pt-8 mt-2 shadow-md">
+            <View className="bg-neutral-T100 mt-2 flex-1 rounded-t-3xl px-7 pt-8 shadow-md">
               {/* Heading */}
-              <Text className="font-sans text-3xl font-bold text-neutral-T10 text-center mb-1">
+              <Text className="text-neutral-T10 mb-1 text-center font-sans text-3xl font-bold">
                 {t('auth.createAccount')}
               </Text>
-              <View className="flex-row justify-center mb-8">
-                <Text className="font-body text-sm text-neutral-T50">
+              <View className="mb-8 flex-row justify-center">
+                <Text className="font-body text-neutral-T50 text-sm">
                   {t('auth.alreadyHaveAccount')}{' '}
                 </Text>
                 <TouchableOpacity onPress={() => router.back()}>
-                  <Text className="font-body text-sm font-bold text-primary-T40">
+                  <Text className="font-body text-primary-T40 text-sm font-bold">
                     {t('auth.login')}
                   </Text>
                 </TouchableOpacity>
@@ -169,7 +169,7 @@ export default function RegisterScreen() {
               <View className="gap-5">
                 {/* Full Name */}
                 <View className="gap-2">
-                  <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
+                  <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
                     {t('auth.fullName')}
                   </Text>
                   <TextInput
@@ -178,13 +178,13 @@ export default function RegisterScreen() {
                     autoCapitalize="words"
                     value={fullName}
                     onChangeText={setFullName}
-                    className="font-body text-base text-neutral-T10 bg-neutral-T95 rounded-xl h-14 px-4 border border-neutral-T90"
+                    className="font-body text-neutral-T10 bg-neutral-T95 border-neutral-T90 h-14 rounded-xl border px-4 text-base"
                   />
                 </View>
 
                 {/* Email */}
                 <View className="gap-2">
-                  <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
+                  <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
                     {t('auth.email')}
                   </Text>
                   <TextInput
@@ -195,13 +195,13 @@ export default function RegisterScreen() {
                     autoCorrect={false}
                     value={email}
                     onChangeText={setEmail}
-                    className="font-body text-base text-neutral-T10 bg-neutral-T95 rounded-xl h-14 px-4 border border-neutral-T90"
+                    className="font-body text-neutral-T10 bg-neutral-T95 border-neutral-T90 h-14 rounded-xl border px-4 text-base"
                   />
                 </View>
 
                 {/* Phone */}
                 <View className="gap-2">
-                  <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
+                  <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
                     {t('auth.phoneNumber')}
                   </Text>
                   <TextInput
@@ -210,23 +210,23 @@ export default function RegisterScreen() {
                     keyboardType="phone-pad"
                     value={phoneNumber}
                     onChangeText={setPhoneNumber}
-                    className="font-body text-base text-neutral-T10 bg-neutral-T95 rounded-xl h-14 px-4 border border-neutral-T90"
+                    className="font-body text-neutral-T10 bg-neutral-T95 border-neutral-T90 h-14 rounded-xl border px-4 text-base"
                   />
                 </View>
 
                 {/* Password */}
                 <View className="gap-2">
-                  <Text className="font-label font-semibold text-sm text-neutral-T50 ml-1">
+                  <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
                     {t('auth.password')}
                   </Text>
-                  <View className="flex-row items-center bg-neutral-T95 rounded-xl h-14 px-4 border border-neutral-T90">
+                  <View className="bg-neutral-T95 border-neutral-T90 h-14 flex-row items-center rounded-xl border px-4">
                     <TextInput
                       placeholder={t('auth.passwordMinPlaceholder')}
                       placeholderTextColor="#AAABAB"
                       secureTextEntry={!showPassword}
                       value={password}
                       onChangeText={setPassword}
-                      className="font-body text-base text-neutral-T10 flex-1"
+                      className="font-body text-neutral-T10 flex-1 text-base"
                     />
                     <TouchableOpacity
                       onPress={() => setShowPassword(!showPassword)}
@@ -247,12 +247,12 @@ export default function RegisterScreen() {
                 activeOpacity={0.8}
                 onPress={handleRegister}
                 disabled={isLoading}
-                className="bg-primary-T40 h-14 rounded-xl items-center justify-center mt-8 mb-10 shadow-sm active:opacity-80"
+                className="bg-primary-T40 mb-10 mt-8 h-14 items-center justify-center rounded-xl shadow-sm active:opacity-80"
               >
                 {isLoading ? (
                   <ActivityIndicator color="#FFFFFF" />
                 ) : (
-                  <Text className="font-label font-semibold text-base text-neutral-T100">
+                  <Text className="font-label text-neutral-T100 text-base font-semibold">
                     {t('auth.createAccount')}
                   </Text>
                 )}

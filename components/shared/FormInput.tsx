@@ -25,11 +25,11 @@ export default function FormInput({
 }: FormInputProps) {
   return (
     <View className="gap-1.5">
-      <Text className="font-label text-xs font-semibold text-neutral-T50 uppercase tracking-wider">
+      <Text className="font-label text-neutral-T50 text-xs font-semibold uppercase tracking-wider">
         {label}
       </Text>
       <TextInput
-        className={`bg-neutral-T100 border rounded-xl px-4 font-body text-sm text-neutral-T10 ${
+        className={`bg-neutral-T100 font-body text-neutral-T10 rounded-xl border px-4 text-sm ${
           multiline ? 'h-24 pt-3' : 'h-12'
         } ${errorMessage ? 'border-error' : 'border-neutral-T80'} ${
           !editable ? 'opacity-50' : ''
@@ -44,7 +44,9 @@ export default function FormInput({
         keyboardType={keyboardType}
       />
       {errorMessage ? (
-        <Text className="font-body text-xs text-error ml-1">{errorMessage}</Text>
+        <Text className="font-body text-error ml-1 text-xs">
+          {errorMessage}
+        </Text>
       ) : null}
     </View>
   );

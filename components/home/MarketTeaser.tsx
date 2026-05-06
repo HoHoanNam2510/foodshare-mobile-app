@@ -46,18 +46,20 @@ export default function MarketTeaser() {
   const { t } = useTranslation();
   return (
     <View className="mt-8">
-      <View className="px-5 mb-1">
-        <Text className="text-sm font-body text-neutral-T50">{t('home.marketSubtitle')}</Text>
-        <View className="flex-row items-end justify-between mt-1">
+      <View className="mb-1 px-5">
+        <Text className="font-body text-neutral-T50 text-sm">
+          {t('home.marketSubtitle')}
+        </Text>
+        <View className="mt-1 flex-row items-end justify-between">
           <Text
-            className="text-xl font-sans text-neutral-T10"
+            className="text-neutral-T10 font-sans text-xl"
             style={{ fontWeight: '700', letterSpacing: -0.3 }}
           >
             {t('home.marketTitle')}
           </Text>
-          <TouchableOpacity className="flex-row items-center gap-1 mb-1 active:opacity-70">
+          <TouchableOpacity className="mb-1 flex-row items-center gap-1 active:opacity-70">
             <Text
-              className="text-sm font-body text-primary-T40"
+              className="font-body text-primary-T40 text-sm"
               style={{ fontWeight: '600' }}
             >
               {t('common.seeAll')}
@@ -80,7 +82,7 @@ export default function MarketTeaser() {
             <TouchableOpacity
               key={item.id}
               activeOpacity={0.9}
-              className={`bg-neutral-T100 rounded-2xl overflow-hidden shadow-sm active:opacity-90 ${
+              className={`bg-neutral-T100 overflow-hidden rounded-2xl shadow-sm active:opacity-90 ${
                 index < MARKET_ITEMS.length - 1 ? 'mr-3' : ''
               }`}
               style={{ width: 190 }}
@@ -92,29 +94,29 @@ export default function MarketTeaser() {
                   className="rounded-t-2xl"
                   resizeMode="cover"
                 />
-                <View className="absolute bottom-3 left-3 bg-primary-T40 rounded-full px-2.5 py-1">
+                <View className="bg-primary-T40 absolute bottom-3 left-3 rounded-full px-2.5 py-1">
                   <Text
-                    className="text-neutral-T100 text-xs font-body"
+                    className="text-neutral-T100 font-body text-xs"
                     style={{ fontWeight: '600' }}
                   >
                     {item.price}
                   </Text>
                 </View>
-                <TouchableOpacity className="absolute top-3 right-3 bg-neutral-T100/90 w-8 h-8 rounded-full items-center justify-center">
+                <TouchableOpacity className="bg-neutral-T100/90 absolute right-3 top-3 h-8 w-8 items-center justify-center rounded-full">
                   <Ionicons name="bag-outline" size={16} color="#191C1C" />
                 </TouchableOpacity>
               </View>
-              <View className="px-3.5 pt-3 pb-3.5">
+              <View className="px-3.5 pb-3.5 pt-3">
                 <Text
-                  className="text-[15px] font-body text-neutral-T10"
+                  className="font-body text-neutral-T10 text-[15px]"
                   style={{ fontWeight: '600' }}
                   numberOfLines={1}
                 >
                   {item.name}
                 </Text>
-                <View className="flex-row items-center justify-between mt-1.5">
+                <View className="mt-1.5 flex-row items-center justify-between">
                   <Text
-                    className="text-xs font-body text-neutral-T50 flex-1 mr-2"
+                    className="font-body text-neutral-T50 mr-2 flex-1 text-xs"
                     numberOfLines={1}
                   >
                     {item.subtitle}
@@ -122,7 +124,7 @@ export default function MarketTeaser() {
                   <View className="flex-row items-center gap-0.5">
                     <Ionicons name="star" size={12} color="#EC8632" />
                     <Text
-                      className="text-xs font-body text-neutral-T10"
+                      className="font-body text-neutral-T10 text-xs"
                       style={{ fontWeight: '600' }}
                     >
                       {item.rating}

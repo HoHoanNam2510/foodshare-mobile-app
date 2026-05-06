@@ -107,7 +107,10 @@ export default function ProfileScreen() {
   }, [user?.kycStatus, user?.kycDocuments?.length]);
 
   const handleDeleteAccountConfirm = async () => {
-    if (!user || deleteEmailInput.trim().toLowerCase() !== user.email.toLowerCase()) {
+    if (
+      !user ||
+      deleteEmailInput.trim().toLowerCase() !== user.email.toLowerCase()
+    ) {
       Alert.alert(t('common.error'), t('profile.deleteAccountEmailMismatch'));
       return;
     }
@@ -119,7 +122,10 @@ export default function ProfileScreen() {
         { text: 'OK', onPress: () => logout() },
       ]);
     } catch (e) {
-      Alert.alert(t('common.error'), e instanceof Error ? e.message : t('profile.deleteAccountFailed'));
+      Alert.alert(
+        t('common.error'),
+        e instanceof Error ? e.message : t('profile.deleteAccountFailed')
+      );
     } finally {
       setIsDeletingAccount(false);
     }
@@ -127,9 +133,9 @@ export default function ProfileScreen() {
 
   if (!user) {
     return (
-      <View className="flex-1 bg-neutral-DEFAULT items-center justify-center">
+      <View className="bg-neutral-DEFAULT flex-1 items-center justify-center">
         <ActivityIndicator size="large" color="#72B866" />
-        <Text className="font-body text-sm text-neutral-T50 mt-3">
+        <Text className="font-body text-neutral-T50 mt-3 text-sm">
           {t('profile.loadingProfile')}
         </Text>
       </View>
@@ -158,7 +164,7 @@ export default function ProfileScreen() {
     (user.kycDocuments && user.kycDocuments.length > 0);
 
   return (
-    <View className="flex-1 bg-neutral-DEFAULT">
+    <View className="bg-neutral-DEFAULT flex-1">
       {/* ── KYC Rejection Modal ── */}
       <Modal
         visible={showRejectionModal}
@@ -173,24 +179,24 @@ export default function ProfileScreen() {
         >
           <Pressable onPress={(e) => e.stopPropagation()}>
             <View
-              className="bg-neutral-T100 rounded-3xl mx-6 p-6 gap-4"
+              className="bg-neutral-T100 mx-6 gap-4 rounded-3xl p-6"
               style={{ maxWidth: 340 }}
             >
               {/* Icon */}
               <View
-                className="w-14 h-14 rounded-2xl items-center justify-center self-center"
+                className="h-14 w-14 items-center justify-center self-center rounded-2xl"
                 style={{ backgroundColor: 'rgba(186,26,26,0.1)' }}
               >
                 <MaterialIcons name="gpp-bad" size={28} color="#ba1a1a" />
               </View>
               {/* Title */}
               <View className="gap-1">
-                <Text className="font-sans font-bold text-lg text-neutral-T10 text-center">
+                <Text className="text-neutral-T10 text-center font-sans text-lg font-bold">
                   {t('profile.kycRejectedTitle')}
                 </Text>
-                <Text className="font-body text-sm text-neutral-T50 text-center leading-5">
+                <Text className="font-body text-neutral-T50 text-center text-sm leading-5">
                   {t('profile.kycRejectedMsgPart1')}
-                  <Text className="font-semibold text-neutral-T30">
+                  <Text className="text-neutral-T30 font-semibold">
                     {t('profile.registerStore')}
                   </Text>
                   {t('profile.kycRejectedMsgPart2')}
@@ -198,11 +204,11 @@ export default function ProfileScreen() {
               </View>
               {/* Action */}
               <TouchableOpacity
-                className="h-12 rounded-xl items-center justify-center"
+                className="h-12 items-center justify-center rounded-xl"
                 style={{ backgroundColor: 'rgba(186,26,26,0.1)' }}
                 onPress={() => setShowRejectionModal(false)}
               >
-                <Text className="font-label font-semibold text-error">
+                <Text className="font-label text-error font-semibold">
                   {t('common.gotIt')}
                 </Text>
               </TouchableOpacity>
@@ -225,25 +231,29 @@ export default function ProfileScreen() {
         >
           <Pressable onPress={(e) => e.stopPropagation()}>
             <View
-              className="bg-neutral-T100 rounded-3xl mx-6 p-6 gap-4"
+              className="bg-neutral-T100 mx-6 gap-4 rounded-3xl p-6"
               style={{ maxWidth: 360 }}
             >
               <View
-                className="w-14 h-14 rounded-2xl items-center justify-center self-center"
+                className="h-14 w-14 items-center justify-center self-center rounded-2xl"
                 style={{ backgroundColor: 'rgba(220,38,38,0.1)' }}
               >
-                <MaterialIcons name="delete-forever" size={28} color="#DC2626" />
+                <MaterialIcons
+                  name="delete-forever"
+                  size={28}
+                  color="#DC2626"
+                />
               </View>
               <View className="gap-1">
-                <Text className="font-sans font-bold text-lg text-neutral-T10 text-center">
+                <Text className="text-neutral-T10 text-center font-sans text-lg font-bold">
                   {t('profile.deleteAccountTitle')}
                 </Text>
-                <Text className="font-body text-sm text-neutral-T50 text-center leading-5">
+                <Text className="font-body text-neutral-T50 text-center text-sm leading-5">
                   {t('profile.deleteAccountWarning')}
                 </Text>
               </View>
               <View className="gap-1.5">
-                <Text className="font-label text-xs font-semibold text-neutral-T50 uppercase tracking-wider">
+                <Text className="font-label text-neutral-T50 text-xs font-semibold uppercase tracking-wider">
                   {t('profile.deleteAccountConfirmMsg')}
                 </Text>
                 <TextInput
@@ -254,13 +264,17 @@ export default function ProfileScreen() {
                   autoCapitalize="none"
                   keyboardType="email-address"
                   editable={!isDeletingAccount}
-                  className="h-12 bg-neutral-T95 rounded-xl px-4 font-body text-sm text-neutral-T10 border border-neutral-T90"
+                  className="bg-neutral-T95 font-body text-neutral-T10 border-neutral-T90 h-12 rounded-xl border px-4 text-sm"
                 />
               </View>
               <View className="gap-2">
                 <TouchableOpacity
-                  className="h-12 rounded-xl items-center justify-center"
-                  style={{ backgroundColor: isDeletingAccount ? 'rgba(220,38,38,0.3)' : '#DC2626' }}
+                  className="h-12 items-center justify-center rounded-xl"
+                  style={{
+                    backgroundColor: isDeletingAccount
+                      ? 'rgba(220,38,38,0.3)'
+                      : '#DC2626',
+                  }}
                   onPress={handleDeleteAccountConfirm}
                   disabled={isDeletingAccount}
                   activeOpacity={0.85}
@@ -268,18 +282,21 @@ export default function ProfileScreen() {
                   {isDeletingAccount ? (
                     <ActivityIndicator color="#fff" />
                   ) : (
-                    <Text className="font-label font-semibold text-neutral-T100">
+                    <Text className="font-label text-neutral-T100 font-semibold">
                       {t('profile.deleteAccount')}
                     </Text>
                   )}
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className="h-12 rounded-xl bg-neutral-T95 items-center justify-center"
-                  onPress={() => { setShowDeleteModal(false); setDeleteEmailInput(''); }}
+                  className="bg-neutral-T95 h-12 items-center justify-center rounded-xl"
+                  onPress={() => {
+                    setShowDeleteModal(false);
+                    setDeleteEmailInput('');
+                  }}
                   disabled={isDeletingAccount}
                   activeOpacity={0.8}
                 >
-                  <Text className="font-label font-semibold text-neutral-T50">
+                  <Text className="font-label text-neutral-T50 font-semibold">
                     {t('common.cancel')}
                   </Text>
                 </TouchableOpacity>
@@ -362,7 +379,10 @@ export default function ProfileScreen() {
             onRegisterStore={() => router.push('/(profile)/register-store')}
             showRegisterStore={canRegisterStore}
             storeRegistrationPending={storeRegistrationPending}
-            onDeleteAccount={() => { setDeleteEmailInput(''); setShowDeleteModal(true); }}
+            onDeleteAccount={() => {
+              setDeleteEmailInput('');
+              setShowDeleteModal(true);
+            }}
           />
         </View>
       </ScrollView>

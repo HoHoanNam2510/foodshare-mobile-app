@@ -147,17 +147,17 @@ function ReportCard({
 
   return (
     <TouchableOpacity
-      className="mx-4 mb-3 bg-neutral-T100 rounded-2xl overflow-hidden"
+      className="bg-neutral-T100 mx-4 mb-3 overflow-hidden rounded-2xl"
       style={styles.card}
       activeOpacity={0.85}
       onPress={onPress}
     >
       {/* Top row */}
-      <View className="p-4 gap-3">
+      <View className="gap-3 p-4">
         <View className="flex-row items-start justify-between gap-2">
           {/* Target type chip */}
           <View
-            className="flex-row items-center gap-1.5 px-2.5 py-1 rounded-lg"
+            className="flex-row items-center gap-1.5 rounded-lg px-2.5 py-1"
             style={{ backgroundColor: targetCfg.bg }}
           >
             <MaterialIcons
@@ -166,7 +166,7 @@ function ReportCard({
               color={targetCfg.text}
             />
             <Text
-              className="font-label font-semibold text-xs"
+              className="font-label text-xs font-semibold"
               style={{ color: targetCfg.text }}
             >
               {t(targetCfg.labelKey)}
@@ -178,13 +178,13 @@ function ReportCard({
         {/* Reason */}
         <View className="gap-0.5">
           <Text
-            className="font-sans text-sm text-neutral-T10"
+            className="text-neutral-T10 font-sans text-sm"
             style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
           >
             {reasonLabel}
           </Text>
           <Text
-            className="font-body text-xs text-neutral-T50"
+            className="font-body text-neutral-T50 text-xs"
             numberOfLines={2}
           >
             {report.description}
@@ -195,11 +195,11 @@ function ReportCard({
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center gap-1">
             <MaterialIcons name="image" size={13} color="#AAABAB" />
-            <Text className="font-label text-xs text-neutral-T70">
+            <Text className="font-label text-neutral-T70 text-xs">
               {t('report.evidenceCountLabel', { count: report.images.length })}
             </Text>
           </View>
-          <Text className="font-body text-xs text-neutral-T70">
+          <Text className="font-body text-neutral-T70 text-xs">
             {formatDate(report.createdAt)}
           </Text>
         </View>
@@ -208,7 +208,7 @@ function ReportCard({
       {/* Resolution note — shown when RESOLVED or DISMISSED */}
       {report.resolutionNote && (
         <View
-          className="mx-4 mb-4 p-3 rounded-xl gap-1"
+          className="mx-4 mb-4 gap-1 rounded-xl p-3"
           style={{ backgroundColor: isDismissed ? '#FEF2F2' : '#F0FDF4' }}
         >
           <View className="flex-row items-center gap-1.5">
@@ -218,7 +218,7 @@ function ReportCard({
               color={isDismissed ? '#DC2626' : '#15803D'}
             />
             <Text
-              className="font-label font-semibold text-xs"
+              className="font-label text-xs font-semibold"
               style={{ color: isDismissed ? '#DC2626' : '#15803D' }}
             >
               {isDismissed
@@ -237,9 +237,9 @@ function ReportCard({
 
       {/* Resubmit hint when DISMISSED */}
       {isDismissed && (
-        <View className="mx-4 mb-4 flex-row items-center gap-2 p-3 bg-primary-T95 rounded-xl">
+        <View className="bg-primary-T95 mx-4 mb-4 flex-row items-center gap-2 rounded-xl p-3">
           <MaterialIcons name="refresh" size={14} color="#296C24" />
-          <Text className="font-body text-xs text-primary-T30 flex-1 leading-4">
+          <Text className="font-body text-primary-T30 flex-1 text-xs leading-4">
             {t('report.dismissedHint')}
           </Text>
         </View>
@@ -247,7 +247,7 @@ function ReportCard({
 
       {/* Tap hint */}
       <View className="mx-4 mb-3 flex-row items-center justify-end gap-1">
-        <Text className="font-body text-xs text-neutral-T70">
+        <Text className="font-body text-neutral-T70 text-xs">
           {t('report.viewDetailHint')}
         </Text>
         <MaterialIcons name="chevron-right" size={14} color="#AAABAB" />
@@ -290,15 +290,15 @@ function EmptyState({ filter }: { filter: FilterTab }) {
   };
   const cfg = msgs[filter];
   return (
-    <View className="flex-1 items-center justify-center py-24 px-8 gap-3">
-      <View className="w-16 h-16 rounded-2xl bg-primary-T95 items-center justify-center">
+    <View className="flex-1 items-center justify-center gap-3 px-8 py-24">
+      <View className="bg-primary-T95 h-16 w-16 items-center justify-center rounded-2xl">
         <MaterialIcons name={cfg.icon as any} size={28} color="#296C24" />
       </View>
-      <Text className="font-sans font-bold text-base text-neutral-T10 text-center">
+      <Text className="text-neutral-T10 text-center font-sans text-base font-bold">
         {t(cfg.titleKey)}
       </Text>
       {cfg.bodyKey ? (
-        <Text className="font-body text-sm text-neutral-T50 text-center leading-5">
+        <Text className="font-body text-neutral-T50 text-center text-sm leading-5">
           {t(cfg.bodyKey)}
         </Text>
       ) : null}
@@ -346,7 +346,7 @@ export default function MyReportsScreen() {
   const dismissedCount = reports.filter((r) => r.status === 'DISMISSED').length;
 
   return (
-    <View className="flex-1 bg-neutral">
+    <View className="bg-neutral flex-1">
       <StatusBar
         barStyle="dark-content"
         backgroundColor="transparent"
@@ -358,7 +358,7 @@ export default function MyReportsScreen() {
       />
 
       {/* ── Filter tabs ── */}
-      <View className="mx-4 mt-4 mb-3 bg-neutral-T95 rounded-xl p-1 flex-row">
+      <View className="bg-neutral-T95 mx-4 mb-3 mt-4 flex-row rounded-xl p-1">
         {FILTER_TAB_KEYS.map((tab) => {
           const isActive = activeTab === tab.key;
           const showDot = tab.key === 'DISMISSED' && dismissedCount > 0;
@@ -367,18 +367,18 @@ export default function MyReportsScreen() {
               key={tab.key}
               onPress={() => setActiveTab(tab.key)}
               activeOpacity={0.8}
-              className="flex-1 py-2.5 rounded-lg items-center"
+              className="flex-1 items-center rounded-lg py-2.5"
               style={isActive ? styles.tabActive : undefined}
             >
               <View className="flex-row items-center gap-1">
                 <Text
-                  className="font-label font-semibold text-xs"
+                  className="font-label text-xs font-semibold"
                   style={{ color: isActive ? '#296C24' : '#757777' }}
                 >
                   {t(tab.labelKey)}
                 </Text>
                 {showDot && (
-                  <View className="w-1.5 h-1.5 rounded-full bg-red-500" />
+                  <View className="h-1.5 w-1.5 rounded-full bg-red-500" />
                 )}
               </View>
             </TouchableOpacity>
@@ -390,21 +390,21 @@ export default function MyReportsScreen() {
       {isLoading ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-sm text-neutral-T50">
+          <Text className="font-body text-neutral-T50 text-sm">
             {t('common.loading')}
           </Text>
         </View>
       ) : error ? (
-        <View className="flex-1 items-center justify-center px-8 gap-4">
-          <Text className="font-body text-sm text-neutral-T50 text-center">
+        <View className="flex-1 items-center justify-center gap-4 px-8">
+          <Text className="font-body text-neutral-T50 text-center text-sm">
             {error}
           </Text>
           <TouchableOpacity
             onPress={() => load()}
-            className="px-6 py-3 bg-primary-T40 rounded-xl"
+            className="bg-primary-T40 rounded-xl px-6 py-3"
             activeOpacity={0.85}
           >
-            <Text className="font-label font-semibold text-neutral-T100">
+            <Text className="font-label text-neutral-T100 font-semibold">
               {t('common.retry')}
             </Text>
           </TouchableOpacity>

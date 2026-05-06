@@ -214,7 +214,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   deductGreenPoints: (amount) =>
     set((state) => ({
       user: state.user
-        ? { ...state.user, greenPoints: Math.max(0, state.user.greenPoints - amount) }
+        ? {
+            ...state.user,
+            greenPoints: Math.max(0, state.user.greenPoints - amount),
+          }
         : null,
     })),
 

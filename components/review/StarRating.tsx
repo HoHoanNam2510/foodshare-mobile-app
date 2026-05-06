@@ -14,7 +14,12 @@ interface StarRatingProps {
 const STAR_COLOR = '#F59E0B';
 const EMPTY_COLOR = '#D1D5DB';
 
-export default function StarRating({ rating, onRate, size = 20, gap = 4 }: StarRatingProps) {
+export default function StarRating({
+  rating,
+  onRate,
+  size = 20,
+  gap = 4,
+}: StarRatingProps) {
   return (
     <View style={{ flexDirection: 'row', gap }}>
       {[1, 2, 3, 4, 5].map((star) => {

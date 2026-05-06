@@ -20,7 +20,7 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
 
   return (
     <View
-      className="flex-row items-center gap-2 bg-white mx-4 mb-4 mt-2 px-3 py-2 rounded-full"
+      className="mx-4 mb-4 mt-2 flex-row items-center gap-2 rounded-full bg-white px-3 py-2"
       style={{
         shadowColor: '#191c1c',
         shadowOpacity: 0.08,
@@ -43,7 +43,7 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
         value={message}
         onChangeText={setMessage}
         multiline
-        className="flex-1 font-body text-base text-neutral-T10 py-1.5 max-h-24"
+        className="font-body text-neutral-T10 max-h-24 flex-1 py-1.5 text-base"
       />
 
       {/* Emoji or Send */}
@@ -51,8 +51,14 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
         <TouchableOpacity
           onPress={handleSend}
           disabled={disabled}
-          className="w-10 h-10 bg-primary rounded-full items-center justify-center"
-          style={{ shadowColor: '#72B866', shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, opacity: disabled ? 0.5 : 1 }}
+          className="bg-primary h-10 w-10 items-center justify-center rounded-full"
+          style={{
+            shadowColor: '#72B866',
+            shadowOpacity: 0.3,
+            shadowRadius: 6,
+            elevation: 3,
+            opacity: disabled ? 0.5 : 1,
+          }}
         >
           <Feather name="send" size={16} color="white" />
         </TouchableOpacity>

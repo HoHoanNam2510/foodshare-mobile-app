@@ -22,15 +22,15 @@ export default function FilterPills() {
         {FILTER_CONFIGS.map((f, index) => (
           <TouchableOpacity
             key={f.id}
-            className={`px-4 py-2 rounded-full ${
+            className={`rounded-full px-4 py-2 ${
               f.active
                 ? 'bg-primary-T40'
-                : 'bg-neutral-T100 border border-neutral-T90'
+                : 'bg-neutral-T100 border-neutral-T90 border'
             } ${index < FILTER_CONFIGS.length - 1 ? 'mr-2' : ''}`}
             activeOpacity={0.8}
           >
             <Text
-              className={`text-sm font-body ${
+              className={`font-body text-sm ${
                 f.active ? 'text-neutral-T100' : 'text-neutral-T30'
               }`}
               style={{ fontWeight: f.active ? '600' : '400' }}

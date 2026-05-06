@@ -11,30 +11,30 @@ export default function HeroBanner() {
         source={{
           uri: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=800&q=80',
         }}
-        className="rounded-2xl overflow-hidden shadow-md"
+        className="overflow-hidden rounded-2xl shadow-md"
         style={{ minHeight: 180 }}
       >
         <View
           className="absolute inset-0"
           style={{ backgroundColor: 'rgba(10, 83, 12, 0.75)' }}
         />
-        <View className="p-6 justify-between" style={{ minHeight: 180 }}>
+        <View className="justify-between p-6" style={{ minHeight: 180 }}>
           <Text
-            className="text-xs font-body tracking-widest text-neutral-T100/70"
+            className="font-body text-neutral-T100/70 text-xs tracking-widest"
             style={{ letterSpacing: 1.5 }}
           >
             {t('home.heroBannerBadge')}
           </Text>
           <View className="mt-3">
             <Text
-              className="text-2xl font-sans text-neutral-T100 leading-tight"
+              className="text-neutral-T100 font-sans text-2xl leading-tight"
               style={{ fontWeight: '700', letterSpacing: -0.5, lineHeight: 32 }}
             >
               {t('home.heroBannerTitle')}
             </Text>
-            <TouchableOpacity className="mt-5 self-start bg-neutral-T100 rounded-xl px-5 py-3 flex-row items-center gap-2 active:opacity-80">
+            <TouchableOpacity className="bg-neutral-T100 mt-5 flex-row items-center gap-2 self-start rounded-xl px-5 py-3 active:opacity-80">
               <Text
-                className="text-primary-T40 text-sm font-body"
+                className="text-primary-T40 font-body text-sm"
                 style={{ fontWeight: '600' }}
               >
                 {t('home.heroBannerCta')}

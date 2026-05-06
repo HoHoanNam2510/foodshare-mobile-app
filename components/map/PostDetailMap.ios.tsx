@@ -12,7 +12,7 @@ interface PostDetailMapProps {
 export default function PostDetailMap({ onDirections }: PostDetailMapProps) {
   return (
     <View
-      className="bg-neutral-T90 rounded-2xl overflow-hidden items-center justify-center"
+      className="bg-neutral-T90 items-center justify-center overflow-hidden rounded-2xl"
       style={{
         height: 180,
         shadowColor: '#000',
@@ -23,7 +23,7 @@ export default function PostDetailMap({ onDirections }: PostDetailMapProps) {
       }}
     >
       <Ionicons name="map-outline" size={36} color="#9CA3AF" />
-      <Text className="font-body text-sm text-neutral-T50 mt-2 text-center px-6">
+      <Text className="font-body text-neutral-T50 mt-2 px-6 text-center text-sm">
         Tạm thời chưa hỗ trợ bản đồ trên iOS
       </Text>
 
@@ -41,7 +41,14 @@ export default function PostDetailMap({ onDirections }: PostDetailMapProps) {
         }}
       >
         <MaterialIcons name="directions" size={16} color="#fff" />
-        <Text style={{ color: '#fff', fontSize: 12, fontWeight: '700', marginLeft: 4 }}>
+        <Text
+          style={{
+            color: '#fff',
+            fontSize: 12,
+            fontWeight: '700',
+            marginLeft: 4,
+          }}
+        >
           Chỉ đường
         </Text>
       </TouchableOpacity>

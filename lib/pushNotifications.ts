@@ -9,7 +9,8 @@ const isExpoGo = Constants.appOwnership === 'expo';
 export function setupNotificationHandler(): void {
   if (isExpoGo) return;
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const Notifications = require('expo-notifications') as typeof import('expo-notifications');
+  const Notifications =
+    require('expo-notifications') as typeof import('expo-notifications');
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
@@ -21,11 +22,14 @@ export function setupNotificationHandler(): void {
   });
 }
 
-export async function registerForPushNotificationsAsync(): Promise<string | null> {
+export async function registerForPushNotificationsAsync(): Promise<
+  string | null
+> {
   if (isExpoGo || !Device.isDevice) return null;
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const Notifications = require('expo-notifications') as typeof import('expo-notifications');
+  const Notifications =
+    require('expo-notifications') as typeof import('expo-notifications');
 
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('default', {

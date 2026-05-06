@@ -22,7 +22,9 @@ export async function getStoredLanguage(): Promise<SupportedLanguage> {
   return DEFAULT_LANGUAGE;
 }
 
-export async function setStoredLanguage(lang: SupportedLanguage): Promise<void> {
+export async function setStoredLanguage(
+  lang: SupportedLanguage
+): Promise<void> {
   try {
     await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
   } catch {

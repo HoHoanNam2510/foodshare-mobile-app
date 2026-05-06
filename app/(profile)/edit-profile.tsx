@@ -155,19 +155,19 @@ export default function EditProfile() {
   if (!user) return null;
 
   return (
-    <View className="flex-1 bg-neutral-DEFAULT">
+    <View className="bg-neutral-DEFAULT flex-1">
       <StackHeader
         title={t('profile.editProfile')}
         rightElement={
           <TouchableOpacity
-            className="px-4 py-2 bg-primary-T40 rounded-lg active:opacity-80"
+            className="bg-primary-T40 rounded-lg px-4 py-2 active:opacity-80"
             onPress={handleSave}
             disabled={isSaving}
           >
             {isSaving ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
-              <Text className="font-label font-bold text-sm text-neutral-T100">
+              <Text className="font-label text-neutral-T100 text-sm font-bold">
                 {t('common.save')}
               </Text>
             )}
@@ -196,22 +196,22 @@ export default function EditProfile() {
                 onPress={handlePickAvatar}
                 className="active:opacity-80"
               >
-                <View className="w-28 h-28 rounded-full overflow-hidden border-2 border-primary-T70 bg-neutral-T95 items-center justify-center">
+                <View className="border-primary-T70 bg-neutral-T95 h-28 w-28 items-center justify-center overflow-hidden rounded-full border-2">
                   {avatar ? (
                     <Image
                       source={{ uri: avatar }}
-                      className="w-full h-full"
+                      className="h-full w-full"
                       resizeMode="cover"
                     />
                   ) : (
                     <MaterialIcons name="person" size={48} color="#757777" />
                   )}
                 </View>
-                <View className="absolute bottom-0 right-0 w-9 h-9 bg-primary-T40 rounded-full items-center justify-center border-2 border-neutral-T100">
+                <View className="bg-primary-T40 border-neutral-T100 absolute bottom-0 right-0 h-9 w-9 items-center justify-center rounded-full border-2">
                   <MaterialIcons name="camera-alt" size={18} color="#FFFFFF" />
                 </View>
               </TouchableOpacity>
-              <Text className="font-label text-xs text-neutral-T50">
+              <Text className="font-label text-neutral-T50 text-xs">
                 {t('profile.tapToChangeAvatar')}
               </Text>
             </View>
@@ -254,17 +254,17 @@ export default function EditProfile() {
 
             {/* ─── Location picker ─── */}
             <View className="gap-1.5">
-              <Text className="font-label text-xs font-semibold text-neutral-T50 uppercase tracking-wider">
+              <Text className="font-label text-neutral-T50 text-xs font-semibold uppercase tracking-wider">
                 {t('profile.locationMap')}
               </Text>
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => setShowLocationPicker(true)}
-                className="bg-neutral-T100 border border-neutral-T80 rounded-xl px-4 h-12 flex-row items-center gap-3"
+                className="bg-neutral-T100 border-neutral-T80 h-12 flex-row items-center gap-3 rounded-xl border px-4"
               >
                 <MaterialIcons name="location-on" size={18} color="#296C24" />
                 <Text
-                  className="flex-1 font-body text-sm text-neutral-T10"
+                  className="font-body text-neutral-T10 flex-1 text-sm"
                   numberOfLines={1}
                 >
                   {pickedLocation?.address ||
@@ -328,7 +328,7 @@ export default function EditProfile() {
               icon="account-balance"
               label={t('profile.bankSection')}
             />
-            <Text className="font-body text-xs text-neutral-T50 -mt-2">
+            <Text className="font-body text-neutral-T50 -mt-2 text-xs">
               {isStore ? t('profile.bankHintStore') : t('profile.bankHintUser')}
             </Text>
 
@@ -388,7 +388,7 @@ function SectionLabel({
   return (
     <View className="flex-row items-center gap-3 pt-2">
       <MaterialIcons name={icon} size={20} color="#296C24" />
-      <Text className="font-sans font-bold text-base text-neutral-T10">
+      <Text className="text-neutral-T10 font-sans text-base font-bold">
         {label}
       </Text>
     </View>
@@ -416,11 +416,11 @@ function FormInput({
 }: FormInputProps) {
   return (
     <View className="gap-1.5">
-      <Text className="font-label text-xs font-semibold text-neutral-T50 uppercase tracking-wider">
+      <Text className="font-label text-neutral-T50 text-xs font-semibold uppercase tracking-wider">
         {label}
       </Text>
       <TextInput
-        className={`bg-neutral-T100 border border-neutral-T80 rounded-xl px-4 font-body text-sm text-neutral-T10 ${
+        className={`bg-neutral-T100 border-neutral-T80 font-body text-neutral-T10 rounded-xl border px-4 text-sm ${
           multiline ? 'h-24 pt-3' : 'h-12'
         } ${!editable ? 'opacity-50' : ''}`}
         value={value}

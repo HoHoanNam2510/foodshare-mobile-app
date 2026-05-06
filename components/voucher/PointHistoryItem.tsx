@@ -23,10 +23,10 @@ export default function PointHistoryItem({ log }: PointHistoryItemProps) {
   const isPositive = log.amount > 0;
 
   return (
-    <View className="flex-row items-center gap-3 py-3 px-4 bg-neutral-T100 rounded-xl">
+    <View className="bg-neutral-T100 flex-row items-center gap-3 rounded-xl px-4 py-3">
       {/* Icon */}
       <View
-        className="w-10 h-10 rounded-full items-center justify-center"
+        className="h-10 w-10 items-center justify-center rounded-full"
         style={{
           backgroundColor: isPositive
             ? 'rgba(66,134,58,0.1)'
@@ -42,21 +42,25 @@ export default function PointHistoryItem({ log }: PointHistoryItemProps) {
 
       {/* Reason + Date */}
       <View className="flex-1 gap-0.5">
-        <Text className="font-label font-semibold text-sm text-neutral-T10" numberOfLines={2}>
+        <Text
+          className="font-label text-neutral-T10 text-sm font-semibold"
+          numberOfLines={2}
+        >
           {log.reason}
         </Text>
-        <Text className="font-label text-xs text-neutral-T50">
+        <Text className="font-label text-neutral-T50 text-xs">
           {formatDateTime(log.createdAt)}
         </Text>
       </View>
 
       {/* Amount */}
       <Text
-        className={`font-sans font-bold text-base ${
+        className={`font-sans text-base font-bold ${
           isPositive ? 'text-primary-T40' : 'text-error'
         }`}
       >
-        {isPositive ? '+' : ''}{log.amount.toLocaleString()}
+        {isPositive ? '+' : ''}
+        {log.amount.toLocaleString()}
       </Text>
     </View>
   );

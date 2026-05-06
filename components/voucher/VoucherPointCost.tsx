@@ -16,16 +16,14 @@ export default function VoucherPointCost({
 }: VoucherPointCostProps) {
   const { t } = useTranslation();
   const pointsNeeded =
-    !canAfford && userPoints !== undefined
-      ? pointCost - userPoints
-      : 0;
+    !canAfford && userPoints !== undefined ? pointCost - userPoints : 0;
 
   return (
     <View className="gap-0.5">
       <View className="flex-row items-center gap-1">
         <Text className="text-base">🍃</Text>
         <Text
-          className={`font-label font-semibold text-sm ${
+          className={`font-label text-sm font-semibold ${
             canAfford ? 'text-primary-T40' : 'text-error'
           }`}
         >
@@ -33,8 +31,10 @@ export default function VoucherPointCost({
         </Text>
       </View>
       {!canAfford && pointsNeeded > 0 && (
-        <Text className="font-label text-xs text-error">
-          {t('voucher.pointsNeededFormat', { points: pointsNeeded.toLocaleString() })}
+        <Text className="font-label text-error text-xs">
+          {t('voucher.pointsNeededFormat', {
+            points: pointsNeeded.toLocaleString(),
+          })}
         </Text>
       )}
     </View>

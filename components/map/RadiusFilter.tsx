@@ -24,7 +24,7 @@ export default function RadiusFilter({ value, onChange }: RadiusFilterProps) {
             key={opt.value}
             activeOpacity={0.8}
             onPress={() => onChange(opt.value)}
-            className={`px-4 py-2 rounded-full ${active ? 'bg-primary-T40' : 'bg-neutral-T100'}`}
+            className={`rounded-full px-4 py-2 ${active ? 'bg-primary-T40' : 'bg-neutral-T100'}`}
             style={{
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 2 },
@@ -34,7 +34,7 @@ export default function RadiusFilter({ value, onChange }: RadiusFilterProps) {
             }}
           >
             <Text
-              className={`text-xs font-label font-semibold ${active ? 'text-neutral-T100' : 'text-neutral-T30'}`}
+              className={`font-label text-xs font-semibold ${active ? 'text-neutral-T100' : 'text-neutral-T30'}`}
             >
               {opt.label}
             </Text>

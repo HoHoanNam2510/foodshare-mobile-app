@@ -100,7 +100,7 @@ export default function VoucherDetailScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-neutral">
+      <View className="bg-neutral flex-1">
         <StackHeader title={t('voucher.voucherDetailTitle')} />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#296C24" />
@@ -111,17 +111,17 @@ export default function VoucherDetailScreen() {
 
   if (!voucher) {
     return (
-      <View className="flex-1 bg-neutral">
+      <View className="bg-neutral flex-1">
         <StackHeader title={t('voucher.voucherDetailTitle')} />
-        <View className="flex-1 items-center justify-center px-8 gap-4">
-          <Text className="font-body text-sm text-neutral-T50 text-center">
+        <View className="flex-1 items-center justify-center gap-4 px-8">
+          <Text className="font-body text-neutral-T50 text-center text-sm">
             {t('voucher.notFoundDetail')}
           </Text>
           <TouchableOpacity
             onPress={() => router.back()}
-            className="px-6 py-3 bg-primary-T40 rounded-xl"
+            className="bg-primary-T40 rounded-xl px-6 py-3"
           >
-            <Text className="font-label font-semibold text-neutral-T100">
+            <Text className="font-label text-neutral-T100 font-semibold">
               {t('voucher.backBtn', 'Quay lại')}
             </Text>
           </TouchableOpacity>
@@ -138,7 +138,7 @@ export default function VoucherDetailScreen() {
     });
 
   return (
-    <View className="flex-1 bg-neutral">
+    <View className="bg-neutral flex-1">
       <StackHeader title={t('voucher.voucherDetailTitle')} />
 
       <ScrollView
@@ -152,7 +152,7 @@ export default function VoucherDetailScreen() {
       >
         {/* ── Hero Badge Card ── */}
         <View
-          className="bg-neutral-T100 rounded-2xl p-6 items-center gap-4"
+          className="bg-neutral-T100 items-center gap-4 rounded-2xl p-6"
           style={styles.card}
         >
           <VoucherDiscountBadge
@@ -160,17 +160,17 @@ export default function VoucherDetailScreen() {
             discountValue={voucher.discountValue}
             size="lg"
           />
-          <Text className="font-sans font-bold text-2xl text-neutral-T10 text-center">
+          <Text className="text-neutral-T10 text-center font-sans text-2xl font-bold">
             {voucher.title}
           </Text>
 
           {/* Code + Copy */}
           <TouchableOpacity
             onPress={handleCopyCode}
-            className="flex-row items-center gap-2 bg-neutral-T95 rounded-xl px-4 py-2"
+            className="bg-neutral-T95 flex-row items-center gap-2 rounded-xl px-4 py-2"
             activeOpacity={0.8}
           >
-            <Text className="font-label font-bold text-base text-neutral-T20 tracking-widest">
+            <Text className="font-label text-neutral-T20 text-base font-bold tracking-widest">
               {voucher.code}
             </Text>
             <MaterialIcons name="content-copy" size={16} color="#5C5F5E" />
@@ -184,10 +184,10 @@ export default function VoucherDetailScreen() {
 
         {/* ── Details Card ── */}
         <View
-          className="bg-neutral-T100 rounded-2xl p-5 gap-4"
+          className="bg-neutral-T100 gap-4 rounded-2xl p-5"
           style={styles.card}
         >
-          <Text className="font-sans font-bold text-base text-neutral-T10">
+          <Text className="text-neutral-T10 font-sans text-base font-bold">
             {t('voucher.voucherDetailsInfo')}
           </Text>
 
@@ -209,7 +209,7 @@ export default function VoucherDetailScreen() {
               }
             />
             <View className="flex-row items-center justify-between">
-              <Text className="font-label text-sm text-neutral-T50">
+              <Text className="font-label text-neutral-T50 text-sm">
                 {t('voucher.pointsCostDetail')}
               </Text>
               <VoucherPointCost
@@ -219,7 +219,7 @@ export default function VoucherDetailScreen() {
               />
             </View>
             <View className="gap-1">
-              <Text className="font-label text-sm text-neutral-T50">
+              <Text className="font-label text-neutral-T50 text-sm">
                 {t('voucher.remainingQuantityDetail')}
               </Text>
               <VoucherQuantityBar
@@ -235,12 +235,12 @@ export default function VoucherDetailScreen() {
 
           {voucher.description && (
             <>
-              <View className="h-px bg-neutral-T90" />
+              <View className="bg-neutral-T90 h-px" />
               <View className="gap-1">
-                <Text className="font-label text-sm text-neutral-T50">
+                <Text className="font-label text-neutral-T50 text-sm">
                   {t('voucher.voucherDescriptionDetail')}
                 </Text>
-                <Text className="font-body text-sm text-neutral-T30 leading-5">
+                <Text className="font-body text-neutral-T30 text-sm leading-5">
                   {voucher.description}
                 </Text>
               </View>
@@ -250,11 +250,11 @@ export default function VoucherDetailScreen() {
 
         {/* ── User Points Widget (chỉ market mode) ── */}
         {!isFromWallet && user && (
-          <View className="flex-row items-center gap-2 px-4 py-3 bg-primary-T95 rounded-xl">
+          <View className="bg-primary-T95 flex-row items-center gap-2 rounded-xl px-4 py-3">
             <Text className="text-lg">🍃</Text>
-            <Text className="font-label font-semibold text-sm text-primary-T30">
+            <Text className="font-label text-primary-T30 text-sm font-semibold">
               {t('voucher.yourCurrentPoints')}{' '}
-              <Text className="font-bold text-primary-T10">
+              <Text className="text-primary-T10 font-bold">
                 {user.greenPoints.toLocaleString()}
               </Text>
             </Text>
@@ -268,14 +268,14 @@ export default function VoucherDetailScreen() {
       {/* ── Bottom Action ── */}
       {!isFromWallet && (
         <View
-          className="absolute bottom-0 left-0 right-0 bg-neutral px-4"
+          className="bg-neutral absolute bottom-0 left-0 right-0 px-4"
           style={[
             styles.bottomBar,
             { paddingBottom: Math.max(insets.bottom, 16), paddingTop: 12 },
           ]}
         >
           <TouchableOpacity
-            className={`h-14 rounded-2xl items-center justify-center ${
+            className={`h-14 items-center justify-center rounded-2xl ${
               canAfford ? 'bg-primary-T40' : 'bg-neutral-T90'
             }`}
             onPress={() => canAfford && setShowModal(true)}
@@ -283,7 +283,7 @@ export default function VoucherDetailScreen() {
             activeOpacity={0.85}
           >
             <Text
-              className={`font-sans font-bold text-base ${
+              className={`font-sans text-base font-bold ${
                 canAfford ? 'text-neutral-T100' : 'text-neutral-T50'
               }`}
             >
@@ -310,8 +310,8 @@ export default function VoucherDetailScreen() {
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <View className="flex-row items-center justify-between">
-      <Text className="font-label text-sm text-neutral-T50">{label}</Text>
-      <Text className="font-label font-semibold text-sm text-neutral-T20">
+      <Text className="font-label text-neutral-T50 text-sm">{label}</Text>
+      <Text className="font-label text-neutral-T20 text-sm font-semibold">
         {value}
       </Text>
     </View>

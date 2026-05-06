@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Modal,
-  Pressable,
-  View,
-  TouchableOpacity,
-  Text,
-} from 'react-native';
+import { Modal, Pressable, View, TouchableOpacity, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useTranslation } from 'react-i18next';
@@ -48,10 +42,10 @@ const DateTimePickerModal: React.FC<DateTimePickerModalProps> = ({
       >
         <Pressable onPress={(e) => e.stopPropagation()}>
           <View
-            className="bg-neutral-T100 rounded-t-3xl px-6 pt-4 pb-6"
+            className="bg-neutral-T100 rounded-t-3xl px-6 pb-6 pt-4"
             style={{ paddingBottom: Math.max(insets.bottom, 24) + 8 }}
           >
-            <View className="w-10 h-1 bg-neutral-T80 rounded-full self-center mb-2" />
+            <View className="bg-neutral-T80 mb-2 h-1 w-10 self-center rounded-full" />
             <View style={{ overflow: 'hidden', alignSelf: 'center' }}>
               <DateTimePicker
                 value={value}
@@ -64,10 +58,10 @@ const DateTimePickerModal: React.FC<DateTimePickerModalProps> = ({
               />
             </View>
             <TouchableOpacity
-              className="h-14 bg-primary-T40 rounded-xl items-center justify-center shadow-sm active:opacity-80 mt-4"
+              className="bg-primary-T40 mt-4 h-14 items-center justify-center rounded-xl shadow-sm active:opacity-80"
               onPress={onClose}
             >
-              <Text className="font-label font-semibold text-neutral-T100">
+              <Text className="font-label text-neutral-T100 font-semibold">
                 {t('common.done')}
               </Text>
             </TouchableOpacity>

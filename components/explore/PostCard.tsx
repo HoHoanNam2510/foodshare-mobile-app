@@ -22,22 +22,28 @@ function formatPickupTime(start: string, end: string, t: TFunc): string {
   const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
 
-  if (s.toDateString() === tomorrow.toDateString()) return t('explore.tomorrowTime', { time: timeRange });
+  if (s.toDateString() === tomorrow.toDateString())
+    return t('explore.tomorrowTime', { time: timeRange });
   return timeRange;
 }
 
-function getUrgencyInfo(expiryDate: string, t: TFunc): { label: string; isUrgent: boolean } | null {
+function getUrgencyInfo(
+  expiryDate: string,
+  t: TFunc
+): { label: string; isUrgent: boolean } | null {
   const expiry = new Date(expiryDate);
   const now = new Date();
   const msPerDay = 24 * 60 * 60 * 1000;
   const daysLeft = (expiry.getTime() - now.getTime()) / msPerDay;
 
   if (daysLeft < 0) return { label: t('explore.expired'), isUrgent: true };
-  if (expiry.toDateString() === now.toDateString()) return { label: t('explore.expiringToday'), isUrgent: true };
+  if (expiry.toDateString() === now.toDateString())
+    return { label: t('explore.expiringToday'), isUrgent: true };
 
   const tomorrow = new Date(now);
   tomorrow.setDate(now.getDate() + 1);
-  if (expiry.toDateString() === tomorrow.toDateString()) return { label: t('explore.expiringTomorrow'), isUrgent: true };
+  if (expiry.toDateString() === tomorrow.toDateString())
+    return { label: t('explore.expiringTomorrow'), isUrgent: true };
 
   return null;
 }
@@ -47,15 +53,22 @@ export default function PostCard({ post, onPress }: PostCardProps) {
   const isFree = post.type === 'P2P_FREE';
   const imageUrl = post.images?.[0];
   const urgency = getUrgencyInfo(post.expiryDate, t as TFunc);
-  const pickupLabel = formatPickupTime(post.pickupTime.start, post.pickupTime.end, t as TFunc);
-  const priceLabel = isFree ? t('common.free').toUpperCase() : `${post.price.toLocaleString('vi-VN')}đ`;
-  const tag = post.type === 'B2C_MYSTERY_BAG' ? t('explore.surpriseBag') : undefined;
+  const pickupLabel = formatPickupTime(
+    post.pickupTime.start,
+    post.pickupTime.end,
+    t as TFunc
+  );
+  const priceLabel = isFree
+    ? t('common.free').toUpperCase()
+    : `${post.price.toLocaleString('vi-VN')}đ`;
+  const tag =
+    post.type === 'B2C_MYSTERY_BAG' ? t('explore.surpriseBag') : undefined;
 
   return (
     <TouchableOpacity
       activeOpacity={0.88}
       onPress={onPress}
-      className="bg-neutral-T100 rounded-2xl overflow-hidden"
+      className="bg-neutral-T100 overflow-hidden rounded-2xl"
       style={{
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -65,33 +78,33 @@ export default function PostCard({ post, onPress }: PostCardProps) {
       }}
     >
       {/* Image */}
-      <View className="w-full aspect-video overflow-hidden">
+      <View className="aspect-video w-full overflow-hidden">
         {imageUrl ? (
           <Image
             source={{ uri: imageUrl }}
-            className="w-full h-full"
+            className="h-full w-full"
             resizeMode="cover"
           />
         ) : (
-          <View className="w-full h-full bg-neutral-T95 items-center justify-center">
+          <View className="bg-neutral-T95 h-full w-full items-center justify-center">
             <Feather name="image" size={32} color="#AAABAB" />
           </View>
         )}
 
         {/* Price / FREE badge – top left */}
         {isFree ? (
-          <View className="absolute top-3 left-3 bg-primary-T40 px-3 py-1 rounded-full">
+          <View className="bg-primary-T40 absolute left-3 top-3 rounded-full px-3 py-1">
             <Text
-              className="text-neutral-T100 text-xs font-label"
+              className="text-neutral-T100 font-label text-xs"
               style={{ fontWeight: '700' }}
             >
               FREE
             </Text>
           </View>
         ) : (
-          <View className="absolute top-3 left-3 bg-secondary px-3 py-1 rounded-full">
+          <View className="bg-secondary absolute left-3 top-3 rounded-full px-3 py-1">
             <Text
-              className="text-neutral-T100 text-xs font-label"
+              className="text-neutral-T100 font-label text-xs"
               style={{ fontWeight: '700' }}
             >
               {priceLabel}
@@ -102,11 +115,11 @@ export default function PostCard({ post, onPress }: PostCardProps) {
         {/* "Surprise Bag" label – bottom right */}
         {tag && (
           <View
-            className="absolute bottom-3 right-3 px-3 py-1 rounded-full"
+            className="absolute bottom-3 right-3 rounded-full px-3 py-1"
             style={{ backgroundColor: 'rgba(255,255,255,0.92)' }}
           >
             <Text
-              className="text-primary-T40 text-sm font-label uppercase tracking-widest"
+              className="text-primary-T40 font-label text-sm uppercase tracking-widest"
               style={{ fontWeight: '700' }}
             >
               {tag}
@@ -116,10 +129,10 @@ export default function PostCard({ post, onPress }: PostCardProps) {
       </View>
 
       {/* Info row */}
-      <View className="px-4 py-3 gap-1.5">
+      <View className="gap-1.5 px-4 py-3">
         <View className="flex-row items-start justify-between">
           <Text
-            className="text-neutral-T10 font-sans flex-1 pr-2"
+            className="text-neutral-T10 flex-1 pr-2 font-sans"
             style={{ fontSize: 16, fontWeight: '700' }}
             numberOfLines={1}
           >
@@ -133,7 +146,7 @@ export default function PostCard({ post, onPress }: PostCardProps) {
           {post.distance && (
             <View className="flex-row items-center gap-1">
               <Feather name="navigation" size={12} color="#757777" />
-              <Text className="text-neutral-T50 text-sm font-label">
+              <Text className="text-neutral-T50 font-label text-sm">
                 {post.distance}
               </Text>
             </View>
@@ -143,7 +156,7 @@ export default function PostCard({ post, onPress }: PostCardProps) {
           <View className="flex-row items-center gap-1">
             <Feather name="clock" size={12} color="#983F6A" />
             <Text
-              className="text-sm font-label"
+              className="font-label text-sm"
               style={{ color: '#983F6A', fontWeight: '600' }}
             >
               {pickupLabel}
@@ -159,7 +172,7 @@ export default function PostCard({ post, onPress }: PostCardProps) {
                 color={urgency.isUrgent ? '#ba1a1a' : '#757777'}
               />
               <Text
-                className="text-sm font-label"
+                className="font-label text-sm"
                 style={{
                   color: urgency.isUrgent ? '#ba1a1a' : '#757777',
                   fontWeight: urgency.isUrgent ? '600' : '400',

@@ -1,6 +1,10 @@
 import api from '@/lib/axios';
 
-import { ExplorePost, SortOption, TypeFilter } from '../components/explore/types';
+import {
+  ExplorePost,
+  SortOption,
+  TypeFilter,
+} from '../components/explore/types';
 
 function toApiType(
   filter: TypeFilter
@@ -10,9 +14,7 @@ function toApiType(
   return undefined;
 }
 
-function toApiSort(
-  sort: SortOption
-): 'newest' | 'expiring' | undefined {
+function toApiSort(sort: SortOption): 'newest' | 'expiring' | undefined {
   if (sort === 'newest') return 'newest';
   if (sort === 'expiring') return 'expiring';
   // 'closest' handled client-side (no GPS on server)

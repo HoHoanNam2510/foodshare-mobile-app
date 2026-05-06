@@ -69,16 +69,16 @@ export default function SelectPostTypeModal({
       onRequestClose={handleClose}
     >
       <Pressable
-        className="flex-1 bg-neutral-T10/70 justify-end"
+        className="bg-neutral-T10/70 flex-1 justify-end"
         onPress={handleClose}
       >
         <Pressable onPress={(e) => e.stopPropagation()}>
           <View
-            className="bg-neutral-T100 rounded-t-3xl px-6 pt-4 border-t border-neutral-T90 shadow-lg"
+            className="bg-neutral-T100 border-neutral-T90 rounded-t-3xl border-t px-6 pt-4 shadow-lg"
             style={{ paddingBottom: Math.max(insets.bottom, 24) + 16 }}
           >
             {/* Drag handle */}
-            <View className="w-12 h-1.5 bg-neutral-T80 rounded-md self-center mb-8" />
+            <View className="bg-neutral-T80 mb-8 h-1.5 w-12 self-center rounded-md" />
 
             {/* ── Option 1: P2P Free Food ── */}
             <PostTypeOption
@@ -111,8 +111,14 @@ export default function SelectPostTypeModal({
                   ? t('post.selectTypeStoreOnly')
                   : t('post.selectTypeNoPermission')
               }
-              upgradeLabel={userRole === 'USER' ? t('post.selectTypeUpgradeToStore') : undefined}
-              onUpgradePress={userRole === 'USER' ? handleGoRegisterStore : undefined}
+              upgradeLabel={
+                userRole === 'USER'
+                  ? t('post.selectTypeUpgradeToStore')
+                  : undefined
+              }
+              onUpgradePress={
+                userRole === 'USER' ? handleGoRegisterStore : undefined
+              }
               onPress={() => handleSelect('SURPRISE_BAG')}
             />
           </View>
@@ -152,7 +158,7 @@ function PostTypeOption({
     <View>
       <TouchableOpacity
         activeOpacity={allowed ? 0.8 : 0.95}
-        className={`flex-row items-center gap-4 py-4 px-4 rounded-2xl shadow-sm border ${
+        className={`flex-row items-center gap-4 rounded-2xl border px-4 py-4 shadow-sm ${
           allowed
             ? 'bg-neutral-T100 border-neutral-T90'
             : 'bg-neutral-T97 border-neutral-T90 opacity-50'
@@ -160,19 +166,19 @@ function PostTypeOption({
         onPress={onPress}
       >
         <View
-          className="w-14 h-14 rounded-xl items-center justify-center"
+          className="h-14 w-14 items-center justify-center rounded-xl"
           style={{ backgroundColor: iconBg }}
         >
           <Feather name={icon} size={24} color="#FFFFFF" />
         </View>
         <View className="flex-1">
           <Text
-            className={`text-lg font-sans leading-tight mb-0.5 ${allowed ? 'text-neutral-T10' : 'text-neutral-T50'}`}
+            className={`mb-0.5 font-sans text-lg leading-tight ${allowed ? 'text-neutral-T10' : 'text-neutral-T50'}`}
             style={{ fontWeight: '800' }}
           >
             {title}
           </Text>
-          <Text className="text-sm font-body text-neutral-T50">{subtitle}</Text>
+          <Text className="font-body text-neutral-T50 text-sm">{subtitle}</Text>
         </View>
         {allowed ? (
           <Feather name="arrow-right" size={20} color="#191C1C" />
@@ -181,14 +187,14 @@ function PostTypeOption({
         )}
       </TouchableOpacity>
       {showError && (
-        <View className="mt-1.5 ml-1 gap-0.5">
+        <View className="ml-1 mt-1.5 gap-0.5">
           <View className="flex-row items-center gap-1">
             <MaterialIcons name="info-outline" size={13} color="#ba1a1a" />
-            <Text className="font-body text-xs text-error">{errorMsg}</Text>
+            <Text className="font-body text-error text-xs">{errorMsg}</Text>
           </View>
           {upgradeLabel && onUpgradePress && (
             <TouchableOpacity onPress={onUpgradePress} className="ml-4">
-              <Text className="font-label text-xs text-primary-T30 underline">
+              <Text className="font-label text-primary-T30 text-xs underline">
                 {upgradeLabel}
               </Text>
             </TouchableOpacity>

@@ -65,14 +65,14 @@ function getItemIcon(
 function EmptyState() {
   const { t } = useTranslation();
   return (
-    <View className="flex-1 items-center justify-center py-24 px-8 gap-3">
-      <View className="w-16 h-16 rounded-2xl bg-primary-T95 items-center justify-center">
+    <View className="flex-1 items-center justify-center gap-3 px-8 py-24">
+      <View className="bg-primary-T95 h-16 w-16 items-center justify-center rounded-2xl">
         <MaterialIcons name="delete-outline" size={28} color="#296C24" />
       </View>
-      <Text className="font-sans font-bold text-base text-neutral-T10 text-center">
+      <Text className="text-neutral-T10 text-center font-sans text-base font-bold">
         {t('trash.emptyTitle')}
       </Text>
-      <Text className="font-body text-sm text-neutral-T50 text-center leading-5">
+      <Text className="font-body text-neutral-T50 text-center text-sm leading-5">
         {t('trash.emptyBody')}
       </Text>
     </View>
@@ -99,25 +99,25 @@ function TrashItemCard({
 
   return (
     <View
-      className="mx-4 mb-3 bg-neutral-T100 rounded-2xl p-4"
+      className="bg-neutral-T100 mx-4 mb-3 rounded-2xl p-4"
       style={styles.card}
     >
       <View className="flex-row items-start gap-3">
-        <View className="w-10 h-10 rounded-xl bg-primary-T95 items-center justify-center shrink-0">
+        <View className="bg-primary-T95 h-10 w-10 shrink-0 items-center justify-center rounded-xl">
           <MaterialIcons
             name={getItemIcon(collection)}
             size={20}
             color="#296C24"
           />
         </View>
-        <View className="flex-1 min-w-0">
+        <View className="min-w-0 flex-1">
           <Text
-            className="font-sans font-semibold text-sm text-neutral-T10"
+            className="text-neutral-T10 font-sans text-sm font-semibold"
             numberOfLines={2}
           >
             {getItemLabel(collection, item)}
           </Text>
-          <Text className="font-body text-xs text-neutral-T50 mt-0.5">
+          <Text className="font-body text-neutral-T50 mt-0.5 text-xs">
             {t('trash.deletedOn', {
               date: formatDate((item as any).deletedAt),
             })}
@@ -125,12 +125,12 @@ function TrashItemCard({
         </View>
       </View>
 
-      <View className="flex-row gap-2 mt-3">
+      <View className="mt-3 flex-row gap-2">
         <TouchableOpacity
           onPress={onRestore}
           disabled={busy}
           activeOpacity={0.85}
-          className="flex-1 h-9 rounded-xl bg-primary-T95 flex-row items-center justify-center gap-1.5"
+          className="bg-primary-T95 h-9 flex-1 flex-row items-center justify-center gap-1.5 rounded-xl"
           style={busy ? { opacity: 0.5 } : undefined}
         >
           {restoring ? (
@@ -138,7 +138,7 @@ function TrashItemCard({
           ) : (
             <MaterialIcons name="restore" size={15} color="#296C24" />
           )}
-          <Text className="font-label font-semibold text-xs text-primary-T30">
+          <Text className="font-label text-primary-T30 text-xs font-semibold">
             {t('trash.restore')}
           </Text>
         </TouchableOpacity>
@@ -147,7 +147,7 @@ function TrashItemCard({
           onPress={onPurge}
           disabled={busy}
           activeOpacity={0.85}
-          className="flex-1 h-9 rounded-xl bg-red-50 flex-row items-center justify-center gap-1.5"
+          className="h-9 flex-1 flex-row items-center justify-center gap-1.5 rounded-xl bg-red-50"
           style={busy ? { opacity: 0.5 } : undefined}
         >
           {purging ? (
@@ -155,7 +155,7 @@ function TrashItemCard({
           ) : (
             <MaterialIcons name="delete-forever" size={15} color="#DC2626" />
           )}
-          <Text className="font-label font-semibold text-xs text-red-600">
+          <Text className="font-label text-xs font-semibold text-red-600">
             {t('trash.purge')}
           </Text>
         </TouchableOpacity>
@@ -290,7 +290,7 @@ export default function TrashScreen() {
   const isLoading = loading[activeTab];
 
   return (
-    <View className="flex-1 bg-neutral">
+    <View className="bg-neutral flex-1">
       <StatusBar
         barStyle="dark-content"
         backgroundColor="transparent"
@@ -299,7 +299,7 @@ export default function TrashScreen() {
       <ManagementHeader title={t('trash.title')} onBack={() => router.back()} />
 
       {/* ── Tab Bar ── */}
-      <View className="mx-4 mt-4 mb-3 bg-neutral-T95 rounded-xl p-1 flex-row">
+      <View className="bg-neutral-T95 mx-4 mb-3 mt-4 flex-row rounded-xl p-1">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.key;
           const count = items[tab.key].length;
@@ -308,19 +308,19 @@ export default function TrashScreen() {
               key={tab.key}
               onPress={() => handleTabChange(tab.key)}
               activeOpacity={0.8}
-              className="flex-1 py-2.5 rounded-lg items-center"
+              className="flex-1 items-center rounded-lg py-2.5"
               style={isActive ? styles.tabActive : undefined}
             >
               <View className="flex-row items-center gap-1.5">
                 <Text
-                  className="font-label font-semibold text-xs"
+                  className="font-label text-xs font-semibold"
                   style={{ color: isActive ? '#296C24' : '#757777' }}
                 >
                   {tab.label}
                 </Text>
                 {count > 0 && (
                   <View
-                    className="px-1.5 py-0.5 rounded-full"
+                    className="rounded-full px-1.5 py-0.5"
                     style={{
                       backgroundColor: isActive ? '#296C24' : '#C8CACA',
                     }}
@@ -340,14 +340,14 @@ export default function TrashScreen() {
       </View>
 
       {/* ── Info banner ── */}
-      <View className="mx-4 mb-3 p-3 bg-amber-50 rounded-xl flex-row gap-2 items-start">
+      <View className="mx-4 mb-3 flex-row items-start gap-2 rounded-xl bg-amber-50 p-3">
         <MaterialIcons
           name="info-outline"
           size={15}
           color="#D97706"
           style={{ marginTop: 1 }}
         />
-        <Text className="font-body text-xs text-amber-800 flex-1 leading-4">
+        <Text className="font-body flex-1 text-xs leading-4 text-amber-800">
           {t('trash.infoBanner')}
         </Text>
       </View>
@@ -356,21 +356,21 @@ export default function TrashScreen() {
       {isLoading ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-sm text-neutral-T50">
+          <Text className="font-body text-neutral-T50 text-sm">
             {t('common.loading')}
           </Text>
         </View>
       ) : error ? (
-        <View className="flex-1 items-center justify-center px-8 gap-4">
-          <Text className="font-body text-sm text-neutral-T50 text-center">
+        <View className="flex-1 items-center justify-center gap-4 px-8">
+          <Text className="font-body text-neutral-T50 text-center text-sm">
             {error}
           </Text>
           <TouchableOpacity
             onPress={() => loadTab(activeTab)}
-            className="px-6 py-3 bg-primary-T40 rounded-xl"
+            className="bg-primary-T40 rounded-xl px-6 py-3"
             activeOpacity={0.85}
           >
-            <Text className="font-label font-semibold text-neutral-T100">
+            <Text className="font-label text-neutral-T100 font-semibold">
               {t('common.retry')}
             </Text>
           </TouchableOpacity>

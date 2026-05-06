@@ -32,10 +32,10 @@ export default function CategoryPicker({
         <TouchableOpacity
           key={cat}
           onPress={() => onSelect(cat)}
-          className={`px-5 py-2.5 rounded-lg shadow-sm active:opacity-80 ${
+          className={`rounded-lg px-5 py-2.5 shadow-sm active:opacity-80 ${
             selected === cat
               ? 'bg-primary-T95'
-              : 'bg-neutral-T100 border border-neutral-T90'
+              : 'bg-neutral-T100 border-neutral-T90 border'
           }`}
         >
           <Text

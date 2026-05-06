@@ -36,14 +36,14 @@ interface MenuItemProps {
 function MenuItem({ icon, label, onPress }: MenuItemProps) {
   return (
     <TouchableOpacity
-      className="flex-row items-center gap-4 py-4 border-b border-neutral-T90 active:opacity-70"
+      className="border-neutral-T90 flex-row items-center gap-4 border-b py-4 active:opacity-70"
       onPress={onPress}
       activeOpacity={0.7}
     >
-      <View className="w-9 h-9 rounded-xl bg-primary-T95 items-center justify-center">
+      <View className="bg-primary-T95 h-9 w-9 items-center justify-center rounded-xl">
         <MaterialIcons name={icon} size={18} color="#296C24" />
       </View>
-      <Text className="flex-1 font-body text-base text-neutral-T10 font-semibold">
+      <Text className="font-body text-neutral-T10 flex-1 text-base font-semibold">
         {label}
       </Text>
       <Feather name="chevron-right" size={16} color="#AAABAB" />
@@ -155,7 +155,7 @@ export default function MenuDrawer() {
 
       {/* Drawer Panel */}
       <Animated.View
-        className="absolute top-0 bottom-0 left-0 bg-neutral-T100 shadow-lg"
+        className="bg-neutral-T100 absolute bottom-0 left-0 top-0 shadow-lg"
         style={{
           width: DRAWER_WIDTH,
           transform: [{ translateX: slideAnim }],
@@ -164,16 +164,16 @@ export default function MenuDrawer() {
         }}
       >
         {/* ── Header ── */}
-        <View className="px-5 pt-3 pb-4 flex-row items-center">
+        <View className="flex-row items-center px-5 pb-4 pt-3">
           <Text
-            className="text-lg font-sans text-primary-T40"
+            className="text-primary-T40 font-sans text-lg"
             style={{ fontWeight: '700', letterSpacing: -0.3 }}
           >
             FoodShare
           </Text>
           <View className="flex-1" />
           <TouchableOpacity
-            className="w-9 h-9 rounded-full bg-neutral-T95 items-center justify-center active:opacity-70"
+            className="bg-neutral-T95 h-9 w-9 items-center justify-center rounded-full active:opacity-70"
             onPress={handleClose}
           >
             <Feather name="x" size={18} color="#191C1C" />
@@ -181,12 +181,12 @@ export default function MenuDrawer() {
         </View>
 
         {/* ── User Identity ── */}
-        <View className="px-5 pb-5 flex-row items-center gap-3">
-          <View className="w-14 h-14 rounded-full overflow-hidden border border-neutral-T80 bg-neutral-T95 items-center justify-center">
+        <View className="flex-row items-center gap-3 px-5 pb-5">
+          <View className="border-neutral-T80 bg-neutral-T95 h-14 w-14 items-center justify-center overflow-hidden rounded-full border">
             {user?.avatar ? (
               <Image
                 source={{ uri: user.avatar }}
-                className="w-full h-full"
+                className="h-full w-full"
                 resizeMode="cover"
               />
             ) : (
@@ -195,14 +195,14 @@ export default function MenuDrawer() {
           </View>
           <View className="flex-1">
             <Text
-              className="font-sans text-neutral-T10 text-base"
+              className="text-neutral-T10 font-sans text-base"
               style={{ fontWeight: '700' }}
               numberOfLines={1}
             >
               {user?.fullName ?? '—'}
             </Text>
             <View
-              className={`self-start mt-1 px-2.5 py-0.5 rounded-full ${roleBadge.containerClass}`}
+              className={`mt-1 self-start rounded-full px-2.5 py-0.5 ${roleBadge.containerClass}`}
             >
               <Text
                 className={`font-label text-[10px] font-bold ${roleBadge.textClass}`}
@@ -213,13 +213,13 @@ export default function MenuDrawer() {
           </View>
           {/* Language toggle (right-aligned, opposite the avatar block) */}
           <TouchableOpacity
-            className="flex-row items-center px-3 h-9 rounded-full bg-primary-T95 border border-primary-T90 active:opacity-70"
+            className="bg-primary-T95 border-primary-T90 h-9 flex-row items-center rounded-full border px-3 active:opacity-70"
             onPress={toggleLanguage}
             accessibilityLabel="Toggle language"
           >
             <MaterialIcons name="language" size={16} color="#296C24" />
             <Text
-              className="ml-1.5 font-label text-xs font-bold text-primary-T20"
+              className="font-label text-primary-T20 ml-1.5 text-xs font-bold"
               style={{ letterSpacing: 0.5 }}
             >
               {language === 'vi' ? 'VI' : 'EN'}
@@ -228,7 +228,7 @@ export default function MenuDrawer() {
         </View>
 
         {/* ── Divider ── */}
-        <View className="h-px bg-neutral-T90 mx-5" />
+        <View className="bg-neutral-T90 mx-5 h-px" />
 
         {/* ── Menu Items ── */}
         <ScrollView
@@ -237,7 +237,7 @@ export default function MenuDrawer() {
           contentContainerStyle={{ paddingTop: 8 }}
         >
           {/* Section label */}
-          <Text className="font-label text-xs font-semibold text-neutral-T50 tracking-wider uppercase mt-3 mb-1">
+          <Text className="font-label text-neutral-T50 mb-1 mt-3 text-xs font-semibold uppercase tracking-wider">
             {t('menu.menu')}
           </Text>
 
@@ -286,14 +286,14 @@ export default function MenuDrawer() {
         </ScrollView>
 
         {/* ── Logout (pinned to bottom) ── */}
-        <View className="px-5 pt-3 border-t border-neutral-T90">
+        <View className="border-neutral-T90 border-t px-5 pt-3">
           <TouchableOpacity
-            className="h-14 rounded-xl bg-red-50 border border-red-200 flex-row items-center justify-center gap-2.5 active:scale-[0.98]"
+            className="h-14 flex-row items-center justify-center gap-2.5 rounded-xl border border-red-200 bg-red-50 active:scale-[0.98]"
             onPress={handleLogout}
             activeOpacity={0.8}
           >
             <MaterialIcons name="logout" size={20} color="#ba1a1a" />
-            <Text className="font-label font-semibold text-error">
+            <Text className="font-label text-error font-semibold">
               {t('auth.logout')}
             </Text>
           </TouchableOpacity>

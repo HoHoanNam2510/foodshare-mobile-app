@@ -56,7 +56,7 @@ export default function PointHistoryScreen() {
   };
 
   return (
-    <View className="flex-1 bg-neutral">
+    <View className="bg-neutral flex-1">
       <ManagementHeader
         title={t('voucher.pointHistoryTitle')}
         onBack={() => router.back()}
@@ -65,7 +65,7 @@ export default function PointHistoryScreen() {
       {/* ── Points Widget ── */}
       <View className="m-4">
         <View
-          className="bg-primary-T95 rounded-2xl p-5 items-center gap-2"
+          className="bg-primary-T95 items-center gap-2 rounded-2xl p-5"
           style={{
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 2 },
@@ -75,17 +75,17 @@ export default function PointHistoryScreen() {
           }}
         >
           <Text className="text-4xl">🍃</Text>
-          <Text className="font-label text-xs font-semibold text-primary-T50 uppercase tracking-wider">
+          <Text className="font-label text-primary-T50 text-xs font-semibold uppercase tracking-wider">
             {t('voucher.currentPointsLabel')}
           </Text>
           {isLoading ? (
             <ActivityIndicator color="#296C24" />
           ) : (
-            <Text className="font-sans font-bold text-4xl text-primary-T20">
+            <Text className="text-primary-T20 font-sans text-4xl font-bold">
               {currentPoints.toLocaleString()}
             </Text>
           )}
-          <Text className="font-label text-xs text-primary-T50">
+          <Text className="font-label text-primary-T50 text-xs">
             {t('voucher.pointsUnit')}
           </Text>
         </View>
@@ -95,7 +95,7 @@ export default function PointHistoryScreen() {
       {isLoading ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-sm text-neutral-T50">
+          <Text className="font-body text-neutral-T50 text-sm">
             {t('voucher.loadingHistory')}
           </Text>
         </View>
@@ -112,9 +112,9 @@ export default function PointHistoryScreen() {
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.3}
           ListEmptyComponent={
-            <View className="items-center justify-center py-20 gap-3">
+            <View className="items-center justify-center gap-3 py-20">
               <MaterialIcons name="history" size={48} color="#C5C7C6" />
-              <Text className="font-body text-sm text-neutral-T50 text-center">
+              <Text className="font-body text-neutral-T50 text-center text-sm">
                 {t('voucher.emptyHistoryTitle')}
                 {'\n'}
                 {t('voucher.emptyHistoryDesc')}
@@ -123,11 +123,11 @@ export default function PointHistoryScreen() {
           }
           ListFooterComponent={
             isFetchingMore ? (
-              <View className="py-4 items-center">
+              <View className="items-center py-4">
                 <ActivityIndicator color="#296C24" />
               </View>
             ) : !hasMore && logs.length > 0 ? (
-              <Text className="font-label text-xs text-neutral-T50 text-center py-4">
+              <Text className="font-label text-neutral-T50 py-4 text-center text-xs">
                 {t('voucher.endOfHistory')}
               </Text>
             ) : null

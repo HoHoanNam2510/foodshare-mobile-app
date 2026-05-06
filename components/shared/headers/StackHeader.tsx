@@ -10,15 +10,19 @@ interface StackHeaderProps {
   onBack?: () => void;
 }
 
-export default function StackHeader({ title, rightElement, onBack }: StackHeaderProps) {
+export default function StackHeader({
+  title,
+  rightElement,
+  onBack,
+}: StackHeaderProps) {
   const router = useRouter();
 
   return (
     <BaseHeader>
-      <View className="flex-row items-center justify-between flex-1">
+      <View className="flex-1 flex-row items-center justify-between">
         {/* Left: Back Button */}
         <TouchableOpacity
-          className="w-10 h-10 rounded-full bg-neutral-T95 items-center justify-center active:opacity-80"
+          className="bg-neutral-T95 h-10 w-10 items-center justify-center rounded-full active:opacity-80"
           onPress={() => (onBack ? onBack() : router.back())}
         >
           <Feather name="arrow-left" size={20} color="#191C1C" />
@@ -26,7 +30,7 @@ export default function StackHeader({ title, rightElement, onBack }: StackHeader
 
         {/* Center: Title */}
         <Text
-          className="text-lg flex-1 text-center"
+          className="flex-1 text-center text-lg"
           style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
           numberOfLines={1}
         >
@@ -36,7 +40,7 @@ export default function StackHeader({ title, rightElement, onBack }: StackHeader
         {/* Right: Optional Element */}
         <View className="flex-row items-center">
           {rightElement || (
-            <View className="w-10 h-10" /> // Spacer for alignment
+            <View className="h-10 w-10" /> // Spacer for alignment
           )}
         </View>
       </View>

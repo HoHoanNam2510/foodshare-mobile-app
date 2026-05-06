@@ -18,9 +18,7 @@ export default function BaseHeader({
       className={`bg-neutral-T100 shadow-sm ${className}`}
       style={{ paddingTop: insets.top }}
     >
-      <View className="py-3 flex-row items-center px-4">
-        {children}
-      </View>
+      <View className="flex-row items-center px-4 py-3">{children}</View>
     </View>
   );
 }

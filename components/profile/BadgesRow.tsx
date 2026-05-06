@@ -35,12 +35,12 @@ export default function BadgesRow({
   const remaining = total - 5;
 
   return (
-    <View className="bg-neutral-T100 rounded-2xl shadow-sm p-5 gap-4">
+    <View className="bg-neutral-T100 gap-4 rounded-2xl p-5 shadow-sm">
       {/* Header */}
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <MaterialIcons name="military-tech" size={20} color="#296C24" />
-          <Text className="font-sans font-bold text-base text-neutral-T10">
+          <Text className="text-neutral-T10 font-sans text-base font-bold">
             {t('profile.badges')}
           </Text>
         </View>
@@ -48,7 +48,7 @@ export default function BadgesRow({
           onPress={onSeeAll}
           className="flex-row items-center gap-1 active:opacity-70"
         >
-          <Text className="font-label text-xs font-semibold text-primary-T40">
+          <Text className="font-label text-primary-T40 text-xs font-semibold">
             {t('common.seeAll')}
           </Text>
           <MaterialIcons name="chevron-right" size={16} color="#296C24" />
@@ -58,16 +58,16 @@ export default function BadgesRow({
       {/* Progress bar */}
       <View className="gap-1.5">
         <View className="flex-row items-center justify-between">
-          <Text className="font-label text-xs text-neutral-T50">
+          <Text className="font-label text-neutral-T50 text-xs">
             {t('profile.badgeUnlockedLabel')}
           </Text>
-          <Text className="font-label text-xs font-semibold text-primary-T40">
+          <Text className="font-label text-primary-T40 text-xs font-semibold">
             {unlocked}/{total}
           </Text>
         </View>
-        <View className="h-1.5 bg-neutral-T90 rounded-full overflow-hidden">
+        <View className="bg-neutral-T90 h-1.5 overflow-hidden rounded-full">
           <View
-            className="h-full bg-primary rounded-full"
+            className="bg-primary h-full rounded-full"
             style={{ width: total > 0 ? `${(unlocked / total) * 100}%` : '0%' }}
           />
         </View>
@@ -79,9 +79,9 @@ export default function BadgesRow({
           <ActivityIndicator color="#296C24" />
         </View>
       ) : badges.length === 0 ? (
-        <View className="items-center py-6 gap-2">
+        <View className="items-center gap-2 py-6">
           <MaterialIcons name="military-tech" size={40} color="#C5C7C6" />
-          <Text className="font-body text-xs text-neutral-T50 text-center">
+          <Text className="font-body text-neutral-T50 text-center text-xs">
             {t('profile.badgesNoBadges')}
           </Text>
         </View>
@@ -93,9 +93,9 @@ export default function BadgesRow({
           {remaining > 0 && (
             <TouchableOpacity
               onPress={onSeeAll}
-              className="w-14 h-14 rounded-2xl bg-neutral-T95 items-center justify-center active:opacity-70"
+              className="bg-neutral-T95 h-14 w-14 items-center justify-center rounded-2xl active:opacity-70"
             >
-              <Text className="font-label text-xs font-semibold text-neutral-T50">
+              <Text className="font-label text-neutral-T50 text-xs font-semibold">
                 +{remaining}
               </Text>
             </TouchableOpacity>
@@ -110,7 +110,7 @@ function BadgeItem({ badge }: { badge: IBadge }) {
   return (
     <View className="items-center gap-1.5" style={{ width: 52 }}>
       <View
-        className={`w-14 h-14 rounded-2xl items-center justify-center overflow-hidden ${
+        className={`h-14 w-14 items-center justify-center overflow-hidden rounded-2xl ${
           badge.isUnlocked ? 'bg-primary-T95' : 'bg-neutral-T95'
         }`}
       >
@@ -125,7 +125,7 @@ function BadgeItem({ badge }: { badge: IBadge }) {
         />
       </View>
       <Text
-        className={`font-label text-[9px] text-center leading-tight ${
+        className={`font-label text-center text-[9px] leading-tight ${
           badge.isUnlocked
             ? 'text-neutral-T20 font-semibold'
             : 'text-neutral-T60'

@@ -47,9 +47,7 @@ export default function VoucherCard({
 }: VoucherCardProps) {
   const { t } = useTranslation();
   const canAfford =
-    userGreenPoints !== undefined
-      ? userGreenPoints >= voucher.pointCost
-      : true;
+    userGreenPoints !== undefined ? userGreenPoints >= voucher.pointCost : true;
 
   const usedCount = voucher.totalQuantity - voucher.remainingQuantity;
 
@@ -58,18 +56,18 @@ export default function VoucherCard({
       onPress={() => onPress?.(voucher._id)}
       activeOpacity={onPress ? 0.85 : 1}
       style={styles.card}
-      className="bg-neutral-T100 rounded-2xl overflow-hidden mb-3"
+      className="bg-neutral-T100 mb-3 overflow-hidden rounded-2xl"
     >
       {/* ── Thanh màu bên trái ── */}
       <View
-        className="absolute left-0 top-0 bottom-0 w-1"
+        className="absolute bottom-0 left-0 top-0 w-1"
         style={{
           backgroundColor:
             voucher.discountType === 'PERCENTAGE' ? '#42863A' : '#B95F03',
         }}
       />
 
-      <View className="pl-4 pr-4 pt-4 pb-4 ml-1">
+      <View className="ml-1 pb-4 pl-4 pr-4 pt-4">
         {/* ── Row 1: Badge + Code ── */}
         <View className="flex-row items-start justify-between gap-2">
           <VoucherDiscountBadge
@@ -77,14 +75,14 @@ export default function VoucherCard({
             discountValue={voucher.discountValue}
             size="sm"
           />
-          <Text className="font-label text-xs text-neutral-T50 font-semibold tracking-wider">
+          <Text className="font-label text-neutral-T50 text-xs font-semibold tracking-wider">
             {voucher.code}
           </Text>
         </View>
 
         {/* ── Row 2: Title ── */}
         <Text
-          className="font-sans font-bold text-base text-neutral-T10 mt-2"
+          className="text-neutral-T10 mt-2 font-sans text-base font-bold"
           numberOfLines={1}
         >
           {voucher.title}
@@ -93,7 +91,7 @@ export default function VoucherCard({
         {/* ── Row 3: Description (chỉ market mode) ── */}
         {viewMode === 'market' && voucher.description && (
           <Text
-            className="font-body text-xs text-neutral-T50 mt-1 leading-4"
+            className="font-body text-neutral-T50 mt-1 text-xs leading-4"
             numberOfLines={2}
           >
             {voucher.description}
@@ -101,7 +99,7 @@ export default function VoucherCard({
         )}
 
         {/* ── Divider ── */}
-        <View className="h-px bg-neutral-T90 my-3" />
+        <View className="bg-neutral-T90 my-3 h-px" />
 
         {/* ── Bottom Info Row ── */}
         <View className="gap-2">
@@ -123,8 +121,11 @@ export default function VoucherCard({
 
           {/* Store-manage: X/Y đã dùng label */}
           {viewMode === 'store-manage' && (
-            <Text className="font-label text-xs text-neutral-T50">
-              {t('voucher.redeemedCountFormat', { used: usedCount, total: voucher.totalQuantity })}
+            <Text className="font-label text-neutral-T50 text-xs">
+              {t('voucher.redeemedCountFormat', {
+                used: usedCount,
+                total: voucher.totalQuantity,
+              })}
             </Text>
           )}
 
@@ -139,7 +140,7 @@ export default function VoucherCard({
           {/* Store Active Badge */}
           {viewMode === 'store-manage' && (
             <View
-              className={`self-start px-2 py-0.5 rounded-full ${
+              className={`self-start rounded-full px-2 py-0.5 ${
                 voucher.isActive ? 'bg-primary-T95' : 'bg-neutral-T90'
               }`}
             >
@@ -148,7 +149,9 @@ export default function VoucherCard({
                   voucher.isActive ? 'text-primary-T30' : 'text-neutral-T50'
                 }`}
               >
-                {voucher.isActive ? t('voucher.activeBadge') : t('voucher.inactiveBadge')}
+                {voucher.isActive
+                  ? t('voucher.activeBadge')
+                  : t('voucher.inactiveBadge')}
               </Text>
             </View>
           )}
@@ -158,72 +161,78 @@ export default function VoucherCard({
         <View className="mt-3">
           {viewMode === 'market' && (
             <TouchableOpacity
-              className={`h-11 rounded-xl items-center justify-center ${
-                canAfford
-                  ? 'bg-primary-T40'
-                  : 'bg-neutral-T90'
+              className={`h-11 items-center justify-center rounded-xl ${
+                canAfford ? 'bg-primary-T40' : 'bg-neutral-T90'
               }`}
               onPress={() => canAfford && onRedeemPress?.(voucher)}
               disabled={!canAfford}
               activeOpacity={0.85}
             >
               <Text
-                className={`font-label font-semibold text-sm ${
+                className={`font-label text-sm font-semibold ${
                   canAfford ? 'text-neutral-T100' : 'text-neutral-T50'
                 }`}
               >
-                {canAfford ? t('voucher.redeemNowBtn') : t('voucher.notEnoughPointsShortBtn')}
+                {canAfford
+                  ? t('voucher.redeemNowBtn')
+                  : t('voucher.notEnoughPointsShortBtn')}
               </Text>
             </TouchableOpacity>
           )}
 
           {viewMode === 'wallet' && (
             <TouchableOpacity
-              className="h-11 rounded-xl bg-neutral-T95 border border-neutral-T80 items-center justify-center"
+              className="bg-neutral-T95 border-neutral-T80 h-11 items-center justify-center rounded-xl border"
               onPress={() => onPress?.(voucher._id)}
               activeOpacity={0.8}
             >
-              <Text className="font-label font-semibold text-sm text-neutral-T40">
+              <Text className="font-label text-neutral-T40 text-sm font-semibold">
                 {t('voucher.viewDetailsBtn')}
               </Text>
             </TouchableOpacity>
           )}
 
           {viewMode === 'store-manage' && (
-            <View className="flex-row gap-3 items-center">
+            <View className="flex-row items-center gap-3">
               {/* Toggle */}
-              <View className="flex-row items-center gap-2 flex-1">
+              <View className="flex-1 flex-row items-center gap-2">
                 <Switch
                   value={voucher.isActive}
                   onValueChange={() => onToggleActive?.(voucher._id)}
                   trackColor={{ false: '#C5C7C6', true: '#90D882' }}
                   thumbColor={voucher.isActive ? '#296C24' : '#AAABAB'}
                 />
-                <Text className="font-label text-xs text-neutral-T50">
-                  {voucher.isActive ? t('voucher.activeStatus') : t('voucher.inactiveStatus')}
+                <Text className="font-label text-neutral-T50 text-xs">
+                  {voucher.isActive
+                    ? t('voucher.activeStatus')
+                    : t('voucher.inactiveStatus')}
                 </Text>
               </View>
 
               {/* Edit button */}
               <TouchableOpacity
-                className="flex-row items-center gap-1 h-10 px-4 rounded-xl bg-secondary-T95 border border-secondary-T80"
+                className="bg-secondary-T95 border-secondary-T80 h-10 flex-row items-center gap-1 rounded-xl border px-4"
                 onPress={() => onEditPress?.(voucher._id)}
                 activeOpacity={0.8}
               >
                 <MaterialIcons name="edit" size={14} color="#944A00" />
-                <Text className="font-label font-semibold text-xs text-secondary-T40">
+                <Text className="font-label text-secondary-T40 text-xs font-semibold">
                   {t('voucher.editBtn')}
                 </Text>
               </TouchableOpacity>
 
               {/* Delete button */}
               <TouchableOpacity
-                className="w-10 h-10 rounded-xl items-center justify-center"
+                className="h-10 w-10 items-center justify-center rounded-xl"
                 style={{ backgroundColor: 'rgba(220,38,38,0.08)' }}
                 onPress={() => onDeletePress?.(voucher._id)}
                 activeOpacity={0.8}
               >
-                <MaterialIcons name="delete-outline" size={18} color="#DC2626" />
+                <MaterialIcons
+                  name="delete-outline"
+                  size={18}
+                  color="#DC2626"
+                />
               </TouchableOpacity>
             </View>
           )}

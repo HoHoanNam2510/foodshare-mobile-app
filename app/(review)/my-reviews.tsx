@@ -46,10 +46,10 @@ function AverageRatingBadge({
   if (count === 0) return null;
   return (
     <View
-      className="mx-4 mb-3 bg-neutral-T100 rounded-2xl p-4 flex-row items-center gap-3"
+      className="bg-neutral-T100 mx-4 mb-3 flex-row items-center gap-3 rounded-2xl p-4"
       style={styles.card}
     >
-      <View className="w-14 h-14 rounded-xl bg-primary-T95 items-center justify-center">
+      <View className="bg-primary-T95 h-14 w-14 items-center justify-center rounded-xl">
         <Text
           style={{
             fontFamily: 'Epilogue',
@@ -64,11 +64,11 @@ function AverageRatingBadge({
       <View className="flex-1 gap-0.5">
         <Text
           style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
-          className="text-sm text-neutral-T10"
+          className="text-neutral-T10 text-sm"
         >
           {t('review.trustScoreTitle')}
         </Text>
-        <Text className="font-body text-xs text-neutral-T50">
+        <Text className="font-body text-neutral-T50 text-xs">
           {t('review.trustScoreFrom', { count })}
         </Text>
       </View>
@@ -102,14 +102,14 @@ function EmptyState({ tab }: { tab: TabKey }) {
   }[tab];
 
   return (
-    <View className="flex-1 items-center justify-center py-24 px-8 gap-3">
-      <View className="w-16 h-16 rounded-2xl bg-primary-T95 items-center justify-center">
+    <View className="flex-1 items-center justify-center gap-3 px-8 py-24">
+      <View className="bg-primary-T95 h-16 w-16 items-center justify-center rounded-2xl">
         <MaterialIcons name={cfg.icon} size={28} color="#296C24" />
       </View>
-      <Text className="font-sans font-bold text-base text-neutral-T10 text-center">
+      <Text className="text-neutral-T10 text-center font-sans text-base font-bold">
         {t(cfg.titleKey)}
       </Text>
-      <Text className="font-body text-sm text-neutral-T50 text-center leading-5">
+      <Text className="font-body text-neutral-T50 text-center text-sm leading-5">
         {t(cfg.bodyKey)}
       </Text>
     </View>
@@ -260,7 +260,7 @@ export default function MyReviewsScreen() {
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <View className="flex-1 bg-neutral">
+    <View className="bg-neutral flex-1">
       <StatusBar
         barStyle="dark-content"
         backgroundColor="transparent"
@@ -272,7 +272,7 @@ export default function MyReviewsScreen() {
       />
 
       {/* ── Tab Bar ── */}
-      <View className="mx-4 mt-4 mb-3 bg-neutral-T95 rounded-xl p-1 flex-row">
+      <View className="bg-neutral-T95 mx-4 mb-3 mt-4 flex-row rounded-xl p-1">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.key;
           return (
@@ -280,19 +280,19 @@ export default function MyReviewsScreen() {
               key={tab.key}
               onPress={() => setActiveTab(tab.key)}
               activeOpacity={0.8}
-              className="flex-1 py-2.5 rounded-lg items-center"
+              className="flex-1 items-center rounded-lg py-2.5"
               style={isActive ? styles.tabActive : undefined}
             >
               <View className="flex-row items-center gap-1.5">
                 <Text
-                  className="font-label font-semibold text-xs"
+                  className="font-label text-xs font-semibold"
                   style={{ color: isActive ? '#296C24' : '#757777' }}
                 >
                   {tab.label}
                 </Text>
                 {tab.count > 0 && (
                   <View
-                    className="px-1.5 py-0.5 rounded-full"
+                    className="rounded-full px-1.5 py-0.5"
                     style={{
                       backgroundColor: isActive ? '#296C24' : '#C8CACA',
                     }}
@@ -316,21 +316,21 @@ export default function MyReviewsScreen() {
         writtenLoading ? (
           <View className="flex-1 items-center justify-center gap-3">
             <ActivityIndicator size="large" color="#296C24" />
-            <Text className="font-body text-sm text-neutral-T50">
+            <Text className="font-body text-neutral-T50 text-sm">
               {t('common.loading')}
             </Text>
           </View>
         ) : writtenError ? (
-          <View className="flex-1 items-center justify-center px-8 gap-4">
-            <Text className="font-body text-sm text-neutral-T50 text-center">
+          <View className="flex-1 items-center justify-center gap-4 px-8">
+            <Text className="font-body text-neutral-T50 text-center text-sm">
               {writtenError}
             </Text>
             <TouchableOpacity
               onPress={() => loadWritten()}
-              className="px-6 py-3 bg-primary-T40 rounded-xl"
+              className="bg-primary-T40 rounded-xl px-6 py-3"
               activeOpacity={0.85}
             >
-              <Text className="font-label font-semibold text-neutral-T100">
+              <Text className="font-label text-neutral-T100 font-semibold">
                 {t('common.retry')}
               </Text>
             </TouchableOpacity>
@@ -352,14 +352,14 @@ export default function MyReviewsScreen() {
             )}
             ListEmptyComponent={<EmptyState tab="written" />}
             ListHeaderComponent={
-              <View className="mx-4 mt-4 mb-3 p-3 bg-primary-T95 rounded-xl flex-row gap-2 items-start">
+              <View className="bg-primary-T95 mx-4 mb-3 mt-4 flex-row items-start gap-2 rounded-xl p-3">
                 <MaterialIcons
                   name="info-outline"
                   size={15}
                   color="#296C24"
                   style={{ marginTop: 1 }}
                 />
-                <Text className="font-body text-xs text-primary-T30 flex-1 leading-4">
+                <Text className="font-body text-primary-T30 flex-1 text-xs leading-4">
                   {t('review.editRecalcInfo')}
                 </Text>
               </View>
@@ -378,21 +378,21 @@ export default function MyReviewsScreen() {
       ) : !receivedLoaded && !receivedError ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-sm text-neutral-T50">
+          <Text className="font-body text-neutral-T50 text-sm">
             {t('common.loading')}
           </Text>
         </View>
       ) : receivedError ? (
-        <View className="flex-1 items-center justify-center px-8 gap-4">
-          <Text className="font-body text-sm text-neutral-T50 text-center">
+        <View className="flex-1 items-center justify-center gap-4 px-8">
+          <Text className="font-body text-neutral-T50 text-center text-sm">
             {receivedError}
           </Text>
           <TouchableOpacity
             onPress={() => loadReceived()}
-            className="px-6 py-3 bg-primary-T40 rounded-xl"
+            className="bg-primary-T40 rounded-xl px-6 py-3"
             activeOpacity={0.85}
           >
-            <Text className="font-label font-semibold text-neutral-T100">
+            <Text className="font-label text-neutral-T100 font-semibold">
               {t('common.retry')}
             </Text>
           </TouchableOpacity>

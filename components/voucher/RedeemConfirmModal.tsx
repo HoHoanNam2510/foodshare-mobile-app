@@ -49,11 +49,11 @@ export default function RedeemConfirmModal({
       >
         <Pressable onPress={(e) => e.stopPropagation()}>
           <View
-            className="bg-neutral-T100 rounded-3xl mx-6 p-6 gap-5"
+            className="bg-neutral-T100 mx-6 gap-5 rounded-3xl p-6"
             style={{ minWidth: 300, maxWidth: 360 }}
           >
             {/* Title */}
-            <Text className="font-sans font-bold text-xl text-neutral-T10 text-center">
+            <Text className="text-neutral-T10 text-center font-sans text-xl font-bold">
               {t('voucher.redeemConfirmTitle')}
             </Text>
 
@@ -64,32 +64,33 @@ export default function RedeemConfirmModal({
                 discountValue={voucher.discountValue}
                 size="lg"
               />
-              <Text className="font-sans font-bold text-base text-neutral-T10 text-center">
+              <Text className="text-neutral-T10 text-center font-sans text-base font-bold">
                 {voucher.code} — {voucher.title}
               </Text>
             </View>
 
             {/* Points Summary */}
-            <View className="bg-neutral-T95 rounded-2xl p-4 gap-2">
+            <View className="bg-neutral-T95 gap-2 rounded-2xl p-4">
               <View className="flex-row items-center justify-between">
-                <Text className="font-label text-sm text-neutral-T50">
+                <Text className="font-label text-neutral-T50 text-sm">
                   {t('voucher.youWillUse')}
                 </Text>
                 <View className="flex-row items-center gap-1">
                   <Text className="text-sm">🍃</Text>
-                  <Text className="font-label font-semibold text-sm text-error">
-                    {voucher.pointCost.toLocaleString()} {t('voucher.pointsUnit')}
+                  <Text className="font-label text-error text-sm font-semibold">
+                    {voucher.pointCost.toLocaleString()}{' '}
+                    {t('voucher.pointsUnit')}
                   </Text>
                 </View>
               </View>
-              <View className="h-px bg-neutral-T90" />
+              <View className="bg-neutral-T90 h-px" />
               <View className="flex-row items-center justify-between">
-                <Text className="font-label text-sm text-neutral-T50">
+                <Text className="font-label text-neutral-T50 text-sm">
                   {t('voucher.pointsRemaining')}
                 </Text>
                 <View className="flex-row items-center gap-1">
                   <Text className="text-sm">🍃</Text>
-                  <Text className="font-label font-semibold text-sm text-primary-T40">
+                  <Text className="font-label text-primary-T40 text-sm font-semibold">
                     {pointsAfter.toLocaleString()} {t('voucher.pointsUnit')}
                   </Text>
                 </View>
@@ -99,17 +100,17 @@ export default function RedeemConfirmModal({
             {/* Actions */}
             <View className="flex-row gap-3">
               <TouchableOpacity
-                className="flex-1 h-12 rounded-xl bg-neutral-T95 border border-neutral-T80 items-center justify-center"
+                className="bg-neutral-T95 border-neutral-T80 h-12 flex-1 items-center justify-center rounded-xl border"
                 onPress={onClose}
                 disabled={isLoading}
                 activeOpacity={0.8}
               >
-                <Text className="font-label font-semibold text-neutral-T40">
+                <Text className="font-label text-neutral-T40 font-semibold">
                   {t('common.cancel')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                className="flex-1 h-12 rounded-xl bg-primary-T40 items-center justify-center"
+                className="bg-primary-T40 h-12 flex-1 items-center justify-center rounded-xl"
                 onPress={onConfirm}
                 disabled={isLoading}
                 activeOpacity={0.85}
@@ -117,7 +118,7 @@ export default function RedeemConfirmModal({
                 {isLoading ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
-                  <Text className="font-label font-semibold text-neutral-T100">
+                  <Text className="font-label text-neutral-T100 font-semibold">
                     {t('voucher.confirmRedeemBtn')}
                   </Text>
                 )}

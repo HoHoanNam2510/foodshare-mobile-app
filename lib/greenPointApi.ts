@@ -95,7 +95,12 @@ export async function getLeaderboardApi(params?: {
       period: raw.period ?? params?.period ?? 'weekly',
       role: raw.role ?? params?.role ?? 'ALL',
       entries: (raw.leaderboard ?? []).map(
-        (e: { rank: number; periodPoints?: number; points?: number; user: LeaderboardEntry['user'] }) => ({
+        (e: {
+          rank: number;
+          periodPoints?: number;
+          points?: number;
+          user: LeaderboardEntry['user'];
+        }) => ({
           rank: e.rank,
           points: e.periodPoints ?? e.points ?? 0,
           user: e.user,

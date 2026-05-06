@@ -21,9 +21,9 @@ export type PaymentMethod = 'FREE' | 'BANK_TRANSFER';
 
 export interface ITransaction {
   _id: string;
-  postId: ITransactionPost | null;  // populated; null if post was deleted
+  postId: ITransactionPost | null; // populated; null if post was deleted
   requesterId: string | ITransactionRequester; // string in list, populated object in detail
-  ownerId: string;            // ObjectId string — người cho / cửa hàng
+  ownerId: string; // ObjectId string — người cho / cửa hàng
   type: 'REQUEST' | 'ORDER';
   quantity: number;
   status: TransactionStatus;
@@ -88,7 +88,10 @@ export async function createRequestApi(
   postId: string,
   quantity: number
 ): Promise<{ success: boolean; message: string; data: ITransaction }> {
-  const { data } = await api.post('/transactions/requests', { postId, quantity });
+  const { data } = await api.post('/transactions/requests', {
+    postId,
+    quantity,
+  });
   return data;
 }
 
@@ -121,7 +124,9 @@ export async function respondToRequestApi(
   transactionId: string,
   response: 'ACCEPT' | 'REJECT'
 ): Promise<{ success: boolean; message: string; data: ITransactionAsOwner }> {
-  const { data } = await api.patch(`/transactions/${transactionId}/respond`, { response });
+  const { data } = await api.patch(`/transactions/${transactionId}/respond`, {
+    response,
+  });
   return data;
 }
 
@@ -145,6 +150,8 @@ export async function scanQrApi(verificationCode: string): Promise<{
 export async function confirmReceiptApi(
   transactionId: string
 ): Promise<{ success: boolean; message: string; data: ITransaction }> {
-  const { data } = await api.patch(`/transactions/${transactionId}/confirm-receipt`);
+  const { data } = await api.patch(
+    `/transactions/${transactionId}/confirm-receipt`
+  );
   return data;
 }

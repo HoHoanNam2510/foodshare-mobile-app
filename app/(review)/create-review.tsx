@@ -120,7 +120,7 @@ export default function CreateReviewScreen() {
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <View className="flex-1 bg-neutral">
+    <View className="bg-neutral flex-1">
       <StatusBar
         barStyle="dark-content"
         backgroundColor="transparent"
@@ -143,14 +143,14 @@ export default function CreateReviewScreen() {
           {/* ── Context info ── */}
           {(revieweeName || reviewerName) && (
             <View
-              className="mx-4 mt-4 bg-neutral-T100 rounded-2xl p-4 gap-2"
+              className="bg-neutral-T100 mx-4 mt-4 gap-2 rounded-2xl p-4"
               style={styles.card}
             >
               <View className="flex-row items-center gap-2">
-                <View className="w-7 h-7 rounded-lg bg-primary-T95 items-center justify-center">
+                <View className="bg-primary-T95 h-7 w-7 items-center justify-center rounded-lg">
                   <MaterialIcons name="rate-review" size={15} color="#296C24" />
                 </View>
-                <Text className="font-label font-semibold text-sm text-neutral-T50">
+                <Text className="font-label text-neutral-T50 text-sm font-semibold">
                   {isEditMode
                     ? t('review.editingContext')
                     : t('review.reviewingContext')}
@@ -158,7 +158,7 @@ export default function CreateReviewScreen() {
               </View>
               <Text
                 style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
-                className="text-base text-neutral-T10"
+                className="text-neutral-T10 text-base"
               >
                 {revieweeName ?? reviewerName ?? '—'}
               </Text>
@@ -167,12 +167,12 @@ export default function CreateReviewScreen() {
 
           {/* ── Star Picker ── */}
           <View
-            className="mx-4 mt-4 bg-neutral-T100 rounded-2xl p-5 gap-4 items-center"
+            className="bg-neutral-T100 mx-4 mt-4 items-center gap-4 rounded-2xl p-5"
             style={styles.card}
           >
             <Text
               style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
-              className="text-base text-neutral-T10"
+              className="text-neutral-T10 text-base"
             >
               {t('review.selectSatisfaction')}
             </Text>
@@ -181,18 +181,18 @@ export default function CreateReviewScreen() {
 
             {ratingMeta ? (
               <View
-                className="px-4 py-1.5 rounded-full"
+                className="rounded-full px-4 py-1.5"
                 style={{ backgroundColor: `${ratingMeta.color}15` }}
               >
                 <Text
-                  className="font-label font-semibold text-sm"
+                  className="font-label text-sm font-semibold"
                   style={{ color: ratingMeta.color }}
                 >
                   {t(ratingMeta.labelKey)}
                 </Text>
               </View>
             ) : (
-              <Text className="font-body text-sm text-neutral-T70">
+              <Text className="font-body text-neutral-T70 text-sm">
                 {t('review.tapStarHint')}
               </Text>
             )}
@@ -202,16 +202,16 @@ export default function CreateReviewScreen() {
           <View className="mx-4 mt-4 gap-2">
             <Text
               style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
-              className="text-base text-neutral-T10"
+              className="text-neutral-T10 text-base"
             >
               {t('review.feedbackOptionalTitle')}
             </Text>
-            <Text className="font-body text-sm text-neutral-T50 -mt-1">
+            <Text className="font-body text-neutral-T50 -mt-1 text-sm">
               {t('review.feedbackHint')}
             </Text>
 
             <View
-              className="bg-neutral-T100 rounded-2xl overflow-hidden"
+              className="bg-neutral-T100 overflow-hidden rounded-2xl"
               style={styles.card}
             >
               <TextInput
@@ -228,8 +228,8 @@ export default function CreateReviewScreen() {
                 ]}
                 className="text-neutral-T10 text-sm"
               />
-              <View className="px-4 pb-3 flex-row justify-end">
-                <Text className="font-label text-xs text-neutral-T70">
+              <View className="flex-row justify-end px-4 pb-3">
+                <Text className="font-label text-neutral-T70 text-xs">
                   {t('review.charCount', { count: feedback.trim().length })}
                 </Text>
               </View>
@@ -238,14 +238,14 @@ export default function CreateReviewScreen() {
 
           {/* ── GreenPoints incentive (create-mode only) ── */}
           {!isEditMode && (
-            <View className="mx-4 mt-4 flex-row gap-2 p-3 bg-primary-T95 rounded-xl items-start">
+            <View className="bg-primary-T95 mx-4 mt-4 flex-row items-start gap-2 rounded-xl p-3">
               <MaterialIcons
                 name="eco"
                 size={16}
                 color="#296C24"
                 style={{ marginTop: 1 }}
               />
-              <Text className="font-body text-xs text-primary-T30 flex-1 leading-4">
+              <Text className="font-body text-primary-T30 flex-1 text-xs leading-4">
                 {t('review.greenPointsIncentive')}
               </Text>
             </View>
@@ -253,7 +253,7 @@ export default function CreateReviewScreen() {
 
           {/* ── Edit warning ── */}
           {isEditMode && (
-            <View className="mx-4 mt-4 flex-row gap-2 p-3 bg-amber-50 rounded-xl items-start">
+            <View className="mx-4 mt-4 flex-row items-start gap-2 rounded-xl bg-amber-50 p-3">
               <MaterialIcons
                 name="info-outline"
                 size={16}
@@ -270,14 +270,14 @@ export default function CreateReviewScreen() {
           )}
 
           {/* ── Integrity policy ── */}
-          <View className="mx-4 mt-4 flex-row gap-2 p-3 bg-red-50 rounded-xl items-start">
+          <View className="mx-4 mt-4 flex-row items-start gap-2 rounded-xl bg-red-50 p-3">
             <MaterialIcons
               name="gpp-good"
               size={16}
               color="#ba1a1a"
               style={{ marginTop: 1 }}
             />
-            <Text className="font-body text-xs text-error flex-1 leading-4">
+            <Text className="font-body text-error flex-1 text-xs leading-4">
               {t('review.integrityPolicy')}
             </Text>
           </View>
@@ -286,14 +286,14 @@ export default function CreateReviewScreen() {
 
       {/* ── Submit Button ── */}
       <View
-        className="absolute bottom-0 left-0 right-0 bg-neutral-T100 px-4 pt-3 border-t border-neutral-T90"
+        className="bg-neutral-T100 border-neutral-T90 absolute bottom-0 left-0 right-0 border-t px-4 pt-3"
         style={{ paddingBottom: insets.bottom + 12 }}
       >
         <TouchableOpacity
           onPress={handleSubmit}
           disabled={!canSubmit}
           activeOpacity={0.85}
-          className="h-14 rounded-xl items-center justify-center flex-row gap-2"
+          className="h-14 flex-row items-center justify-center gap-2 rounded-xl"
           style={{ backgroundColor: canSubmit ? '#296C24' : '#E0E0E0' }}
         >
           {isSubmitting ? (
@@ -306,7 +306,7 @@ export default function CreateReviewScreen() {
                 color={canSubmit ? '#FFFFFF' : '#AAABAB'}
               />
               <Text
-                className="font-label font-semibold text-base"
+                className="font-label text-base font-semibold"
                 style={{ color: canSubmit ? '#FFFFFF' : '#AAABAB' }}
               >
                 {isEditMode ? t('review.saveBtn') : t('review.submitBtn')}

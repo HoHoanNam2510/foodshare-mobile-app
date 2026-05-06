@@ -54,14 +54,14 @@ function NotificationCard({ item, onPress }: CardProps) {
     <TouchableOpacity
       onPress={() => onPress(item)}
       activeOpacity={0.75}
-      className="flex-row items-start gap-3 px-4 py-3 bg-white"
+      className="flex-row items-start gap-3 bg-white px-4 py-3"
       style={
         !item.isRead
           ? { borderLeftWidth: 3, borderLeftColor: '#2A7C6E' }
           : undefined
       }
     >
-      <View className="w-10 h-10 rounded-full bg-neutral-T95 items-center justify-center mt-0.5 shrink-0">
+      <View className="bg-neutral-T95 mt-0.5 h-10 w-10 shrink-0 items-center justify-center rounded-full">
         {getNotificationIcon(item.type)}
       </View>
 
@@ -77,16 +77,16 @@ function NotificationCard({ item, onPress }: CardProps) {
         >
           {item.title}
         </Text>
-        <Text className="text-neutral-T30 text-sm mt-0.5" numberOfLines={2}>
+        <Text className="text-neutral-T30 mt-0.5 text-sm" numberOfLines={2}>
           {item.body}
         </Text>
-        <Text className="text-neutral-T50 text-xs mt-1">
+        <Text className="text-neutral-T50 mt-1 text-xs">
           {formatRelativeTime(item.createdAt)}
         </Text>
       </View>
 
       {!item.isRead && (
-        <View className="w-2 h-2 rounded-full bg-primary-T40 mt-2 shrink-0" />
+        <View className="bg-primary-T40 mt-2 h-2 w-2 shrink-0 rounded-full" />
       )}
     </TouchableOpacity>
   );
@@ -137,13 +137,13 @@ export default function NotificationsScreen() {
   );
 
   const renderSeparator = useCallback(
-    () => <View className="h-px bg-neutral-T95 mx-4" />,
+    () => <View className="bg-neutral-T95 mx-4 h-px" />,
     []
   );
 
   const renderEmpty = useCallback(
     () => (
-      <View className="flex-1 items-center justify-center py-20 gap-3">
+      <View className="flex-1 items-center justify-center gap-3 py-20">
         <Feather name="bell-off" size={48} color="#B0BAC0" />
         <Text className="text-neutral-T50 text-base">
           Chưa có thông báo nào
@@ -165,16 +165,16 @@ export default function NotificationsScreen() {
     unreadCount > 0 ? (
       <TouchableOpacity
         onPress={markAllAsRead}
-        className="w-10 h-10 items-center justify-center active:opacity-70"
+        className="h-10 w-10 items-center justify-center active:opacity-70"
       >
         <Feather name="check-circle" size={20} color="#2A7C6E" />
       </TouchableOpacity>
     ) : (
-      <View className="w-10 h-10" />
+      <View className="h-10 w-10" />
     );
 
   return (
-    <SafeAreaView edges={['bottom']} className="flex-1 bg-neutral-T98">
+    <SafeAreaView edges={['bottom']} className="bg-neutral-T98 flex-1">
       <StackHeader title="Thông báo" rightElement={markAllButton} />
 
       <FlatList

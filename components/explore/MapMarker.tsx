@@ -12,7 +12,7 @@ export function PriceMarker({ price, isActive, onPress }: PriceMarkerProps) {
   return (
     <TouchableOpacity activeOpacity={0.85} onPress={onPress}>
       <View
-        className={`px-3 py-1.5 rounded-full ${
+        className={`rounded-full px-3 py-1.5 ${
           isActive ? 'bg-primary-T40' : 'bg-neutral-T100'
         }`}
         style={{
@@ -24,7 +24,7 @@ export function PriceMarker({ price, isActive, onPress }: PriceMarkerProps) {
         }}
       >
         <Text
-          className={`text-xs font-label ${
+          className={`font-label text-xs ${
             isActive ? 'text-neutral-T100' : 'text-primary-T40'
           }`}
           style={{ fontWeight: '700' }}
@@ -34,7 +34,7 @@ export function PriceMarker({ price, isActive, onPress }: PriceMarkerProps) {
       </View>
       {/* Stem */}
       <View
-        className={`w-px h-2 mx-auto ${
+        className={`mx-auto h-2 w-px ${
           isActive ? 'bg-primary-T40' : 'bg-neutral-T100'
         }`}
       />
@@ -51,7 +51,7 @@ export function IconMarker({ isActive, onPress }: IconMarkerProps) {
   return (
     <TouchableOpacity activeOpacity={0.85} onPress={onPress}>
       <View
-        className={`p-2.5 rounded-full ${
+        className={`rounded-full p-2.5 ${
           isActive ? 'bg-primary-T40' : 'bg-neutral-T100'
         }`}
         style={{
@@ -70,7 +70,7 @@ export function IconMarker({ isActive, onPress }: IconMarkerProps) {
       </View>
       {/* Stem */}
       <View
-        className={`w-px h-2 mx-auto ${
+        className={`mx-auto h-2 w-px ${
           isActive ? 'bg-primary-T40' : 'bg-neutral-T100'
         }`}
       />

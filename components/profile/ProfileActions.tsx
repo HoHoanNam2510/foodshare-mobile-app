@@ -23,7 +23,7 @@ export default function ProfileActions({
     <View className="gap-3 pt-4">
       {showRegisterStore && (
         <TouchableOpacity
-          className={`h-14 rounded-xl border flex-row items-center justify-center gap-2 ${
+          className={`h-14 flex-row items-center justify-center gap-2 rounded-xl border ${
             storeRegistrationPending
               ? 'bg-neutral-T95 border-neutral-T80'
               : 'bg-secondary-T95 border-secondary-T70 active:scale-[0.98]'
@@ -48,19 +48,23 @@ export default function ProfileActions({
       )}
 
       <TouchableOpacity
-        className="h-14 rounded-xl bg-primary-T95 border border-primary-T70 flex-row items-center justify-center gap-2 active:scale-[0.98]"
+        className="bg-primary-T95 border-primary-T70 h-14 flex-row items-center justify-center gap-2 rounded-xl border active:scale-[0.98]"
         onPress={onEditProfile}
         activeOpacity={0.8}
       >
         <MaterialIcons name="edit" size={20} color="#296C24" />
-        <Text className="font-label font-semibold text-primary-T40">
+        <Text className="font-label text-primary-T40 font-semibold">
           {t('profile.editProfile')}
         </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        className="h-14 rounded-xl flex-row items-center justify-center gap-2 active:scale-[0.98]"
-        style={{ backgroundColor: 'rgba(220,38,38,0.06)', borderWidth: 1, borderColor: 'rgba(220,38,38,0.2)' }}
+        className="h-14 flex-row items-center justify-center gap-2 rounded-xl active:scale-[0.98]"
+        style={{
+          backgroundColor: 'rgba(220,38,38,0.06)',
+          borderWidth: 1,
+          borderColor: 'rgba(220,38,38,0.2)',
+        }}
         onPress={onDeleteAccount}
         activeOpacity={0.8}
       >

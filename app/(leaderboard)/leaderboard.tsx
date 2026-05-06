@@ -48,22 +48,22 @@ function SummaryCard({
 }) {
   const { t } = useTranslation();
   return (
-    <View className="flex-1 bg-white rounded-2xl p-3 border border-primary-T80">
-      <Text className="font-label text-xs text-primary-T40 mb-1">{title}</Text>
+    <View className="border-primary-T80 flex-1 rounded-2xl border bg-white p-3">
+      <Text className="font-label text-primary-T40 mb-1 text-xs">{title}</Text>
       {item ? (
         <>
           <Text
-            className="font-sans text-base text-primary-T20"
+            className="text-primary-T20 font-sans text-base"
             style={{ fontWeight: '700' }}
           >
             #{item.rank}
           </Text>
-          <Text className="font-body text-xs text-primary-T40">
+          <Text className="font-body text-primary-T40 text-xs">
             {item.points} {t('leaderboard.pointsUnit')}
           </Text>
         </>
       ) : (
-        <Text className="font-body text-xs text-primary-T50">
+        <Text className="font-body text-primary-T50 text-xs">
           {t('leaderboard.noData')}
         </Text>
       )}
@@ -254,10 +254,10 @@ export default function LeaderboardScreen() {
   );
 
   return (
-    <View className="flex-1 bg-neutral-T100">
+    <View className="bg-neutral-T100 flex-1">
       <StackHeader title={t('leaderboard.greenPointsLeaderboard')} />
 
-      <View className="px-4 pt-3 gap-3">
+      <View className="gap-3 px-4 pt-3">
         {/* Period filter */}
         <View className="flex-row gap-2">
           {PERIOD_OPTIONS.map((opt) => {
@@ -265,7 +265,7 @@ export default function LeaderboardScreen() {
             return (
               <TouchableOpacity
                 key={opt.value}
-                className={`px-3 py-2 rounded-full border ${
+                className={`rounded-full border px-3 py-2 ${
                   active
                     ? 'bg-primary-T95 border-primary-T80'
                     : 'bg-neutral-T100 border-neutral-T90'
@@ -289,7 +289,7 @@ export default function LeaderboardScreen() {
             return (
               <TouchableOpacity
                 key={opt.value}
-                className={`px-3 py-2 rounded-full border ${
+                className={`rounded-full border px-3 py-2 ${
                   active
                     ? 'bg-secondary-T95 border-secondary-T80'
                     : 'bg-neutral-T100 border-neutral-T90'
@@ -307,9 +307,9 @@ export default function LeaderboardScreen() {
         </View>
 
         {/* My ranking summary */}
-        <View className="bg-primary-T95 border border-primary-T80 rounded-2xl p-3">
+        <View className="bg-primary-T95 border-primary-T80 rounded-2xl border p-3">
           <Text
-            className="font-sans text-sm text-primary-T20 mb-2"
+            className="text-primary-T20 mb-2 font-sans text-sm"
             style={{ fontWeight: '700' }}
           >
             {t('leaderboard.yourRank')}
@@ -361,7 +361,7 @@ export default function LeaderboardScreen() {
           }
           ListHeaderComponent={
             entries.length > 0 ? (
-              <Text className="font-label text-xs text-neutral-T50 mb-3">
+              <Text className="font-label text-neutral-T50 mb-3 text-xs">
                 {t('leaderboard.topNUsers', { count: entries.length })}
               </Text>
             ) : null
@@ -375,7 +375,7 @@ export default function LeaderboardScreen() {
           }
           ListFooterComponent={
             entries.length > 0 ? (
-              <Text className="font-body text-xs text-neutral-T60 text-center mt-2">
+              <Text className="font-body text-neutral-T60 mt-2 text-center text-xs">
                 {t('leaderboard.showingTop', { count: entries.length })}
               </Text>
             ) : null

@@ -70,7 +70,11 @@ export async function createReviewApi(
 export async function getMyWrittenReviewsApi(params?: {
   page?: number;
   limit?: number;
-}): Promise<{ success: boolean; data: IWrittenReview[]; pagination: PaginationMeta }> {
+}): Promise<{
+  success: boolean;
+  data: IWrittenReview[];
+  pagination: PaginationMeta;
+}> {
   const { data } = await api.get('/reviews/me', { params });
   return data;
 }
@@ -80,7 +84,11 @@ export async function getMyWrittenReviewsApi(params?: {
 export async function getUserReviewsApi(
   userId: string,
   params?: { page?: number; limit?: number; sort?: string }
-): Promise<{ success: boolean; data: IReceivedReview[]; pagination: PaginationMeta }> {
+): Promise<{
+  success: boolean;
+  data: IReceivedReview[];
+  pagination: PaginationMeta;
+}> {
   const { data } = await api.get(`/reviews/users/${userId}`, { params });
   return data;
 }

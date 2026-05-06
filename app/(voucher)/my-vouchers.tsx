@@ -62,19 +62,19 @@ export default function MyVouchersScreen() {
   };
 
   return (
-    <View className="flex-1 bg-neutral">
+    <View className="bg-neutral flex-1">
       <ManagementHeader
         title={t('voucher.myVouchersTitle')}
         onBack={() => router.back()}
       />
 
       {/* ── Tab Bar ── */}
-      <View className="flex-row m-4 bg-neutral-T95 rounded-xl p-1">
+      <View className="bg-neutral-T95 m-4 flex-row rounded-xl p-1">
         {TABS(t).map((tab) => (
           <TouchableOpacity
             key={tab.value}
             onPress={() => handleTabChange(tab.value)}
-            className={`flex-1 py-2.5 rounded-lg items-center ${
+            className={`flex-1 items-center rounded-lg py-2.5 ${
               activeTab === tab.value ? 'bg-neutral-T100' : ''
             }`}
             activeOpacity={0.8}
@@ -107,7 +107,7 @@ export default function MyVouchersScreen() {
       {isLoading ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-sm text-neutral-T50">
+          <Text className="font-body text-neutral-T50 text-sm">
             {t('common.loading')}
           </Text>
         </View>
@@ -123,19 +123,19 @@ export default function MyVouchersScreen() {
           }}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <View className="items-center justify-center py-20 gap-3">
+            <View className="items-center justify-center gap-3 py-20">
               <MaterialIcons name="wallet" size={48} color="#C5C7C6" />
-              <Text className="font-body text-sm text-neutral-T50 text-center">
+              <Text className="font-body text-neutral-T50 text-center text-sm">
                 {t('voucher.emptyWalletTitle')}
                 {'\n'}
                 {t('voucher.emptyWalletDesc')}
               </Text>
               <TouchableOpacity
                 onPress={() => router.push('/(voucher)/voucher-market' as any)}
-                className="px-6 py-3 bg-primary-T40 rounded-xl"
+                className="bg-primary-T40 rounded-xl px-6 py-3"
                 activeOpacity={0.85}
               >
-                <Text className="font-label font-semibold text-neutral-T100">
+                <Text className="font-label text-neutral-T100 font-semibold">
                   {t('voucher.goToMarket')}
                 </Text>
               </TouchableOpacity>
