@@ -19,6 +19,7 @@ import BadgesRow from '@/components/profile/BadgesRow';
 import ContactCard from '@/components/profile/ContactCard';
 import IdentityCard from '@/components/profile/IdentityCard';
 import ProfileActions from '@/components/profile/ProfileActions';
+import StatisticsCard from '@/components/profile/StatisticsCard';
 import MainHeader from '@/components/shared/headers/MainHeader';
 import RecentPosts, { Post } from '@/components/profile/RecentPosts';
 import StoreDetailsCard from '@/components/profile/StoreDetailsCard';
@@ -104,7 +105,7 @@ export default function ProfileScreen() {
       setShowRejectionModal(true);
       rejectionShownRef.current = true;
     }
-  }, [user?.kycStatus, user?.kycDocuments?.length]);
+  }, [user?.kycStatus, user?.kycDocuments, user?.role]);
 
   const handleDeleteAccountConfirm = async () => {
     if (
@@ -371,6 +372,8 @@ export default function ProfileScreen() {
             isLoading={badgesLoading}
             onSeeAll={() => router.push('/(profile)/badges' as any)}
           />
+
+          <StatisticsCard />
 
           <RecentPosts posts={myPosts} />
 

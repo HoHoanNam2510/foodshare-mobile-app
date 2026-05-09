@@ -124,7 +124,8 @@
     "myVouchers": "Ví Voucher",
     "pointHistory": "Lịch sử điểm",
     "leaderboard": "Bảng xếp hạng điểm xanh",
-    "myTrash": "Thùng rác"
+    "myTrash": "Thùng rác",
+    "statistics": "Thống kê"
   },
   "trash": {
     "title": "Thùng rác của bạn",
@@ -948,6 +949,28 @@
     "noRankingData": "Chưa có dữ liệu xếp hạng",
     "topNUsers": "Top {{count}} người dùng xuất sắc nhất",
     "showingTop": "Hiển thị top {{count}} — Làm mới để cập nhật"
+  },
+  "statistics": {
+    "title": "Thống kê của tôi",
+    "totalGiven": "Đã cho",
+    "totalReceived": "Đã nhận",
+    "totalRevenue": "Doanh số",
+    "greenPointsEarned": "GreenPoints tích lũy",
+    "topItems": "Món nhiều nhất",
+    "topCounterparts": "Đối tác nhiều nhất",
+    "compare": "So sánh",
+    "range": {
+      "7d": "7 ngày",
+      "30d": "30 ngày",
+      "12m": "12 tháng",
+      "custom": "Tùy chỉnh"
+    },
+    "empty": {
+      "noData": "Chưa có dữ liệu",
+      "emptyRange": "Không có dữ liệu trong khoảng thời gian này",
+      "error": "Lỗi tải dữ liệu"
+    },
+    "viewDetail": "Xem chi tiết"
   },
   "errors": {
     "networkError": "Lỗi kết nối mạng",

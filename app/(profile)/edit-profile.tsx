@@ -73,14 +73,15 @@ export default function EditProfile() {
 
   const isStore = user?.role === 'STORE';
 
-  // Reverse geocode existing location on mount
+  const initialLng = user?.location?.coordinates[0];
+  const initialLat = user?.location?.coordinates[1];
+
   useEffect(() => {
-    if (!user?.location) return;
-    const [lng, lat] = user.location.coordinates;
-    reverseGeocode(lat, lng).then((addr) => {
+    if (initialLng == null || initialLat == null) return;
+    reverseGeocode(initialLat, initialLng).then((addr) => {
       if (addr) setLocationLabel(addr);
     });
-  }, []);
+  }, [initialLng, initialLat]);
 
   const handlePickAvatar = async (): Promise<void> => {
     const uri = await pickImage({ allowsEditing: true, aspect: [1, 1] });

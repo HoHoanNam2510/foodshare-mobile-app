@@ -283,6 +283,11 @@ export default function MenuDrawer() {
             label={t('menu.leaderboard')}
             onPress={() => navigate('/(leaderboard)/leaderboard')}
           />
+          <MenuItem
+            icon="bar-chart"
+            label={t('menu.statistics')}
+            onPress={() => navigate('/(profile)/statistics')}
+          />
         </ScrollView>
 
         {/* ── Logout (pinned to bottom) ── */}
