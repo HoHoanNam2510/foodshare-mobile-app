@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollView, StatusBar, View } from 'react-native';
 
 import FilterPills from '../../components/home/FilterPills';
@@ -10,6 +10,8 @@ import MarketTeaser from '../../components/home/MarketTeaser';
 import MainHeader from '../../components/shared/headers/MainHeader';
 
 export default function HomeScreen() {
+  const [activeCategory, setActiveCategory] = useState<string>('all');
+
   return (
     <View className="bg-neutral flex-1">
       <StatusBar
@@ -26,13 +28,16 @@ export default function HomeScreen() {
         }}
         className="flex-1"
       >
-        <FilterPills />
+        <FilterPills
+          activeCategory={activeCategory}
+          onCategoryChange={setActiveCategory}
+        />
         <View className="mt-5">
           <HeroBanner />
         </View>
         <GuideSection />
-        <FreshlyShared />
-        <MarketTeaser />
+        <FreshlyShared activeCategory={activeCategory} />
+        <MarketTeaser activeCategory={activeCategory} />
         <ImpactBanner />
       </ScrollView>
     </View>

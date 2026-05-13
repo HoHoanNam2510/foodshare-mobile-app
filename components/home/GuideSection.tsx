@@ -1,9 +1,13 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-const GUIDE_CARD_CONFIGS = [
+import GuideSectionModal from './GuideSectionModal';
+
+type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
+
+const GUIDE_CARD_CONFIGS: { id: string; icon: IconName; labelKey: string }[] = [
   { id: 'g1', icon: 'shield-check', labelKey: 'home.guideSafety' },
   { id: 'g2', icon: 'truck-fast', labelKey: 'home.guideFastPickup' },
   { id: 'g3', icon: 'leaf', labelKey: 'home.guideReduceWaste' },
@@ -12,6 +16,8 @@ const GUIDE_CARD_CONFIGS = [
 
 export default function GuideSection() {
   const { t } = useTranslation();
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
   return (
     <View className="mt-8">
       <View className="mb-1 px-5">
@@ -38,6 +44,7 @@ export default function GuideSection() {
           {GUIDE_CARD_CONFIGS.map((card, index) => (
             <TouchableOpacity
               key={card.id}
+              onPress={() => setSelectedIndex(index)}
               className={`bg-neutral-T100 justify-between rounded-2xl p-4 shadow-sm active:opacity-80 ${
                 index < GUIDE_CARD_CONFIGS.length - 1 ? 'mr-2.5' : ''
               }`}
@@ -45,7 +52,7 @@ export default function GuideSection() {
             >
               <View className="bg-primary-T95 h-10 w-10 items-center justify-center rounded-xl">
                 <MaterialCommunityIcons
-                  name={card.icon as any}
+                  name={card.icon}
                   size={22}
                   color="#296C24"
                 />
@@ -60,6 +67,11 @@ export default function GuideSection() {
           ))}
         </ScrollView>
       </View>
+
+      <GuideSectionModal
+        guideIndex={selectedIndex}
+        onClose={() => setSelectedIndex(null)}
+      />
     </View>
   );
 }
