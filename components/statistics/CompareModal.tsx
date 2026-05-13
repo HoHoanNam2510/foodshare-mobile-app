@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Modal } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, Modal, ScrollView } from 'react-native';
 import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { validateCompareRange } from '@/utils/statisticsHelpers';
+
+type PickerField = 'currentFrom' | 'currentTo' | 'compareFrom' | 'compareTo';
 
 interface CompareModalProps {
   visible: boolean;
@@ -20,6 +24,67 @@ interface CompareModalProps {
   initialCompareTo?: string;
 }
 
+function formatDate(date: Date | null): string {
+  if (!date) return 'Chọn ngày';
+  return date.toLocaleDateString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+}
+
+interface DateFieldProps {
+  label: string;
+  value: Date | null;
+  fieldKey: PickerField;
+  activePicker: PickerField | null;
+  onToggle: (field: PickerField) => void;
+  onChange: (event: DateTimePickerEvent, date?: Date) => void;
+}
+
+function DateField({
+  label,
+  value,
+  fieldKey,
+  activePicker,
+  onToggle,
+  onChange,
+}: DateFieldProps) {
+  const isActive = activePicker === fieldKey;
+  return (
+    <>
+      <Text className="font-body-semibold text-neutral-T50 mb-1 text-xs uppercase tracking-wide">
+        {label}
+      </Text>
+      <TouchableOpacity
+        className={`bg-neutral-T95 mb-1 h-14 flex-row items-center justify-between rounded-xl border px-4 ${
+          isActive ? 'border-primary' : 'border-neutral-T90'
+        }`}
+        onPress={() => onToggle(fieldKey)}
+      >
+        <Text
+          className={`font-body text-base ${value ? 'text-neutral-T10' : 'text-neutral-T50'}`}
+        >
+          {formatDate(value)}
+        </Text>
+        <MaterialIcons name="event" size={20} color="#AAABAB" />
+      </TouchableOpacity>
+      {isActive && (
+        <View className="mb-2" style={{ overflow: 'hidden', alignSelf: 'center' }}>
+          <DateTimePicker
+            value={value ?? new Date()}
+            mode="date"
+            display="spinner"
+            onChange={onChange}
+            themeVariant="light"
+            style={{ height: 180 }}
+          />
+        </View>
+      )}
+    </>
+  );
+}
+
 export default function CompareModal({
   visible,
   onClose,
@@ -30,26 +95,38 @@ export default function CompareModal({
   initialCompareTo,
 }: CompareModalProps) {
   const [currentFrom, setCurrentFrom] = useState<Date | null>(
-    initialCurrentFrom ? new Date(initialCurrentFrom) : null
+    initialCurrentFrom ? new Date(initialCurrentFrom) : null,
   );
   const [currentTo, setCurrentTo] = useState<Date | null>(
-    initialCurrentTo ? new Date(initialCurrentTo) : null
+    initialCurrentTo ? new Date(initialCurrentTo) : null,
   );
   const [compareFrom, setCompareFrom] = useState<Date | null>(
-    initialCompareFrom ? new Date(initialCompareFrom) : null
+    initialCompareFrom ? new Date(initialCompareFrom) : null,
   );
   const [compareTo, setCompareTo] = useState<Date | null>(
-    initialCompareTo ? new Date(initialCompareTo) : null
+    initialCompareTo ? new Date(initialCompareTo) : null,
   );
+  const [activePicker, setActivePicker] = useState<PickerField | null>(null);
+  const insets = useSafeAreaInsets();
+  const hasAutoSuggested = useRef(false);
 
-  const [showPicker, setShowPicker] = useState(false);
-  const [pickerMode, setPickerMode] = useState<
-    'currentFrom' | 'currentTo' | 'compareFrom' | 'compareTo'
-  >('currentFrom');
-
-  // Auto-suggest compare range when current range changes
+  // Re-sync state and reset auto-suggest flag each time the modal opens
   useEffect(() => {
-    if (currentFrom && currentTo) {
+    if (visible) {
+      setCurrentFrom(initialCurrentFrom ? new Date(initialCurrentFrom) : null);
+      setCurrentTo(initialCurrentTo ? new Date(initialCurrentTo) : null);
+      setCompareFrom(initialCompareFrom ? new Date(initialCompareFrom) : null);
+      setCompareTo(initialCompareTo ? new Date(initialCompareTo) : null);
+      setActivePicker(null);
+      hasAutoSuggested.current = false;
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible]);
+
+  // Auto-suggest compare range once, only when user hasn't manually edited it yet
+  useEffect(() => {
+    if (currentFrom && currentTo && !hasAutoSuggested.current) {
+      hasAutoSuggested.current = true;
       const duration = currentTo.getTime() - currentFrom.getTime();
       const compTo = new Date(currentFrom.getTime() - 24 * 60 * 60 * 1000);
       const compFrom = new Date(compTo.getTime() - duration);
@@ -58,10 +135,13 @@ export default function CompareModal({
     }
   }, [currentFrom, currentTo]);
 
-  const handleDateChange = (event: DateTimePickerEvent, date?: Date) => {
-    setShowPicker(false);
-    if (event.type === 'dismissed' || !date) return;
-    switch (pickerMode) {
+  const handleToggle = (field: PickerField) => {
+    setActivePicker((prev) => (prev === field ? null : field));
+  };
+
+  const handleDateChange = (_event: DateTimePickerEvent, date?: Date) => {
+    if (!date || !activePicker) return;
+    switch (activePicker) {
       case 'currentFrom':
         setCurrentFrom(date);
         break;
@@ -77,18 +157,6 @@ export default function CompareModal({
     }
   };
 
-  const openPicker = (
-    mode: 'currentFrom' | 'currentTo' | 'compareFrom' | 'compareTo'
-  ) => {
-    setPickerMode(mode);
-    setShowPicker(true);
-  };
-
-  const formatDate = (date: Date | null) => {
-    if (!date) return 'Chọn ngày';
-    return date.toLocaleDateString('vi-VN');
-  };
-
   const canApply =
     currentFrom &&
     currentTo &&
@@ -96,106 +164,85 @@ export default function CompareModal({
     compareTo &&
     validateCompareRange(
       { from: currentFrom, to: currentTo },
-      { from: compareFrom, to: compareTo }
+      { from: compareFrom, to: compareTo },
     );
 
   const handleApply = () => {
-    if (canApply) {
-      onApply({
-        from: currentFrom!.toISOString(),
-        to: currentTo!.toISOString(),
-        compareFrom: compareFrom!.toISOString(),
-        compareTo: compareTo!.toISOString(),
-      });
-    }
+    if (!canApply) return;
+    onApply({
+      from: currentFrom!.toISOString(),
+      to: currentTo!.toISOString(),
+      compareFrom: compareFrom!.toISOString(),
+      compareTo: compareTo!.toISOString(),
+    });
   };
 
-  const pickerValue =
-    pickerMode === 'currentFrom'
-      ? (currentFrom ?? new Date())
-      : pickerMode === 'currentTo'
-        ? (currentTo ?? new Date())
-        : pickerMode === 'compareFrom'
-          ? (compareFrom ?? new Date())
-          : (compareTo ?? new Date());
+  const fieldProps = { activePicker, onToggle: handleToggle, onChange: handleDateChange };
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <View className="flex-1 bg-white p-4">
-        <View className="mb-6 flex-row items-center justify-between">
+      <View className="flex-1 bg-white">
+        {/* Header — paddingTop accounts for status bar since SafeAreaView is unreliable in Modal on iOS */}
+        <View
+          className="border-neutral-T90 flex-row items-center border-b px-6"
+          style={{ paddingTop: insets.top + 12, paddingBottom: 12 }}
+        >
+          <TouchableOpacity onPress={onClose} className="mr-3">
+            <MaterialIcons name="arrow-back" size={24} color="#191C1C" />
+          </TouchableOpacity>
           <Text className="font-body-bold text-neutral-T10 text-xl">
             So sánh khoảng thời gian
           </Text>
-          <TouchableOpacity onPress={onClose}>
-            <Text className="text-primary font-body-semibold">Đóng</Text>
+        </View>
+
+        <ScrollView
+          className="flex-1 px-6"
+          contentContainerStyle={{ paddingTop: 20, paddingBottom: 40 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <Text className="font-body-bold text-neutral-T10 mb-4 text-base">Khoảng hiện tại</Text>
+          <DateField label="Từ ngày" value={currentFrom} fieldKey="currentFrom" {...fieldProps} />
+          <View className="mt-3">
+            <DateField label="Đến ngày" value={currentTo} fieldKey="currentTo" {...fieldProps} />
+          </View>
+
+          <View className="border-neutral-T90 my-5 border-t" />
+
+          <Text className="font-body-bold text-neutral-T10 mb-4 text-base">Khoảng so sánh</Text>
+          <DateField
+            label="Từ ngày"
+            value={compareFrom}
+            fieldKey="compareFrom"
+            {...fieldProps}
+          />
+          <View className="mt-3">
+            <DateField
+              label="Đến ngày"
+              value={compareTo}
+              fieldKey="compareTo"
+              {...fieldProps}
+            />
+          </View>
+        </ScrollView>
+
+        {/* Apply button */}
+        <View className="px-6" style={{ paddingBottom: Math.max(insets.bottom, 24) }}>
+          <TouchableOpacity
+            className={`h-14 items-center justify-center rounded-xl active:opacity-80 ${
+              canApply ? 'bg-primary-T40' : 'bg-neutral-T80'
+            }`}
+            onPress={handleApply}
+            disabled={!canApply}
+          >
+            <Text
+              className={`font-body-semibold text-base ${
+                canApply ? 'text-neutral-T100' : 'text-neutral-T50'
+              }`}
+            >
+              Áp dụng
+            </Text>
           </TouchableOpacity>
         </View>
-
-        {/* Current range */}
-        <View className="mb-6">
-          <Text className="font-body-semibold text-neutral-T20 mb-2 text-base">
-            Khoảng hiện tại
-          </Text>
-          <View className="flex-row gap-4">
-            <TouchableOpacity
-              className="border-neutral-T80 flex-1 rounded-lg border p-3"
-              onPress={() => openPicker('currentFrom')}
-            >
-              <Text className="text-neutral-T30 text-sm">
-                {formatDate(currentFrom)}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="border-neutral-T80 flex-1 rounded-lg border p-3"
-              onPress={() => openPicker('currentTo')}
-            >
-              <Text className="text-neutral-T30 text-sm">
-                {formatDate(currentTo)}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Compare range */}
-        <View className="mb-8">
-          <Text className="font-body-semibold text-neutral-T20 mb-2 text-base">
-            Khoảng so sánh
-          </Text>
-          <View className="flex-row gap-4">
-            <TouchableOpacity
-              className="border-neutral-T80 flex-1 rounded-lg border p-3"
-              onPress={() => openPicker('compareFrom')}
-            >
-              <Text className="text-neutral-T30 text-sm">
-                {formatDate(compareFrom)}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className="border-neutral-T80 flex-1 rounded-lg border p-3"
-              onPress={() => openPicker('compareTo')}
-            >
-              <Text className="text-neutral-T30 text-sm">
-                {formatDate(compareTo)}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <TouchableOpacity
-          className={`rounded-xl p-4 ${canApply ? 'bg-primary' : 'bg-neutral-T80'}`}
-          onPress={handleApply}
-          disabled={!canApply}
-        >
-          <Text className="font-body-bold text-center text-white">Áp dụng</Text>
-        </TouchableOpacity>
-
-        {showPicker && (
-          <DateTimePicker
-            value={pickerValue}
-            mode="date"
-            onChange={handleDateChange}
-          />
-        )}
       </View>
     </Modal>
   );

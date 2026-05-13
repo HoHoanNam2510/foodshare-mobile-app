@@ -18,21 +18,21 @@ export default function StatsSummaryCards({
       label: 'Đã cho',
       value: summary.totalGiven,
       deltaPct: comparison?.givenPct,
-      icon: 'arrow-upward',
+      icon: 'arrow-upward' as const,
     },
     {
       key: 'received',
       label: 'Đã nhận',
       value: summary.totalReceived,
       deltaPct: comparison?.receivedPct,
-      icon: 'arrow-downward',
+      icon: 'arrow-downward' as const,
     },
     {
       key: 'transactions',
       label: 'Tổng giao dịch',
       value: summary.txCount,
       deltaPct: null,
-      icon: 'receipt',
+      icon: 'receipt' as const,
     },
   ];
 
@@ -47,7 +47,7 @@ export default function StatsSummaryCards({
             <View className="flex-row items-center justify-between">
               <View className="bg-primary-T95 rounded-xl p-2">
                 <MaterialIcons
-                  name={card.icon as any}
+                  name={card.icon}
                   size={20}
                   color="#72B866"
                 />

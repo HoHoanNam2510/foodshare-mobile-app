@@ -269,6 +269,11 @@ export default function MenuDrawer() {
             onPress={() => navigate('/(voucher)/my-vouchers')}
           />
           <MenuItem
+            icon="bar-chart"
+            label={t('menu.statistics')}
+            onPress={() => navigate('/(statistics)/statistics')}
+          />
+          <MenuItem
             icon="delete"
             label={t('menu.myTrash')}
             onPress={() => navigate('/(trash)/trash')}
@@ -282,11 +287,6 @@ export default function MenuDrawer() {
             icon="leaderboard"
             label={t('menu.leaderboard')}
             onPress={() => navigate('/(leaderboard)/leaderboard')}
-          />
-          <MenuItem
-            icon="bar-chart"
-            label={t('menu.statistics')}
-            onPress={() => navigate('/(profile)/statistics')}
           />
         </ScrollView>
 
