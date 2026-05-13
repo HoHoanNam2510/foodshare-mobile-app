@@ -620,6 +620,8 @@
     "pendingForDonorDesc": "Go to the 'Incoming' tab to accept or reject this request.",
     "reviewCTATitle": "Leave a review",
     "reviewCTADesc": "Earn +2 GreenPoints and help the community trust each other more",
+    "reviewedCTATitle": "Already reviewed",
+    "reviewedCTADesc": "You have already left a review for this transaction",
     "reportSectionLabel": "Report",
     "reportTransactionTitle": "Report this transaction",
     "disputeModalTitle": "Dispute order",

@@ -70,6 +70,7 @@ export async function createReviewApi(
 export async function getMyWrittenReviewsApi(params?: {
   page?: number;
   limit?: number;
+  transactionId?: string;
 }): Promise<{
   success: boolean;
   data: IWrittenReview[];

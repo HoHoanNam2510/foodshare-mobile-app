@@ -2,6 +2,20 @@ import api from './axios';
 
 type UploadFolder = 'avatars' | 'posts' | 'kyc' | 'reports' | 'chat';
 
+const EXT_TO_MIME: Record<string, string> = {
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  webp: 'image/webp',
+  heic: 'image/heic',
+  heif: 'image/heif',
+};
+
+function getMimeType(uri: string): string {
+  const ext = /\.(\w+)$/.exec(uri.split('/').pop() ?? '')?.[1]?.toLowerCase();
+  return EXT_TO_MIME[ext ?? ''] ?? 'image/jpeg';
+}
+
 interface UploadResult {
   url: string;
   publicId: string;
@@ -33,13 +47,10 @@ export async function uploadImage(
   const formData = new FormData();
 
   const fileName = uri.split('/').pop() || 'image.jpg';
-  const match = /\.(\w+)$/.exec(fileName);
-  const mimeType = match ? `image/${match[1].toLowerCase()}` : 'image/jpeg';
-
   formData.append('image', {
     uri,
     name: fileName,
-    type: mimeType,
+    type: getMimeType(uri),
   } as unknown as Blob);
 
   const { data } = await api.post<UploadResponse>(
@@ -69,13 +80,10 @@ export async function uploadMultipleImages(
 
   for (const uri of uris) {
     const fileName = uri.split('/').pop() || 'image.jpg';
-    const match = /\.(\w+)$/.exec(fileName);
-    const mimeType = match ? `image/${match[1].toLowerCase()}` : 'image/jpeg';
-
     formData.append('images', {
       uri,
       name: fileName,
-      type: mimeType,
+      type: getMimeType(uri),
     } as unknown as Blob);
   }
 

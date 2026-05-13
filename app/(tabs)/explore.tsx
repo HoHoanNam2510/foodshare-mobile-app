@@ -1,7 +1,6 @@
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { StatusBar, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ExploreListView from '../../components/explore/ExploreListView';
 import ExploreMapView from '../../components/explore/ExploreMapView';
@@ -17,7 +16,6 @@ import { fetchExplorePosts } from '../../lib/exploreApi';
 
 export default function ExploreScreen() {
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [activeFilter, setActiveFilter] = useState<TypeFilter>('All');
   const [sortOption, setSortOption] = useState<SortOption>('newest');
@@ -59,6 +57,11 @@ export default function ExploreScreen() {
 
       <MainHeader />
 
+      {/* ── View Toggle — nằm ngay dưới header, căn giữa ── */}
+      <View className="bg-neutral-T100 border-neutral-T95 items-center border-b px-4 py-2">
+        <ViewToggle activeView={viewMode} onViewChange={setViewMode} />
+      </View>
+
       {/* ── Content ── */}
       <View className="flex-1">
         {viewMode === 'list' ? (
@@ -81,22 +84,6 @@ export default function ExploreScreen() {
         ) : (
           <ExploreMapView activeFilter={activeFilter} />
         )}
-      </View>
-
-      {/* ── Floating View Toggle ── */}
-      <View
-        className="absolute items-center"
-        style={{
-          // FAB visual top ≈ 75 + max(insets.bottom, 8) from screen bottom
-          // (outer paddingTop 18 + FAB top:10 + marginTop:-19 + content 56 = 75)
-          bottom: 75 + Math.max(insets.bottom, 8) + 16,
-          left: 0,
-          right: 0,
-          zIndex: 40,
-        }}
-        pointerEvents="box-none"
-      >
-        <ViewToggle activeView={viewMode} onViewChange={setViewMode} />
       </View>
     </View>
   );

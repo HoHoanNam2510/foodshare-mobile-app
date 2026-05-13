@@ -30,7 +30,11 @@ export interface ITransaction {
   paymentMethod: PaymentMethod;
   totalAmount?: number;
   verificationCode?: string;
-  paymentQR?: string;
+  bankSnapshot?: {
+    bankName?: string;
+    bankAccountNumber: string;
+    bankAccountName: string;
+  };
   createdAt: string;
   updatedAt: string;
 }

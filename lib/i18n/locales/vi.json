@@ -620,6 +620,8 @@
     "pendingForDonorDesc": "Vào tab \"Nhận yêu cầu\" để chấp nhận hoặc từ chối yêu cầu này.",
     "reviewCTATitle": "Để lại đánh giá",
     "reviewCTADesc": "Nhận +2 GreenPoints và giúp cộng đồng tin tưởng lẫn nhau hơn",
+    "reviewedCTATitle": "Đã đánh giá",
+    "reviewedCTADesc": "Bạn đã để lại đánh giá cho giao dịch này",
     "reportSectionLabel": "Báo cáo",
     "reportTransactionTitle": "Báo cáo giao dịch này",
     "disputeModalTitle": "Khiếu nại đơn hàng",

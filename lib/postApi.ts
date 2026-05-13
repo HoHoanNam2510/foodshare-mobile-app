@@ -54,12 +54,14 @@ interface CreatePostResponse {
 function extractErrorMessage(error: unknown, fallback: string): never {
   if (error instanceof AxiosError && error.response?.data) {
     const data = error.response.data;
-    // Nếu server trả về field-level errors (Zod validation)
+    // Field-level errors (Zod / Mongoose validation)
     if (Array.isArray(data.errors) && data.errors.length > 0) {
       throw new ApiValidationError(data.message || fallback, data.errors);
     }
-    if (data.message) {
-      throw new Error(data.message);
+    // Use data.error (detail) over data.message (generic) when available
+    const msg = data.error || data.message;
+    if (msg) {
+      throw new Error(msg);
     }
   }
   if (error instanceof Error) {

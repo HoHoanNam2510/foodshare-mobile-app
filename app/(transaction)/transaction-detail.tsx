@@ -1,13 +1,13 @@
 // app/(transaction)/transaction-detail.tsx
 import { MaterialIcons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import * as Clipboard from 'expo-clipboard';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Alert,
-  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -34,6 +34,7 @@ import {
   type TransactionStatus,
 } from '@/lib/transactionApi';
 import { getOrCreateConversationApi } from '@/lib/chatApi';
+import { getMyWrittenReviewsApi } from '@/lib/reviewApi';
 import { useAuthStore } from '@/stores/authStore';
 
 // ── Status config ─────────────────────────────────────────────────────────────
@@ -123,6 +124,49 @@ function InfoRow({
         <Text className="font-body text-neutral-T10 mt-0.5 text-sm font-semibold">
           {value}
         </Text>
+      </View>
+    </View>
+  );
+}
+
+function BankInfoRow({
+  label,
+  value,
+  copyable,
+  highlight,
+}: {
+  label: string;
+  value: string;
+  copyable?: boolean;
+  highlight?: 'blue' | 'orange';
+}) {
+  const valueColor =
+    highlight === 'blue'
+      ? '#1D4ED8'
+      : highlight === 'orange'
+        ? '#C2410C'
+        : undefined;
+
+  return (
+    <View className="flex-row items-center justify-between py-1">
+      <Text className="font-body text-neutral-T50 text-sm">{label}</Text>
+      <View className="flex-row items-center gap-2">
+        <Text
+          className="font-sans text-sm font-semibold"
+          style={valueColor ? { color: valueColor } : undefined}
+        >
+          {value}
+        </Text>
+        {copyable && (
+          <TouchableOpacity
+            onPress={async () => {
+              await Clipboard.setStringAsync(value);
+              Alert.alert('Đã sao chép', value);
+            }}
+          >
+            <MaterialIcons name="content-copy" size={15} color="#6B7280" />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -249,14 +293,10 @@ function DonorQrSection({ verificationCode }: { verificationCode: string }) {
 // ── QR Scan Section for Receiver ──────────────────────────────────────────────
 
 interface ReceiverScanSectionProps {
-  transactionId: string;
   onCompleted: () => void;
 }
 
-function ReceiverScanSection({
-  transactionId,
-  onCompleted,
-}: ReceiverScanSectionProps) {
+function ReceiverScanSection({ onCompleted }: ReceiverScanSectionProps) {
   const { t } = useTranslation();
   const [showCameraModal, setShowCameraModal] = useState(false);
   const [showManualModal, setShowManualModal] = useState(false);
@@ -510,6 +550,17 @@ export default function TransactionDetailScreen() {
   const [isCancelling, setIsCancelling] = useState(false);
   const [isChatting, setIsChatting] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
+  const [hasReviewed, setHasReviewed] = useState(false);
+
+  // checkHasReviewed declared first — load() calls it when COMPLETED
+  const checkHasReviewed = useCallback(async () => {
+    try {
+      const res = await getMyWrittenReviewsApi({ transactionId: id });
+      setHasReviewed(res.data.length > 0);
+    } catch {
+      /* silent */
+    }
+  }, [id]);
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -517,16 +568,76 @@ export default function TransactionDetailScreen() {
     try {
       const res = await getTransactionByIdApi(id);
       setTransaction(res.data);
+      // Always check review status when transaction is COMPLETED
+      if (res.data.status === 'COMPLETED') {
+        checkHasReviewed();
+      }
     } catch {
       setError(t('transaction.loadError'));
     } finally {
       setIsLoading(false);
     }
-  }, [id]);
+  }, [id, checkHasReviewed]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Primitive derived values — stable deps for the polling effect
+  const txStatus = transaction?.status;
+  const txType = transaction?.type;
+  const txOwnerId = transaction?.ownerId;
+  const txRequesterId = transaction
+    ? typeof transaction.requesterId === 'object'
+      ? transaction.requesterId._id
+      : (transaction.requesterId as string)
+    : undefined;
+  const currentUserId = currentUser?._id;
 
   useEffect(() => {
     load();
   }, [load]);
+
+  // Poll every 3s for the passive party (P2P donor / B2C buyer) while ACCEPTED.
+  // Calls checkHasReviewed directly when COMPLETED is detected — no intermediate useEffect chain.
+  useEffect(() => {
+    if (txStatus !== 'ACCEPTED' || !currentUserId) return;
+
+    const isP2P = txType === 'REQUEST';
+    const isPassiveParty =
+      (isP2P && currentUserId === txOwnerId) ||
+      (!isP2P && currentUserId === txRequesterId);
+
+    if (!isPassiveParty) return;
+
+    const intervalRef = { id: 0 as ReturnType<typeof setInterval> };
+    intervalRef.id = setInterval(async () => {
+      try {
+        const res = await getTransactionByIdApi(id);
+        setTransaction(res.data);
+        if (res.data.status === 'COMPLETED') {
+          clearInterval(intervalRef.id);
+          checkHasReviewed();
+        }
+      } catch {
+        /* silent */
+      }
+    }, 3000);
+    return () => clearInterval(intervalRef.id);
+  }, [
+    txStatus,
+    txType,
+    txOwnerId,
+    txRequesterId,
+    id,
+    currentUserId,
+    checkHasReviewed,
+  ]);
+
+  // Re-check when returning to screen (e.g., back from create-review while component stays mounted)
+  useFocusEffect(
+    useCallback(() => {
+      if (txStatus === 'COMPLETED') {
+        checkHasReviewed();
+      }
+    }, [txStatus, checkHasReviewed])
+  );
 
   if (isLoading) {
     return (
@@ -814,43 +925,66 @@ export default function TransactionDetailScreen() {
           )}
 
           {showQrSection && isP2P && isReceiver && (
-            <ReceiverScanSection transactionId={tx._id} onCompleted={load} />
+            <ReceiverScanSection onCompleted={load} />
           )}
 
-          {/* ── B2C ACCEPTED: Buyer — VietQR to scan with banking app ── */}
-          {tx.status === 'ACCEPTED' && !isP2P && isReceiver && tx.paymentQR && (
-            <View
-              style={styles.card}
-              className="bg-neutral-T100 gap-4 rounded-2xl p-5"
-            >
-              <View className="gap-1">
+          {/* ── B2C ACCEPTED: Buyer — thông tin chuyển khoản thủ công ── */}
+          {tx.status === 'ACCEPTED' &&
+            !isP2P &&
+            isReceiver &&
+            tx.bankSnapshot && (
+              <View
+                style={styles.card}
+                className="bg-neutral-T100 gap-3 rounded-2xl p-5"
+              >
                 <Text className="text-neutral-T10 font-sans text-base font-bold">
-                  {t('transaction.b2cPayQRTitle')}
+                  Thông tin chuyển khoản
                 </Text>
-                <Text className="font-body text-neutral-T50 text-xs leading-4">
-                  {t('transaction.b2cPayQRDesc')}
-                </Text>
-              </View>
-              <View className="items-center py-2">
-                <Image
-                  source={{ uri: tx.paymentQR }}
-                  style={{ width: 220, height: 220 }}
-                  resizeMode="contain"
+
+                {tx.bankSnapshot.bankName && (
+                  <BankInfoRow
+                    label="Ngân hàng"
+                    value={tx.bankSnapshot.bankName}
+                  />
+                )}
+                <BankInfoRow
+                  label="Số tài khoản"
+                  value={tx.bankSnapshot.bankAccountNumber}
+                  copyable
                 />
-              </View>
-              <View className="flex-row items-start gap-2 rounded-xl border border-blue-200 bg-blue-50 p-3">
-                <MaterialIcons
-                  name="info-outline"
-                  size={16}
-                  color="#1D4ED8"
-                  style={{ marginTop: 1 }}
+                <BankInfoRow
+                  label="Tên chủ TK"
+                  value={tx.bankSnapshot.bankAccountName}
                 />
-                <Text className="font-body flex-1 text-xs leading-5 text-blue-800">
-                  {t('transaction.b2cPayQRNote')}
-                </Text>
+                <BankInfoRow
+                  label="Số tiền"
+                  value={`${(tx.totalAmount ?? 0).toLocaleString('vi-VN')} ₫`}
+                  highlight="blue"
+                />
+                <BankInfoRow
+                  label="Nội dung CK"
+                  value={tx.verificationCode ?? ''}
+                  copyable
+                  highlight="orange"
+                />
+
+                <View className="flex-row items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3">
+                  <MaterialIcons
+                    name="info-outline"
+                    size={16}
+                    color="#B45309"
+                    style={{ marginTop: 1 }}
+                  />
+                  <Text
+                    className="font-body flex-1 text-xs leading-5"
+                    style={{ color: '#92400E' }}
+                  >
+                    Nhập đúng nội dung chuyển khoản để cửa hàng xác nhận đúng
+                    đơn của bạn.
+                  </Text>
+                </View>
               </View>
-            </View>
-          )}
+            )}
 
           {/* ── B2C ACCEPTED: Store — confirm receipt button ── */}
           {tx.status === 'ACCEPTED' && !isP2P && isDonor && (
@@ -1030,14 +1164,12 @@ export default function TransactionDetailScreen() {
           {tx.status === 'COMPLETED' && (isDonor || isReceiver) && (
             <TouchableOpacity
               style={styles.card}
-              className="bg-primary-T95 flex-row items-center gap-3 rounded-2xl px-5 py-4"
-              activeOpacity={0.8}
+              className={`flex-row items-center gap-3 rounded-2xl px-5 py-4 ${
+                hasReviewed ? 'bg-neutral-T95' : 'bg-primary-T95'
+              }`}
+              activeOpacity={hasReviewed ? 1 : 0.8}
+              disabled={hasReviewed}
               onPress={() => {
-                const otherId = isDonor
-                  ? typeof tx.requesterId === 'object'
-                    ? tx.requesterId._id
-                    : tx.requesterId
-                  : tx.ownerId;
                 const otherName = isDonor
                   ? typeof tx.requesterId === 'object'
                     ? tx.requesterId.fullName
@@ -1052,18 +1184,37 @@ export default function TransactionDetailScreen() {
                 } as any);
               }}
             >
-              <View className="bg-primary-T40 h-10 w-10 items-center justify-center rounded-xl">
-                <MaterialIcons name="star" size={20} color="#FFFFFF" />
+              <View
+                className="h-10 w-10 items-center justify-center rounded-xl"
+                style={{ backgroundColor: hasReviewed ? '#E5E7EB' : '#296C24' }}
+              >
+                <MaterialIcons
+                  name={hasReviewed ? 'check-circle' : 'star'}
+                  size={20}
+                  color={hasReviewed ? '#9CA3AF' : '#FFFFFF'}
+                />
               </View>
               <View className="flex-1">
-                <Text className="text-primary-T10 font-sans text-sm font-bold">
-                  {t('transaction.reviewCTATitle')}
+                <Text
+                  className={`font-sans text-sm font-bold ${hasReviewed ? '' : 'text-primary-T10'}`}
+                  style={hasReviewed ? { color: '#757777' } : undefined}
+                >
+                  {hasReviewed
+                    ? t('transaction.reviewedCTATitle')
+                    : t('transaction.reviewCTATitle')}
                 </Text>
-                <Text className="font-body text-primary-T30 mt-0.5 text-xs leading-4">
-                  {t('transaction.reviewCTADesc')}
+                <Text
+                  className={`font-body mt-0.5 text-xs leading-4 ${hasReviewed ? '' : 'text-primary-T30'}`}
+                  style={hasReviewed ? { color: '#AAABAB' } : undefined}
+                >
+                  {hasReviewed
+                    ? t('transaction.reviewedCTADesc')
+                    : t('transaction.reviewCTADesc')}
                 </Text>
               </View>
-              <MaterialIcons name="chevron-right" size={20} color="#296C24" />
+              {!hasReviewed && (
+                <MaterialIcons name="chevron-right" size={20} color="#296C24" />
+              )}
             </TouchableOpacity>
           )}
 
