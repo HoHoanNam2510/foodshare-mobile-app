@@ -46,11 +46,7 @@ export default function StatsSummaryCards({
           <View className="rounded-2xl bg-white p-4 shadow-sm">
             <View className="flex-row items-center justify-between">
               <View className="bg-primary-T95 rounded-xl p-2">
-                <MaterialIcons
-                  name={card.icon}
-                  size={20}
-                  color="#72B866"
-                />
+                <MaterialIcons name={card.icon} size={20} color="#72B866" />
               </View>
               {typeof card.deltaPct === 'number' && (
                 <View className="flex-row items-center">

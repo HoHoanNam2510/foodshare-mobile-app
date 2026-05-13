@@ -70,7 +70,10 @@ function DateField({
         <MaterialIcons name="event" size={20} color="#AAABAB" />
       </TouchableOpacity>
       {isActive && (
-        <View className="mb-2" style={{ overflow: 'hidden', alignSelf: 'center' }}>
+        <View
+          className="mb-2"
+          style={{ overflow: 'hidden', alignSelf: 'center' }}
+        >
           <DateTimePicker
             value={value ?? new Date()}
             mode="date"
@@ -95,16 +98,16 @@ export default function CompareModal({
   initialCompareTo,
 }: CompareModalProps) {
   const [currentFrom, setCurrentFrom] = useState<Date | null>(
-    initialCurrentFrom ? new Date(initialCurrentFrom) : null,
+    initialCurrentFrom ? new Date(initialCurrentFrom) : null
   );
   const [currentTo, setCurrentTo] = useState<Date | null>(
-    initialCurrentTo ? new Date(initialCurrentTo) : null,
+    initialCurrentTo ? new Date(initialCurrentTo) : null
   );
   const [compareFrom, setCompareFrom] = useState<Date | null>(
-    initialCompareFrom ? new Date(initialCompareFrom) : null,
+    initialCompareFrom ? new Date(initialCompareFrom) : null
   );
   const [compareTo, setCompareTo] = useState<Date | null>(
-    initialCompareTo ? new Date(initialCompareTo) : null,
+    initialCompareTo ? new Date(initialCompareTo) : null
   );
   const [activePicker, setActivePicker] = useState<PickerField | null>(null);
   const insets = useSafeAreaInsets();
@@ -120,7 +123,7 @@ export default function CompareModal({
       setActivePicker(null);
       hasAutoSuggested.current = false;
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
   // Auto-suggest compare range once, only when user hasn't manually edited it yet
@@ -164,7 +167,7 @@ export default function CompareModal({
     compareTo &&
     validateCompareRange(
       { from: currentFrom, to: currentTo },
-      { from: compareFrom, to: compareTo },
+      { from: compareFrom, to: compareTo }
     );
 
   const handleApply = () => {
@@ -177,7 +180,11 @@ export default function CompareModal({
     });
   };
 
-  const fieldProps = { activePicker, onToggle: handleToggle, onChange: handleDateChange };
+  const fieldProps = {
+    activePicker,
+    onToggle: handleToggle,
+    onChange: handleDateChange,
+  };
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
@@ -200,15 +207,29 @@ export default function CompareModal({
           contentContainerStyle={{ paddingTop: 20, paddingBottom: 40 }}
           showsVerticalScrollIndicator={false}
         >
-          <Text className="font-body-bold text-neutral-T10 mb-4 text-base">Khoảng hiện tại</Text>
-          <DateField label="Từ ngày" value={currentFrom} fieldKey="currentFrom" {...fieldProps} />
+          <Text className="font-body-bold text-neutral-T10 mb-4 text-base">
+            Khoảng hiện tại
+          </Text>
+          <DateField
+            label="Từ ngày"
+            value={currentFrom}
+            fieldKey="currentFrom"
+            {...fieldProps}
+          />
           <View className="mt-3">
-            <DateField label="Đến ngày" value={currentTo} fieldKey="currentTo" {...fieldProps} />
+            <DateField
+              label="Đến ngày"
+              value={currentTo}
+              fieldKey="currentTo"
+              {...fieldProps}
+            />
           </View>
 
           <View className="border-neutral-T90 my-5 border-t" />
 
-          <Text className="font-body-bold text-neutral-T10 mb-4 text-base">Khoảng so sánh</Text>
+          <Text className="font-body-bold text-neutral-T10 mb-4 text-base">
+            Khoảng so sánh
+          </Text>
           <DateField
             label="Từ ngày"
             value={compareFrom}
@@ -226,7 +247,10 @@ export default function CompareModal({
         </ScrollView>
 
         {/* Apply button */}
-        <View className="px-6" style={{ paddingBottom: Math.max(insets.bottom, 24) }}>
+        <View
+          className="px-6"
+          style={{ paddingBottom: Math.max(insets.bottom, 24) }}
+        >
           <TouchableOpacity
             className={`h-14 items-center justify-center rounded-xl active:opacity-80 ${
               canApply ? 'bg-primary-T40' : 'bg-neutral-T80'

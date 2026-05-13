@@ -45,6 +45,9 @@ interface User {
   };
   kycStatus: 'PENDING' | 'VERIFIED' | 'REJECTED';
   kycDocuments: string[];
+  pendingKycDocuments: string[];
+  pendingKycStatus: 'PENDING' | 'APPROVED' | 'REJECTED' | null;
+  kycGracePeriodEndsAt: string | null;
   storeInfo?: StoreInfo;
   paymentInfo?: PaymentInfo;
   greenPoints: number;

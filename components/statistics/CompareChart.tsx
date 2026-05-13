@@ -23,17 +23,31 @@ function formatXLabel(name: string): string {
   return `${parts[2]}/${parseInt(parts[1])}`;
 }
 
-export default function CompareChart({ current, previous, metric }: CompareChartProps) {
+export default function CompareChart({
+  current,
+  previous,
+  metric,
+}: CompareChartProps) {
   // Bug 5 fix: account for gifted-charts y-axis width (~35px)
   const { width: screenWidth } = useWindowDimensions();
   const chartWidth = screenWidth - 130;
 
   const { currentData, previousData } = useMemo(() => {
     const getVal = (p: ITimeseriesPoint): number =>
-      metric === 'given' ? p.given : metric === 'received' ? p.received : p.revenue;
+      metric === 'given'
+        ? p.given
+        : metric === 'received'
+          ? p.received
+          : p.revenue;
 
-    const cur = current.map((p) => ({ value: getVal(p), label: formatXLabel(p.name) }));
-    const prev = previous.map((p) => ({ value: getVal(p), label: formatXLabel(p.name) }));
+    const cur = current.map((p) => ({
+      value: getVal(p),
+      label: formatXLabel(p.name),
+    }));
+    const prev = previous.map((p) => ({
+      value: getVal(p),
+      label: formatXLabel(p.name),
+    }));
     return { currentData: cur, previousData: prev };
   }, [current, previous, metric]);
 
@@ -74,7 +88,9 @@ export default function CompareChart({ current, previous, metric }: CompareChart
           autoAdjustPointerLabelPosition: true,
           pointerLabelWidth: 140,
           pointerLabelHeight: 76,
-          pointerLabelComponent: (items: Array<{ label: string; value: number }>) => (
+          pointerLabelComponent: (
+            items: Array<{ label: string; value: number }>
+          ) => (
             <View
               style={{
                 backgroundColor: 'white',
@@ -87,15 +103,35 @@ export default function CompareChart({ current, previous, metric }: CompareChart
                 shadowRadius: 4,
               }}
             >
-              <Text style={{ fontSize: 11, color: COLOR_CURRENT }}>{items[0]?.label ?? ''}</Text>
-              <Text style={{ fontSize: 13, fontWeight: '700', color: COLOR_CURRENT }}>
-                {metric === 'revenue' ? formatVND(items[0]?.value ?? 0) : items[0]?.value}
+              <Text style={{ fontSize: 11, color: COLOR_CURRENT }}>
+                {items[0]?.label ?? ''}
               </Text>
-              <Text style={{ fontSize: 11, color: COLOR_PREVIOUS, marginTop: 4 }}>
+              <Text
+                style={{
+                  fontSize: 13,
+                  fontWeight: '700',
+                  color: COLOR_CURRENT,
+                }}
+              >
+                {metric === 'revenue'
+                  ? formatVND(items[0]?.value ?? 0)
+                  : items[0]?.value}
+              </Text>
+              <Text
+                style={{ fontSize: 11, color: COLOR_PREVIOUS, marginTop: 4 }}
+              >
                 {items[1]?.label ?? ''}
               </Text>
-              <Text style={{ fontSize: 13, fontWeight: '700', color: COLOR_PREVIOUS }}>
-                {metric === 'revenue' ? formatVND(items[1]?.value ?? 0) : items[1]?.value}
+              <Text
+                style={{
+                  fontSize: 13,
+                  fontWeight: '700',
+                  color: COLOR_PREVIOUS,
+                }}
+              >
+                {metric === 'revenue'
+                  ? formatVND(items[1]?.value ?? 0)
+                  : items[1]?.value}
               </Text>
             </View>
           ),
@@ -104,13 +140,23 @@ export default function CompareChart({ current, previous, metric }: CompareChart
       <View className="mt-2 flex-row justify-center gap-4">
         <View className="flex-row items-center">
           <View
-            style={{ width: 16, height: 3, backgroundColor: COLOR_CURRENT, marginRight: 4 }}
+            style={{
+              width: 16,
+              height: 3,
+              backgroundColor: COLOR_CURRENT,
+              marginRight: 4,
+            }}
           />
           <Text className="text-neutral-T30 text-xs">Hiện tại</Text>
         </View>
         <View className="flex-row items-center">
           <View
-            style={{ width: 16, height: 3, backgroundColor: COLOR_PREVIOUS, marginRight: 4 }}
+            style={{
+              width: 16,
+              height: 3,
+              backgroundColor: COLOR_PREVIOUS,
+              marginRight: 4,
+            }}
           />
           <Text className="text-neutral-T30 text-xs">So sánh</Text>
         </View>

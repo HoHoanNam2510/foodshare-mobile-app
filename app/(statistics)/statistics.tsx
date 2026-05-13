@@ -1,5 +1,11 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -106,12 +112,15 @@ export default function StatisticsScreen() {
 
         {/* Range chips — own row, full width */}
         <View className="px-6 pb-3">
-          <RangePicker selectedRange={range} onRangeChange={handleRangeChange} />
+          <RangePicker
+            selectedRange={range}
+            onRangeChange={handleRangeChange}
+          />
         </View>
       </View>
 
       <ScrollView
-        className="flex-1 bg-neutral px-6"
+        className="bg-neutral flex-1 px-6"
         contentContainerStyle={{ paddingBottom: 40, gap: 16, paddingTop: 16 }}
         showsVerticalScrollIndicator={false}
       >
@@ -122,9 +131,7 @@ export default function StatisticsScreen() {
           </View>
         )}
         {!loading && error && <EmptyState variant="error" onRetry={refetch} />}
-        {!loading && !error && !data && (
-          <EmptyState variant="no-data" />
-        )}
+        {!loading && !error && !data && <EmptyState variant="no-data" />}
         {!loading && !error && data && (
           <>
             {user?.role === 'STORE' ? (
@@ -135,11 +142,7 @@ export default function StatisticsScreen() {
                 onTabChange={handleTabChange}
               />
             ) : (
-              <UserStatsView
-                data={data}
-                chartType={chartType}
-                metric="given"
-              />
+              <UserStatsView data={data} chartType={chartType} metric="given" />
             )}
           </>
         )}

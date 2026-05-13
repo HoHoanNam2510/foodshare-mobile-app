@@ -93,6 +93,19 @@ export async function updateProfileApi(
   }
 }
 
+export async function resubmitKycApi(
+  kycDocuments: string[]
+): Promise<ProfileResponse> {
+  try {
+    const { data } = await api.post<ProfileResponse>('/auth/kyc-resubmit', {
+      kycDocuments,
+    });
+    return data;
+  } catch (error) {
+    extractErrorMessage(error, 'Nộp lại KYC thất bại');
+  }
+}
+
 export async function deleteAccountApi(): Promise<{
   success: boolean;
   message: string;

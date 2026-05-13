@@ -22,7 +22,11 @@ function formatXLabel(name: string): string {
   return `${parts[2]}/${parseInt(parts[1])}`;
 }
 
-export default function GrowthChart({ data, metric, chartType }: GrowthChartProps) {
+export default function GrowthChart({
+  data,
+  metric,
+  chartType,
+}: GrowthChartProps) {
   // Bug 5 fix: subtract extra space for y-axis (gifted-charts adds ~35px to the left)
   const { width: screenWidth } = useWindowDimensions();
   const chartWidth = screenWidth - 130;
@@ -85,7 +89,9 @@ export default function GrowthChart({ data, metric, chartType }: GrowthChartProp
         pointerLabelHeight: 56,
         activatePointersOnLongPress: false,
         autoAdjustPointerLabelPosition: true,
-        pointerLabelComponent: (items: Array<{ label: string; value: number }>) => (
+        pointerLabelComponent: (
+          items: Array<{ label: string; value: number }>
+        ) => (
           <View
             style={{
               backgroundColor: 'white',
@@ -98,8 +104,12 @@ export default function GrowthChart({ data, metric, chartType }: GrowthChartProp
               shadowRadius: 4,
             }}
           >
-            <Text style={{ fontSize: 11, color: '#6B7280' }}>{items[0]?.label}</Text>
-            <Text style={{ fontSize: 13, fontWeight: '700', color: CHART_COLOR }}>
+            <Text style={{ fontSize: 11, color: '#6B7280' }}>
+              {items[0]?.label}
+            </Text>
+            <Text
+              style={{ fontSize: 13, fontWeight: '700', color: CHART_COLOR }}
+            >
               {metric === 'revenue'
                 ? formatVND(items[0]?.value ?? 0)
                 : items[0]?.value}

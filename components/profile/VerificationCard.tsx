@@ -4,10 +4,14 @@ import { Image, ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 type KycStatus = 'PENDING' | 'VERIFIED' | 'REJECTED';
+type PendingKycStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | null;
 
 interface VerificationCardProps {
   kycStatus: KycStatus;
   kycDocuments: string[];
+  pendingKycStatus?: PendingKycStatus;
+  graceDaysLeft?: number | null;
+  isInGracePeriod?: boolean;
 }
 
 const KYC_BADGE: Record<
@@ -40,6 +44,9 @@ const KYC_BADGE: Record<
 export default function VerificationCard({
   kycStatus,
   kycDocuments,
+  pendingKycStatus,
+  graceDaysLeft,
+  isInGracePeriod,
 }: VerificationCardProps) {
   const { t } = useTranslation();
   const badge = KYC_BADGE[kycStatus];
@@ -69,7 +76,7 @@ export default function VerificationCard({
         </View>
       </View>
 
-      {/* Trạng thái PENDING: hiển thị thông báo chờ */}
+      {/* Trạng thái PENDING (đăng ký lần đầu): hiển thị thông báo chờ */}
       {kycStatus === 'PENDING' && (
         <View className="bg-secondary-T95 border-secondary-T70 flex-row items-start gap-2 rounded-xl border p-3">
           <MaterialIcons name="schedule" size={16} color="#6B5E00" />
@@ -79,7 +86,7 @@ export default function VerificationCard({
         </View>
       )}
 
-      {/* Trạng thái REJECTED: hiển thị cảnh báo */}
+      {/* Trạng thái REJECTED (đăng ký lần đầu): hiển thị cảnh báo */}
       {kycStatus === 'REJECTED' && (
         <View
           className="flex-row items-start gap-2 rounded-xl p-3"
@@ -91,6 +98,46 @@ export default function VerificationCard({
           </Text>
         </View>
       )}
+
+      {/* Tái nộp KYC đang chờ duyệt */}
+      {pendingKycStatus === 'PENDING' && (
+        <View className="bg-secondary-T95 border-secondary-T70 flex-row items-start gap-2 rounded-xl border p-3">
+          <MaterialIcons name="schedule" size={16} color="#6B5E00" />
+          <Text className="font-body text-secondary-T30 flex-1 text-xs leading-5">
+            {t('profile.kycResubmitPendingMsg')}
+          </Text>
+        </View>
+      )}
+
+      {/* Tái nộp KYC bị từ chối — còn trong grace period */}
+      {pendingKycStatus === 'REJECTED' && isInGracePeriod && (
+        <View
+          className="flex-row items-start gap-2 rounded-xl p-3"
+          style={{ backgroundColor: 'rgba(186,26,26,0.08)' }}
+        >
+          <MaterialIcons name="warning-amber" size={16} color="#ba1a1a" />
+          <Text className="font-body text-error flex-1 text-xs leading-5">
+            {t('profile.kycGracePeriodCardMsg', { days: graceDaysLeft })}
+          </Text>
+        </View>
+      )}
+
+      {/* Tái nộp KYC bị từ chối — hết grace period (graceDaysLeft=0, không phải null) */}
+      {pendingKycStatus === 'REJECTED' &&
+        !isInGracePeriod &&
+        graceDaysLeft !== null &&
+        graceDaysLeft !== undefined &&
+        graceDaysLeft <= 0 && (
+          <View
+            className="flex-row items-start gap-2 rounded-xl p-3"
+            style={{ backgroundColor: 'rgba(186,26,26,0.08)' }}
+          >
+            <MaterialIcons name="lock" size={16} color="#ba1a1a" />
+            <Text className="font-body text-error flex-1 text-xs leading-5">
+              {t('profile.kycExpiredMsg')}
+            </Text>
+          </View>
+        )}
 
       {/* KYC document images */}
       <ScrollView

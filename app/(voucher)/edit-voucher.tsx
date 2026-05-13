@@ -8,11 +8,14 @@ import {
   ScrollView,
   ActivityIndicator,
   Platform,
+  Modal,
+  Pressable,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import StackHeader from '@/components/shared/headers/StackHeader';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   storeGetMyVouchersApi,
   storeUpdateVoucherApi,
@@ -25,6 +28,7 @@ const EditVoucherScreen = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
 
   const [voucher, setVoucher] = useState<IVoucher | null>(null);
   const [fetching, setFetching] = useState(true);
@@ -71,7 +75,7 @@ const EditVoucherScreen = () => {
       }
     };
     load();
-  }, [id, router]);
+  }, [id, router, t]);
 
   const handleSave = useCallback(async () => {
     if (!title.trim()) {
@@ -102,7 +106,7 @@ const EditVoucherScreen = () => {
     } finally {
       setLoading(false);
     }
-  }, [id, title, description, validUntil, router]);
+  }, [id, title, description, validUntil, router, t]);
 
   if (fetching) {
     return (
@@ -177,18 +181,52 @@ const EditVoucherScreen = () => {
                 <Ionicons name="calendar-outline" size={20} color="#6b7280" />
               </View>
             </TouchableOpacity>
-            {showDatePicker && (
-              <DateTimePicker
-                value={validUntil}
-                mode="date"
-                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                minimumDate={new Date()}
-                onChange={(event, date) => {
-                  setShowDatePicker(Platform.OS === 'ios');
-                  if (date) setValidUntil(date);
-                }}
-              />
-            )}
+            <Modal
+              transparent
+              animationType="slide"
+              visible={showDatePicker}
+              onRequestClose={() => setShowDatePicker(false)}
+            >
+              <Pressable
+                className="flex-1 justify-end"
+                style={{ backgroundColor: 'rgba(0,0,0,0.35)' }}
+                onPress={() => setShowDatePicker(false)}
+              >
+                <Pressable onPress={(e) => e.stopPropagation()}>
+                  <View
+                    className="rounded-t-3xl bg-white px-6 pt-4"
+                    style={{ paddingBottom: Math.max(insets.bottom, 24) + 8 }}
+                  >
+                    <View className="mb-2 h-1 w-10 self-center rounded-full bg-gray-200" />
+                    <View style={{ overflow: 'hidden', alignSelf: 'center' }}>
+                      <DateTimePicker
+                        value={validUntil}
+                        mode="date"
+                        display="spinner"
+                        minimumDate={new Date()}
+                        onChange={(_, date) => {
+                          if (Platform.OS === 'android')
+                            setShowDatePicker(false);
+                          if (date) setValidUntil(date);
+                        }}
+                        themeVariant="light"
+                        style={{ height: 216 }}
+                      />
+                    </View>
+                    {Platform.OS === 'ios' && (
+                      <TouchableOpacity
+                        className="bg-primary mt-4 h-14 items-center justify-center rounded-xl"
+                        onPress={() => setShowDatePicker(false)}
+                      >
+                        <Text className="text-base font-semibold text-white">
+                          {t('common.done')}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </Pressable>
+              </Pressable>
+            </Modal>
           </View>
 
           {/* Read-only fields when redeemed */}

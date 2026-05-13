@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { StatusBar, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ExploreListView from '../../components/explore/ExploreListView';
 import ExploreMapView from '../../components/explore/ExploreMapView';
@@ -16,6 +17,7 @@ import { fetchExplorePosts } from '../../lib/exploreApi';
 
 export default function ExploreScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [activeFilter, setActiveFilter] = useState<TypeFilter>('All');
   const [sortOption, setSortOption] = useState<SortOption>('newest');
@@ -85,7 +87,9 @@ export default function ExploreScreen() {
       <View
         className="absolute items-center"
         style={{
-          bottom: 72,
+          // FAB visual top ≈ 75 + max(insets.bottom, 8) from screen bottom
+          // (outer paddingTop 18 + FAB top:10 + marginTop:-19 + content 56 = 75)
+          bottom: 75 + Math.max(insets.bottom, 8) + 16,
           left: 0,
           right: 0,
           zIndex: 40,

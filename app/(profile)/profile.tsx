@@ -164,6 +164,24 @@ export default function ProfileScreen() {
     user.role === 'STORE' ||
     (user.kycDocuments && user.kycDocuments.length > 0);
 
+  // ─── KYC re-submission state (STORE only) ───
+  const gracePeriodEndsAt = user.kycGracePeriodEndsAt
+    ? new Date(user.kycGracePeriodEndsAt)
+    : null;
+  const isInGracePeriod =
+    gracePeriodEndsAt !== null && new Date() < gracePeriodEndsAt;
+  // null = không có grace period; 0 = đã hết hạn; >0 = còn N ngày
+  const graceDaysLeft =
+    gracePeriodEndsAt === null
+      ? null
+      : isInGracePeriod
+        ? Math.ceil(
+            (gracePeriodEndsAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+          )
+        : 0;
+  const showKycResubmitButton =
+    user.role === 'STORE' && user.pendingKycStatus !== 'PENDING';
+
   return (
     <View className="bg-neutral-DEFAULT flex-1">
       {/* ── KYC Rejection Modal ── */}
@@ -362,7 +380,51 @@ export default function ProfileScreen() {
             <VerificationCard
               kycStatus={user.kycStatus}
               kycDocuments={user.kycDocuments ?? []}
+              pendingKycStatus={user.pendingKycStatus ?? null}
+              graceDaysLeft={graceDaysLeft}
+              isInGracePeriod={isInGracePeriod}
             />
+          )}
+
+          {/* KYC pending re-submission banner */}
+          {user.role === 'STORE' && user.pendingKycStatus === 'PENDING' && (
+            <View className="bg-secondary-T95 border-secondary-T70 flex-row items-start gap-3 rounded-2xl border p-4">
+              <MaterialIcons name="schedule" size={20} color="#6B5E00" />
+              <Text className="font-body text-secondary-T30 flex-1 text-sm leading-5">
+                {t('profile.kycResubmitPendingBanner')}
+              </Text>
+            </View>
+          )}
+
+          {/* Grace period warning banner */}
+          {user.role === 'STORE' && isInGracePeriod && (
+            <View
+              className="flex-row items-start gap-3 rounded-2xl p-4"
+              style={{
+                backgroundColor: 'rgba(186,26,26,0.08)',
+                borderWidth: 1,
+                borderColor: 'rgba(186,26,26,0.2)',
+              }}
+            >
+              <MaterialIcons name="warning-amber" size={20} color="#ba1a1a" />
+              <Text className="font-body text-error flex-1 text-sm leading-5">
+                {t('profile.kycGracePeriodWarning', { days: graceDaysLeft })}
+              </Text>
+            </View>
+          )}
+
+          {/* KYC re-submit button (STORE only) */}
+          {showKycResubmitButton && (
+            <TouchableOpacity
+              className="bg-secondary-T95 border-secondary-T70 h-14 flex-row items-center justify-center gap-2 rounded-xl border active:scale-[0.98]"
+              onPress={() => router.push('/(profile)/kyc-resubmit' as any)}
+              activeOpacity={0.8}
+            >
+              <MaterialIcons name="verified-user" size={20} color="#6B5E00" />
+              <Text className="font-label text-secondary-T40 font-semibold">
+                {t('profile.kycResubmitBtn')}
+              </Text>
+            </TouchableOpacity>
           )}
 
           <BadgesRow
