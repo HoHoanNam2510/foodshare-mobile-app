@@ -28,6 +28,8 @@ import { getOrCreateConversationApi } from '@/lib/chatApi';
 import { useAuthStore } from '@/stores/authStore';
 import StackHeader from '@/components/shared/headers/StackHeader';
 import PostDetailMap from '@/components/map/PostDetailMap';
+import SaveTemplateModal from '@/components/post/SaveTemplateModal';
+import { createTemplateApi } from '@/lib/postTemplateApi';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -60,6 +62,8 @@ export default function PostDetailScreen() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isChatting, setIsChatting] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [isSavingTemplate, setIsSavingTemplate] = useState(false);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const { width: screenWidth } = useWindowDimensions();
@@ -78,7 +82,7 @@ export default function PostDetailScreen() {
     } finally {
       setIsLoading(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   useEffect(() => {
     load();
@@ -180,6 +184,32 @@ export default function PostDetailScreen() {
       );
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleSaveAsTemplate = async (templateName: string) => {
+    if (!post) return;
+    setIsSavingTemplate(true);
+    try {
+      await createTemplateApi({
+        templateName,
+        type: post.type,
+        category: post.category,
+        title: post.title,
+        description: post.description,
+        images: post.images,
+        totalQuantity: post.totalQuantity,
+        price: post.price,
+      });
+      setShowSaveModal(false);
+      Alert.alert(t('common.success'), t('template.saveSuccess'));
+    } catch (e) {
+      Alert.alert(
+        t('common.error'),
+        e instanceof Error ? e.message : t('template.saveFailed')
+      );
+    } finally {
+      setIsSavingTemplate(false);
     }
   };
 
@@ -477,7 +507,7 @@ export default function PostDetailScreen() {
         ]}
       >
         {isOwnPost ? (
-          // Own post — Edit & Delete actions
+          // Own post — Edit, Save as Template & Delete actions
           <View className="w-full flex-row gap-3">
             <TouchableOpacity
               className="bg-primary-T40 flex-1 flex-row items-center justify-center gap-2 rounded-2xl py-4"
@@ -488,6 +518,13 @@ export default function PostDetailScreen() {
               <Text className="text-neutral-T100 font-sans text-base font-black tracking-tight">
                 {t('common.edit')}
               </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className="bg-primary-T95 items-center justify-center rounded-2xl px-5 py-4"
+              activeOpacity={0.85}
+              onPress={() => setShowSaveModal(true)}
+            >
+              <MaterialIcons name="bookmark-add" size={22} color="#296C24" />
             </TouchableOpacity>
             <TouchableOpacity
               className="bg-neutral-T95 items-center justify-center rounded-2xl px-5 py-4"
@@ -689,6 +726,14 @@ export default function PostDetailScreen() {
           </View>
         )}
       </View>
+
+      <SaveTemplateModal
+        visible={showSaveModal}
+        initialName={post?.title ?? ''}
+        isSaving={isSavingTemplate}
+        onSave={handleSaveAsTemplate}
+        onCancel={() => setShowSaveModal(false)}
+      />
     </View>
   );
 }

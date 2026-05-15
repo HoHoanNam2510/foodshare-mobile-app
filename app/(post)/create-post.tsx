@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Alert,
@@ -31,6 +31,13 @@ import {
   sendPostPasscodeApi,
 } from '@/lib/postApi';
 import { uploadMultipleImages } from '@/lib/uploadApi';
+import SaveTemplateModal from '@/components/post/SaveTemplateModal';
+import TemplatePickerSheet from '@/components/post/TemplatePickerSheet';
+import {
+  createTemplateApi,
+  getMyTemplatesApi,
+  type IPostTemplate,
+} from '@/lib/postTemplateApi';
 
 type ActivePicker = 'pickupStart' | 'pickupEnd' | 'expiryDate' | null;
 type PickerMode = 'date' | 'time';
@@ -90,6 +97,63 @@ export default function CreatePost() {
   const preUploadPromiseRef = useRef<Promise<string[]> | null>(null);
   // ── Field-level errors ──
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  // ── Template state ──
+  const [hasTemplates, setHasTemplates] = useState(false);
+  const [showTemplatePicker, setShowTemplatePicker] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [isSavingTemplate, setIsSavingTemplate] = useState(false);
+
+  // ── Fetch hasTemplates on mount ──
+  useEffect(() => {
+    getMyTemplatesApi()
+      .then((list) => setHasTemplates(list.length > 0))
+      .catch(() => {});
+  }, []);
+
+  // ── Apply template to form ──
+  const applyTemplate = (template: IPostTemplate) => {
+    setTitle(template.title);
+    setDescription(template.description ?? '');
+    setCategory(template.category);
+    setQuantity(template.totalQuantity);
+    setImages(template.images);
+    if (isB2C && template.price > 0) {
+      setPrice(String(template.price));
+    }
+  };
+
+  // ── Save current form as template ──
+  const handleSaveFormAsTemplate = async (templateName: string) => {
+    setIsSavingTemplate(true);
+    try {
+      let resolvedImages: string[] = [];
+      if (images.length > 0) {
+        const results = await uploadMultipleImages(images, 'posts');
+        resolvedImages = results.map((r) => r.url);
+      }
+      await createTemplateApi({
+        templateName,
+        type: isB2C ? 'B2C_MYSTERY_BAG' : 'P2P_FREE',
+        category,
+        title: title.trim(),
+        description: description.trim() || undefined,
+        images: resolvedImages,
+        totalQuantity: quantity,
+        price: isB2C ? parseFloat(price) || 0 : 0,
+      });
+      setShowSaveModal(false);
+      setHasTemplates(true);
+      Alert.alert(t('template.saveAsTemplate'), t('template.saveFormSuccess'));
+    } catch (e) {
+      Alert.alert(
+        t('common.error'),
+        e instanceof Error ? e.message : t('template.saveFailed')
+      );
+    } finally {
+      setIsSavingTemplate(false);
+    }
+  };
 
   // ── Helpers ──
   const formatTime = (d: Date) =>
@@ -366,6 +430,28 @@ export default function CreatePost() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
+          {/* ── Template picker banner ── */}
+          {hasTemplates && (
+            <TouchableOpacity
+              className="bg-primary-T95 border-primary-T80 mb-6 flex-row items-center gap-3 rounded-2xl border p-4"
+              onPress={() => setShowTemplatePicker(true)}
+              activeOpacity={0.8}
+            >
+              <View className="bg-primary-T40 h-9 w-9 items-center justify-center rounded-xl">
+                <MaterialIcons name="bookmark" size={18} color="#fff" />
+              </View>
+              <View className="flex-1">
+                <Text className="font-label text-primary-T30 text-sm font-bold">
+                  {t('template.useBanner')}
+                </Text>
+                <Text className="font-body text-primary-T50 text-xs">
+                  {t('template.pickerSubtitle')}
+                </Text>
+              </View>
+              <MaterialIcons name="chevron-right" size={20} color="#296C24" />
+            </TouchableOpacity>
+          )}
+
           {/* ── Photos ── */}
           <View className="mb-8">
             <ImagePickerSection
@@ -587,6 +673,19 @@ export default function CreatePost() {
               <MaterialIcons name="chevron-right" size={20} color="#AAABAB" />
             </TouchableOpacity>
           </View>
+
+          {/* ── Save as template (inline, above footer) ── */}
+          <TouchableOpacity
+            className={`bg-primary-T95 border-primary-T70 mt-2 h-12 flex-row items-center justify-center gap-2 rounded-xl border active:opacity-80 ${!title.trim() ? 'opacity-40' : ''}`}
+            onPress={() => setShowSaveModal(true)}
+            disabled={!title.trim()}
+            activeOpacity={0.8}
+          >
+            <MaterialIcons name="bookmark-add" size={18} color="#296C24" />
+            <Text className="font-label text-primary-T40 text-sm font-semibold">
+              {t('template.saveAsTemplate')}
+            </Text>
+          </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
 
@@ -600,7 +699,10 @@ export default function CreatePost() {
         }}
       >
         <View className="flex-row gap-4">
-          <TouchableOpacity className="bg-neutral-T95 h-14 flex-1 flex-row items-center justify-center gap-2 rounded-xl active:opacity-80">
+          <TouchableOpacity
+            className="bg-neutral-T95 h-14 flex-1 flex-row items-center justify-center gap-2 rounded-xl active:opacity-80"
+            onPress={() => router.back()}
+          >
             <MaterialIcons name="save" size={18} color="#757777" />
             <Text className="font-label text-neutral-T50 text-sm font-medium">
               {t('post.saveDraft')}
@@ -650,6 +752,23 @@ export default function CreatePost() {
         onResend={handleResendPasscode}
         isLoading={isSubmitting}
         deliveryMethod={deliveryMethod}
+      />
+
+      {/* ── Template picker sheet ── */}
+      <TemplatePickerSheet
+        visible={showTemplatePicker}
+        onClose={() => setShowTemplatePicker(false)}
+        onSelect={applyTemplate}
+        onManage={() => router.push('/(post)/my-templates' as any)}
+      />
+
+      {/* ── Save form as template modal ── */}
+      <SaveTemplateModal
+        visible={showSaveModal}
+        initialName={title.trim()}
+        isSaving={isSavingTemplate}
+        onSave={handleSaveFormAsTemplate}
+        onCancel={() => setShowSaveModal(false)}
       />
     </View>
   );

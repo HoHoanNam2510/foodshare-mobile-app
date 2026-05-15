@@ -1,4 +1,4 @@
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -282,20 +282,23 @@ export default function PostList() {
     [t]
   );
 
-  const load = useCallback(async (isRefresh = false) => {
-    if (isRefresh) setIsRefreshing(true);
-    else setIsLoading(true);
-    setError(null);
-    try {
-      const { data } = await api.get('/posts/me');
-      setPosts(data.data ?? []);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : t('post.errorLoadPosts'));
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, []);
+  const load = useCallback(
+    async (isRefresh = false) => {
+      if (isRefresh) setIsRefreshing(true);
+      else setIsLoading(true);
+      setError(null);
+      try {
+        const { data } = await api.get('/posts/me');
+        setPosts(data.data ?? []);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : t('post.errorLoadPosts'));
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
+    },
+    [t]
+  );
 
   useEffect(() => {
     load();
@@ -352,6 +355,13 @@ export default function PostList() {
             </TouchableOpacity>
           )}
         </View>
+        <TouchableOpacity
+          onPress={() => router.push('/(post)/my-templates' as any)}
+          activeOpacity={0.8}
+          className="bg-neutral-T95 border-neutral-T90 h-11 w-11 items-center justify-center rounded-full border active:opacity-70"
+        >
+          <MaterialIcons name="bookmark" size={18} color="#191C1C" />
+        </TouchableOpacity>
         <TouchableOpacity
           onPress={() => setSortAsc((prev) => !prev)}
           activeOpacity={0.8}
