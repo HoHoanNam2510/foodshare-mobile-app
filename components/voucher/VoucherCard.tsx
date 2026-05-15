@@ -49,8 +49,6 @@ export default function VoucherCard({
   const canAfford =
     userGreenPoints !== undefined ? userGreenPoints >= voucher.pointCost : true;
 
-  const usedCount = voucher.totalQuantity - voucher.remainingQuantity;
-
   return (
     <TouchableOpacity
       onPress={() => onPress?.(voucher._id)}
@@ -123,7 +121,7 @@ export default function VoucherCard({
           {viewMode === 'store-manage' && (
             <Text className="font-label text-neutral-T50 text-xs">
               {t('voucher.redeemedCountFormat', {
-                used: usedCount,
+                used: voucher.totalQuantity - voucher.remainingQuantity,
                 total: voucher.totalQuantity,
               })}
             </Text>

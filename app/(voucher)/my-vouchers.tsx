@@ -17,7 +17,11 @@ import ManagementHeader from '@/components/shared/headers/ManagementHeader';
 
 import VoucherCard from '@/components/voucher/VoucherCard';
 import { getMyVouchersApi } from '@/lib/voucherApi';
-import type { IUserVoucher, VoucherStatusFilter } from '@/lib/voucherApi';
+import type {
+  IUserVoucher,
+  IVoucher,
+  VoucherStatusFilter,
+} from '@/lib/voucherApi';
 
 const TABS = (t: any): { label: string; value: VoucherStatusFilter }[] => [
   { label: t('voucher.statusUnused'), value: 'UNUSED' },
@@ -31,7 +35,9 @@ export default function MyVouchersScreen() {
   const { t } = useTranslation();
 
   const [activeTab, setActiveTab] = useState<VoucherStatusFilter>('UNUSED');
-  const [userVouchers, setUserVouchers] = useState<IUserVoucher[]>([]);
+  const [userVouchers, setUserVouchers] = useState<
+    (IUserVoucher & { voucherId: IVoucher })[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const loadVouchers = useCallback(
@@ -39,8 +45,13 @@ export default function MyVouchersScreen() {
       setIsLoading(true);
       try {
         const res = await getMyVouchersApi({ status });
-        setUserVouchers(res.data);
-      } catch (e) {
+        setUserVouchers(
+          res.data.filter(
+            (uv): uv is typeof uv & { voucherId: IVoucher } =>
+              uv.voucherId != null
+          )
+        );
+      } catch {
         Alert.alert(t('voucher.errorAlert'), t('voucher.loadWalletError'));
       } finally {
         setIsLoading(false);

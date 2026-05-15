@@ -27,7 +27,7 @@ export interface IVoucher {
 export interface IUserVoucher {
   _id: string;
   userId: string;
-  voucherId: IVoucher; // Đã được populate từ server
+  voucherId: IVoucher | null; // Populated từ server; null nếu voucher đã bị xóa
   status: 'UNUSED' | 'USED' | 'EXPIRED';
   usedAt?: string;
   transactionId?: string;
