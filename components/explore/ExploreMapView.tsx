@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -37,35 +37,41 @@ export default function ExploreMapView({ activeFilter }: ExploreMapViewProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
 
-  const loadPosts = async (coords: [number, number], r: RadiusOption) => {
-    setLoading(true);
-    try {
-      const results = await fetchMapPosts({
-        lng: coords[0],
-        lat: coords[1],
-        distance: r,
-        type: toApiType(activeFilter),
-      });
-      setPosts(results);
-      setSelectedId(results[0]?._id ?? null);
-    } catch {
-      setPosts([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const loadPosts = useCallback(
+    async (coords: [number, number], r: RadiusOption) => {
+      setLoading(true);
+      try {
+        const results = await fetchMapPosts({
+          lng: coords[0],
+          lat: coords[1],
+          distance: r,
+          type: toApiType(activeFilter),
+        });
+        setPosts(results);
+        setSelectedId(results[0]?._id ?? null);
+      } catch {
+        setPosts([]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [activeFilter]
+  );
 
-  const handleUserLocation = (coords: [number, number]) => {
-    userCoordsRef.current = coords;
-    setReady(true);
-    loadPosts(coords, radius);
-  };
+  const handleUserLocation = useCallback(
+    (coords: [number, number]) => {
+      userCoordsRef.current = coords;
+      setReady(true);
+      loadPosts(coords, radius);
+    },
+    [loadPosts, radius]
+  );
 
   // Re-fetch when filter or radius changes (after GPS ready)
   useEffect(() => {
     if (!ready) return;
     loadPosts(userCoordsRef.current, radius);
-  }, [activeFilter, radius]);
+  }, [activeFilter, radius, loadPosts, ready]);
 
   const handleRadiusChange = (r: RadiusOption) => {
     setRadius(r);

@@ -20,7 +20,7 @@ export default function GoongMapView({ onUserLocation }: GoongMapViewProps) {
   // Report HCM center so callers that depend on onUserLocation still function.
   useEffect(() => {
     onUserLocation?.(HCM_CENTER);
-  }, []);
+  }, [onUserLocation]);
 
   return (
     <View className="bg-neutral-T90 flex-1 items-center justify-center">

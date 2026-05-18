@@ -125,6 +125,7 @@ const CreateVoucherScreen = () => {
     validUntil,
     user,
     router,
+    t,
   ]);
 
   return (

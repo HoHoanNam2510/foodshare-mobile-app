@@ -98,7 +98,7 @@ export default function EditPost() {
     } finally {
       setIsLoadingPost(false);
     }
-  }, [id, router]);
+  }, [id, router, t]);
 
   useEffect(() => {
     loadPost();
