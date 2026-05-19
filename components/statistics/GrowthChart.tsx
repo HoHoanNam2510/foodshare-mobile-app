@@ -90,7 +90,7 @@ export default function GrowthChart({
         activatePointersOnLongPress: false,
         autoAdjustPointerLabelPosition: true,
         pointerLabelComponent: (
-          items: Array<{ label: string; value: number }>
+          items: { label: string; value: number }[]
         ) => (
           <View
             style={{
