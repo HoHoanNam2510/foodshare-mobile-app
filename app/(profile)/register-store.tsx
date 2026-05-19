@@ -38,7 +38,6 @@ export default function RegisterStore() {
 
   // Payment info (thông tin nhận tiền)
   const [momoPhone, setMomoPhone] = useState('');
-  // const [zalopayPhone, setZalopayPhone] = useState(''); // TODO: Re-enable when ZaloPay is ready
   const [bankName, setBankName] = useState('');
   const [bankCode, setBankCode] = useState('');
   const [bankAccountNumber, setBankAccountNumber] = useState('');
@@ -111,7 +110,6 @@ export default function RegisterStore() {
       // Build paymentInfo — chỉ gửi nếu có ít nhất 1 trường
       const paymentInfo: Record<string, string> = {};
       if (momoPhone.trim()) paymentInfo.momoPhone = momoPhone.trim();
-      // if (zalopayPhone.trim()) paymentInfo.zalopayPhone = zalopayPhone.trim(); // TODO: Re-enable when ZaloPay is ready
       if (bankName.trim()) paymentInfo.bankName = bankName.trim();
       if (bankCode.trim()) paymentInfo.bankCode = bankCode.trim();
       if (bankAccountNumber.trim())
@@ -257,15 +255,6 @@ export default function RegisterStore() {
               placeholder="0912345678"
               keyboardType="phone-pad"
             />
-
-            {/* TODO: Re-enable when ZaloPay is ready */}
-            {/* <FormInput
-              label="SĐT ZaloPay"
-              value={zalopayPhone}
-              onChangeText={setZalopayPhone}
-              placeholder="0912345678"
-              keyboardType="phone-pad"
-            /> */}
 
             <FormInput
               label={t('profile.bankNameLabel')}
