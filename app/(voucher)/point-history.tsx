@@ -40,7 +40,7 @@ export default function PointHistoryScreen() {
         setCurrentPoints(pts);
         setLogs((prev) => (append ? [...prev, ...newLogs] : newLogs));
         setHasMore(pageNum < pagination.totalPages);
-      } catch (e) {
+      } catch {
         Alert.alert(
           t('voucher.errorAlert'),
           t('voucher.loadPointHistoryError')

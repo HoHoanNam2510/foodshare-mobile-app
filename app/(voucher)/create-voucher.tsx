@@ -15,7 +15,6 @@ import { Ionicons } from '@expo/vector-icons';
 import DateTimePickerModal from '@/components/shared/DateTimePickerModal';
 import { useRouter } from 'expo-router';
 import StackHeader from '@/components/shared/headers/StackHeader';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuthStore } from '@/stores/authStore';
 import { storeCreateVoucherApi, CreateVoucherBody } from '@/lib/voucherApi';
 import { useTranslation } from 'react-i18next';

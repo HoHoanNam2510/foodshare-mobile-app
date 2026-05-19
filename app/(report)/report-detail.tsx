@@ -134,10 +134,7 @@ function formatDate(iso: string) {
 
 function SectionLabel({ label }: { label: string }) {
   return (
-    <Text
-      className="text-neutral-T50 mb-2 text-xs uppercase tracking-wider"
-      style={{ fontFamily: 'BeVietnamPro-SemiBold' }}
-    >
+    <Text className="font-body-semibold text-neutral-T50 mb-2 text-xs uppercase tracking-wider">
       {label}
     </Text>
   );

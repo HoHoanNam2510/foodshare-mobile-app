@@ -113,10 +113,7 @@ function ChatCard({
 
           {hasUnread ? (
             <View className="bg-primary-T40 h-5 min-w-[20px] items-center justify-center rounded-full px-1.5">
-              <Text
-                className="font-label text-neutral-T100 text-[10px]"
-                style={{ fontWeight: '700' }}
-              >
+              <Text className="font-label text-neutral-T100 text-[10px] font-bold">
                 {unread}
               </Text>
             </View>
@@ -251,10 +248,7 @@ export default function ChatListScreen() {
               <View className="bg-neutral-T95 mb-4 h-16 w-16 items-center justify-center rounded-full">
                 <Feather name="message-circle" size={28} color="#AAABAB" />
               </View>
-              <Text
-                className="font-body text-neutral-T10 mb-1 text-[15px]"
-                style={{ fontWeight: '700' }}
-              >
+              <Text className="font-body text-neutral-T10 mb-1 text-[15px] font-bold">
                 {query ? t('chat.noResultsTitle') : t('chat.noChats')}
               </Text>
               <Text className="font-body text-neutral-T50 text-center text-[13px]">

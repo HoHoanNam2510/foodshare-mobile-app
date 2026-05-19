@@ -72,7 +72,7 @@ export default function VoucherMarketScreen() {
       }
       const res = await getVoucherMarketApi(params);
       setVouchers(res.data);
-    } catch (e) {
+    } catch {
       Alert.alert(t('voucher.errorAlert'), t('voucher.loadMarketError'));
     } finally {
       setIsLoading(false);
