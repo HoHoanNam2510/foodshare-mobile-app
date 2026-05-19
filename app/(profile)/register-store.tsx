@@ -37,7 +37,6 @@ export default function RegisterStore() {
   const [kycDocuments, setKycDocuments] = useState<string[]>([]);
 
   // Payment info (thông tin nhận tiền)
-  const [momoPhone, setMomoPhone] = useState('');
   const [bankName, setBankName] = useState('');
   const [bankCode, setBankCode] = useState('');
   const [bankAccountNumber, setBankAccountNumber] = useState('');
@@ -109,7 +108,6 @@ export default function RegisterStore() {
 
       // Build paymentInfo — chỉ gửi nếu có ít nhất 1 trường
       const paymentInfo: Record<string, string> = {};
-      if (momoPhone.trim()) paymentInfo.momoPhone = momoPhone.trim();
       if (bankName.trim()) paymentInfo.bankName = bankName.trim();
       if (bankCode.trim()) paymentInfo.bankCode = bankCode.trim();
       if (bankAccountNumber.trim())
@@ -247,14 +245,6 @@ export default function RegisterStore() {
             <Text className="font-body text-neutral-T50 -mt-2 text-xs">
               {t('profile.paymentHint')}
             </Text>
-
-            <FormInput
-              label={t('profile.momoLabel')}
-              value={momoPhone}
-              onChangeText={setMomoPhone}
-              placeholder="0912345678"
-              keyboardType="phone-pad"
-            />
 
             <FormInput
               label={t('profile.bankNameLabel')}

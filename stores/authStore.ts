@@ -19,7 +19,6 @@ interface StoreInfo {
 }
 
 interface PaymentInfo {
-  momoPhone?: string;
   bankName?: string;
   bankCode?: string;
   bankAccountNumber?: string;

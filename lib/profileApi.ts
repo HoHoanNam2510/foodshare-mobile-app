@@ -9,7 +9,6 @@ interface ProfileResponse {
 }
 
 export interface PaymentInfoPayload {
-  momoPhone?: string;
   bankName?: string;
   bankCode?: string;
   bankAccountNumber?: string;
