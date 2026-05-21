@@ -47,7 +47,7 @@ export default function EditPost() {
   const [postType, setPostType] = useState<'P2P_FREE' | 'B2C_MYSTERY_BAG'>(
     'P2P_FREE'
   );
-  const [originalImages, setOriginalImages] = useState<string[]>([]);
+  const [, setOriginalImages] = useState<string[]>([]);
 
   // ── Form state ──
   const [title, setTitle] = useState('');
@@ -98,7 +98,7 @@ export default function EditPost() {
     } finally {
       setIsLoadingPost(false);
     }
-  }, [id, router]);
+  }, [id, router, t]);
 
   useEffect(() => {
     loadPost();

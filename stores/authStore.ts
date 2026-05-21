@@ -19,13 +19,11 @@ interface StoreInfo {
 }
 
 interface PaymentInfo {
-  momoPhone?: string;
-  // zalopayPhone?: string; // TODO: Re-enable when ZaloPay is ready
   bankName?: string;
   bankCode?: string;
   bankAccountNumber?: string;
   bankAccountName?: string;
-  preferredDisbursement?: 'MOMO' | /* 'ZALOPAY' | */ 'BANK'; // TODO: Re-add ZALOPAY when ready
+  preferredDisbursement?: 'MOMO' | 'BANK';
 }
 
 interface User {

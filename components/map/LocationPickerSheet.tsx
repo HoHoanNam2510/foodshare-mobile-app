@@ -87,7 +87,7 @@ export default function LocationPickerSheet({
       setPinCoords(HCM_CENTER);
       resolveAddress(HCM_CENTER[1], HCM_CENTER[0]);
     })();
-  }, [visible]);
+  }, [visible, initialCoords]);
 
   const resolveAddress = async (lat: number, lng: number) => {
     setResolving(true);

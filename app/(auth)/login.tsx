@@ -114,7 +114,7 @@ export default function LoginScreen() {
         setIsGoogleLoading(false);
       }
     },
-    [googleClientId, googleRedirectUri, googleLogin, router]
+    [googleClientId, googleRedirectUri, googleLogin, router, t]
   );
 
   useEffect(() => {

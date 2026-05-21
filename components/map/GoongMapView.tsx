@@ -63,7 +63,7 @@ export default function GoongMapView({
         onUserLocation?.(HCM_CENTER);
       }
     })();
-  }, []);
+  }, [onUserLocation]);
 
   const center = centerCoordinate ?? userCoords ?? HCM_CENTER;
 

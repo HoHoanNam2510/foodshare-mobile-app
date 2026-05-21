@@ -119,7 +119,7 @@ function TrashItemCard({
           </Text>
           <Text className="font-body text-neutral-T50 mt-0.5 text-xs">
             {t('trash.deletedOn', {
-              date: formatDate((item as any).deletedAt),
+              date: formatDate(item.deletedAt),
             })}
           </Text>
         </View>

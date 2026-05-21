@@ -89,7 +89,7 @@ export default function CompareChart({
           pointerLabelWidth: 140,
           pointerLabelHeight: 76,
           pointerLabelComponent: (
-            items: Array<{ label: string; value: number }>
+            items: { label: string; value: number }[]
           ) => (
             <View
               style={{

@@ -20,7 +20,6 @@ const KYC_BADGE: Record<
     containerClass: string;
     textClass: string;
     labelKey: string;
-    bgStyle?: object;
   }
 > = {
   VERIFIED: {
@@ -34,10 +33,9 @@ const KYC_BADGE: Record<
     labelKey: 'profile.kycPending',
   },
   REJECTED: {
-    containerClass: '',
+    containerClass: 'bg-[rgba(186,26,26,0.1)]',
     textClass: 'text-error',
     labelKey: 'profile.kycRejected',
-    bgStyle: { backgroundColor: 'rgba(186,26,26,0.1)' },
   },
 };
 
@@ -64,10 +62,7 @@ export default function VerificationCard({
           </Text>
         </View>
         {/* KYC status badge */}
-        <View
-          className={`${badge.containerClass} rounded-full p-2`}
-          style={badge.bgStyle}
-        >
+        <View className={`${badge.containerClass} rounded-full p-2`}>
           <Text
             className={`font-label text-[11px] font-bold ${badge.textClass}`}
           >
@@ -88,10 +83,7 @@ export default function VerificationCard({
 
       {/* Trạng thái REJECTED (đăng ký lần đầu): hiển thị cảnh báo */}
       {kycStatus === 'REJECTED' && (
-        <View
-          className="flex-row items-start gap-2 rounded-xl p-3"
-          style={{ backgroundColor: 'rgba(186,26,26,0.08)' }}
-        >
+        <View className="flex-row items-start gap-2 rounded-xl bg-[rgba(186,26,26,0.08)] p-3">
           <MaterialIcons name="error-outline" size={16} color="#ba1a1a" />
           <Text className="font-body text-error flex-1 text-xs leading-5">
             {t('profile.verificationRejectedMsg')}
@@ -111,10 +103,7 @@ export default function VerificationCard({
 
       {/* Tái nộp KYC bị từ chối — còn trong grace period */}
       {pendingKycStatus === 'REJECTED' && isInGracePeriod && (
-        <View
-          className="flex-row items-start gap-2 rounded-xl p-3"
-          style={{ backgroundColor: 'rgba(186,26,26,0.08)' }}
-        >
+        <View className="flex-row items-start gap-2 rounded-xl bg-[rgba(186,26,26,0.08)] p-3">
           <MaterialIcons name="warning-amber" size={16} color="#ba1a1a" />
           <Text className="font-body text-error flex-1 text-xs leading-5">
             {t('profile.kycGracePeriodCardMsg', { days: graceDaysLeft })}
@@ -128,10 +117,7 @@ export default function VerificationCard({
         graceDaysLeft !== null &&
         graceDaysLeft !== undefined &&
         graceDaysLeft <= 0 && (
-          <View
-            className="flex-row items-start gap-2 rounded-xl p-3"
-            style={{ backgroundColor: 'rgba(186,26,26,0.08)' }}
-          >
+          <View className="flex-row items-start gap-2 rounded-xl bg-[rgba(186,26,26,0.08)] p-3">
             <MaterialIcons name="lock" size={16} color="#ba1a1a" />
             <Text className="font-body text-error flex-1 text-xs leading-5">
               {t('profile.kycExpiredMsg')}

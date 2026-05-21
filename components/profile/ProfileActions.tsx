@@ -21,28 +21,27 @@ export default function ProfileActions({
   const { t } = useTranslation();
   return (
     <View className="gap-3 pt-4">
-      {showRegisterStore && (
+      {showRegisterStore && storeRegistrationPending && (
         <TouchableOpacity
-          className={`h-14 flex-row items-center justify-center gap-2 rounded-xl border ${
-            storeRegistrationPending
-              ? 'bg-neutral-T95 border-neutral-T80'
-              : 'bg-secondary-T95 border-secondary-T70 active:scale-[0.98]'
-          }`}
-          onPress={storeRegistrationPending ? undefined : onRegisterStore}
-          activeOpacity={storeRegistrationPending ? 1 : 0.8}
-          disabled={storeRegistrationPending}
+          className="bg-neutral-T95 border-neutral-T80 h-14 flex-row items-center justify-center gap-2 rounded-xl border"
+          activeOpacity={1}
+          disabled
         >
-          <MaterialIcons
-            name="storefront"
-            size={20}
-            color={storeRegistrationPending ? '#AAABAB' : '#6B5E00'}
-          />
-          <Text
-            className={`font-label font-semibold ${storeRegistrationPending ? 'text-neutral-T50' : 'text-secondary-T40'}`}
-          >
-            {storeRegistrationPending
-              ? t('profile.storePendingLabel')
-              : t('profile.registerStore')}
+          <MaterialIcons name="storefront" size={20} color="#AAABAB" />
+          <Text className="font-label text-neutral-T50 font-semibold">
+            {t('profile.storePendingLabel')}
+          </Text>
+        </TouchableOpacity>
+      )}
+      {showRegisterStore && !storeRegistrationPending && (
+        <TouchableOpacity
+          className="bg-secondary-T95 border-secondary-T70 h-14 flex-row items-center justify-center gap-2 rounded-xl border active:scale-[0.98]"
+          onPress={onRegisterStore}
+          activeOpacity={0.8}
+        >
+          <MaterialIcons name="storefront" size={20} color="#6B5E00" />
+          <Text className="font-label text-secondary-T40 font-semibold">
+            {t('profile.registerStore')}
           </Text>
         </TouchableOpacity>
       )}
@@ -59,17 +58,12 @@ export default function ProfileActions({
       </TouchableOpacity>
 
       <TouchableOpacity
-        className="h-14 flex-row items-center justify-center gap-2 rounded-xl active:scale-[0.98]"
-        style={{
-          backgroundColor: 'rgba(220,38,38,0.06)',
-          borderWidth: 1,
-          borderColor: 'rgba(220,38,38,0.2)',
-        }}
+        className="h-14 flex-row items-center justify-center gap-2 rounded-xl border border-[rgba(220,38,38,0.2)] bg-[rgba(220,38,38,0.06)] active:scale-[0.98]"
         onPress={onDeleteAccount}
         activeOpacity={0.8}
       >
         <MaterialIcons name="delete-forever" size={20} color="#DC2626" />
-        <Text className="font-label font-semibold" style={{ color: '#DC2626' }}>
+        <Text className="font-label font-semibold text-[#DC2626]">
           {t('profile.deleteAccount')}
         </Text>
       </TouchableOpacity>

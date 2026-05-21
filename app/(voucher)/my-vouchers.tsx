@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 
 import ManagementHeader from '@/components/shared/headers/ManagementHeader';
 
@@ -23,7 +24,9 @@ import type {
   VoucherStatusFilter,
 } from '@/lib/voucherApi';
 
-const TABS = (t: any): { label: string; value: VoucherStatusFilter }[] => [
+const TABS = (
+  t: TFunction
+): { label: string; value: VoucherStatusFilter }[] => [
   { label: t('voucher.statusUnused'), value: 'UNUSED' },
   { label: t('voucher.statusUsed'), value: 'USED' },
   { label: t('voucher.statusExpired'), value: 'EXPIRED' },

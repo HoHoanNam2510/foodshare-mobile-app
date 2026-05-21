@@ -277,7 +277,7 @@ export default function BadgesScreen() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     loadCatalog();

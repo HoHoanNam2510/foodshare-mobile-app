@@ -32,6 +32,7 @@ export async function setStoredLanguage(
   }
 }
 
+// eslint-disable-next-line import/no-named-as-default-member
 i18n.use(initReactI18next).init({
   resources: {
     vi: { translation: vi },

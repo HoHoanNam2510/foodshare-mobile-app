@@ -192,8 +192,7 @@ export default function ProfileScreen() {
         onRequestClose={() => setShowRejectionModal(false)}
       >
         <Pressable
-          className="flex-1 items-center justify-center"
-          style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
+          className="flex-1 items-center justify-center bg-black/45"
           onPress={() => setShowRejectionModal(false)}
         >
           <Pressable onPress={(e) => e.stopPropagation()}>
@@ -202,10 +201,7 @@ export default function ProfileScreen() {
               style={{ maxWidth: 340 }}
             >
               {/* Icon */}
-              <View
-                className="h-14 w-14 items-center justify-center self-center rounded-2xl"
-                style={{ backgroundColor: 'rgba(186,26,26,0.1)' }}
-              >
+              <View className="h-14 w-14 items-center justify-center self-center rounded-2xl bg-[rgba(186,26,26,0.1)]">
                 <MaterialIcons name="gpp-bad" size={28} color="#ba1a1a" />
               </View>
               {/* Title */}
@@ -223,8 +219,7 @@ export default function ProfileScreen() {
               </View>
               {/* Action */}
               <TouchableOpacity
-                className="h-12 items-center justify-center rounded-xl"
-                style={{ backgroundColor: 'rgba(186,26,26,0.1)' }}
+                className="h-12 items-center justify-center rounded-xl bg-[rgba(186,26,26,0.1)]"
                 onPress={() => setShowRejectionModal(false)}
               >
                 <Text className="font-label text-error font-semibold">
@@ -244,8 +239,7 @@ export default function ProfileScreen() {
         onRequestClose={() => !isDeletingAccount && setShowDeleteModal(false)}
       >
         <Pressable
-          className="flex-1 items-center justify-center"
-          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+          className="flex-1 items-center justify-center bg-black/50"
           onPress={() => !isDeletingAccount && setShowDeleteModal(false)}
         >
           <Pressable onPress={(e) => e.stopPropagation()}>
@@ -253,10 +247,7 @@ export default function ProfileScreen() {
               className="bg-neutral-T100 mx-6 gap-4 rounded-3xl p-6"
               style={{ maxWidth: 360 }}
             >
-              <View
-                className="h-14 w-14 items-center justify-center self-center rounded-2xl"
-                style={{ backgroundColor: 'rgba(220,38,38,0.1)' }}
-              >
+              <View className="h-14 w-14 items-center justify-center self-center rounded-2xl bg-[rgba(220,38,38,0.1)]">
                 <MaterialIcons
                   name="delete-forever"
                   size={28}
@@ -287,25 +278,24 @@ export default function ProfileScreen() {
                 />
               </View>
               <View className="gap-2">
-                <TouchableOpacity
-                  className="h-12 items-center justify-center rounded-xl"
-                  style={{
-                    backgroundColor: isDeletingAccount
-                      ? 'rgba(220,38,38,0.3)'
-                      : '#DC2626',
-                  }}
-                  onPress={handleDeleteAccountConfirm}
-                  disabled={isDeletingAccount}
-                  activeOpacity={0.85}
-                >
-                  {isDeletingAccount ? (
+                {isDeletingAccount ? (
+                  <TouchableOpacity
+                    className="h-12 items-center justify-center rounded-xl bg-[rgba(220,38,38,0.3)]"
+                    disabled
+                  >
                     <ActivityIndicator color="#fff" />
-                  ) : (
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    className="h-12 items-center justify-center rounded-xl bg-[#DC2626]"
+                    onPress={handleDeleteAccountConfirm}
+                    activeOpacity={0.85}
+                  >
                     <Text className="font-label text-neutral-T100 font-semibold">
                       {t('profile.deleteAccount')}
                     </Text>
-                  )}
-                </TouchableOpacity>
+                  </TouchableOpacity>
+                )}
                 <TouchableOpacity
                   className="bg-neutral-T95 h-12 items-center justify-center rounded-xl"
                   onPress={() => {
@@ -398,14 +388,7 @@ export default function ProfileScreen() {
 
           {/* Grace period warning banner */}
           {user.role === 'STORE' && isInGracePeriod && (
-            <View
-              className="flex-row items-start gap-3 rounded-2xl p-4"
-              style={{
-                backgroundColor: 'rgba(186,26,26,0.08)',
-                borderWidth: 1,
-                borderColor: 'rgba(186,26,26,0.2)',
-              }}
-            >
+            <View className="flex-row items-start gap-3 rounded-2xl border border-[rgba(186,26,26,0.2)] bg-[rgba(186,26,26,0.08)] p-4">
               <MaterialIcons name="warning-amber" size={20} color="#ba1a1a" />
               <Text className="font-body text-error flex-1 text-sm leading-5">
                 {t('profile.kycGracePeriodWarning', { days: graceDaysLeft })}

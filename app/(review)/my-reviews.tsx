@@ -25,6 +25,7 @@ import {
   getMyWrittenReviewsApi,
   getUserReviewsApi,
   type IReceivedReview,
+  type IReviewUser,
   type IWrittenReview,
 } from '@/lib/reviewApi';
 import { useAuthStore } from '@/stores/authStore';
@@ -141,20 +142,23 @@ export default function MyReviewsScreen() {
 
   // ── Loaders ────────────────────────────────────────────────────────────────
 
-  const loadWritten = useCallback(async (isRefresh = false) => {
-    if (isRefresh) setWrittenRefreshing(true);
-    else setWrittenLoading(true);
-    setWrittenError(null);
-    try {
-      const res = await getMyWrittenReviewsApi({ limit: 50 });
-      setWritten(res.data ?? []);
-    } catch {
-      setWrittenError(t('review.loadError'));
-    } finally {
-      setWrittenLoading(false);
-      setWrittenRefreshing(false);
-    }
-  }, []);
+  const loadWritten = useCallback(
+    async (isRefresh = false) => {
+      if (isRefresh) setWrittenRefreshing(true);
+      else setWrittenLoading(true);
+      setWrittenError(null);
+      try {
+        const res = await getMyWrittenReviewsApi({ limit: 50 });
+        setWritten(res.data ?? []);
+      } catch {
+        setWrittenError(t('review.loadError'));
+      } finally {
+        setWrittenLoading(false);
+        setWrittenRefreshing(false);
+      }
+    },
+    [t]
+  );
 
   const loadReceived = useCallback(
     async (isRefresh = false) => {
@@ -171,7 +175,7 @@ export default function MyReviewsScreen() {
         setReceivedLoaded(true);
       }
     },
-    [myId]
+    [myId, t]
   );
 
   useEffect(() => {
@@ -187,27 +191,30 @@ export default function MyReviewsScreen() {
 
   // ── Delete handler ─────────────────────────────────────────────────────────
 
-  const handleDelete = useCallback((reviewId: string) => {
-    Alert.alert(t('review.withdrawTitle'), t('review.withdrawConfirmMsg'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      {
-        text: t('review.withdrawBtn'),
-        style: 'destructive',
-        onPress: async () => {
-          setDeletingId(reviewId);
-          try {
-            await deleteMyReviewApi(reviewId);
-            setWritten((prev) => prev.filter((r) => r._id !== reviewId));
-            Alert.alert(t('review.withdrawnTitle'), t('review.withdrawnMsg'));
-          } catch {
-            Alert.alert(t('common.error'), t('review.withdrawError'));
-          } finally {
-            setDeletingId(null);
-          }
+  const handleDelete = useCallback(
+    (reviewId: string) => {
+      Alert.alert(t('review.withdrawTitle'), t('review.withdrawConfirmMsg'), [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('review.withdrawBtn'),
+          style: 'destructive',
+          onPress: async () => {
+            setDeletingId(reviewId);
+            try {
+              await deleteMyReviewApi(reviewId);
+              setWritten((prev) => prev.filter((r) => r._id !== reviewId));
+              Alert.alert(t('review.withdrawnTitle'), t('review.withdrawnMsg'));
+            } catch {
+              Alert.alert(t('common.error'), t('review.withdrawError'));
+            } finally {
+              setDeletingId(null);
+            }
+          },
         },
-      },
-    ]);
-  }, []);
+      ]);
+    },
+    [t]
+  );
 
   // ── Navigate to edit ───────────────────────────────────────────────────────
 
@@ -221,7 +228,7 @@ export default function MyReviewsScreen() {
           existingFeedback: review.feedback ?? '',
           revieweeName:
             typeof review.revieweeId === 'object'
-              ? (review.revieweeId as any).fullName
+              ? (review.revieweeId as IReviewUser).fullName
               : '',
         },
       } as any);
@@ -408,7 +415,7 @@ export default function MyReviewsScreen() {
                 handleReport(
                   item._id,
                   typeof item.reviewerId === 'object'
-                    ? `${t('review.reviewedYou')} — ${(item.reviewerId as any).fullName}`
+                    ? `${t('review.reviewedYou')} — ${(item.reviewerId as IReviewUser).fullName}`
                     : t('review.title')
                 )
               }

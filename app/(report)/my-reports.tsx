@@ -13,8 +13,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import ManagementHeader from '@/components/shared/headers/ManagementHeader';
 import {
   getMyReportsApi,
@@ -311,28 +309,29 @@ function EmptyState({ filter }: { filter: FilterTab }) {
 export default function MyReportsScreen() {
   const router = useRouter();
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
-
   const [reports, setReports] = useState<IReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<FilterTab>('ALL');
 
-  const load = useCallback(async (isRefresh = false) => {
-    if (isRefresh) setIsRefreshing(true);
-    else setIsLoading(true);
-    setError(null);
-    try {
-      const res = await getMyReportsApi();
-      setReports(res.data);
-    } catch {
-      setError(t('review.loadError'));
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, []);
+  const load = useCallback(
+    async (isRefresh = false) => {
+      if (isRefresh) setIsRefreshing(true);
+      else setIsLoading(true);
+      setError(null);
+      try {
+        const res = await getMyReportsApi();
+        setReports(res.data);
+      } catch {
+        setError(t('review.loadError'));
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
+    },
+    [t]
+  );
 
   useEffect(() => {
     load();

@@ -89,9 +89,7 @@ export default function GrowthChart({
         pointerLabelHeight: 56,
         activatePointersOnLongPress: false,
         autoAdjustPointerLabelPosition: true,
-        pointerLabelComponent: (
-          items: Array<{ label: string; value: number }>
-        ) => (
+        pointerLabelComponent: (items: { label: string; value: number }[]) => (
           <View
             style={{
               backgroundColor: 'white',

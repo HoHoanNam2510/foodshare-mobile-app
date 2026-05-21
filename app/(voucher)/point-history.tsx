@@ -26,23 +26,32 @@ export default function PointHistoryScreen() {
   const [hasMore, setHasMore] = useState(true);
   const { t } = useTranslation();
 
-  const loadHistory = useCallback(async (pageNum: number, append = false) => {
-    if (pageNum === 1) setIsLoading(true);
-    else setIsFetchingMore(true);
+  const loadHistory = useCallback(
+    async (pageNum: number, append = false) => {
+      if (pageNum === 1) setIsLoading(true);
+      else setIsFetchingMore(true);
 
-    try {
-      const res = await getPointHistoryApi({ page: pageNum, limit: PAGE_SIZE });
-      const { currentPoints: pts, logs: newLogs, pagination } = res.data;
-      setCurrentPoints(pts);
-      setLogs((prev) => (append ? [...prev, ...newLogs] : newLogs));
-      setHasMore(pageNum < pagination.totalPages);
-    } catch (e) {
-      Alert.alert(t('voucher.errorAlert'), t('voucher.loadPointHistoryError'));
-    } finally {
-      setIsLoading(false);
-      setIsFetchingMore(false);
-    }
-  }, []);
+      try {
+        const res = await getPointHistoryApi({
+          page: pageNum,
+          limit: PAGE_SIZE,
+        });
+        const { currentPoints: pts, logs: newLogs, pagination } = res.data;
+        setCurrentPoints(pts);
+        setLogs((prev) => (append ? [...prev, ...newLogs] : newLogs));
+        setHasMore(pageNum < pagination.totalPages);
+      } catch {
+        Alert.alert(
+          t('voucher.errorAlert'),
+          t('voucher.loadPointHistoryError')
+        );
+      } finally {
+        setIsLoading(false);
+        setIsFetchingMore(false);
+      }
+    },
+    [t]
+  );
 
   useEffect(() => {
     loadHistory(1);
