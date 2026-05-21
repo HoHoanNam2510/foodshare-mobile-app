@@ -28,8 +28,12 @@ export default function PostMarker({
       <TouchableOpacity activeOpacity={0.85} onPress={() => onPress(post._id)}>
         {isFree ? (
           <View
-            className={`rounded-full p-2.5 ${isActive ? 'bg-primary-T40' : 'bg-neutral-T100'}`}
             style={{
+              borderRadius: 999,
+              padding: 10,
+              backgroundColor: isActive ? '#296C24' : '#EDF7EC',
+              borderWidth: 1.5,
+              borderColor: '#296C24',
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 3 },
               shadowOpacity: 0.18,
@@ -45,8 +49,13 @@ export default function PostMarker({
           </View>
         ) : (
           <View
-            className={`rounded-full px-3 py-1.5 ${isActive ? 'bg-secondary' : 'bg-neutral-T100'}`}
             style={{
+              borderRadius: 999,
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              backgroundColor: isActive ? '#EC8632' : '#FFF3E8',
+              borderWidth: 1.5,
+              borderColor: '#EC8632',
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 3 },
               shadowOpacity: 0.18,
@@ -55,7 +64,8 @@ export default function PostMarker({
             }}
           >
             <Text
-              className={`font-label text-xs font-bold ${isActive ? 'text-neutral-T100' : 'text-secondary'}`}
+              className="font-label text-xs font-bold"
+              style={{ color: isActive ? '#fff' : '#EC8632' }}
             >
               {post.price.toLocaleString('vi-VN')}đ
             </Text>

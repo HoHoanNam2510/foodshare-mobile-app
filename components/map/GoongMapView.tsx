@@ -29,6 +29,7 @@ interface GoongMapViewProps {
   zoomLevel?: number;
   onPress?: (coords: [number, number]) => void;
   interactive?: boolean;
+  radius?: number;
 }
 
 export default function GoongMapView({
@@ -38,6 +39,7 @@ export default function GoongMapView({
   zoomLevel = 14,
   onPress,
   interactive = true,
+  radius: _radius,
 }: GoongMapViewProps) {
   const cameraRef = useRef<CameraRef>(null);
   const [userCoords, setUserCoords] = useState<[number, number] | null>(null);

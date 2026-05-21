@@ -81,7 +81,7 @@ export default function ExploreMapView({ activeFilter }: ExploreMapViewProps) {
 
   return (
     <View className="flex-1">
-      <GoongMapView onUserLocation={handleUserLocation}>
+      <GoongMapView onUserLocation={handleUserLocation} radius={radius}>
         {posts.map((post) => (
           <PostMarker
             key={post._id}
