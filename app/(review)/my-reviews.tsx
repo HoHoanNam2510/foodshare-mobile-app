@@ -25,6 +25,7 @@ import {
   getMyWrittenReviewsApi,
   getUserReviewsApi,
   type IReceivedReview,
+  type IReviewUser,
   type IWrittenReview,
 } from '@/lib/reviewApi';
 import { useAuthStore } from '@/stores/authStore';
@@ -227,7 +228,7 @@ export default function MyReviewsScreen() {
           existingFeedback: review.feedback ?? '',
           revieweeName:
             typeof review.revieweeId === 'object'
-              ? (review.revieweeId as any).fullName
+              ? (review.revieweeId as IReviewUser).fullName
               : '',
         },
       } as any);
@@ -414,7 +415,7 @@ export default function MyReviewsScreen() {
                 handleReport(
                   item._id,
                   typeof item.reviewerId === 'object'
-                    ? `${t('review.reviewedYou')} — ${(item.reviewerId as any).fullName}`
+                    ? `${t('review.reviewedYou')} — ${(item.reviewerId as IReviewUser).fullName}`
                     : t('review.title')
                 )
               }

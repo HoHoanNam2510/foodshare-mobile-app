@@ -88,15 +88,13 @@ function ChatCard({
       <View className="flex-1 justify-center">
         <View className="mb-1 flex-row items-baseline justify-between">
           <Text
-            className="font-body text-neutral-T10 mr-2 flex-1 text-[15px]"
-            style={{ fontWeight: hasUnread ? '700' : '400' }}
+            className={`font-body text-neutral-T10 mr-2 flex-1 text-[15px] ${hasUnread ? 'font-bold' : 'font-normal'}`}
             numberOfLines={1}
           >
             {other?.fullName ?? t('chat.unknownUser')}
           </Text>
           <Text
-            className={`font-label text-[11px] ${hasUnread ? 'text-primary-T40' : 'text-neutral-T50'}`}
-            style={{ fontWeight: hasUnread ? '600' : '400' }}
+            className={`font-label text-[11px] ${hasUnread ? 'text-primary-T40 font-semibold' : 'text-neutral-T50 font-normal'}`}
           >
             {time}
           </Text>
@@ -104,8 +102,7 @@ function ChatCard({
 
         <View className="flex-row items-center justify-between">
           <Text
-            className={`font-body mr-2 flex-1 text-[13px] ${hasUnread ? 'text-neutral-T30' : 'text-neutral-T50'}`}
-            style={{ fontWeight: hasUnread ? '500' : '400' }}
+            className={`font-body mr-2 flex-1 text-[13px] ${hasUnread ? 'text-neutral-T30 font-medium' : 'text-neutral-T50 font-normal'}`}
             numberOfLines={1}
           >
             {lastMsg}
