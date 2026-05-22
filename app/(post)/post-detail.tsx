@@ -24,11 +24,18 @@ import { useTranslation } from 'react-i18next';
 
 import { getPostByIdApi, deletePostApi, type IPostDetail } from '@/lib/postApi';
 import { createRequestApi, createOrderApi } from '@/lib/transactionApi';
+import {
+  getApplicableVouchersForPostApi,
+  type IUserVoucher,
+  type IVoucher,
+} from '@/lib/voucherApi';
 import { getOrCreateConversationApi } from '@/lib/chatApi';
 import { useAuthStore } from '@/stores/authStore';
 import StackHeader from '@/components/shared/headers/StackHeader';
 import PostDetailMap from '@/components/map/PostDetailMap';
 import SaveTemplateModal from '@/components/post/SaveTemplateModal';
+import VoucherBannerAlert from '@/components/voucher/VoucherBannerAlert';
+import OrderConfirmModal from '@/components/order/OrderConfirmModal';
 import { createTemplateApi } from '@/lib/postTemplateApi';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -68,6 +75,14 @@ export default function PostDetailScreen() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const { width: screenWidth } = useWindowDimensions();
 
+  const [applicableVouchers, setApplicableVouchers] = useState<IUserVoucher[]>(
+    []
+  );
+  const [selectedUserVoucherId, setSelectedUserVoucherId] = useState<
+    string | null
+  >(null);
+  const [showOrderModal, setShowOrderModal] = useState(false);
+
   const load = useCallback(async () => {
     if (!id) return;
     setIsLoading(true);
@@ -87,6 +102,21 @@ export default function PostDetailScreen() {
   useEffect(() => {
     load();
   }, [load]);
+
+  // Fetch vouchers applicable for this B2C post (non-owner view only)
+  useEffect(() => {
+    if (
+      !post ||
+      post.type !== 'B2C_MYSTERY_BAG' ||
+      !currentUser ||
+      post.ownerId._id === currentUser._id ||
+      post.status !== 'AVAILABLE'
+    )
+      return;
+    getApplicableVouchersForPostApi(post._id)
+      .then(({ data }) => setApplicableVouchers(data))
+      .catch(() => {});
+  }, [post, currentUser]);
 
   const isP2P = post?.type === 'P2P_FREE';
   const isOwnPost = post && currentUser && post.ownerId._id === currentUser._id;
@@ -168,11 +198,21 @@ export default function PostDetailScreen() {
     }
   };
 
-  const handleBuyNow = async () => {
+  const handleBuyNow = () => {
+    if (!post) return;
+    setShowOrderModal(true);
+  };
+
+  const handleConfirmOrder = async () => {
     if (!post) return;
     setIsSubmitting(true);
     try {
-      const res = await createOrderApi(post._id, selectedQuantity);
+      const res = await createOrderApi(
+        post._id,
+        selectedQuantity,
+        selectedUserVoucherId ?? undefined
+      );
+      setShowOrderModal(false);
       router.push({
         pathname: '/(transaction)/transaction-detail',
         params: { id: res.data._id },
@@ -260,6 +300,19 @@ export default function PostDetailScreen() {
 
   const images = post.images ?? [];
   const owner = post.ownerId;
+
+  // Real-time price after voucher discount (used in bottom bar)
+  const baseTotal = post.price * selectedQuantity;
+  const selectedVoucherData = (applicableVouchers.find(
+    (v) => v._id === selectedUserVoucherId
+  )?.voucherId ?? null) as IVoucher | null;
+  const discountAmount = selectedVoucherData
+    ? selectedVoucherData.discountType === 'PERCENTAGE'
+      ? (baseTotal * selectedVoucherData.discountValue) / 100
+      : selectedVoucherData.discountValue
+    : 0;
+  const displayTotal = Math.max(0, baseTotal - discountAmount);
+  const hasDiscount = discountAmount > 0;
 
   const handleReport = () => {
     router.push({
@@ -492,6 +545,21 @@ export default function PostDetailScreen() {
             />
           </View>
         )}
+
+        {/* ─── Voucher Banner (B2C, non-owner, available) ─── */}
+        {!isP2P &&
+          !isOwnPost &&
+          isAvailable &&
+          applicableVouchers.length > 0 && (
+            <View className="mx-4 mt-3">
+              <VoucherBannerAlert
+                vouchers={applicableVouchers}
+                selectedId={selectedUserVoucherId}
+                onSelect={setSelectedUserVoucherId}
+                baseAmount={baseTotal}
+              />
+            </View>
+          )}
       </ScrollView>
 
       {/* ─── Fixed Bottom Action Bar ─── */}
@@ -679,10 +747,23 @@ export default function PostDetailScreen() {
                   {selectedQuantity}
                 </Text>
               </Text>
-              <Text className="text-secondary-T20 font-sans text-base font-extrabold">
-                {t('post.totalPrice')}:{' '}
-                {(post.price * selectedQuantity).toLocaleString('vi-VN')}đ
-              </Text>
+              <View className="items-end">
+                {hasDiscount && (
+                  <Text
+                    className="text-neutral-T70 text-xs"
+                    style={{ textDecorationLine: 'line-through' }}
+                  >
+                    {baseTotal.toLocaleString('vi-VN')}đ
+                  </Text>
+                )}
+                <Text
+                  className="font-sans text-base font-extrabold"
+                  style={{ color: hasDiscount ? '#296C24' : '#7A3900' }}
+                >
+                  {t('post.totalPrice')}: {displayTotal.toLocaleString('vi-VN')}
+                  đ
+                </Text>
+              </View>
             </View>
             {/* Action buttons */}
             <View className="flex-row gap-3">
@@ -698,9 +779,7 @@ export default function PostDetailScreen() {
                 ) : (
                   <Text className="text-neutral-T100 font-sans text-lg font-black uppercase tracking-tight">
                     {t('post.buyNow', {
-                      price: (post.price * selectedQuantity).toLocaleString(
-                        'vi-VN'
-                      ),
+                      price: displayTotal.toLocaleString('vi-VN'),
                     })}
                   </Text>
                 )}
@@ -733,6 +812,19 @@ export default function PostDetailScreen() {
         isSaving={isSavingTemplate}
         onSave={handleSaveAsTemplate}
         onCancel={() => setShowSaveModal(false)}
+      />
+
+      <OrderConfirmModal
+        visible={showOrderModal}
+        post={post}
+        quantity={selectedQuantity}
+        selectedVoucher={
+          applicableVouchers.find((v) => v._id === selectedUserVoucherId) ??
+          null
+        }
+        isSubmitting={isSubmitting}
+        onConfirm={handleConfirmOrder}
+        onClose={() => setShowOrderModal(false)}
       />
     </View>
   );

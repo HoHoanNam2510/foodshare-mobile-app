@@ -834,7 +834,9 @@ export default function TransactionDetailScreen() {
               {!isP2P && (
                 <View className="bg-neutral-T95 rounded-md px-2 py-1">
                   <Text className="font-label text-neutral-T50 text-[10px] font-bold uppercase tracking-wider">
-                    {((post?.price ?? 0) * tx.quantity).toLocaleString('vi-VN')}
+                    {(
+                      tx.totalAmount ?? (post?.price ?? 0) * tx.quantity
+                    ).toLocaleString('vi-VN')}
                     đ
                   </Text>
                 </View>
@@ -875,11 +877,13 @@ export default function TransactionDetailScreen() {
                 {t('transaction.yourRoleLabel')}
               </Text>
               <Text className="text-neutral-T10 mt-0.5 font-sans text-sm font-bold">
-                {isDonor
-                  ? t('transaction.donorRoleFull')
-                  : isReceiver
-                    ? t('transaction.receiverRoleFull')
-                    : t('transaction.participantRole')}
+                {isP2P
+                  ? isDonor
+                    ? t('transaction.donorRoleFull')
+                    : t('transaction.receiverRoleFull')
+                  : isDonor
+                    ? t('transaction.sellerRoleFull')
+                    : t('transaction.buyerRoleFull')}
               </Text>
             </View>
           </View>
@@ -904,9 +908,13 @@ export default function TransactionDetailScreen() {
                 {t('transaction.contactSectionLabel')}
               </Text>
               <Text className="text-neutral-T10 mt-0.5 font-sans text-sm font-bold">
-                {isDonor
-                  ? t('transaction.msgWithReceiver')
-                  : t('transaction.msgWithDonor')}
+                {isP2P
+                  ? isDonor
+                    ? t('transaction.msgWithReceiver')
+                    : t('transaction.msgWithDonor')
+                  : isDonor
+                    ? t('transaction.msgWithBuyer')
+                    : t('transaction.msgWithSeller')}
               </Text>
             </View>
             {isChatting ? (
@@ -1173,8 +1181,12 @@ export default function TransactionDetailScreen() {
                 const otherName = isDonor
                   ? typeof tx.requesterId === 'object'
                     ? tx.requesterId.fullName
-                    : 'Người nhận'
-                  : 'Người cho';
+                    : isP2P
+                      ? 'Người nhận'
+                      : 'Người mua'
+                  : isP2P
+                    ? 'Người cho'
+                    : 'Cửa hàng';
                 router.push({
                   pathname: '/(review)/create-review',
                   params: {
