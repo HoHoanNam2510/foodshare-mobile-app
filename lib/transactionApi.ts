@@ -35,6 +35,12 @@ export interface ITransaction {
     bankAccountNumber: string;
     bankAccountName: string;
   };
+  voucherSnapshot?: {
+    userVoucherId: string;
+    discountType: 'PERCENTAGE' | 'FIXED_AMOUNT';
+    discountValue: number;
+    discountAmount: number;
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -104,9 +110,14 @@ export async function createRequestApi(
 
 export async function createOrderApi(
   postId: string,
-  quantity: number
+  quantity: number,
+  userVoucherId?: string
 ): Promise<{ success: boolean; message: string; data: ITransaction }> {
-  const { data } = await api.post('/transactions/orders', { postId, quantity });
+  const { data } = await api.post('/transactions/orders', {
+    postId,
+    quantity,
+    ...(userVoucherId && { userVoucherId }),
+  });
   return data;
 }
 

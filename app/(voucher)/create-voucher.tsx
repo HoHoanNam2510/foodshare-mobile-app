@@ -10,6 +10,7 @@ import {
   Platform,
   KeyboardAvoidingView,
   Keyboard,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePickerModal from '@/components/shared/DateTimePickerModal';
@@ -17,6 +18,7 @@ import { useRouter } from 'expo-router';
 import StackHeader from '@/components/shared/headers/StackHeader';
 import { useAuthStore } from '@/stores/authStore';
 import { storeCreateVoucherApi, CreateVoucherBody } from '@/lib/voucherApi';
+import { getMyStorePostsApi, IPostDetail } from '@/lib/postApi';
 import { useTranslation } from 'react-i18next';
 
 const CreateVoucherScreen = () => {
@@ -61,6 +63,50 @@ const CreateVoucherScreen = () => {
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const scrollViewRef = useRef(null);
 
+  const [applicableType, setApplicableType] = useState<'ALL' | 'SPECIFIC'>(
+    'ALL'
+  );
+  const [selectedPostIds, setSelectedPostIds] = useState<string[]>([]);
+  const [availablePosts, setAvailablePosts] = useState<IPostDetail[]>([]);
+  const [loadingPosts, setLoadingPosts] = useState(false);
+  const postsLoadedRef = useRef(false);
+
+  useEffect(() => {
+    if (applicableType !== 'SPECIFIC' || postsLoadedRef.current) return;
+    postsLoadedRef.current = true;
+    const fetchPosts = async () => {
+      setLoadingPosts(true);
+      try {
+        const { data } = await getMyStorePostsApi({ status: 'AVAILABLE' });
+        const now = new Date();
+        setAvailablePosts(
+          data.filter(
+            (p) =>
+              p.type === 'B2C_MYSTERY_BAG' &&
+              p.remainingQuantity > 0 &&
+              new Date(p.expiryDate) > now
+          )
+        );
+      } catch {
+        Alert.alert(
+          t('voucher.errorAlert'),
+          t('voucher.applicableLoadPostsError')
+        );
+      } finally {
+        setLoadingPosts(false);
+      }
+    };
+    fetchPosts();
+  }, [applicableType, t]);
+
+  const togglePostSelection = useCallback((postId: string) => {
+    setSelectedPostIds((prev) =>
+      prev.includes(postId)
+        ? prev.filter((id) => id !== postId)
+        : [...prev, postId]
+    );
+  }, []);
+
   const handleCreate = useCallback(async () => {
     if (!user || user.role !== 'STORE') {
       Alert.alert(t('voucher.errorAlert'), t('voucher.storeOnlyError'));
@@ -83,6 +129,13 @@ const CreateVoucherScreen = () => {
       Alert.alert(t('voucher.errorAlert'), t('voucher.codeRequired'));
       return;
     }
+    if (applicableType === 'SPECIFIC' && selectedPostIds.length === 0) {
+      Alert.alert(
+        t('voucher.errorAlert'),
+        t('voucher.applicableSpecificRequired')
+      );
+      return;
+    }
 
     setLoading(true);
     try {
@@ -96,6 +149,9 @@ const CreateVoucherScreen = () => {
         validFrom: new Date().toISOString(),
         validUntil: validUntil.toISOString(),
         code: code.trim().toUpperCase(),
+        applicableType,
+        applicablePostIds:
+          applicableType === 'SPECIFIC' ? selectedPostIds : undefined,
       };
       const { success } = await storeCreateVoucherApi(body);
       if (success) {
@@ -122,6 +178,8 @@ const CreateVoucherScreen = () => {
     totalQuantity,
     code,
     validUntil,
+    applicableType,
+    selectedPostIds,
     user,
     router,
     t,
@@ -291,7 +349,7 @@ const CreateVoucherScreen = () => {
           </View>
 
           {/* Code */}
-          <View className="mb-8">
+          <View className="mb-4">
             <Text className="text-foreground mb-2 text-sm font-medium">
               {t('voucher.codeLabel')} <Text className="text-error">*</Text>
             </Text>
@@ -302,6 +360,140 @@ const CreateVoucherScreen = () => {
               autoCapitalize="characters"
               onChangeText={(value) => setCode(value.toUpperCase())}
             />
+          </View>
+
+          {/* Applicable Scope */}
+          <View className="mb-8">
+            <Text className="text-foreground mb-2 text-sm font-medium">
+              {t('voucher.applicableScopeLabel')}
+            </Text>
+            <View className="flex-row gap-3">
+              <TouchableOpacity
+                className={`flex-1 items-center rounded-lg border py-3 ${
+                  applicableType === 'ALL'
+                    ? 'bg-primary border-primary'
+                    : 'border-gray-300 bg-white'
+                }`}
+                onPress={() => setApplicableType('ALL')}
+              >
+                <Text
+                  className={
+                    applicableType === 'ALL'
+                      ? 'font-semibold text-white'
+                      : 'text-foreground'
+                  }
+                >
+                  {t('voucher.applicableScopeAll')}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className={`flex-1 items-center rounded-lg border py-3 ${
+                  applicableType === 'SPECIFIC'
+                    ? 'bg-primary border-primary'
+                    : 'border-gray-300 bg-white'
+                }`}
+                onPress={() => setApplicableType('SPECIFIC')}
+              >
+                <Text
+                  className={
+                    applicableType === 'SPECIFIC'
+                      ? 'font-semibold text-white'
+                      : 'text-foreground'
+                  }
+                >
+                  {t('voucher.applicableScopeSpecific')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Post multi-select (SPECIFIC mode only) */}
+            {applicableType === 'SPECIFIC' && (
+              <View className="mt-3">
+                {selectedPostIds.length > 0 && (
+                  <Text className="text-primary mb-2 text-xs font-medium">
+                    {t('voucher.applicableSelectedCount', {
+                      count: selectedPostIds.length,
+                    })}
+                  </Text>
+                )}
+                {loadingPosts ? (
+                  <ActivityIndicator className="mt-2" />
+                ) : availablePosts.length === 0 ? (
+                  <Text className="text-neutral-T50 mt-2 text-sm">
+                    {t('voucher.applicableNoPostsFound')}
+                  </Text>
+                ) : (
+                  availablePosts.map((post) => {
+                    const selected = selectedPostIds.includes(post._id);
+                    return (
+                      <TouchableOpacity
+                        key={post._id}
+                        className={`mb-2 flex-row items-center rounded-xl border p-3 ${
+                          selected
+                            ? 'border-primary-T40 bg-primary-T95'
+                            : 'border-gray-200 bg-white'
+                        }`}
+                        onPress={() => togglePostSelection(post._id)}
+                        activeOpacity={0.7}
+                      >
+                        {post.images[0] ? (
+                          <Image
+                            source={{ uri: post.images[0] }}
+                            style={{
+                              width: 48,
+                              height: 48,
+                              borderRadius: 8,
+                              marginRight: 12,
+                            }}
+                            resizeMode="cover"
+                          />
+                        ) : null}
+                        <View className="flex-1">
+                          <Text
+                            className="text-neutral-T10 text-sm font-medium"
+                            numberOfLines={1}
+                          >
+                            {post.title}
+                          </Text>
+                          <View className="mt-1 flex-row items-center gap-2">
+                            <View
+                              className="rounded px-1.5 py-0.5"
+                              style={{ backgroundColor: 'rgba(148,74,0,0.12)' }}
+                            >
+                              <Text
+                                className="font-label text-[10px] font-semibold"
+                                style={{ color: '#944A00' }}
+                              >
+                                B2C
+                              </Text>
+                            </View>
+                            <Text className="text-neutral-T50 text-[11px]">
+                              {t('post.remainingCount', {
+                                remaining: post.remainingQuantity,
+                                total: post.totalQuantity,
+                              })}
+                            </Text>
+                            <Text className="text-neutral-T50 text-[11px]">
+                              {t('post.expiryPrefix')}{' '}
+                              {new Date(post.expiryDate).toLocaleDateString(
+                                'vi-VN'
+                              )}
+                            </Text>
+                          </View>
+                        </View>
+                        <Ionicons
+                          name={
+                            selected ? 'checkmark-circle' : 'ellipse-outline'
+                          }
+                          size={22}
+                          color={selected ? '#296C24' : '#9CA3AF'}
+                        />
+                      </TouchableOpacity>
+                    );
+                  })
+                )}
+              </View>
+            )}
           </View>
         </ScrollView>
 

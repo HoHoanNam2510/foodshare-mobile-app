@@ -23,7 +23,7 @@ interface VoucherCardProps {
   onRedeemPress?: (voucher: IVoucher) => void;
 
   // viewMode="wallet"
-  userVoucherStatus?: 'UNUSED' | 'USED' | 'EXPIRED';
+  userVoucherStatus?: 'UNUSED' | 'LOCKED' | 'USED' | 'EXPIRED';
 
   // viewMode="store-manage"
   onToggleActive?: (voucherId: string) => void;

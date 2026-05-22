@@ -3,7 +3,7 @@ import React from 'react';
 import { Text, View } from 'react-native';
 
 interface VoucherStatusBadgeProps {
-  status: 'UNUSED' | 'USED' | 'EXPIRED';
+  status: 'UNUSED' | 'LOCKED' | 'USED' | 'EXPIRED';
 }
 
 const STATUS_CONFIG = {
@@ -11,6 +11,11 @@ const STATUS_CONFIG = {
     bgColor: '#ABF59C', // primary-T90
     textColor: '#002201', // primary-T10
     label: 'Chưa dùng',
+  },
+  LOCKED: {
+    bgColor: '#FFF2CC',
+    textColor: '#7A5F00',
+    label: 'Đang dùng',
   },
   USED: {
     bgColor: '#E1E3E2', // neutral-T90

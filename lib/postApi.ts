@@ -144,6 +144,20 @@ export async function getMyPostsApi(): Promise<{
   }
 }
 
+export async function getMyStorePostsApi(params?: {
+  status?: string;
+}): Promise<{ success: boolean; data: IPostDetail[] }> {
+  try {
+    const { data } = await api.get('/posts/me', { params });
+    return data;
+  } catch (error) {
+    extractErrorMessage(
+      error,
+      'Không lấy được danh sách bài đăng của cửa hàng'
+    );
+  }
+}
+
 // ── Update post ───────────────────────────────────────────────────────────
 
 export interface UpdatePostPayload {

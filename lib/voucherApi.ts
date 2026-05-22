@@ -19,6 +19,8 @@ export interface IVoucher {
   validFrom: string; // ISO date string
   validUntil: string; // ISO date string
   isActive: boolean;
+  applicableType: 'ALL' | 'SPECIFIC';
+  applicablePostIds: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -28,7 +30,7 @@ export interface IUserVoucher {
   _id: string;
   userId: string;
   voucherId: IVoucher | null; // Populated từ server; null nếu voucher đã bị xóa
-  status: 'UNUSED' | 'USED' | 'EXPIRED';
+  status: 'UNUSED' | 'LOCKED' | 'USED' | 'EXPIRED';
   usedAt?: string;
   transactionId?: string;
   createdAt: string;
@@ -54,6 +56,8 @@ export interface CreateVoucherBody {
   totalQuantity: number;
   validFrom: string; // ISO date string
   validUntil: string;
+  applicableType?: 'ALL' | 'SPECIFIC';
+  applicablePostIds?: string[];
 }
 
 export interface UpdateVoucherBody {
@@ -106,6 +110,15 @@ export async function getMyVouchersApi(params?: {
   status?: VoucherStatusFilter;
 }): Promise<{ success: boolean; data: IUserVoucher[] }> {
   const { data } = await api.get('/vouchers/me', { params });
+  return data;
+}
+
+export async function getApplicableVouchersForPostApi(
+  postId: string
+): Promise<{ success: boolean; data: IUserVoucher[] }> {
+  const { data } = await api.get('/vouchers/applicable-for-post', {
+    params: { postId },
+  });
   return data;
 }
 
