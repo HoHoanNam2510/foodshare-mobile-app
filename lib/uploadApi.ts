@@ -1,6 +1,12 @@
 import api from './axios';
 
-type UploadFolder = 'avatars' | 'posts' | 'kyc' | 'reports' | 'chat';
+type UploadFolder =
+  | 'avatars'
+  | 'posts'
+  | 'kyc'
+  | 'reports'
+  | 'chat'
+  | 'feedbacks';
 
 const EXT_TO_MIME: Record<string, string> = {
   jpg: 'image/jpeg',

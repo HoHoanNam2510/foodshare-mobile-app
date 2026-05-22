@@ -288,6 +288,11 @@ export default function MenuDrawer() {
             label={t('menu.leaderboard')}
             onPress={() => navigate('/(leaderboard)/leaderboard')}
           />
+          <MenuItem
+            icon="feedback"
+            label={t('menu.helpAndFeedback')}
+            onPress={() => navigate('/(feedback)/feedback-history')}
+          />
         </ScrollView>
 
         {/* ── Logout (pinned to bottom) ── */}
