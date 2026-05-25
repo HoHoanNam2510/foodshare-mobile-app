@@ -35,12 +35,12 @@ export default function BadgesRow({
   const remaining = total - 5;
 
   return (
-    <View className="bg-neutral-T100 gap-4 rounded-2xl p-5 shadow-sm">
+    <View className="bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 gap-4 rounded-2xl p-5 shadow-sm dark:border dark:shadow-none">
       {/* Header */}
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <MaterialIcons name="military-tech" size={20} color="#296C24" />
-          <Text className="text-neutral-T10 font-sans text-base font-bold">
+          <Text className="text-neutral-T10 dark:text-neutral-T90 font-sans text-base font-bold">
             {t('profile.badges')}
           </Text>
         </View>
@@ -65,7 +65,7 @@ export default function BadgesRow({
             {unlocked}/{total}
           </Text>
         </View>
-        <View className="bg-neutral-T90 h-1.5 overflow-hidden rounded-full">
+        <View className="bg-neutral-T90 dark:bg-neutral-T30 h-1.5 overflow-hidden rounded-full">
           <View
             className="bg-primary h-full rounded-full"
             style={{ width: total > 0 ? `${(unlocked / total) * 100}%` : '0%' }}
@@ -93,7 +93,7 @@ export default function BadgesRow({
           {remaining > 0 && (
             <TouchableOpacity
               onPress={onSeeAll}
-              className="bg-neutral-T95 h-14 w-14 items-center justify-center rounded-2xl active:opacity-70"
+              className="bg-neutral-T95 dark:bg-neutral-T30 h-14 w-14 items-center justify-center rounded-2xl active:opacity-70"
             >
               <Text className="font-label text-neutral-T50 text-xs font-semibold">
                 +{remaining}
@@ -111,7 +111,9 @@ function BadgeItem({ badge }: { badge: IBadge }) {
     <View className="items-center gap-1.5" style={{ width: 52 }}>
       <View
         className={`h-14 w-14 items-center justify-center overflow-hidden rounded-2xl ${
-          badge.isUnlocked ? 'bg-primary-T95' : 'bg-neutral-T95'
+          badge.isUnlocked
+            ? 'bg-primary-T95 dark:bg-primary-T20'
+            : 'bg-neutral-T95 dark:bg-neutral-T30'
         }`}
       >
         <Image
@@ -127,7 +129,7 @@ function BadgeItem({ badge }: { badge: IBadge }) {
       <Text
         className={`font-label text-center text-[9px] leading-tight ${
           badge.isUnlocked
-            ? 'text-neutral-T20 font-semibold'
+            ? 'text-neutral-T20 dark:text-neutral-T90 font-semibold'
             : 'text-neutral-T60'
         }`}
         numberOfLines={2}

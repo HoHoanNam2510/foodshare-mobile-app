@@ -1,3 +1,4 @@
+import { useColorScheme } from 'nativewind';
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import Animated, {
@@ -14,6 +15,9 @@ interface LoadingSkeletonProps {
 export default function LoadingSkeleton({ variant }: LoadingSkeletonProps) {
   const [containerWidth, setContainerWidth] = useState(0);
   const shimmerPos = useSharedValue(-100);
+  const { colorScheme } = useColorScheme();
+  const shimmerColor =
+    colorScheme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.5)';
 
   useEffect(() => {
     shimmerPos.value = withRepeat(
@@ -32,7 +36,7 @@ export default function LoadingSkeleton({ variant }: LoadingSkeletonProps) {
       case 'chart':
         return (
           <View
-            className="bg-neutral-T95 w-full overflow-hidden rounded-xl"
+            className="bg-neutral-T95 dark:bg-neutral-T30 w-full overflow-hidden rounded-xl"
             style={{ height: 240 }}
             onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}
           >
@@ -41,7 +45,7 @@ export default function LoadingSkeleton({ variant }: LoadingSkeletonProps) {
                 {
                   width: '30%',
                   height: '100%',
-                  backgroundColor: 'rgba(255,255,255,0.5)',
+                  backgroundColor: shimmerColor,
                 },
                 animatedStyle,
               ]}
@@ -51,7 +55,7 @@ export default function LoadingSkeleton({ variant }: LoadingSkeletonProps) {
       case 'card':
         return (
           <View
-            className="bg-neutral-T95 w-full overflow-hidden rounded-xl"
+            className="bg-neutral-T95 dark:bg-neutral-T30 w-full overflow-hidden rounded-xl"
             style={{ height: 100 }}
             onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}
           >
@@ -60,7 +64,7 @@ export default function LoadingSkeleton({ variant }: LoadingSkeletonProps) {
                 {
                   width: '30%',
                   height: '100%',
-                  backgroundColor: 'rgba(255,255,255,0.5)',
+                  backgroundColor: shimmerColor,
                 },
                 animatedStyle,
               ]}
@@ -73,7 +77,7 @@ export default function LoadingSkeleton({ variant }: LoadingSkeletonProps) {
             {[1, 2, 3].map((_, i) => (
               <View
                 key={i}
-                className="bg-neutral-T95 mb-3 w-full overflow-hidden rounded-xl"
+                className="bg-neutral-T95 dark:bg-neutral-T30 mb-3 w-full overflow-hidden rounded-xl"
                 style={{ height: 60 }}
                 onLayout={(e) => {
                   if (i === 0) setContainerWidth(e.nativeEvent.layout.width);
@@ -84,7 +88,7 @@ export default function LoadingSkeleton({ variant }: LoadingSkeletonProps) {
                     {
                       width: '30%',
                       height: '100%',
-                      backgroundColor: 'rgba(255,255,255,0.5)',
+                      backgroundColor: shimmerColor,
                     },
                     animatedStyle,
                   ]}

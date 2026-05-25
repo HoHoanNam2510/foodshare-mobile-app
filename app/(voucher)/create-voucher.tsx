@@ -25,7 +25,6 @@ const CreateVoucherScreen = () => {
   const router = useRouter();
   const { user } = useAuthStore();
   const { t } = useTranslation();
-
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
@@ -190,7 +189,7 @@ const CreateVoucherScreen = () => {
       className="flex-1"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <View className="bg-neutral flex-1">
+      <View className="bg-neutral dark:bg-neutral-T10 flex-1">
         <StackHeader title={t('voucher.createVoucherTitle')} />
         <ScrollView
           ref={scrollViewRef}
@@ -205,11 +204,11 @@ const CreateVoucherScreen = () => {
         >
           {/* Title */}
           <View className="mb-4">
-            <Text className="text-foreground mb-2 text-sm font-medium">
+            <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
               {t('voucher.titleLabel')} <Text className="text-error">*</Text>
             </Text>
             <TextInput
-              className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
+              className="dark:border-neutral-T30 dark:bg-neutral-T30 dark:text-neutral-T90 rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
               placeholder={t('voucher.titlePlaceholder')}
               value={title}
               onChangeText={setTitle}
@@ -218,11 +217,11 @@ const CreateVoucherScreen = () => {
 
           {/* Description */}
           <View className="mb-4">
-            <Text className="text-foreground mb-2 text-sm font-medium">
+            <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
               {t('voucher.descriptionLabel')}
             </Text>
             <TextInput
-              className="h-24 rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
+              className="dark:border-neutral-T30 dark:bg-neutral-T30 dark:text-neutral-T90 h-24 rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
               placeholder={t('voucher.descriptionPlaceholder')}
               multiline
               numberOfLines={4}
@@ -233,7 +232,7 @@ const CreateVoucherScreen = () => {
 
           {/* Discount Type */}
           <View className="mb-4">
-            <Text className="text-foreground mb-2 text-sm font-medium">
+            <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
               {t('voucher.discountTypeLabel')}{' '}
               <Text className="text-error">*</Text>
             </Text>
@@ -242,7 +241,7 @@ const CreateVoucherScreen = () => {
                 className={`flex-1 items-center rounded-lg border py-3 ${
                   discountType === 'PERCENTAGE'
                     ? 'bg-primary border-primary'
-                    : 'border-gray-300 bg-white'
+                    : 'dark:border-neutral-T30 dark:bg-neutral-T30 border-gray-300 bg-white'
                 }`}
                 onPress={() => setDiscountType('PERCENTAGE')}
               >
@@ -250,7 +249,7 @@ const CreateVoucherScreen = () => {
                   className={
                     discountType === 'PERCENTAGE'
                       ? 'font-semibold text-white'
-                      : 'text-foreground'
+                      : 'text-foreground dark:text-neutral-T80'
                   }
                 >
                   {t('voucher.percentageLabel')}
@@ -260,7 +259,7 @@ const CreateVoucherScreen = () => {
                 className={`flex-1 items-center rounded-lg border py-3 ${
                   discountType === 'FIXED_AMOUNT'
                     ? 'bg-primary border-primary'
-                    : 'border-gray-300 bg-white'
+                    : 'dark:border-neutral-T30 dark:bg-neutral-T30 border-gray-300 bg-white'
                 }`}
                 onPress={() => setDiscountType('FIXED_AMOUNT')}
               >
@@ -279,7 +278,7 @@ const CreateVoucherScreen = () => {
 
           {/* Discount Value */}
           <View className="mb-4">
-            <Text className="text-foreground mb-2 text-sm font-medium">
+            <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
               {t('voucher.discountValueLabel')}{' '}
               {discountType === 'PERCENTAGE'
                 ? t('voucher.percentageSuffix')
@@ -287,7 +286,7 @@ const CreateVoucherScreen = () => {
               <Text className="text-error">*</Text>
             </Text>
             <TextInput
-              className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
+              className="dark:border-neutral-T30 dark:bg-neutral-T30 dark:text-neutral-T90 rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
               placeholder={
                 discountType === 'PERCENTAGE'
                   ? t('voucher.percentagePlaceholder')
@@ -302,12 +301,12 @@ const CreateVoucherScreen = () => {
           {/* Point Cost & Quantity */}
           <View className="mb-4 flex-row gap-4">
             <View className="flex-1">
-              <Text className="text-foreground mb-2 text-sm font-medium">
+              <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
                 {t('voucher.pointCostLabel')}{' '}
                 <Text className="text-error">*</Text>
               </Text>
               <TextInput
-                className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
+                className="dark:border-neutral-T30 dark:bg-neutral-T30 dark:text-neutral-T90 rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
                 placeholder={t('voucher.pointCostPlaceholder')}
                 keyboardType="numeric"
                 value={pointCost}
@@ -315,12 +314,12 @@ const CreateVoucherScreen = () => {
               />
             </View>
             <View className="flex-1">
-              <Text className="text-foreground mb-2 text-sm font-medium">
+              <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
                 {t('voucher.quantityLabel')}{' '}
                 <Text className="text-error">*</Text>
               </Text>
               <TextInput
-                className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
+                className="dark:border-neutral-T30 dark:bg-neutral-T30 dark:text-neutral-T90 rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
                 placeholder={t('voucher.quantityPlaceholder')}
                 keyboardType="numeric"
                 value={totalQuantity}
@@ -331,16 +330,16 @@ const CreateVoucherScreen = () => {
 
           {/* Valid Until */}
           <View className="mb-4">
-            <Text className="text-foreground mb-2 text-sm font-medium">
+            <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
               {t('voucher.validUntilLabel')}{' '}
               <Text className="text-error">*</Text>
             </Text>
             <TouchableOpacity
-              className="rounded-lg border border-gray-300 bg-white px-4 py-3"
+              className="dark:border-neutral-T30 dark:bg-neutral-T30 rounded-lg border border-gray-300 bg-white px-4 py-3"
               onPress={() => setActiveValidUntilPicker(true)}
             >
               <View className="flex-row items-center justify-between">
-                <Text className="text-foreground text-base">
+                <Text className="text-foreground dark:text-neutral-T90 text-base">
                   {validUntil.toLocaleDateString('vi-VN')}
                 </Text>
                 <Ionicons name="calendar-outline" size={20} color="#6b7280" />
@@ -350,11 +349,11 @@ const CreateVoucherScreen = () => {
 
           {/* Code */}
           <View className="mb-4">
-            <Text className="text-foreground mb-2 text-sm font-medium">
+            <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
               {t('voucher.codeLabel')} <Text className="text-error">*</Text>
             </Text>
             <TextInput
-              className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-base uppercase"
+              className="dark:border-neutral-T30 dark:bg-neutral-T30 dark:text-neutral-T90 rounded-lg border border-gray-300 bg-white px-4 py-3 text-base uppercase"
               placeholder={t('voucher.codePlaceholder')}
               value={code}
               autoCapitalize="characters"
@@ -364,7 +363,7 @@ const CreateVoucherScreen = () => {
 
           {/* Applicable Scope */}
           <View className="mb-8">
-            <Text className="text-foreground mb-2 text-sm font-medium">
+            <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
               {t('voucher.applicableScopeLabel')}
             </Text>
             <View className="flex-row gap-3">
@@ -372,7 +371,7 @@ const CreateVoucherScreen = () => {
                 className={`flex-1 items-center rounded-lg border py-3 ${
                   applicableType === 'ALL'
                     ? 'bg-primary border-primary'
-                    : 'border-gray-300 bg-white'
+                    : 'dark:border-neutral-T30 dark:bg-neutral-T30 border-gray-300 bg-white'
                 }`}
                 onPress={() => setApplicableType('ALL')}
               >
@@ -380,7 +379,7 @@ const CreateVoucherScreen = () => {
                   className={
                     applicableType === 'ALL'
                       ? 'font-semibold text-white'
-                      : 'text-foreground'
+                      : 'text-foreground dark:text-neutral-T80'
                   }
                 >
                   {t('voucher.applicableScopeAll')}
@@ -390,7 +389,7 @@ const CreateVoucherScreen = () => {
                 className={`flex-1 items-center rounded-lg border py-3 ${
                   applicableType === 'SPECIFIC'
                     ? 'bg-primary border-primary'
-                    : 'border-gray-300 bg-white'
+                    : 'dark:border-neutral-T30 dark:bg-neutral-T30 border-gray-300 bg-white'
                 }`}
                 onPress={() => setApplicableType('SPECIFIC')}
               >
@@ -430,8 +429,8 @@ const CreateVoucherScreen = () => {
                         key={post._id}
                         className={`mb-2 flex-row items-center rounded-xl border p-3 ${
                           selected
-                            ? 'border-primary-T40 bg-primary-T95'
-                            : 'border-gray-200 bg-white'
+                            ? 'border-primary-T40 bg-primary-T95 dark:bg-primary-T20'
+                            : 'dark:border-neutral-T30 dark:bg-neutral-T30 border-gray-200 bg-white'
                         }`}
                         onPress={() => togglePostSelection(post._id)}
                         activeOpacity={0.7}

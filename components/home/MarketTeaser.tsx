@@ -28,16 +28,16 @@ function formatVND(price: number): string {
 function MarketSkeletonCard({ anim }: { anim: Animated.Value }) {
   return (
     <Animated.View
-      className="bg-neutral-T100 mr-3 overflow-hidden rounded-2xl shadow-sm"
+      className="bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 mr-3 overflow-hidden rounded-2xl shadow-sm dark:border dark:shadow-none"
       style={{ width: 190, opacity: anim }}
     >
       <View
-        className="bg-neutral-T90 rounded-t-2xl"
+        className="bg-neutral-T90 dark:bg-neutral-T30 rounded-t-2xl"
         style={{ width: 190, height: 150 }}
       />
       <View className="gap-2 px-3.5 pb-3.5 pt-3">
-        <View className="bg-neutral-T90 h-4 w-3/4 rounded-full" />
-        <View className="bg-neutral-T90 h-3 w-1/2 rounded-full" />
+        <View className="bg-neutral-T90 dark:bg-neutral-T30 h-4 w-3/4 rounded-full" />
+        <View className="bg-neutral-T90 dark:bg-neutral-T30 h-3 w-1/2 rounded-full" />
       </View>
     </Animated.View>
   );
@@ -58,7 +58,7 @@ function MarketCard({
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={onPress}
-      className={`bg-neutral-T100 overflow-hidden rounded-2xl shadow-sm active:opacity-90 ${isLast ? '' : 'mr-3'}`}
+      className={`bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 overflow-hidden rounded-2xl shadow-sm active:opacity-90 dark:border dark:shadow-none ${isLast ? '' : 'mr-3'}`}
       style={{ width: 190 }}
     >
       <View className="relative">
@@ -86,7 +86,7 @@ function MarketCard({
 
       <View className="px-3.5 pb-3.5 pt-3">
         <Text
-          className="font-body text-neutral-T10 text-[15px]"
+          className="font-body text-neutral-T10 dark:text-neutral-T90 text-[15px]"
           style={{ fontWeight: '600' }}
           numberOfLines={1}
         >
@@ -94,7 +94,7 @@ function MarketCard({
         </Text>
         <View className="mt-1.5 flex-row items-center justify-between">
           <Text
-            className="font-body text-neutral-T50 mr-2 flex-1 text-xs"
+            className="font-body text-neutral-T50 dark:text-neutral-T60 mr-2 flex-1 text-xs"
             numberOfLines={1}
           >
             {owner.fullName}
@@ -103,7 +103,7 @@ function MarketCard({
             <View className="flex-row items-center gap-0.5">
               <Ionicons name="star" size={12} color="#EC8632" />
               <Text
-                className="font-body text-neutral-T10 text-xs"
+                className="font-body text-neutral-T10 dark:text-neutral-T90 text-xs"
                 style={{ fontWeight: '600' }}
               >
                 {owner.averageRating.toFixed(1)}
@@ -185,12 +185,12 @@ export default function MarketTeaser({
   return (
     <View className="mt-8">
       <View className="mb-1 px-5">
-        <Text className="font-body text-neutral-T50 text-sm">
+        <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-sm">
           {t('home.marketSubtitle')}
         </Text>
         <View className="mt-1 flex-row items-end justify-between">
           <Text
-            className="text-neutral-T10 font-sans text-xl"
+            className="text-neutral-T10 dark:text-neutral-T90 font-sans text-xl"
             style={{ fontWeight: '700', letterSpacing: -0.3 }}
           >
             {t('home.marketTitle')}
@@ -233,7 +233,7 @@ export default function MarketTeaser({
       {!loading && posts.length === 0 && (
         <View className="items-center px-5 py-10">
           <Ionicons name="bag-handle-outline" size={40} color="#AAABAB" />
-          <Text className="font-body text-neutral-T50 mt-3 text-center text-sm">
+          <Text className="font-body text-neutral-T50 dark:text-neutral-T60 mt-3 text-center text-sm">
             {t('home.marketTeaserEmpty')}
           </Text>
         </View>

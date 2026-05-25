@@ -68,7 +68,7 @@ export function WrittenReviewCard({
   return (
     <View
       style={styles.card}
-      className="bg-neutral-T100 mx-4 mb-3 overflow-hidden rounded-2xl"
+      className="bg-neutral-T100 dark:bg-neutral-T20 mx-4 mb-3 overflow-hidden rounded-2xl"
     >
       {/* Header row */}
       <View className="gap-3 p-4">
@@ -77,7 +77,7 @@ export function WrittenReviewCard({
           <UserAvatar user={reviewee} />
           <View className="flex-1">
             <Text
-              className="font-label text-neutral-T10 text-sm font-semibold"
+              className="font-label text-neutral-T10 dark:text-neutral-T90 text-sm font-semibold"
               numberOfLines={1}
             >
               {reviewee?.fullName ?? t('review.unknownUser')}
@@ -101,7 +101,7 @@ export function WrittenReviewCard({
 
         {/* Feedback */}
         {review.feedback ? (
-          <Text className="font-body text-neutral-T30 text-sm leading-5">
+          <Text className="font-body text-neutral-T30 dark:text-neutral-T80 text-sm leading-5">
             {review.feedback}
           </Text>
         ) : (
@@ -112,7 +112,7 @@ export function WrittenReviewCard({
       </View>
 
       {/* Action row */}
-      <View className="border-neutral-T90 flex-row border-t">
+      <View className="border-neutral-T90 dark:border-neutral-T30 flex-row border-t">
         <TouchableOpacity
           onPress={onEdit}
           activeOpacity={0.8}
@@ -124,7 +124,7 @@ export function WrittenReviewCard({
           </Text>
         </TouchableOpacity>
 
-        <View className="bg-neutral-T90 w-px" />
+        <View className="bg-neutral-T90 dark:bg-neutral-T30 w-px" />
 
         <TouchableOpacity
           onPress={onDelete}
@@ -142,7 +142,7 @@ export function WrittenReviewCard({
 
         {onReport && (
           <>
-            <View className="bg-neutral-T90 w-px" />
+            <View className="bg-neutral-T90 dark:bg-neutral-T30 w-px" />
             <TouchableOpacity
               onPress={onReport}
               activeOpacity={0.8}
@@ -174,7 +174,7 @@ export function ReceivedReviewCard({ review, onReport }: ReceivedCardProps) {
   return (
     <View
       style={styles.card}
-      className="bg-neutral-T100 mx-4 mb-3 overflow-hidden rounded-2xl"
+      className="bg-neutral-T100 dark:bg-neutral-T20 mx-4 mb-3 overflow-hidden rounded-2xl"
     >
       <View className="gap-3 p-4">
         {/* Reviewer identity */}
@@ -182,7 +182,7 @@ export function ReceivedReviewCard({ review, onReport }: ReceivedCardProps) {
           <UserAvatar user={reviewer} />
           <View className="flex-1">
             <Text
-              className="font-label text-neutral-T10 text-sm font-semibold"
+              className="font-label text-neutral-T10 dark:text-neutral-T90 text-sm font-semibold"
               numberOfLines={1}
             >
               {reviewer?.fullName ?? t('review.unknownUser')}
@@ -201,7 +201,7 @@ export function ReceivedReviewCard({ review, onReport }: ReceivedCardProps) {
 
         {/* Feedback */}
         {review.feedback ? (
-          <Text className="font-body text-neutral-T30 text-sm leading-5">
+          <Text className="font-body text-neutral-T30 dark:text-neutral-T80 text-sm leading-5">
             {review.feedback}
           </Text>
         ) : (
@@ -212,7 +212,7 @@ export function ReceivedReviewCard({ review, onReport }: ReceivedCardProps) {
       </View>
 
       {/* Report action */}
-      <View className="border-neutral-T90 flex-row border-t">
+      <View className="border-neutral-T90 dark:border-neutral-T30 flex-row border-t">
         <TouchableOpacity
           onPress={onReport}
           activeOpacity={0.8}

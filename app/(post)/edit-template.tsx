@@ -19,6 +19,7 @@ import CategoryPicker from '@/components/post/CategoryPicker';
 import ImagePickerSection from '@/components/post/ImagePickerSection';
 import QuantityStepper from '@/components/post/QuantityStepper';
 import ManagementHeader from '@/components/shared/headers/ManagementHeader';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 import { getMyTemplatesApi, updateTemplateApi } from '@/lib/postTemplateApi';
 import { uploadImage } from '@/lib/uploadApi';
 
@@ -31,6 +32,7 @@ export default function EditTemplateScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
+  const colors = useThemeColors();
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -129,14 +131,14 @@ export default function EditTemplateScreen() {
 
   if (isLoading) {
     return (
-      <View className="bg-neutral flex-1">
+      <View className="bg-neutral dark:bg-neutral-T10 flex-1">
         <ManagementHeader
           title={t('template.editScreenTitle')}
           onBack={() => router.back()}
         />
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-neutral-T50 text-sm">
+          <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-sm">
             {t('common.loading')}
           </Text>
         </View>
@@ -145,7 +147,7 @@ export default function EditTemplateScreen() {
   }
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <ManagementHeader
         title={t('template.editScreenTitle')}
         onBack={() => router.back()}
@@ -167,13 +169,13 @@ export default function EditTemplateScreen() {
         >
           {/* Template name */}
           <View className="mb-6 gap-2">
-            <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
+            <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
               {t('template.fieldTemplateName')}
             </Text>
             <TextInput
-              className="bg-neutral-T95 border-neutral-T90 font-body text-neutral-T10 h-14 w-full rounded-xl border px-4 text-base"
+              className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 font-body text-neutral-T10 dark:text-neutral-T90 h-14 w-full rounded-xl border px-4 text-base"
               placeholder={t('template.fieldTemplateNamePlaceholder')}
-              placeholderTextColor="#AAABAB"
+              placeholderTextColor={colors.placeholder}
               value={templateName}
               onChangeText={setTemplateName}
             />
@@ -181,7 +183,7 @@ export default function EditTemplateScreen() {
 
           {/* Post type */}
           <View className="mb-6 gap-2">
-            <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
+            <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
               {t('template.fieldPostType')}
             </Text>
             <View className="flex-row gap-3">
@@ -193,7 +195,7 @@ export default function EditTemplateScreen() {
               ).map((opt) => (
                 <TouchableOpacity
                   key={opt.value}
-                  className={`h-12 flex-1 items-center justify-center rounded-xl border ${type === opt.value ? 'bg-primary-T95 border-primary-T70' : 'bg-neutral-T95 border-neutral-T90'}`}
+                  className={`h-12 flex-1 items-center justify-center rounded-xl border ${type === opt.value ? 'bg-primary-T95 dark:bg-primary-T20 border-primary-T70' : 'bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30'}`}
                   onPress={() => {
                     setType(opt.value);
                     if (opt.value === 'P2P_FREE') setPrice('');
@@ -201,7 +203,7 @@ export default function EditTemplateScreen() {
                   activeOpacity={0.8}
                 >
                   <Text
-                    className={`font-label text-sm font-semibold ${type === opt.value ? 'text-primary-T40' : 'text-neutral-T50'}`}
+                    className={`font-label text-sm font-semibold ${type === opt.value ? 'text-primary-T40 dark:text-primary-T60' : 'text-neutral-T50 dark:text-neutral-T60'}`}
                   >
                     {t(opt.labelKey)}
                   </Text>
@@ -217,7 +219,7 @@ export default function EditTemplateScreen() {
 
           {/* Category */}
           <View className="mb-6 gap-2">
-            <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
+            <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
               {t('post.category')}
             </Text>
             <CategoryPicker selected={category} onSelect={setCategory} />
@@ -225,13 +227,13 @@ export default function EditTemplateScreen() {
 
           {/* Food name */}
           <View className="mb-6 gap-2">
-            <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
+            <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
               {t('template.fieldFoodName')}
             </Text>
             <TextInput
-              className="bg-neutral-T95 border-neutral-T90 font-body text-neutral-T10 h-14 w-full rounded-xl border px-4 text-base"
+              className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 font-body text-neutral-T10 dark:text-neutral-T90 h-14 w-full rounded-xl border px-4 text-base"
               placeholder={t('post.titlePlaceholder')}
-              placeholderTextColor="#AAABAB"
+              placeholderTextColor={colors.placeholder}
               value={title}
               onChangeText={setTitle}
             />
@@ -239,13 +241,13 @@ export default function EditTemplateScreen() {
 
           {/* Description */}
           <View className="mb-6 gap-2">
-            <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
+            <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
               {t('post.description')}
             </Text>
             <TextInput
-              className="bg-neutral-T95 border-neutral-T90 font-body text-neutral-T10 w-full rounded-xl border p-4 text-base"
+              className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 font-body text-neutral-T10 dark:text-neutral-T90 w-full rounded-xl border p-4 text-base"
               placeholder={t('post.descriptionPlaceholder')}
-              placeholderTextColor="#AAABAB"
+              placeholderTextColor={colors.placeholder}
               multiline
               numberOfLines={4}
               textAlignVertical="top"
@@ -259,26 +261,26 @@ export default function EditTemplateScreen() {
           <View className="mb-6 flex-row gap-4">
             {isB2C && (
               <View className="flex-1 gap-2">
-                <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
+                <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
                   {t('template.fieldPrice')}
                 </Text>
                 <View className="relative justify-center">
                   <TextInput
-                    className="bg-neutral-T95 border-neutral-T90 font-body text-neutral-T10 h-14 w-full rounded-xl border pl-4 pr-10 text-base"
+                    className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 font-body text-neutral-T10 dark:text-neutral-T90 h-14 w-full rounded-xl border pl-4 pr-10 text-base"
                     placeholder="0"
-                    placeholderTextColor="#AAABAB"
+                    placeholderTextColor={colors.placeholder}
                     keyboardType="number-pad"
                     value={price}
                     onChangeText={setPrice}
                   />
-                  <Text className="font-label text-neutral-T50 absolute right-4 z-10 font-semibold">
+                  <Text className="font-label text-neutral-T50 dark:text-neutral-T60 absolute right-4 z-10 font-semibold">
                     ₫
                   </Text>
                 </View>
               </View>
             )}
             <View className="flex-1 gap-2">
-              <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
                 {t('template.fieldServings')}
               </Text>
               <QuantityStepper value={quantity} onChange={setQuantity} />
@@ -289,7 +291,7 @@ export default function EditTemplateScreen() {
 
       {/* Fixed footer */}
       <View
-        className="bg-neutral-T100 border-neutral-T90 absolute bottom-0 left-0 right-0 border-t"
+        className="bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T90 dark:border-neutral-T30 absolute bottom-0 left-0 right-0 border-t"
         style={{
           paddingBottom: Math.max(insets.bottom, 16),
           paddingTop: 16,

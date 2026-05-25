@@ -4,6 +4,7 @@ import React from 'react';
 import { StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 
 import type { IVoucher } from '@/lib/voucherApi';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 import VoucherDiscountBadge from './VoucherDiscountBadge';
 import VoucherExpiryTag from './VoucherExpiryTag';
 import VoucherPointCost from './VoucherPointCost';
@@ -46,6 +47,7 @@ export default function VoucherCard({
   onPress,
 }: VoucherCardProps) {
   const { t } = useTranslation();
+  const colors = useThemeColors();
   const canAfford =
     userGreenPoints !== undefined ? userGreenPoints >= voucher.pointCost : true;
 
@@ -54,7 +56,7 @@ export default function VoucherCard({
       onPress={() => onPress?.(voucher._id)}
       activeOpacity={onPress ? 0.85 : 1}
       style={styles.card}
-      className="bg-neutral-T100 mb-3 overflow-hidden rounded-2xl"
+      className="bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 mb-3 overflow-hidden rounded-2xl dark:border"
     >
       {/* ── Thanh màu bên trái ── */}
       <View
@@ -73,14 +75,14 @@ export default function VoucherCard({
             discountValue={voucher.discountValue}
             size="sm"
           />
-          <Text className="font-label text-neutral-T50 text-xs font-semibold tracking-wider">
+          <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-xs font-semibold tracking-wider">
             {voucher.code}
           </Text>
         </View>
 
         {/* ── Row 2: Title ── */}
         <Text
-          className="text-neutral-T10 mt-2 font-sans text-base font-bold"
+          className="text-neutral-T10 dark:text-neutral-T90 mt-2 font-sans text-base font-bold"
           numberOfLines={1}
         >
           {voucher.title}
@@ -89,7 +91,7 @@ export default function VoucherCard({
         {/* ── Row 3: Description (chỉ market mode) ── */}
         {viewMode === 'market' && voucher.description && (
           <Text
-            className="font-body text-neutral-T50 mt-1 text-xs leading-4"
+            className="font-body text-neutral-T50 dark:text-neutral-T60 mt-1 text-xs leading-4"
             numberOfLines={2}
           >
             {voucher.description}
@@ -97,7 +99,7 @@ export default function VoucherCard({
         )}
 
         {/* ── Divider ── */}
-        <View className="bg-neutral-T90 my-3 h-px" />
+        <View className="bg-neutral-T90 dark:bg-neutral-T30 my-3 h-px" />
 
         {/* ── Bottom Info Row ── */}
         <View className="gap-2">
@@ -139,12 +141,16 @@ export default function VoucherCard({
           {viewMode === 'store-manage' && (
             <View
               className={`self-start rounded-full px-2 py-0.5 ${
-                voucher.isActive ? 'bg-primary-T95' : 'bg-neutral-T90'
+                voucher.isActive
+                  ? 'bg-primary-T95 dark:bg-primary-T20'
+                  : 'bg-neutral-T90 dark:bg-neutral-T30'
               }`}
             >
               <Text
                 className={`font-label text-xs font-semibold ${
-                  voucher.isActive ? 'text-primary-T30' : 'text-neutral-T50'
+                  voucher.isActive
+                    ? 'text-primary-T30 dark:text-primary-T60'
+                    : 'text-neutral-T50 dark:text-neutral-T60'
                 }`}
               >
                 {voucher.isActive
@@ -160,7 +166,9 @@ export default function VoucherCard({
           {viewMode === 'market' && (
             <TouchableOpacity
               className={`h-11 items-center justify-center rounded-xl ${
-                canAfford ? 'bg-primary-T40' : 'bg-neutral-T90'
+                canAfford
+                  ? 'bg-primary-T40 dark:bg-primary-T50'
+                  : 'bg-neutral-T90 dark:bg-neutral-T30'
               }`}
               onPress={() => canAfford && onRedeemPress?.(voucher)}
               disabled={!canAfford}
@@ -168,7 +176,9 @@ export default function VoucherCard({
             >
               <Text
                 className={`font-label text-sm font-semibold ${
-                  canAfford ? 'text-neutral-T100' : 'text-neutral-T50'
+                  canAfford
+                    ? 'text-neutral-T100'
+                    : 'text-neutral-T50 dark:text-neutral-T60'
                 }`}
               >
                 {canAfford
@@ -180,11 +190,11 @@ export default function VoucherCard({
 
           {viewMode === 'wallet' && (
             <TouchableOpacity
-              className="bg-neutral-T95 border-neutral-T80 h-11 items-center justify-center rounded-xl border"
+              className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T80 dark:border-neutral-T30 h-11 items-center justify-center rounded-xl border"
               onPress={() => onPress?.(voucher._id)}
               activeOpacity={0.8}
             >
-              <Text className="font-label text-neutral-T40 text-sm font-semibold">
+              <Text className="font-label text-neutral-T40 dark:text-neutral-T80 text-sm font-semibold">
                 {t('voucher.viewDetailsBtn')}
               </Text>
             </TouchableOpacity>
@@ -197,10 +207,17 @@ export default function VoucherCard({
                 <Switch
                   value={voucher.isActive}
                   onValueChange={() => onToggleActive?.(voucher._id)}
-                  trackColor={{ false: '#C5C7C6', true: '#90D882' }}
-                  thumbColor={voucher.isActive ? '#296C24' : '#AAABAB'}
+                  trackColor={{
+                    false: colors.switchTrackFalse,
+                    true: colors.switchTrackTrue,
+                  }}
+                  thumbColor={
+                    voucher.isActive
+                      ? colors.switchThumbActive
+                      : colors.switchThumbInactive
+                  }
                 />
-                <Text className="font-label text-neutral-T50 text-xs">
+                <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-xs">
                   {voucher.isActive
                     ? t('voucher.activeStatus')
                     : t('voucher.inactiveStatus')}
@@ -221,8 +238,7 @@ export default function VoucherCard({
 
               {/* Delete button */}
               <TouchableOpacity
-                className="h-10 w-10 items-center justify-center rounded-xl"
-                style={{ backgroundColor: 'rgba(220,38,38,0.08)' }}
+                className="h-10 w-10 items-center justify-center rounded-xl bg-[rgba(220,38,38,0.08)] dark:bg-[rgba(220,38,38,0.18)]"
                 onPress={() => onDeletePress?.(voucher._id)}
                 activeOpacity={0.8}
               >

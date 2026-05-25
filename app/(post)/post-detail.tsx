@@ -30,7 +30,10 @@ import {
   type IVoucher,
 } from '@/lib/voucherApi';
 import { getOrCreateConversationApi } from '@/lib/chatApi';
+import { useColorScheme } from 'nativewind';
+
 import { useAuthStore } from '@/stores/authStore';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 import StackHeader from '@/components/shared/headers/StackHeader';
 import PostDetailMap from '@/components/map/PostDetailMap';
 import SaveTemplateModal from '@/components/post/SaveTemplateModal';
@@ -62,6 +65,9 @@ export default function PostDetailScreen() {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const colors = useThemeColors();
   const currentUser = useAuthStore((s) => s.user);
 
   const [post, setPost] = useState<IPostDetail | null>(null);
@@ -264,11 +270,11 @@ export default function PostDetailScreen() {
   if (isLoading) {
     return (
       <SafeAreaView
-        className="bg-neutral flex-1 items-center justify-center"
+        className="bg-neutral dark:bg-neutral-T10 flex-1 items-center justify-center"
         edges={['top']}
       >
         <ActivityIndicator size="large" color="#296C24" />
-        <Text className="font-body text-neutral-T50 mt-3 text-sm">
+        <Text className="font-body text-neutral-T50 dark:text-neutral-T60 mt-3 text-sm">
           {t('common.loading')}
         </Text>
       </SafeAreaView>
@@ -279,7 +285,7 @@ export default function PostDetailScreen() {
   if (error || !post) {
     return (
       <SafeAreaView
-        className="bg-neutral flex-1 items-center justify-center gap-4 px-8"
+        className="bg-neutral dark:bg-neutral-T10 flex-1 items-center justify-center gap-4 px-8"
         edges={['top']}
       >
         <Text className="font-body text-neutral-T50 text-center text-sm">
@@ -326,7 +332,7 @@ export default function PostDetailScreen() {
   };
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <StackHeader
         title={t('post.postDetail')}
         rightElement={
@@ -334,7 +340,7 @@ export default function PostDetailScreen() {
             <TouchableOpacity
               onPress={handleReport}
               activeOpacity={0.7}
-              className="bg-neutral-T95 h-10 w-10 items-center justify-center rounded-full"
+              className="bg-neutral-T95 dark:bg-neutral-T30 h-10 w-10 items-center justify-center rounded-full"
             >
               <MaterialIcons name="flag" size={20} color="#757777" />
             </TouchableOpacity>
@@ -376,7 +382,7 @@ export default function PostDetailScreen() {
           ) : (
             <View
               style={{ height: screenWidth * (3 / 4) }}
-              className="bg-neutral-T90 w-full items-center justify-center"
+              className="bg-neutral-T90 dark:bg-neutral-T30 w-full items-center justify-center"
             >
               <MaterialIcons name="fastfood" size={48} color="#AAABAB" />
             </View>
@@ -397,7 +403,15 @@ export default function PostDetailScreen() {
               className="rounded-lg px-3 py-1.5"
               style={[
                 styles.badge,
-                { backgroundColor: isP2P ? '#296C24' : '#944A00' },
+                {
+                  backgroundColor: isP2P
+                    ? isDark
+                      ? '#42863A'
+                      : '#296C24'
+                    : isDark
+                      ? '#B95F03'
+                      : '#944A00',
+                },
               ]}
             >
               <Text className="text-neutral-T100 font-label text-xs font-bold uppercase tracking-wider">
@@ -407,10 +421,10 @@ export default function PostDetailScreen() {
               </Text>
             </View>
             <View
-              className="bg-primary-T95 rounded-lg px-3 py-1.5"
+              className="bg-primary-T95 dark:bg-primary-T20 rounded-lg px-3 py-1.5"
               style={styles.badge}
             >
-              <Text className="text-primary-T30 font-label text-xs font-bold uppercase tracking-wider">
+              <Text className="text-primary-T30 dark:text-primary-T60 font-label text-xs font-bold uppercase tracking-wider">
                 {post.status === 'AVAILABLE'
                   ? t('post.available')
                   : post.status === 'BOOKED'
@@ -423,20 +437,20 @@ export default function PostDetailScreen() {
 
         {/* ─── Content Card ─── */}
         <View
-          className="bg-neutral-T100 mx-4 mt-8 overflow-hidden rounded-2xl"
+          className="bg-neutral-T100 dark:bg-neutral-T20 mx-4 mt-8 overflow-hidden rounded-2xl"
           style={styles.card}
         >
           {/* Title + Meta */}
           <View className="px-5 pb-4 pt-6">
-            <Text className="text-neutral-T10 font-sans text-3xl font-extrabold leading-[34px] tracking-tight">
+            <Text className="text-neutral-T10 dark:text-neutral-T90 font-sans text-3xl font-extrabold leading-[34px] tracking-tight">
               {post.title}
             </Text>
             <View className="mt-2 flex-row items-center gap-2">
-              <Text className="font-label text-neutral-T50 text-xs font-semibold uppercase tracking-wider">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-xs font-semibold uppercase tracking-wider">
                 {post.category}
               </Text>
               <View className="bg-neutral-T70 h-1 w-1 rounded-full" />
-              <Text className="font-label text-neutral-T50 text-xs font-semibold uppercase tracking-wider">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-xs font-semibold uppercase tracking-wider">
                 {t('post.remainingCount', {
                   remaining: post.remainingQuantity,
                   total: post.totalQuantity,
@@ -446,7 +460,7 @@ export default function PostDetailScreen() {
           </View>
 
           {/* Divider */}
-          <View className="bg-neutral-T90 mx-5 h-px" />
+          <View className="bg-neutral-T90 dark:bg-neutral-T30 mx-5 h-px" />
 
           {/* Owner Row */}
           <View className="flex-row items-center justify-between px-5 py-4">
@@ -466,10 +480,10 @@ export default function PostDetailScreen() {
                 </View>
               )}
               <View>
-                <Text className="font-label text-neutral-T50 text-[10px] uppercase tracking-wider">
+                <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-[10px] uppercase tracking-wider">
                   {owner.role === 'STORE' ? t('roles.STORE') : t('post.sharer')}
                 </Text>
-                <Text className="text-neutral-T10 font-sans text-base font-extrabold">
+                <Text className="text-neutral-T10 dark:text-neutral-T90 font-sans text-base font-extrabold">
                   {owner.fullName}
                 </Text>
               </View>
@@ -477,7 +491,7 @@ export default function PostDetailScreen() {
             {owner.averageRating != null && (
               <View className="flex-row items-center gap-1">
                 <MaterialIcons name="star" size={14} color="#F59E0B" />
-                <Text className="font-label text-neutral-T30 text-sm font-semibold">
+                <Text className="font-label text-neutral-T30 dark:text-neutral-T80 text-sm font-semibold">
                   {owner.averageRating.toFixed(1)}
                 </Text>
               </View>
@@ -485,12 +499,12 @@ export default function PostDetailScreen() {
           </View>
 
           {/* Divider */}
-          <View className="bg-neutral-T90 mx-5 h-px" />
+          <View className="bg-neutral-T90 dark:bg-neutral-T30 mx-5 h-px" />
 
           {/* Description */}
           {post.description && (
             <View className="px-5 py-5">
-              <Text className="font-body text-neutral-T30 text-[14px] leading-6">
+              <Text className="font-body text-neutral-T30 dark:text-neutral-T80 text-[14px] leading-6">
                 {post.description}
               </Text>
             </View>
@@ -501,17 +515,21 @@ export default function PostDetailScreen() {
         <View className="mx-4 mt-3 gap-3">
           {/* Pickup Window */}
           <View
-            className="bg-neutral-T100 flex-row items-center gap-4 rounded-2xl px-5 py-4"
+            className="bg-neutral-T100 dark:bg-neutral-T20 flex-row items-center gap-4 rounded-2xl px-5 py-4"
             style={styles.card}
           >
-            <View className="bg-primary-T95 h-10 w-10 items-center justify-center rounded-xl">
-              <MaterialIcons name="schedule" size={20} color="#296C24" />
+            <View className="bg-primary-T95 dark:bg-primary-T20 h-10 w-10 items-center justify-center rounded-xl">
+              <MaterialIcons
+                name="schedule"
+                size={20}
+                color={colors.primaryGreen}
+              />
             </View>
             <View className="flex-1">
-              <Text className="font-label text-neutral-T50 text-[10px] uppercase tracking-wider">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-[10px] uppercase tracking-wider">
                 {t('post.pickupTime')}
               </Text>
-              <Text className="text-neutral-T10 mt-0.5 font-sans text-base font-extrabold">
+              <Text className="text-neutral-T10 dark:text-neutral-T90 mt-0.5 font-sans text-base font-extrabold">
                 {formatPickupTime(post.pickupTime.start, post.pickupTime.end)}
               </Text>
             </View>
@@ -519,17 +537,21 @@ export default function PostDetailScreen() {
 
           {/* Expiry */}
           <View
-            className="bg-neutral-T100 flex-row items-center gap-4 rounded-2xl px-5 py-4"
+            className="bg-neutral-T100 dark:bg-neutral-T20 flex-row items-center gap-4 rounded-2xl px-5 py-4"
             style={styles.card}
           >
-            <View className="bg-secondary-T95 h-10 w-10 items-center justify-center rounded-xl">
-              <MaterialIcons name="timer" size={20} color="#944A00" />
+            <View className="bg-secondary-T95 dark:bg-secondary-T20 h-10 w-10 items-center justify-center rounded-xl">
+              <MaterialIcons
+                name="timer"
+                size={20}
+                color={colors.secondaryOrange}
+              />
             </View>
             <View className="flex-1">
-              <Text className="font-label text-neutral-T50 text-[10px] uppercase tracking-wider">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-[10px] uppercase tracking-wider">
                 {t('post.expires')}
               </Text>
-              <Text className="text-neutral-T10 mt-0.5 font-sans text-base font-extrabold">
+              <Text className="text-neutral-T10 dark:text-neutral-T90 mt-0.5 font-sans text-base font-extrabold">
                 {formatDate(post.expiryDate)}
               </Text>
             </View>
@@ -564,7 +586,7 @@ export default function PostDetailScreen() {
 
       {/* ─── Fixed Bottom Action Bar ─── */}
       <View
-        className="bg-neutral absolute bottom-0 left-0 w-full"
+        className="bg-neutral dark:bg-neutral-T20 absolute bottom-0 left-0 w-full"
         style={[
           styles.bottomBar,
           {
@@ -588,14 +610,18 @@ export default function PostDetailScreen() {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              className="bg-primary-T95 items-center justify-center rounded-2xl px-5 py-4"
+              className="bg-primary-T95 dark:bg-primary-T20 items-center justify-center rounded-2xl px-5 py-4"
               activeOpacity={0.85}
               onPress={() => setShowSaveModal(true)}
             >
-              <MaterialIcons name="bookmark-add" size={22} color="#296C24" />
+              <MaterialIcons
+                name="bookmark-add"
+                size={22}
+                color={colors.primaryGreen}
+              />
             </TouchableOpacity>
             <TouchableOpacity
-              className="bg-neutral-T95 items-center justify-center rounded-2xl px-5 py-4"
+              className="bg-neutral-T95 dark:bg-neutral-T30 items-center justify-center rounded-2xl px-5 py-4"
               activeOpacity={0.85}
               onPress={handleDeletePost}
             >
@@ -605,8 +631,8 @@ export default function PostDetailScreen() {
         ) : !isAvailable ? (
           // Unavailable — still allow chatting with owner
           <View className="w-full flex-row gap-3">
-            <View className="bg-neutral-T95 flex-1 items-center justify-center rounded-2xl py-4">
-              <Text className="font-label text-neutral-T50 font-semibold">
+            <View className="bg-neutral-T95 dark:bg-neutral-T30 flex-1 items-center justify-center rounded-2xl py-4">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 font-semibold">
                 {t('post.notAvailable')}
               </Text>
             </View>
@@ -614,7 +640,7 @@ export default function PostDetailScreen() {
               onPress={handleChat}
               disabled={isChatting}
               activeOpacity={0.85}
-              className="bg-neutral-T95 w-14 items-center justify-center rounded-2xl"
+              className="bg-neutral-T95 dark:bg-neutral-T30 w-14 items-center justify-center rounded-2xl"
             >
               {isChatting ? (
                 <ActivityIndicator color="#296C24" />
@@ -644,11 +670,11 @@ export default function PostDetailScreen() {
                 <TouchableOpacity
                   onPress={() => setSelectedQuantity((q) => Math.max(1, q - 1))}
                   activeOpacity={0.7}
-                  className="bg-neutral-T90 h-9 w-9 items-center justify-center rounded-xl"
+                  className="bg-neutral-T90 dark:bg-neutral-T30 h-9 w-9 items-center justify-center rounded-xl"
                 >
                   <MaterialIcons name="remove" size={18} color="#5C5F5E" />
                 </TouchableOpacity>
-                <Text className="text-neutral-T10 w-7 text-center font-sans text-lg font-bold">
+                <Text className="text-neutral-T10 dark:text-neutral-T90 w-7 text-center font-sans text-lg font-bold">
                   {selectedQuantity}
                 </Text>
                 <TouchableOpacity
@@ -658,7 +684,7 @@ export default function PostDetailScreen() {
                     )
                   }
                   activeOpacity={0.7}
-                  className="bg-neutral-T90 h-9 w-9 items-center justify-center rounded-xl"
+                  className="bg-neutral-T90 dark:bg-neutral-T30 h-9 w-9 items-center justify-center rounded-xl"
                 >
                   <MaterialIcons name="add" size={18} color="#5C5F5E" />
                 </TouchableOpacity>
@@ -684,7 +710,7 @@ export default function PostDetailScreen() {
                 onPress={handleChat}
                 disabled={isChatting}
                 activeOpacity={0.85}
-                className="bg-primary-T95 w-14 items-center justify-center rounded-2xl"
+                className="bg-primary-T95 dark:bg-primary-T20 w-14 items-center justify-center rounded-2xl"
               >
                 {isChatting ? (
                   <ActivityIndicator color="#296C24" />
@@ -715,11 +741,11 @@ export default function PostDetailScreen() {
                 <TouchableOpacity
                   onPress={() => setSelectedQuantity((q) => Math.max(1, q - 1))}
                   activeOpacity={0.7}
-                  className="bg-neutral-T90 h-9 w-9 items-center justify-center rounded-xl"
+                  className="bg-neutral-T90 dark:bg-neutral-T30 h-9 w-9 items-center justify-center rounded-xl"
                 >
                   <MaterialIcons name="remove" size={18} color="#5C5F5E" />
                 </TouchableOpacity>
-                <Text className="text-neutral-T10 w-7 text-center font-sans text-lg font-bold">
+                <Text className="text-neutral-T10 dark:text-neutral-T90 w-7 text-center font-sans text-lg font-bold">
                   {selectedQuantity}
                 </Text>
                 <TouchableOpacity
@@ -729,7 +755,7 @@ export default function PostDetailScreen() {
                     )
                   }
                   activeOpacity={0.7}
-                  className="bg-neutral-T90 h-9 w-9 items-center justify-center rounded-xl"
+                  className="bg-neutral-T90 dark:bg-neutral-T30 h-9 w-9 items-center justify-center rounded-xl"
                 >
                   <MaterialIcons name="add" size={18} color="#5C5F5E" />
                 </TouchableOpacity>

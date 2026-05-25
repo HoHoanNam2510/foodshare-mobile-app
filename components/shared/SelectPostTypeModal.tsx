@@ -1,5 +1,6 @@
 // components/shared/SelectPostTypeModal.tsx
 import { Feather, MaterialIcons } from '@expo/vector-icons';
+import { useColorScheme } from 'nativewind';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Modal, Pressable, Text, TouchableOpacity, View } from 'react-native';
@@ -74,11 +75,11 @@ export default function SelectPostTypeModal({
       >
         <Pressable onPress={(e) => e.stopPropagation()}>
           <View
-            className="bg-neutral-T100 border-neutral-T90 rounded-t-3xl border-t px-6 pt-4 shadow-lg"
+            className="bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T90 dark:border-neutral-T30 rounded-t-3xl border-t px-6 pt-4 shadow-lg dark:shadow-none"
             style={{ paddingBottom: Math.max(insets.bottom, 24) + 16 }}
           >
             {/* Drag handle */}
-            <View className="bg-neutral-T80 mb-8 h-1.5 w-12 self-center rounded-md" />
+            <View className="bg-neutral-T80 dark:bg-neutral-T30 mb-8 h-1.5 w-12 self-center rounded-md" />
 
             {/* ── Option 1: P2P Free Food ── */}
             <PostTypeOption
@@ -154,14 +155,16 @@ function PostTypeOption({
   onUpgradePress,
   onPress,
 }: PostTypeOptionProps) {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   return (
     <View>
       <TouchableOpacity
         activeOpacity={allowed ? 0.8 : 0.95}
         className={`flex-row items-center gap-4 rounded-2xl border px-4 py-4 shadow-sm ${
           allowed
-            ? 'bg-neutral-T100 border-neutral-T90'
-            : 'bg-neutral-T97 border-neutral-T90 opacity-50'
+            ? 'bg-neutral-T100 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30'
+            : 'bg-neutral-T97 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 opacity-50'
         }`}
         onPress={onPress}
       >
@@ -173,15 +176,21 @@ function PostTypeOption({
         </View>
         <View className="flex-1">
           <Text
-            className={`mb-0.5 font-sans text-lg leading-tight ${allowed ? 'text-neutral-T10' : 'text-neutral-T50'}`}
+            className={`mb-0.5 font-sans text-lg leading-tight ${allowed ? 'text-neutral-T10 dark:text-neutral-T90' : 'text-neutral-T50 dark:text-neutral-T60'}`}
             style={{ fontWeight: '800' }}
           >
             {title}
           </Text>
-          <Text className="font-body text-neutral-T50 text-sm">{subtitle}</Text>
+          <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-sm">
+            {subtitle}
+          </Text>
         </View>
         {allowed ? (
-          <Feather name="arrow-right" size={20} color="#191C1C" />
+          <Feather
+            name="arrow-right"
+            size={20}
+            color={isDark ? '#E1E3E2' : '#191C1C'}
+          />
         ) : (
           <MaterialIcons name="lock" size={18} color="#AAABAB" />
         )}
@@ -194,7 +203,7 @@ function PostTypeOption({
           </View>
           {upgradeLabel && onUpgradePress && (
             <TouchableOpacity onPress={onUpgradePress} className="ml-4">
-              <Text className="font-label text-primary-T30 text-xs underline">
+              <Text className="font-label text-primary-T30 dark:text-primary-T60 text-xs underline">
                 {upgradeLabel}
               </Text>
             </TouchableOpacity>

@@ -1,7 +1,9 @@
 import { Feather } from '@expo/vector-icons';
+import { useColorScheme } from 'nativewind';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TextInput, TouchableOpacity, View } from 'react-native';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 interface ChatInputProps {
   onSend?: (text: string) => void;
@@ -10,6 +12,9 @@ interface ChatInputProps {
 
 export default function ChatInput({ onSend, disabled }: ChatInputProps) {
   const { t } = useTranslation();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const colors = useThemeColors();
   const [message, setMessage] = useState('');
 
   const handleSend = () => {
@@ -20,15 +25,15 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
 
   return (
     <View
-      className="mx-4 mb-4 mt-2 flex-row items-center gap-2 rounded-full bg-white px-3 py-2"
+      className="bg-neutral-T100 dark:bg-neutral-T20 mx-4 mb-4 mt-2 flex-row items-center gap-2 rounded-full px-3 py-2"
       style={{
         shadowColor: '#191c1c',
-        shadowOpacity: 0.08,
+        shadowOpacity: isDark ? 0 : 0.08,
         shadowOffset: { width: 0, height: -4 },
         shadowRadius: 16,
-        elevation: 5,
+        elevation: isDark ? 0 : 5,
         borderWidth: 1,
-        borderColor: 'rgba(192,201,185,0.2)',
+        borderColor: isDark ? 'rgba(69,71,71,0.6)' : 'rgba(192,201,185,0.2)',
       }}
     >
       {/* Add button */}
@@ -39,11 +44,11 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
       {/* Text input */}
       <TextInput
         placeholder={t('chat.typeMessage')}
-        placeholderTextColor="#AAABAB"
+        placeholderTextColor={colors.placeholder}
         value={message}
         onChangeText={setMessage}
         multiline
-        className="font-body text-neutral-T10 max-h-24 flex-1 py-1.5 text-base"
+        className="font-body text-neutral-T10 dark:text-neutral-T90 max-h-24 flex-1 py-1.5 text-base"
       />
 
       {/* Emoji or Send */}

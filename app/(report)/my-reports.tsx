@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useColorScheme } from 'nativewind';
 import ManagementHeader from '@/components/shared/headers/ManagementHeader';
 import {
   getMyReportsApi,
@@ -137,6 +138,8 @@ function ReportCard({
   onPress: () => void;
 }) {
   const { t } = useTranslation();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const targetCfg = TARGET_TYPE_CONFIG[report.targetType];
   const reasonLabel = REASON_LABEL_KEY[report.reason]
     ? t(REASON_LABEL_KEY[report.reason])
@@ -145,7 +148,7 @@ function ReportCard({
 
   return (
     <TouchableOpacity
-      className="bg-neutral-T100 mx-4 mb-3 overflow-hidden rounded-2xl"
+      className="bg-neutral-T100 dark:bg-neutral-T20 mx-4 mb-3 overflow-hidden rounded-2xl"
       style={styles.card}
       activeOpacity={0.85}
       onPress={onPress}
@@ -176,13 +179,13 @@ function ReportCard({
         {/* Reason */}
         <View className="gap-0.5">
           <Text
-            className="text-neutral-T10 font-sans text-sm"
+            className="text-neutral-T10 dark:text-neutral-T90 font-sans text-sm"
             style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
           >
             {reasonLabel}
           </Text>
           <Text
-            className="font-body text-neutral-T50 text-xs"
+            className="font-body text-neutral-T50 dark:text-neutral-T60 text-xs"
             numberOfLines={2}
           >
             {report.description}
@@ -193,7 +196,7 @@ function ReportCard({
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center gap-1">
             <MaterialIcons name="image" size={13} color="#AAABAB" />
-            <Text className="font-label text-neutral-T70 text-xs">
+            <Text className="font-label text-neutral-T70 dark:text-neutral-T60 text-xs">
               {t('report.evidenceCountLabel', { count: report.images.length })}
             </Text>
           </View>
@@ -207,7 +210,15 @@ function ReportCard({
       {report.resolutionNote && (
         <View
           className="mx-4 mb-4 gap-1 rounded-xl p-3"
-          style={{ backgroundColor: isDismissed ? '#FEF2F2' : '#F0FDF4' }}
+          style={{
+            backgroundColor: isDismissed
+              ? isDark
+                ? 'rgba(220,38,38,0.15)'
+                : '#FEF2F2'
+              : isDark
+                ? '#003A03'
+                : '#F0FDF4',
+          }}
         >
           <View className="flex-row items-center gap-1.5">
             <MaterialIcons
@@ -235,9 +246,9 @@ function ReportCard({
 
       {/* Resubmit hint when DISMISSED */}
       {isDismissed && (
-        <View className="bg-primary-T95 mx-4 mb-4 flex-row items-center gap-2 rounded-xl p-3">
+        <View className="bg-primary-T95 dark:bg-primary-T20 mx-4 mb-4 flex-row items-center gap-2 rounded-xl p-3">
           <MaterialIcons name="refresh" size={14} color="#296C24" />
-          <Text className="font-body text-primary-T30 flex-1 text-xs leading-4">
+          <Text className="font-body text-primary-T30 dark:text-primary-T80 flex-1 text-xs leading-4">
             {t('report.dismissedHint')}
           </Text>
         </View>
@@ -289,14 +300,14 @@ function EmptyState({ filter }: { filter: FilterTab }) {
   const cfg = msgs[filter];
   return (
     <View className="flex-1 items-center justify-center gap-3 px-8 py-24">
-      <View className="bg-primary-T95 h-16 w-16 items-center justify-center rounded-2xl">
+      <View className="bg-primary-T95 dark:bg-primary-T20 h-16 w-16 items-center justify-center rounded-2xl">
         <MaterialIcons name={cfg.icon as any} size={28} color="#296C24" />
       </View>
-      <Text className="text-neutral-T10 text-center font-sans text-base font-bold">
+      <Text className="text-neutral-T10 dark:text-neutral-T90 text-center font-sans text-base font-bold">
         {t(cfg.titleKey)}
       </Text>
       {cfg.bodyKey ? (
-        <Text className="font-body text-neutral-T50 text-center text-sm leading-5">
+        <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-center text-sm leading-5">
           {t(cfg.bodyKey)}
         </Text>
       ) : null}
@@ -309,6 +320,8 @@ function EmptyState({ filter }: { filter: FilterTab }) {
 export default function MyReportsScreen() {
   const router = useRouter();
   const { t } = useTranslation();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const [reports, setReports] = useState<IReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -345,9 +358,9 @@ export default function MyReportsScreen() {
   const dismissedCount = reports.filter((r) => r.status === 'DISMISSED').length;
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <StatusBar
-        barStyle="dark-content"
+        barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor="transparent"
         translucent
       />
@@ -357,7 +370,7 @@ export default function MyReportsScreen() {
       />
 
       {/* ── Filter tabs ── */}
-      <View className="bg-neutral-T95 mx-4 mb-3 mt-4 flex-row rounded-xl p-1">
+      <View className="bg-neutral-T95 dark:bg-neutral-T30 mx-4 mb-3 mt-4 flex-row rounded-xl p-1">
         {FILTER_TAB_KEYS.map((tab) => {
           const isActive = activeTab === tab.key;
           const showDot = tab.key === 'DISMISSED' && dismissedCount > 0;
@@ -367,7 +380,13 @@ export default function MyReportsScreen() {
               onPress={() => setActiveTab(tab.key)}
               activeOpacity={0.8}
               className="flex-1 items-center rounded-lg py-2.5"
-              style={isActive ? styles.tabActive : undefined}
+              style={
+                isActive
+                  ? isDark
+                    ? styles.tabActiveDark
+                    : styles.tabActive
+                  : undefined
+              }
             >
               <View className="flex-row items-center gap-1">
                 <Text
@@ -389,13 +408,13 @@ export default function MyReportsScreen() {
       {isLoading ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-neutral-T50 text-sm">
+          <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-sm">
             {t('common.loading')}
           </Text>
         </View>
       ) : error ? (
         <View className="flex-1 items-center justify-center gap-4 px-8">
-          <Text className="font-body text-neutral-T50 text-center text-sm">
+          <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-center text-sm">
             {error}
           </Text>
           <TouchableOpacity
@@ -470,5 +489,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.06,
     shadowRadius: 4,
     elevation: 2,
+  },
+  tabActiveDark: {
+    backgroundColor: '#2E3131',
+    elevation: 0,
   },
 });

@@ -33,13 +33,13 @@ function TemplateCard({
 
   return (
     <TouchableOpacity
-      className="bg-neutral-T100 border-neutral-T90 mb-3 flex-row items-center gap-4 rounded-2xl border p-4 active:opacity-80"
+      className="bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T90 dark:border-neutral-T30 mb-3 flex-row items-center gap-4 rounded-2xl border p-4 active:opacity-80 dark:shadow-none"
       onPress={onPress}
       activeOpacity={0.85}
     >
       {/* Type badge */}
       <View
-        className={`h-10 w-10 items-center justify-center rounded-xl ${isB2C ? 'bg-secondary-T95' : 'bg-primary-T95'}`}
+        className={`h-10 w-10 items-center justify-center rounded-xl ${isB2C ? 'bg-secondary-T95 dark:bg-secondary-T20' : 'bg-primary-T95 dark:bg-primary-T20'}`}
       >
         <MaterialIcons
           name={isB2C ? 'shopping-bag' : 'volunteer-activism'}
@@ -51,17 +51,20 @@ function TemplateCard({
       {/* Info */}
       <View className="flex-1 gap-0.5">
         <Text
-          className="text-neutral-T10 font-sans text-sm font-bold"
+          className="text-neutral-T10 dark:text-neutral-T90 font-sans text-sm font-bold"
           numberOfLines={1}
         >
           {template.templateName}
         </Text>
-        <Text className="font-body text-neutral-T50 text-xs" numberOfLines={1}>
+        <Text
+          className="font-body text-neutral-T50 dark:text-neutral-T60 text-xs"
+          numberOfLines={1}
+        >
           {template.title}
         </Text>
         <View className="mt-1 flex-row items-center gap-2">
           <View
-            className={`rounded-full px-2 py-0.5 ${isB2C ? 'bg-secondary-T95' : 'bg-primary-T95'}`}
+            className={`rounded-full px-2 py-0.5 ${isB2C ? 'bg-secondary-T95 dark:bg-secondary-T20' : 'bg-primary-T95 dark:bg-primary-T20'}`}
           >
             <Text
               className={`font-label text-[10px] font-semibold ${isB2C ? 'text-secondary-T40' : 'text-primary-T40'}`}
@@ -69,7 +72,7 @@ function TemplateCard({
               {isB2C ? t('template.typeBag') : t('template.typeFree')}
             </Text>
           </View>
-          <Text className="font-body text-neutral-T70 text-xs">
+          <Text className="font-body text-neutral-T70 dark:text-neutral-T60 text-xs">
             {template.category}
           </Text>
           {isB2C && template.price > 0 && (
@@ -82,7 +85,7 @@ function TemplateCard({
 
       {/* Delete */}
       <TouchableOpacity
-        className="h-9 w-9 items-center justify-center rounded-xl active:opacity-70"
+        className="h-9 w-9 items-center justify-center rounded-xl active:opacity-70 dark:bg-[rgba(220,38,38,0.18)]"
         style={{ backgroundColor: 'rgba(220,38,38,0.08)' }}
         onPress={onDelete}
         hitSlop={8}
@@ -145,7 +148,7 @@ export default function MyTemplatesScreen() {
   };
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <ManagementHeader
         title={t('template.screenTitle')}
         onBack={() => router.back()}
@@ -154,7 +157,7 @@ export default function MyTemplatesScreen() {
       {isLoading ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-neutral-T50 text-sm">
+          <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-sm">
             {t('common.loading')}
           </Text>
         </View>
@@ -172,7 +175,7 @@ export default function MyTemplatesScreen() {
           ListEmptyComponent={
             <View className="items-center justify-center gap-4 px-8 py-20">
               <MaterialIcons name="bookmark-border" size={48} color="#C5C7C6" />
-              <Text className="font-body text-neutral-T50 text-center text-sm">
+              <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-center text-sm">
                 {t('template.emptyTitle')}
               </Text>
               <TouchableOpacity

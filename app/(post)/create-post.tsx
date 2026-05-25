@@ -38,6 +38,8 @@ import {
   getMyTemplatesApi,
   type IPostTemplate,
 } from '@/lib/postTemplateApi';
+import { useColorScheme } from 'nativewind';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 type ActivePicker = 'pickupStart' | 'pickupEnd' | 'expiryDate' | null;
 type PickerMode = 'date' | 'time';
@@ -46,6 +48,10 @@ export default function CreatePost() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const colors = useThemeColors();
 
   const { type } = useLocalSearchParams();
   const isB2C = type === 'SURPRISE_BAG';
@@ -375,10 +381,10 @@ export default function CreatePost() {
         >
           <Pressable onPress={(e) => e.stopPropagation()}>
             <View
-              className="bg-neutral-T100 rounded-t-3xl px-6 pb-6 pt-4"
+              className="bg-neutral-T100 dark:bg-neutral-T20 rounded-t-3xl px-6 pb-6 pt-4"
               style={{ paddingBottom: Math.max(insets.bottom, 24) + 8 }}
             >
-              <View className="bg-neutral-T80 mb-2 h-1 w-10 self-center rounded-full" />
+              <View className="bg-neutral-T80 dark:bg-neutral-T30 mb-2 h-1 w-10 self-center rounded-full" />
               <View style={{ overflow: 'hidden', alignSelf: 'center' }}>
                 <DateTimePicker
                   value={getPickerValue()}
@@ -407,7 +413,7 @@ export default function CreatePost() {
   };
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <StackHeader
         title={isB2C ? t('post.createB2CTitle') : t('post.createP2PTitle')}
         rightElement={
@@ -433,22 +439,26 @@ export default function CreatePost() {
           {/* ── Template picker banner ── */}
           {hasTemplates && (
             <TouchableOpacity
-              className="bg-primary-T95 border-primary-T80 mb-6 flex-row items-center gap-3 rounded-2xl border p-4"
+              className="bg-primary-T95 dark:bg-primary-T20 border-primary-T80 dark:border-primary-T30 mb-6 flex-row items-center gap-3 rounded-2xl border p-4"
               onPress={() => setShowTemplatePicker(true)}
               activeOpacity={0.8}
             >
-              <View className="bg-primary-T40 h-9 w-9 items-center justify-center rounded-xl">
+              <View className="bg-primary-T40 dark:bg-primary-T50 h-9 w-9 items-center justify-center rounded-xl">
                 <MaterialIcons name="bookmark" size={18} color="#fff" />
               </View>
               <View className="flex-1">
-                <Text className="font-label text-primary-T30 text-sm font-bold">
+                <Text className="font-label text-primary-T30 dark:text-primary-T60 text-sm font-bold">
                   {t('template.useBanner')}
                 </Text>
-                <Text className="font-body text-primary-T50 text-xs">
+                <Text className="font-body text-primary-T50 dark:text-primary-T70 text-xs">
                   {t('template.pickerSubtitle')}
                 </Text>
               </View>
-              <MaterialIcons name="chevron-right" size={20} color="#296C24" />
+              <MaterialIcons
+                name="chevron-right"
+                size={20}
+                color={colors.primaryGreen}
+              />
             </TouchableOpacity>
           )}
 
@@ -476,7 +486,7 @@ export default function CreatePost() {
           <View className="mb-8 gap-6">
             {/* Danh mục */}
             <View className="gap-2">
-              <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
                 {t('post.category')}
               </Text>
               <CategoryPicker selected={category} onSelect={setCategory} />
@@ -484,13 +494,13 @@ export default function CreatePost() {
 
             {/* Tên món ăn */}
             <View className="gap-2">
-              <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
                 {t('post.foodName')}
               </Text>
               <TextInput
-                className={`bg-neutral-T95 font-body text-neutral-T10 h-14 w-full rounded-xl border px-4 text-base ${fieldErrors.title ? 'border-red-500' : 'border-neutral-T90'}`}
+                className={`bg-neutral-T95 dark:bg-neutral-T30 font-body text-neutral-T10 dark:text-neutral-T90 h-14 w-full rounded-xl border px-4 text-base ${fieldErrors.title ? 'border-red-500' : 'border-neutral-T90 dark:border-neutral-T30'}`}
                 placeholder={t('post.foodNamePlaceholder')}
-                placeholderTextColor="#AAABAB"
+                placeholderTextColor={colors.placeholder}
                 value={title}
                 onChangeText={(text) => {
                   setTitle(text);
@@ -510,13 +520,13 @@ export default function CreatePost() {
 
             {/* Mô tả */}
             <View className="gap-2">
-              <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
                 {t('post.description')}
               </Text>
               <TextInput
-                className="bg-neutral-T95 border-neutral-T90 font-body text-neutral-T10 w-full rounded-xl border p-4 text-base"
+                className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 font-body text-neutral-T10 dark:text-neutral-T90 w-full rounded-xl border p-4 text-base"
                 placeholder={t('post.descriptionPlaceholder')}
-                placeholderTextColor="#AAABAB"
+                placeholderTextColor={colors.placeholder}
                 multiline
                 numberOfLines={4}
                 textAlignVertical="top"
@@ -530,14 +540,14 @@ export default function CreatePost() {
             <View className="flex-row gap-4">
               {isB2C && (
                 <View className="flex-1 gap-2">
-                  <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
+                  <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
                     {t('post.priceLabel')}
                   </Text>
                   <View className="relative justify-center">
                     <TextInput
-                      className={`bg-neutral-T95 font-body text-neutral-T10 h-14 w-full rounded-xl border pl-4 pr-10 text-base ${fieldErrors.price ? 'border-red-500' : 'border-neutral-T90'}`}
+                      className={`bg-neutral-T95 dark:bg-neutral-T30 font-body text-neutral-T10 dark:text-neutral-T90 h-14 w-full rounded-xl border pl-4 pr-10 text-base ${fieldErrors.price ? 'border-red-500' : 'border-neutral-T90 dark:border-neutral-T30'}`}
                       placeholder="0"
-                      placeholderTextColor="#AAABAB"
+                      placeholderTextColor={colors.placeholder}
                       keyboardType="number-pad"
                       value={price}
                       onChangeText={(p) => {
@@ -549,7 +559,7 @@ export default function CreatePost() {
                           });
                       }}
                     />
-                    <Text className="font-label text-neutral-T50 absolute right-4 z-10 font-semibold">
+                    <Text className="font-label text-neutral-T50 dark:text-neutral-T60 absolute right-4 z-10 font-semibold">
                       ₫
                     </Text>
                   </View>
@@ -558,14 +568,14 @@ export default function CreatePost() {
                       {fieldErrors.price}
                     </Text>
                   ) : (
-                    <Text className="text-neutral-T50 font-label ml-1 text-xs">
+                    <Text className="text-neutral-T50 dark:text-neutral-T60 font-label ml-1 text-xs">
                       {t('post.unitPriceHint')}
                     </Text>
                   )}
                 </View>
               )}
               <View className="flex-1 gap-2">
-                <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
+                <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
                   {t('post.servings')}
                 </Text>
                 <QuantityStepper value={quantity} onChange={setQuantity} />
@@ -575,45 +585,53 @@ export default function CreatePost() {
 
           {/* ── Khung giờ nhận hàng ── */}
           <View
-            className={`mb-6 gap-4 rounded-2xl p-6 ${fieldErrors.pickupTime ? 'border border-red-500 bg-red-50' : 'bg-neutral-T95'}`}
+            className={`mb-6 gap-4 rounded-2xl p-6 ${fieldErrors.pickupTime ? 'border border-red-500 bg-red-50 dark:bg-red-900/20' : 'bg-neutral-T95 dark:bg-neutral-T30'}`}
           >
             <View className="flex-row items-center gap-2">
               <MaterialIcons
                 name="schedule"
                 size={20}
-                color={fieldErrors.pickupTime ? '#EF4444' : '#296C24'}
+                color={fieldErrors.pickupTime ? '#EF4444' : colors.primaryGreen}
               />
-              <Text className="text-neutral-T10 font-sans text-base font-bold">
+              <Text className="text-neutral-T10 dark:text-neutral-T90 font-sans text-base font-bold">
                 {t('post.pickupWindow')}
               </Text>
             </View>
             <View className="flex-row gap-4">
               <View className="flex-1 gap-1">
-                <Text className="font-label text-neutral-T70 ml-1 text-[10px] font-semibold tracking-wider">
+                <Text className="font-label text-neutral-T70 dark:text-neutral-T60 ml-1 text-[10px] font-semibold tracking-wider">
                   {t('post.from')}
                 </Text>
                 <TouchableOpacity
-                  className="bg-neutral-T100 border-neutral-T90 h-12 flex-row items-center justify-between rounded-xl border px-4 active:opacity-80"
+                  className="bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T90 dark:border-neutral-T30 h-12 flex-row items-center justify-between rounded-xl border px-4 active:opacity-80"
                   onPress={() => openPicker('pickupStart', 'time')}
                 >
-                  <Text className="font-body text-neutral-T10 font-semibold">
+                  <Text className="font-body text-neutral-T10 dark:text-neutral-T90 font-semibold">
                     {formatTime(pickupStart)}
                   </Text>
-                  <MaterialIcons name="access-time" size={16} color="#AAABAB" />
+                  <MaterialIcons
+                    name="access-time"
+                    size={16}
+                    color={colors.textMuted}
+                  />
                 </TouchableOpacity>
               </View>
               <View className="flex-1 gap-1">
-                <Text className="font-label text-neutral-T70 ml-1 text-[10px] font-semibold tracking-wider">
+                <Text className="font-label text-neutral-T70 dark:text-neutral-T60 ml-1 text-[10px] font-semibold tracking-wider">
                   {t('post.to')}
                 </Text>
                 <TouchableOpacity
-                  className="bg-neutral-T100 border-neutral-T90 h-12 flex-row items-center justify-between rounded-xl border px-4 active:opacity-80"
+                  className="bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T90 dark:border-neutral-T30 h-12 flex-row items-center justify-between rounded-xl border px-4 active:opacity-80"
                   onPress={() => openPicker('pickupEnd', 'time')}
                 >
-                  <Text className="font-body text-neutral-T10 font-semibold">
+                  <Text className="font-body text-neutral-T10 dark:text-neutral-T90 font-semibold">
                     {formatTime(pickupEnd)}
                   </Text>
-                  <MaterialIcons name="access-time" size={16} color="#AAABAB" />
+                  <MaterialIcons
+                    name="access-time"
+                    size={16}
+                    color={colors.textMuted}
+                  />
                 </TouchableOpacity>
               </View>
             </View>
@@ -626,17 +644,17 @@ export default function CreatePost() {
 
           {/* ── Hạn sử dụng ── */}
           <View className="mb-6 gap-2">
-            <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
+            <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
               {t('post.expiryDate')}
             </Text>
             <TouchableOpacity
-              className={`bg-neutral-T95 h-14 flex-row items-center justify-between rounded-xl border px-4 active:opacity-80 ${fieldErrors.expiryDate ? 'border-red-500' : 'border-neutral-T90'}`}
+              className={`bg-neutral-T95 dark:bg-neutral-T30 h-14 flex-row items-center justify-between rounded-xl border px-4 active:opacity-80 ${fieldErrors.expiryDate ? 'border-red-500' : 'border-neutral-T90 dark:border-neutral-T30'}`}
               onPress={() => openPicker('expiryDate', 'date')}
             >
-              <Text className="font-body text-neutral-T10 text-base">
+              <Text className="font-body text-neutral-T10 dark:text-neutral-T90 text-base">
                 {formatDate(expiryDate)}
               </Text>
-              <MaterialIcons name="event" size={20} color="#AAABAB" />
+              <MaterialIcons name="event" size={20} color={colors.textMuted} />
             </TouchableOpacity>
             {fieldErrors.expiryDate && (
               <Text className="font-label ml-1 text-xs text-red-500">
@@ -647,22 +665,30 @@ export default function CreatePost() {
 
           {/* ── Location picker ── */}
           <View className="mb-2 gap-2">
-            <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
+            <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
               {t('post.pickupLocation')}
             </Text>
             <TouchableOpacity
-              className="bg-neutral-T95 border-neutral-T90 h-14 flex-row items-center justify-between rounded-xl border px-4 active:opacity-80"
+              className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 h-14 flex-row items-center justify-between rounded-xl border px-4 active:opacity-80"
               onPress={() => setShowLocationPicker(true)}
             >
               <View className="flex-1 flex-row items-center gap-2">
                 <MaterialIcons
                   name="location-on"
                   size={20}
-                  color={pickedLocation ? '#296C24' : '#AAABAB'}
+                  color={
+                    pickedLocation ? colors.primaryGreen : colors.textMuted
+                  }
                 />
                 <Text
                   className="font-body flex-1 text-sm"
-                  style={{ color: pickedLocation ? '#2B2C2C' : '#AAABAB' }}
+                  style={{
+                    color: pickedLocation
+                      ? isDark
+                        ? '#E1E3E2'
+                        : '#2B2C2C'
+                      : colors.textMuted,
+                  }}
                   numberOfLines={1}
                 >
                   {pickedLocation
@@ -670,19 +696,27 @@ export default function CreatePost() {
                     : t('post.locationPlaceholder')}
                 </Text>
               </View>
-              <MaterialIcons name="chevron-right" size={20} color="#AAABAB" />
+              <MaterialIcons
+                name="chevron-right"
+                size={20}
+                color={colors.textMuted}
+              />
             </TouchableOpacity>
           </View>
 
           {/* ── Save as template (inline, above footer) ── */}
           <TouchableOpacity
-            className={`bg-primary-T95 border-primary-T70 mt-2 h-12 flex-row items-center justify-center gap-2 rounded-xl border active:opacity-80 ${!title.trim() ? 'opacity-40' : ''}`}
+            className={`bg-primary-T95 dark:bg-primary-T20 border-primary-T70 dark:border-primary-T30 mt-2 h-12 flex-row items-center justify-center gap-2 rounded-xl border active:opacity-80 ${!title.trim() ? 'opacity-40' : ''}`}
             onPress={() => setShowSaveModal(true)}
             disabled={!title.trim()}
             activeOpacity={0.8}
           >
-            <MaterialIcons name="bookmark-add" size={18} color="#296C24" />
-            <Text className="font-label text-primary-T40 text-sm font-semibold">
+            <MaterialIcons
+              name="bookmark-add"
+              size={18}
+              color={colors.primaryGreen}
+            />
+            <Text className="font-label text-primary-T40 dark:text-primary-T60 text-sm font-semibold">
               {t('template.saveAsTemplate')}
             </Text>
           </TouchableOpacity>
@@ -691,7 +725,7 @@ export default function CreatePost() {
 
       {/* ── Fixed footer ── */}
       <View
-        className="bg-neutral-T100 border-neutral-T90 absolute bottom-0 left-0 right-0 border-t"
+        className="bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T90 dark:border-neutral-T30 absolute bottom-0 left-0 right-0 border-t"
         style={{
           paddingBottom: Math.max(insets.bottom, 16),
           paddingTop: 16,
@@ -700,11 +734,11 @@ export default function CreatePost() {
       >
         <View className="flex-row gap-4">
           <TouchableOpacity
-            className="bg-neutral-T95 h-14 flex-1 flex-row items-center justify-center gap-2 rounded-xl active:opacity-80"
+            className="bg-neutral-T95 dark:bg-neutral-T30 h-14 flex-1 flex-row items-center justify-center gap-2 rounded-xl active:opacity-80"
             onPress={() => router.back()}
           >
-            <MaterialIcons name="save" size={18} color="#757777" />
-            <Text className="font-label text-neutral-T50 text-sm font-medium">
+            <MaterialIcons name="save" size={18} color={colors.textMuted} />
+            <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-sm font-medium">
               {t('post.saveDraft')}
             </Text>
           </TouchableOpacity>

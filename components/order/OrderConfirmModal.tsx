@@ -1,5 +1,6 @@
 // components/order/OrderConfirmModal.tsx
 import { MaterialIcons } from '@expo/vector-icons';
+import { useColorScheme } from 'nativewind';
 import React, { useMemo } from 'react';
 import {
   ActivityIndicator,
@@ -34,6 +35,8 @@ export default function OrderConfirmModal({
 }: OrderConfirmModalProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   const voucher = (selectedVoucher?.voucherId ?? null) as IVoucher | null;
 
@@ -71,24 +74,24 @@ export default function OrderConfirmModal({
 
       {/* Bottom sheet */}
       <View
-        className="bg-neutral-T100 rounded-t-3xl px-6 pt-5"
+        className="bg-neutral-T100 dark:bg-neutral-T20 rounded-t-3xl px-6 pt-5"
         style={{ paddingBottom: Math.max(insets.bottom, 24) }}
       >
         {/* Drag handle */}
-        <View className="bg-neutral-T80 mx-auto mb-4 h-1 w-10 rounded-full" />
+        <View className="bg-neutral-T80 dark:bg-neutral-T50 mx-auto mb-4 h-1 w-10 rounded-full" />
 
         {/* Title */}
-        <Text className="text-neutral-T10 font-sans text-xl font-extrabold">
+        <Text className="text-neutral-T10 dark:text-neutral-T90 font-sans text-xl font-extrabold">
           {t('voucher.orderConfirmTitle')}
         </Text>
 
         {/* Price breakdown */}
         <View className="mt-5 gap-3">
           <View className="flex-row items-center justify-between">
-            <Text className="font-body text-neutral-T50 text-sm">
+            <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-sm">
               {t('voucher.orderBasePrice')}
             </Text>
-            <Text className="font-label text-neutral-T30 text-sm font-semibold">
+            <Text className="font-label text-neutral-T30 dark:text-neutral-T80 text-sm font-semibold">
               {baseAmount.toLocaleString('vi-VN')}đ
             </Text>
           </View>
@@ -96,30 +99,30 @@ export default function OrderConfirmModal({
           {voucher && (
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center gap-1.5">
-                <Text className="font-body text-neutral-T50 text-sm">
+                <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-sm">
                   {t('voucher.orderDiscount')}
                 </Text>
-                <View className="bg-primary-T95 rounded-md px-2 py-0.5">
-                  <Text className="text-primary-T30 font-label text-xs font-semibold">
+                <View className="bg-primary-T95 dark:bg-primary-T20 rounded-md px-2 py-0.5">
+                  <Text className="text-primary-T30 dark:text-primary-T80 font-label text-xs font-semibold">
                     {voucher.code}
                   </Text>
                 </View>
               </View>
-              <Text className="font-label text-primary-T30 text-sm font-semibold">
+              <Text className="font-label text-primary-T30 dark:text-primary-T60 text-sm font-semibold">
                 -{discountAmount.toLocaleString('vi-VN')}đ
               </Text>
             </View>
           )}
 
-          <View className="bg-neutral-T90 h-px" />
+          <View className="bg-neutral-T90 dark:bg-neutral-T30 h-px" />
 
           <View className="flex-row items-center justify-between">
-            <Text className="text-neutral-T10 font-sans text-base font-extrabold">
+            <Text className="text-neutral-T10 dark:text-neutral-T90 font-sans text-base font-extrabold">
               {t('voucher.orderTotal')}
             </Text>
             <Text
               className="font-sans text-xl font-extrabold"
-              style={{ color: '#944A00' }}
+              style={{ color: isDark ? '#D97723' : '#944A00' }}
             >
               {totalAmount.toLocaleString('vi-VN')}đ
             </Text>
@@ -170,12 +173,12 @@ export default function OrderConfirmModal({
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="bg-neutral-T95 items-center justify-center rounded-2xl py-4"
+            className="bg-neutral-T95 dark:bg-neutral-T30 items-center justify-center rounded-2xl py-4"
             onPress={onClose}
             disabled={isSubmitting}
             activeOpacity={0.85}
           >
-            <Text className="font-label text-neutral-T40 text-base font-semibold">
+            <Text className="font-label text-neutral-T40 dark:text-neutral-T60 text-base font-semibold">
               {t('common.cancel')}
             </Text>
           </TouchableOpacity>

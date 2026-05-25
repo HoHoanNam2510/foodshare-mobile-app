@@ -80,7 +80,7 @@ interface FilterPillsProps {
 function SkeletonPill({ animValue }: { animValue: Animated.Value }) {
   return (
     <Animated.View
-      className="bg-neutral-T90 mr-2 rounded-full"
+      className="bg-neutral-T90 dark:bg-neutral-T30 mr-2 rounded-full"
       style={{ width: 80, height: 36, opacity: animValue }}
     />
   );
@@ -164,7 +164,7 @@ export default function FilterPills({
           className={`mr-2 rounded-full px-4 py-2 ${
             activeCategory === 'all'
               ? 'bg-primary-T40'
-              : 'bg-neutral-T100 border-neutral-T90 border'
+              : 'bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T90 dark:border-neutral-T30 border'
           }`}
           activeOpacity={0.8}
         >
@@ -172,7 +172,7 @@ export default function FilterPills({
             className={`font-body text-sm ${
               activeCategory === 'all'
                 ? 'text-neutral-T100'
-                : 'text-neutral-T30'
+                : 'text-neutral-T30 dark:text-neutral-T80'
             }`}
             style={{ fontWeight: activeCategory === 'all' ? '600' : '400' }}
           >
@@ -190,13 +190,15 @@ export default function FilterPills({
               className={`rounded-full px-4 py-2 ${
                 isActive
                   ? 'bg-primary-T40'
-                  : 'bg-neutral-T100 border-neutral-T90 border'
+                  : 'bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T90 dark:border-neutral-T30 border'
               } ${!isLast ? 'mr-2' : ''}`}
               activeOpacity={0.8}
             >
               <Text
                 className={`font-body text-sm ${
-                  isActive ? 'text-neutral-T100' : 'text-neutral-T30'
+                  isActive
+                    ? 'text-neutral-T100'
+                    : 'text-neutral-T30 dark:text-neutral-T80'
                 }`}
                 style={{ fontWeight: isActive ? '600' : '400' }}
               >

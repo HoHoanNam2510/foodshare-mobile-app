@@ -25,6 +25,7 @@ import RecentPosts, { Post } from '@/components/profile/RecentPosts';
 import StoreDetailsCard from '@/components/profile/StoreDetailsCard';
 import VerificationCard from '@/components/profile/VerificationCard';
 import { useAuthStore } from '@/stores/authStore';
+import ThemeToggle from '@/components/shared/ThemeToggle';
 import type { IBadge } from '@/lib/badgeApi';
 import { getMyPostsApi } from '@/lib/postApi';
 import { deleteAccountApi } from '@/lib/profileApi';
@@ -136,7 +137,7 @@ export default function ProfileScreen() {
     return (
       <View className="bg-neutral-DEFAULT flex-1 items-center justify-center">
         <ActivityIndicator size="large" color="#72B866" />
-        <Text className="font-body text-neutral-T50 mt-3 text-sm">
+        <Text className="font-body text-neutral-T50 dark:text-neutral-T60 mt-3 text-sm">
           {t('profile.loadingProfile')}
         </Text>
       </View>
@@ -183,7 +184,7 @@ export default function ProfileScreen() {
     user.role === 'STORE' && user.pendingKycStatus !== 'PENDING';
 
   return (
-    <View className="bg-neutral-DEFAULT flex-1">
+    <View className="bg-neutral-DEFAULT dark:bg-neutral-T10 flex-1">
       {/* ── KYC Rejection Modal ── */}
       <Modal
         visible={showRejectionModal}
@@ -197,21 +198,21 @@ export default function ProfileScreen() {
         >
           <Pressable onPress={(e) => e.stopPropagation()}>
             <View
-              className="bg-neutral-T100 mx-6 gap-4 rounded-3xl p-6"
+              className="bg-neutral-T100 dark:bg-neutral-T20 mx-6 gap-4 rounded-3xl p-6"
               style={{ maxWidth: 340 }}
             >
               {/* Icon */}
-              <View className="h-14 w-14 items-center justify-center self-center rounded-2xl bg-[rgba(186,26,26,0.1)]">
+              <View className="h-14 w-14 items-center justify-center self-center rounded-2xl bg-[rgba(186,26,26,0.1)] dark:bg-[rgba(186,26,26,0.18)]">
                 <MaterialIcons name="gpp-bad" size={28} color="#ba1a1a" />
               </View>
               {/* Title */}
               <View className="gap-1">
-                <Text className="text-neutral-T10 text-center font-sans text-lg font-bold">
+                <Text className="text-neutral-T10 dark:text-neutral-T90 text-center font-sans text-lg font-bold">
                   {t('profile.kycRejectedTitle')}
                 </Text>
-                <Text className="font-body text-neutral-T50 text-center text-sm leading-5">
+                <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-center text-sm leading-5">
                   {t('profile.kycRejectedMsgPart1')}
-                  <Text className="text-neutral-T30 font-semibold">
+                  <Text className="text-neutral-T30 dark:text-neutral-T80 font-semibold">
                     {t('profile.registerStore')}
                   </Text>
                   {t('profile.kycRejectedMsgPart2')}
@@ -219,7 +220,7 @@ export default function ProfileScreen() {
               </View>
               {/* Action */}
               <TouchableOpacity
-                className="h-12 items-center justify-center rounded-xl bg-[rgba(186,26,26,0.1)]"
+                className="h-12 items-center justify-center rounded-xl bg-[rgba(186,26,26,0.1)] dark:bg-[rgba(186,26,26,0.18)]"
                 onPress={() => setShowRejectionModal(false)}
               >
                 <Text className="font-label text-error font-semibold">
@@ -244,10 +245,10 @@ export default function ProfileScreen() {
         >
           <Pressable onPress={(e) => e.stopPropagation()}>
             <View
-              className="bg-neutral-T100 mx-6 gap-4 rounded-3xl p-6"
+              className="bg-neutral-T100 dark:bg-neutral-T20 mx-6 gap-4 rounded-3xl p-6"
               style={{ maxWidth: 360 }}
             >
-              <View className="h-14 w-14 items-center justify-center self-center rounded-2xl bg-[rgba(220,38,38,0.1)]">
+              <View className="h-14 w-14 items-center justify-center self-center rounded-2xl bg-[rgba(220,38,38,0.1)] dark:bg-[rgba(220,38,38,0.18)]">
                 <MaterialIcons
                   name="delete-forever"
                   size={28}
@@ -255,15 +256,15 @@ export default function ProfileScreen() {
                 />
               </View>
               <View className="gap-1">
-                <Text className="text-neutral-T10 text-center font-sans text-lg font-bold">
+                <Text className="text-neutral-T10 dark:text-neutral-T90 text-center font-sans text-lg font-bold">
                   {t('profile.deleteAccountTitle')}
                 </Text>
-                <Text className="font-body text-neutral-T50 text-center text-sm leading-5">
+                <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-center text-sm leading-5">
                   {t('profile.deleteAccountWarning')}
                 </Text>
               </View>
               <View className="gap-1.5">
-                <Text className="font-label text-neutral-T50 text-xs font-semibold uppercase tracking-wider">
+                <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-xs font-semibold uppercase tracking-wider">
                   {t('profile.deleteAccountConfirmMsg')}
                 </Text>
                 <TextInput
@@ -274,7 +275,7 @@ export default function ProfileScreen() {
                   autoCapitalize="none"
                   keyboardType="email-address"
                   editable={!isDeletingAccount}
-                  className="bg-neutral-T95 font-body text-neutral-T10 border-neutral-T90 h-12 rounded-xl border px-4 text-sm"
+                  className="bg-neutral-T95 dark:bg-neutral-T30 font-body text-neutral-T10 dark:text-neutral-T90 border-neutral-T90 dark:border-neutral-T30 h-12 rounded-xl border px-4 text-sm"
                 />
               </View>
               <View className="gap-2">
@@ -297,7 +298,7 @@ export default function ProfileScreen() {
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity
-                  className="bg-neutral-T95 h-12 items-center justify-center rounded-xl"
+                  className="bg-neutral-T95 dark:bg-neutral-T30 h-12 items-center justify-center rounded-xl"
                   onPress={() => {
                     setShowDeleteModal(false);
                     setDeleteEmailInput('');
@@ -305,7 +306,7 @@ export default function ProfileScreen() {
                   disabled={isDeletingAccount}
                   activeOpacity={0.8}
                 >
-                  <Text className="font-label text-neutral-T50 font-semibold">
+                  <Text className="font-label text-neutral-T50 dark:text-neutral-T60 font-semibold">
                     {t('common.cancel')}
                   </Text>
                 </TouchableOpacity>
@@ -378,9 +379,9 @@ export default function ProfileScreen() {
 
           {/* KYC pending re-submission banner */}
           {user.role === 'STORE' && user.pendingKycStatus === 'PENDING' && (
-            <View className="bg-secondary-T95 border-secondary-T70 flex-row items-start gap-3 rounded-2xl border p-4">
+            <View className="bg-secondary-T95 dark:bg-secondary-T20 border-secondary-T70 dark:border-secondary-T30 flex-row items-start gap-3 rounded-2xl border p-4">
               <MaterialIcons name="schedule" size={20} color="#6B5E00" />
-              <Text className="font-body text-secondary-T30 flex-1 text-sm leading-5">
+              <Text className="font-body text-secondary-T30 dark:text-secondary-T80 flex-1 text-sm leading-5">
                 {t('profile.kycResubmitPendingBanner')}
               </Text>
             </View>
@@ -388,7 +389,7 @@ export default function ProfileScreen() {
 
           {/* Grace period warning banner */}
           {user.role === 'STORE' && isInGracePeriod && (
-            <View className="flex-row items-start gap-3 rounded-2xl border border-[rgba(186,26,26,0.2)] bg-[rgba(186,26,26,0.08)] p-4">
+            <View className="flex-row items-start gap-3 rounded-2xl border border-[rgba(186,26,26,0.2)] bg-[rgba(186,26,26,0.08)] p-4 dark:border-[rgba(186,26,26,0.35)] dark:bg-[rgba(186,26,26,0.18)]">
               <MaterialIcons name="warning-amber" size={20} color="#ba1a1a" />
               <Text className="font-body text-error flex-1 text-sm leading-5">
                 {t('profile.kycGracePeriodWarning', { days: graceDaysLeft })}
@@ -399,7 +400,7 @@ export default function ProfileScreen() {
           {/* KYC re-submit button (STORE only) */}
           {showKycResubmitButton && (
             <TouchableOpacity
-              className="bg-secondary-T95 border-secondary-T70 h-14 flex-row items-center justify-center gap-2 rounded-xl border active:scale-[0.98]"
+              className="bg-secondary-T95 dark:bg-secondary-T20 border-secondary-T70 dark:border-secondary-T30 h-14 flex-row items-center justify-center gap-2 rounded-xl border active:scale-[0.98]"
               onPress={() => router.push('/(profile)/kyc-resubmit' as any)}
               activeOpacity={0.8}
             >
@@ -421,6 +422,24 @@ export default function ProfileScreen() {
           <StatisticsCard />
 
           <RecentPosts posts={myPosts} />
+
+          {/* ── Appearance ── */}
+          <View className="bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 rounded-2xl p-4 shadow-sm dark:border dark:shadow-none">
+            <Text className="font-label text-neutral-T50 dark:text-neutral-T60 mb-3 text-xs font-semibold uppercase tracking-wider">
+              {t('profile.settings')}
+            </Text>
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1 gap-0.5 pr-4">
+                <Text className="font-body text-neutral-T10 dark:text-neutral-T90 text-sm font-semibold">
+                  {t('profile.darkMode')}
+                </Text>
+                <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-xs leading-4">
+                  {t('profile.darkModeDesc')}
+                </Text>
+              </View>
+              <ThemeToggle />
+            </View>
+          </View>
 
           <ProfileActions
             onEditProfile={() => router.push('/(profile)/edit-profile')}

@@ -136,7 +136,7 @@ export default function ChatDetailScreen() {
   };
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <ChatHeader
         name={params.name || t('chat.unknownUser')}
         avatarUri={avatarUri}
@@ -159,8 +159,8 @@ export default function ChatDetailScreen() {
         >
           {/* Date separator */}
           <View className="my-4 items-center">
-            <View className="bg-neutral-T95 rounded-full px-4 py-1">
-              <Text className="font-label text-neutral-T50 text-xs uppercase tracking-widest">
+            <View className="bg-neutral-T95 dark:bg-neutral-T30 rounded-full px-4 py-1">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-xs uppercase tracking-widest">
                 {t('common.today')}
               </Text>
             </View>

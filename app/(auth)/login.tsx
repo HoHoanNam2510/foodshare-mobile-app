@@ -22,6 +22,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 import { useAuthStore } from '@/stores/authStore';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -63,6 +64,7 @@ function getGoogleRedirectUri(clientId: string): string {
 export default function LoginScreen() {
   const router = useRouter();
   const { t } = useTranslation();
+  const colors = useThemeColors();
   const { login, googleLogin, isLoading } = useAuthStore();
 
   const [email, setEmail] = useState('');
@@ -143,10 +145,10 @@ export default function LoginScreen() {
   };
 
   return (
-    <View className="bg-neutral-T100 flex-1">
+    <View className="bg-neutral-T100 dark:bg-neutral-T10 flex-1">
       {/* Gradient header background */}
       <LinearGradient
-        colors={['#ABF59C', '#FFDCC6', '#FFFFFF']}
+        colors={colors.loginGradient as [string, string, string]}
         locations={[0, 0.45, 0.7]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
@@ -179,12 +181,12 @@ export default function LoginScreen() {
             </View>
 
             {/* White card */}
-            <View className="bg-neutral-T100 flex-1 rounded-t-3xl px-7 pt-10 shadow-md">
+            <View className="bg-neutral-T100 dark:bg-neutral-T20 flex-1 rounded-t-3xl px-7 pt-10 shadow-md dark:shadow-none">
               {/* Heading */}
-              <Text className="text-neutral-T10 mb-1 text-center font-sans text-3xl font-bold">
+              <Text className="text-neutral-T10 dark:text-neutral-T90 mb-1 text-center font-sans text-3xl font-bold">
                 {t('auth.welcomeBack')}
               </Text>
-              <Text className="font-body text-neutral-T50 mb-8 text-center text-sm">
+              <Text className="font-body text-neutral-T50 dark:text-neutral-T60 mb-8 text-center text-sm">
                 {t('auth.loginSubtitle')}
               </Text>
 
@@ -193,7 +195,7 @@ export default function LoginScreen() {
                 activeOpacity={0.8}
                 disabled={isGoogleLoading}
                 onPress={() => promptAsync()}
-                className="bg-neutral-T100 mb-6 h-14 flex-row items-center justify-center rounded-xl shadow-sm"
+                className="bg-neutral-T100 dark:bg-neutral-T30 dark:border-neutral-T30 mb-6 h-14 flex-row items-center justify-center rounded-xl shadow-sm dark:border dark:shadow-none"
               >
                 {isGoogleLoading ? (
                   <ActivityIndicator color="#296C24" />
@@ -206,7 +208,7 @@ export default function LoginScreen() {
                       style={{ width: 24, height: 24 }}
                       className="mr-3"
                     />
-                    <Text className="font-body text-neutral-T10 text-base font-semibold">
+                    <Text className="font-body text-neutral-T10 dark:text-neutral-T90 text-base font-semibold">
                       {t('auth.continueWithGoogle')}
                     </Text>
                   </>
@@ -215,45 +217,45 @@ export default function LoginScreen() {
 
               {/* Divider */}
               <View className="mb-6 flex-row items-center">
-                <View className="bg-neutral-T90 h-[1px] flex-1" />
-                <Text className="font-label text-neutral-T70 px-4 text-xs">
+                <View className="bg-neutral-T90 dark:bg-neutral-T30 h-[1px] flex-1" />
+                <Text className="font-label text-neutral-T70 dark:text-neutral-T60 px-4 text-xs">
                   {t('auth.or')}
                 </Text>
-                <View className="bg-neutral-T90 h-[1px] flex-1" />
+                <View className="bg-neutral-T90 dark:bg-neutral-T30 h-[1px] flex-1" />
               </View>
 
               {/* Form */}
               <View className="gap-5">
                 {/* Email */}
                 <View className="gap-2">
-                  <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
+                  <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
                     {t('auth.email')}
                   </Text>
                   <TextInput
                     placeholder="example@gmail.com"
-                    placeholderTextColor="#AAABAB"
+                    placeholderTextColor={colors.placeholder}
                     keyboardType="email-address"
                     autoCapitalize="none"
                     autoCorrect={false}
                     value={email}
                     onChangeText={setEmail}
-                    className="font-body text-neutral-T10 bg-neutral-T95 border-neutral-T90 h-14 rounded-xl border px-4 text-base"
+                    className="font-body text-neutral-T10 dark:text-neutral-T90 bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 h-14 rounded-xl border px-4 text-base"
                   />
                 </View>
 
                 {/* Password */}
                 <View className="gap-2">
-                  <Text className="font-label text-neutral-T50 ml-1 text-sm font-semibold">
+                  <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
                     {t('auth.password')}
                   </Text>
-                  <View className="bg-neutral-T95 border-neutral-T90 h-14 flex-row items-center rounded-xl border px-4">
+                  <View className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 h-14 flex-row items-center rounded-xl border px-4">
                     <TextInput
                       placeholder={t('auth.passwordPlaceholder')}
-                      placeholderTextColor="#AAABAB"
+                      placeholderTextColor={colors.placeholder}
                       secureTextEntry={!showPassword}
                       value={password}
                       onChangeText={setPassword}
-                      className="font-body text-neutral-T10 flex-1 text-base"
+                      className="font-body text-neutral-T10 dark:text-neutral-T90 flex-1 text-base"
                     />
                     <TouchableOpacity
                       onPress={() => setShowPassword(!showPassword)}
@@ -272,7 +274,7 @@ export default function LoginScreen() {
               {/* Forgot password */}
               <View className="mb-8 mt-3 flex-row justify-end">
                 <TouchableOpacity>
-                  <Text className="font-label text-primary-T40 text-sm font-semibold">
+                  <Text className="font-label text-primary-T40 dark:text-primary-T60 text-sm font-semibold">
                     {t('auth.forgotPassword')}
                   </Text>
                 </TouchableOpacity>
@@ -283,7 +285,7 @@ export default function LoginScreen() {
                 activeOpacity={0.8}
                 onPress={handleLogin}
                 disabled={isLoading}
-                className="bg-primary-T40 h-14 items-center justify-center rounded-xl shadow-sm active:opacity-80"
+                className="bg-primary-T40 dark:bg-primary-T50 h-14 items-center justify-center rounded-xl shadow-sm active:opacity-80"
               >
                 {isLoading ? (
                   <ActivityIndicator color="#FFFFFF" />
@@ -296,12 +298,12 @@ export default function LoginScreen() {
 
               {/* Register link */}
               <View className="mt-6 flex-row justify-center pb-8">
-                <Text className="font-body text-neutral-T50 text-sm">
+                <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-sm">
                   {t('auth.dontHaveAccount')}{' '}
                 </Text>
                 <Link href="/(auth)/register" asChild>
                   <TouchableOpacity>
-                    <Text className="font-body text-primary-T40 text-sm font-bold">
+                    <Text className="font-body text-primary-T40 dark:text-primary-T60 text-sm font-bold">
                       {t('auth.register')}
                     </Text>
                   </TouchableOpacity>

@@ -53,17 +53,19 @@ function DateField({
   const isActive = activePicker === fieldKey;
   return (
     <>
-      <Text className="font-body-semibold text-neutral-T50 mb-1 text-xs uppercase tracking-wide">
+      <Text className="font-body-semibold text-neutral-T50 dark:text-neutral-T60 mb-1 text-xs uppercase tracking-wide">
         {label}
       </Text>
       <TouchableOpacity
-        className={`bg-neutral-T95 mb-1 h-14 flex-row items-center justify-between rounded-xl border px-4 ${
-          isActive ? 'border-primary' : 'border-neutral-T90'
+        className={`bg-neutral-T95 dark:bg-neutral-T30 mb-1 h-14 flex-row items-center justify-between rounded-xl border px-4 ${
+          isActive
+            ? 'border-primary'
+            : 'border-neutral-T90 dark:border-neutral-T30'
         }`}
         onPress={() => onToggle(fieldKey)}
       >
         <Text
-          className={`font-body text-base ${value ? 'text-neutral-T10' : 'text-neutral-T50'}`}
+          className={`font-body text-base ${value ? 'text-neutral-T10 dark:text-neutral-T90' : 'text-neutral-T50 dark:text-neutral-T60'}`}
         >
           {formatDate(value)}
         </Text>
@@ -188,16 +190,16 @@ export default function CompareModal({
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <View className="flex-1 bg-white">
+      <View className="dark:bg-neutral-T10 flex-1 bg-white">
         {/* Header — paddingTop accounts for status bar since SafeAreaView is unreliable in Modal on iOS */}
         <View
-          className="border-neutral-T90 flex-row items-center border-b px-6"
+          className="border-neutral-T90 dark:border-neutral-T30 flex-row items-center border-b px-6"
           style={{ paddingTop: insets.top + 12, paddingBottom: 12 }}
         >
           <TouchableOpacity onPress={onClose} className="mr-3">
             <MaterialIcons name="arrow-back" size={24} color="#191C1C" />
           </TouchableOpacity>
-          <Text className="font-body-bold text-neutral-T10 text-xl">
+          <Text className="font-body-bold text-neutral-T10 dark:text-neutral-T90 text-xl">
             So sánh khoảng thời gian
           </Text>
         </View>
@@ -207,7 +209,7 @@ export default function CompareModal({
           contentContainerStyle={{ paddingTop: 20, paddingBottom: 40 }}
           showsVerticalScrollIndicator={false}
         >
-          <Text className="font-body-bold text-neutral-T10 mb-4 text-base">
+          <Text className="font-body-bold text-neutral-T10 dark:text-neutral-T90 mb-4 text-base">
             Khoảng hiện tại
           </Text>
           <DateField
@@ -225,9 +227,9 @@ export default function CompareModal({
             />
           </View>
 
-          <View className="border-neutral-T90 my-5 border-t" />
+          <View className="border-neutral-T90 dark:border-neutral-T30 my-5 border-t" />
 
-          <Text className="font-body-bold text-neutral-T10 mb-4 text-base">
+          <Text className="font-body-bold text-neutral-T10 dark:text-neutral-T90 mb-4 text-base">
             Khoảng so sánh
           </Text>
           <DateField
@@ -253,7 +255,7 @@ export default function CompareModal({
         >
           <TouchableOpacity
             className={`h-14 items-center justify-center rounded-xl active:opacity-80 ${
-              canApply ? 'bg-primary-T40' : 'bg-neutral-T80'
+              canApply ? 'bg-primary-T40' : 'bg-neutral-T80 dark:bg-neutral-T30'
             }`}
             onPress={handleApply}
             disabled={!canApply}

@@ -1,4 +1,5 @@
 import { Feather, Ionicons } from '@expo/vector-icons';
+import { useColorScheme } from 'nativewind';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -50,6 +51,8 @@ function getUrgencyInfo(
 
 export default function PostCard({ post, onPress }: PostCardProps) {
   const { t } = useTranslation();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const isFree = post.type === 'P2P_FREE';
   const imageUrl = post.images?.[0];
   const urgency = getUrgencyInfo(post.expiryDate, t as TFunc);
@@ -68,13 +71,13 @@ export default function PostCard({ post, onPress }: PostCardProps) {
     <TouchableOpacity
       activeOpacity={0.88}
       onPress={onPress}
-      className="bg-neutral-T100 overflow-hidden rounded-2xl"
+      className="bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 overflow-hidden rounded-2xl dark:border"
       style={{
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.08,
+        shadowOpacity: isDark ? 0 : 0.08,
         shadowRadius: 8,
-        elevation: 3,
+        elevation: isDark ? 0 : 3,
       }}
     >
       {/* Image */}
@@ -86,7 +89,7 @@ export default function PostCard({ post, onPress }: PostCardProps) {
             resizeMode="cover"
           />
         ) : (
-          <View className="bg-neutral-T95 h-full w-full items-center justify-center">
+          <View className="bg-neutral-T95 dark:bg-neutral-T30 h-full w-full items-center justify-center">
             <Feather name="image" size={32} color="#AAABAB" />
           </View>
         )}
@@ -116,10 +119,14 @@ export default function PostCard({ post, onPress }: PostCardProps) {
         {tag && (
           <View
             className="absolute bottom-3 right-3 rounded-full px-3 py-1"
-            style={{ backgroundColor: 'rgba(255,255,255,0.92)' }}
+            style={{
+              backgroundColor: isDark
+                ? 'rgba(46,49,49,0.92)'
+                : 'rgba(255,255,255,0.92)',
+            }}
           >
             <Text
-              className="text-primary-T40 font-label text-sm uppercase tracking-widest"
+              className="text-primary-T40 dark:text-primary-T60 font-label text-sm uppercase tracking-widest"
               style={{ fontWeight: '700' }}
             >
               {tag}
@@ -132,7 +139,7 @@ export default function PostCard({ post, onPress }: PostCardProps) {
       <View className="gap-1.5 px-4 py-3">
         <View className="flex-row items-start justify-between">
           <Text
-            className="text-neutral-T10 flex-1 pr-2 font-sans"
+            className="text-neutral-T10 dark:text-neutral-T90 flex-1 pr-2 font-sans"
             style={{ fontSize: 16, fontWeight: '700' }}
             numberOfLines={1}
           >

@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useColorScheme } from 'nativewind';
 import ManagementHeader from '@/components/shared/headers/ManagementHeader';
 import { getBadgeCatalogApi } from '@/lib/badgeApi';
 import type { IBadge, TargetRole } from '@/lib/badgeApi';
@@ -37,6 +38,8 @@ const NUM_COLUMNS = 3;
 
 // ─── Badge card ───
 function BadgeCard({ badge, onPress }: { badge: IBadge; onPress: () => void }) {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -46,7 +49,13 @@ function BadgeCard({ badge, onPress }: { badge: IBadge; onPress: () => void }) {
       {/* Image container */}
       <View
         className={`h-20 w-20 items-center justify-center overflow-hidden rounded-2xl ${
-          badge.isUnlocked ? 'bg-primary-T95' : 'bg-neutral-T95'
+          badge.isUnlocked
+            ? isDark
+              ? 'bg-primary-T20'
+              : 'bg-primary-T95'
+            : isDark
+              ? 'bg-neutral-T30'
+              : 'bg-neutral-T95'
         }`}
         style={
           badge.isUnlocked
@@ -80,8 +89,12 @@ function BadgeCard({ badge, onPress }: { badge: IBadge; onPress: () => void }) {
       <Text
         className={`font-label text-center text-[11px] leading-tight ${
           badge.isUnlocked
-            ? 'text-neutral-T10 font-semibold'
-            : 'text-neutral-T50'
+            ? isDark
+              ? 'text-neutral-T90 font-semibold'
+              : 'text-neutral-T10 font-semibold'
+            : isDark
+              ? 'text-neutral-T60'
+              : 'text-neutral-T50'
         }`}
         numberOfLines={2}
       >
@@ -90,16 +103,22 @@ function BadgeCard({ badge, onPress }: { badge: IBadge; onPress: () => void }) {
 
       {/* Point reward chip */}
       {badge.isUnlocked ? (
-        <View className="bg-primary-T95 flex-row items-center gap-0.5 rounded-full px-2 py-0.5">
+        <View
+          className={`flex-row items-center gap-0.5 rounded-full px-2 py-0.5 ${isDark ? 'bg-primary-T20' : 'bg-primary-T95'}`}
+        >
           <MaterialIcons name="eco" size={10} color="#296C24" />
-          <Text className="font-label text-primary-T30 text-[9px] font-bold">
+          <Text className="font-label text-primary-T30 dark:text-primary-T80 text-[9px] font-bold">
             +{badge.pointReward}
           </Text>
         </View>
       ) : (
-        <View className="bg-neutral-T90 flex-row items-center gap-0.5 rounded-full px-2 py-0.5">
+        <View
+          className={`flex-row items-center gap-0.5 rounded-full px-2 py-0.5 ${isDark ? 'bg-neutral-T30' : 'bg-neutral-T90'}`}
+        >
           <MaterialIcons name="lock" size={10} color="#757777" />
-          <Text className="font-label text-neutral-T50 text-[9px]">
+          <Text
+            className={`font-label text-[9px] ${isDark ? 'text-neutral-T60' : 'text-neutral-T50'}`}
+          >
             +{badge.pointReward}
           </Text>
         </View>
@@ -117,6 +136,8 @@ function BadgeDetail({
   onClose: () => void;
 }) {
   const { t, i18n } = useTranslation();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const formatDate = (dateStr: string) =>
     new Date(dateStr).toLocaleDateString(
       i18n.language === 'vi' ? 'vi-VN' : 'en-US',
@@ -137,15 +158,21 @@ function BadgeDetail({
         onPress={onClose}
         activeOpacity={1}
       />
-      <View className="bg-neutral-T100 w-full gap-5 rounded-t-3xl px-6 pb-10 pt-6">
+      <View className="bg-neutral-T100 dark:bg-neutral-T20 w-full gap-5 rounded-t-3xl px-6 pb-10 pt-6">
         {/* Drag handle */}
-        <View className="bg-neutral-T80 -mt-1 mb-1 h-1 w-12 self-center rounded-full" />
+        <View className="bg-neutral-T80 dark:bg-neutral-T30 -mt-1 mb-1 h-1 w-12 self-center rounded-full" />
 
         {/* Badge image */}
         <View className="items-center gap-3">
           <View
             className={`h-24 w-24 items-center justify-center rounded-3xl ${
-              badge.isUnlocked ? 'bg-primary-T95' : 'bg-neutral-T95'
+              badge.isUnlocked
+                ? isDark
+                  ? 'bg-primary-T20'
+                  : 'bg-primary-T95'
+                : isDark
+                  ? 'bg-neutral-T30'
+                  : 'bg-neutral-T95'
             }`}
           >
             <Image
@@ -159,12 +186,18 @@ function BadgeDetail({
             />
           </View>
           <View className="items-center gap-1">
-            <Text className="text-neutral-T10 text-center font-sans text-xl font-bold">
+            <Text className="text-neutral-T10 dark:text-neutral-T90 text-center font-sans text-xl font-bold">
               {badge.name}
             </Text>
             <View
               className={`flex-row items-center gap-1 rounded-full px-3 py-1 ${
-                badge.isUnlocked ? 'bg-primary-T95' : 'bg-neutral-T90'
+                badge.isUnlocked
+                  ? isDark
+                    ? 'bg-primary-T20'
+                    : 'bg-primary-T95'
+                  : isDark
+                    ? 'bg-neutral-T30'
+                    : 'bg-neutral-T90'
               }`}
             >
               <MaterialIcons
@@ -174,7 +207,11 @@ function BadgeDetail({
               />
               <Text
                 className={`font-label text-xs font-semibold ${
-                  badge.isUnlocked ? 'text-primary-T30' : 'text-neutral-T50'
+                  badge.isUnlocked
+                    ? 'text-primary-T30 dark:text-primary-T60'
+                    : isDark
+                      ? 'text-neutral-T60'
+                      : 'text-neutral-T50'
                 }`}
               >
                 {badge.isUnlocked
@@ -186,8 +223,8 @@ function BadgeDetail({
         </View>
 
         {/* Description */}
-        <View className="bg-neutral-T97 gap-3 rounded-2xl p-4">
-          <Text className="font-body text-neutral-T30 text-sm leading-5">
+        <View className="bg-neutral-T97 dark:bg-neutral-T30 gap-3 rounded-2xl p-4">
+          <Text className="font-body text-neutral-T30 dark:text-neutral-T80 text-sm leading-5">
             {badge.description}
           </Text>
 
@@ -238,13 +275,17 @@ function InfoRow({
   value: string;
   valueColor?: string;
 }) {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   return (
     <View className="flex-row items-center gap-2">
       <MaterialIcons name={icon as any} size={14} color="#757777" />
-      <Text className="font-label text-neutral-T50 w-24 text-xs">{label}</Text>
+      <Text className="font-label text-neutral-T50 dark:text-neutral-T60 w-24 text-xs">
+        {label}
+      </Text>
       <Text
         className="font-label flex-1 text-xs font-semibold"
-        style={{ color: valueColor ?? '#191C1C' }}
+        style={{ color: valueColor ?? (isDark ? '#E1E3E2' : '#191C1C') }}
       >
         {value}
       </Text>
@@ -257,6 +298,8 @@ export default function BadgesScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   const [badges, setBadges] = useState<IBadge[]>([]);
   const [total, setTotal] = useState(0);
@@ -299,18 +342,18 @@ export default function BadgesScreen() {
   }
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <ManagementHeader
         title={t('profile.badgesCollection')}
         onBack={() => router.back()}
       />
 
       {/* Progress summary */}
-      <View className="bg-primary-T95 mx-4 mt-4 gap-3 rounded-2xl p-5">
+      <View className="bg-primary-T95 dark:bg-primary-T20 mx-4 mt-4 gap-3 rounded-2xl p-5">
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center gap-2">
             <MaterialIcons name="military-tech" size={22} color="#296C24" />
-            <Text className="text-primary-T20 font-sans text-lg font-bold">
+            <Text className="text-primary-T20 dark:text-primary-T80 font-sans text-lg font-bold">
               {t('profile.badgesCount', { unlocked, total })}
             </Text>
           </View>
@@ -318,7 +361,7 @@ export default function BadgesScreen() {
             {total > 0 ? Math.round((unlocked / total) * 100) : 0}%
           </Text>
         </View>
-        <View className="bg-primary-T90 h-2 overflow-hidden rounded-full">
+        <View className="bg-primary-T90 dark:bg-primary-T30 h-2 overflow-hidden rounded-full">
           <View
             className="bg-primary h-full rounded-full"
             style={{ width: total > 0 ? `${(unlocked / total) * 100}%` : '0%' }}
@@ -338,12 +381,18 @@ export default function BadgesScreen() {
             className={`rounded-full px-4 py-2 ${
               filter === f.value
                 ? 'bg-primary'
-                : 'bg-neutral-T100 border-neutral-T80 border'
+                : isDark
+                  ? 'bg-neutral-T20 border-neutral-T30 border'
+                  : 'bg-neutral-T100 border-neutral-T80 border'
             }`}
           >
             <Text
               className={`font-label text-xs font-semibold ${
-                filter === f.value ? 'text-neutral-T100' : 'text-neutral-T30'
+                filter === f.value
+                  ? 'text-neutral-T100'
+                  : isDark
+                    ? 'text-neutral-T80'
+                    : 'text-neutral-T30'
               }`}
             >
               {t(f.labelKey)}
@@ -356,14 +405,14 @@ export default function BadgesScreen() {
       {isLoading ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-neutral-T50 text-sm">
+          <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-sm">
             {t('common.loading')}
           </Text>
         </View>
       ) : filtered.length === 0 ? (
         <View className="flex-1 items-center justify-center gap-3 px-8">
           <MaterialIcons name="military-tech" size={56} color="#C5C7C6" />
-          <Text className="font-body text-neutral-T50 text-center text-sm">
+          <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-center text-sm">
             {filter === 'UNLOCKED'
               ? t('profile.badgeEmptyUnlocked')
               : t('profile.badgesEmptyAll')}

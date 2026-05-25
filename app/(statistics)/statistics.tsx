@@ -9,6 +9,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 import { useAuthStore } from '@/stores/authStore';
 import {
   StatisticsRange,
@@ -26,6 +27,7 @@ import StoreStatsView from '@/components/statistics/StoreStatsView';
 export default function StatisticsScreen() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
+  const colors = useThemeColors();
 
   const [range, setRange] = useState<StatisticsRange>('7d');
   const [from, setFrom] = useState<string | undefined>(undefined);
@@ -84,26 +86,30 @@ export default function StatisticsScreen() {
   }, []);
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="dark:bg-neutral-T10 flex-1 bg-white">
       {/* Header area — white background with shadow separator (Bug 1 fix) */}
-      <View className="bg-white shadow-sm">
+      <View className="dark:bg-neutral-T20 dark:border-neutral-T30 bg-white shadow-sm dark:border-b dark:shadow-none">
         {/* Title row — back + title on left, controls on right (Bug 4 fix) */}
         <View className="flex-row items-center justify-between px-6 pb-2 pt-4">
           <View className="flex-row items-center gap-3">
             <TouchableOpacity onPress={() => router.back()}>
-              <MaterialIcons name="arrow-back" size={24} color="#191C1C" />
+              <MaterialIcons
+                name="arrow-back"
+                size={24}
+                color={colors.textPrimary}
+              />
             </TouchableOpacity>
-            <Text className="font-body-bold text-neutral-T10 text-xl">
+            <Text className="font-body-bold text-neutral-T10 dark:text-neutral-T90 text-xl">
               Thống kê
             </Text>
           </View>
           <View className="flex-row items-center gap-2">
             <ChartTypeToggle value={chartType} onChange={setChartType} />
             <TouchableOpacity
-              className="border-neutral-T80 rounded-xl border bg-white px-3 py-2"
+              className="border-neutral-T80 dark:border-neutral-T30 dark:bg-neutral-T30 rounded-xl border bg-white px-3 py-2"
               onPress={() => setCompareModalVisible(true)}
             >
-              <Text className="font-body-semibold text-neutral-T30 text-sm">
+              <Text className="font-body-semibold text-neutral-T30 dark:text-neutral-T80 text-sm">
                 So sánh
               </Text>
             </TouchableOpacity>
@@ -120,7 +126,7 @@ export default function StatisticsScreen() {
       </View>
 
       <ScrollView
-        className="bg-neutral flex-1 px-6"
+        className="bg-neutral dark:bg-neutral-T10 flex-1 px-6"
         contentContainerStyle={{ paddingBottom: 40, gap: 16, paddingTop: 16 }}
         showsVerticalScrollIndicator={false}
       >

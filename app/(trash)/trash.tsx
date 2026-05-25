@@ -14,6 +14,7 @@ import {
   View,
 } from 'react-native';
 
+import { useColorScheme } from 'nativewind';
 import ManagementHeader from '@/components/shared/headers/ManagementHeader';
 import {
   getMyTrashItemsApi,
@@ -66,13 +67,13 @@ function EmptyState() {
   const { t } = useTranslation();
   return (
     <View className="flex-1 items-center justify-center gap-3 px-8 py-24">
-      <View className="bg-primary-T95 h-16 w-16 items-center justify-center rounded-2xl">
+      <View className="bg-primary-T95 dark:bg-primary-T20 h-16 w-16 items-center justify-center rounded-2xl">
         <MaterialIcons name="delete-outline" size={28} color="#296C24" />
       </View>
-      <Text className="text-neutral-T10 text-center font-sans text-base font-bold">
+      <Text className="text-neutral-T10 dark:text-neutral-T90 text-center font-sans text-base font-bold">
         {t('trash.emptyTitle')}
       </Text>
-      <Text className="font-body text-neutral-T50 text-center text-sm leading-5">
+      <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-center text-sm leading-5">
         {t('trash.emptyBody')}
       </Text>
     </View>
@@ -99,11 +100,11 @@ function TrashItemCard({
 
   return (
     <View
-      className="bg-neutral-T100 mx-4 mb-3 rounded-2xl p-4"
+      className="bg-neutral-T100 dark:bg-neutral-T20 mx-4 mb-3 rounded-2xl p-4"
       style={styles.card}
     >
       <View className="flex-row items-start gap-3">
-        <View className="bg-primary-T95 h-10 w-10 shrink-0 items-center justify-center rounded-xl">
+        <View className="bg-primary-T95 dark:bg-primary-T20 h-10 w-10 shrink-0 items-center justify-center rounded-xl">
           <MaterialIcons
             name={getItemIcon(collection)}
             size={20}
@@ -112,12 +113,12 @@ function TrashItemCard({
         </View>
         <View className="min-w-0 flex-1">
           <Text
-            className="text-neutral-T10 font-sans text-sm font-semibold"
+            className="text-neutral-T10 dark:text-neutral-T90 font-sans text-sm font-semibold"
             numberOfLines={2}
           >
             {getItemLabel(collection, item)}
           </Text>
-          <Text className="font-body text-neutral-T50 mt-0.5 text-xs">
+          <Text className="font-body text-neutral-T50 dark:text-neutral-T60 mt-0.5 text-xs">
             {t('trash.deletedOn', {
               date: formatDate(item.deletedAt),
             })}
@@ -130,7 +131,7 @@ function TrashItemCard({
           onPress={onRestore}
           disabled={busy}
           activeOpacity={0.85}
-          className="bg-primary-T95 h-9 flex-1 flex-row items-center justify-center gap-1.5 rounded-xl"
+          className="bg-primary-T95 dark:bg-primary-T20 h-9 flex-1 flex-row items-center justify-center gap-1.5 rounded-xl"
           style={busy ? { opacity: 0.5 } : undefined}
         >
           {restoring ? (
@@ -138,7 +139,7 @@ function TrashItemCard({
           ) : (
             <MaterialIcons name="restore" size={15} color="#296C24" />
           )}
-          <Text className="font-label text-primary-T30 text-xs font-semibold">
+          <Text className="font-label text-primary-T30 dark:text-primary-T80 text-xs font-semibold">
             {t('trash.restore')}
           </Text>
         </TouchableOpacity>
@@ -147,7 +148,7 @@ function TrashItemCard({
           onPress={onPurge}
           disabled={busy}
           activeOpacity={0.85}
-          className="h-9 flex-1 flex-row items-center justify-center gap-1.5 rounded-xl bg-red-50"
+          className="h-9 flex-1 flex-row items-center justify-center gap-1.5 rounded-xl bg-red-50 dark:bg-red-950/30"
           style={busy ? { opacity: 0.5 } : undefined}
         >
           {purging ? (
@@ -169,6 +170,8 @@ function TrashItemCard({
 export default function TrashScreen() {
   const router = useRouter();
   const { t } = useTranslation();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const user = useAuthStore((s) => s.user);
   const isStore = user?.role === 'STORE';
 
@@ -290,16 +293,16 @@ export default function TrashScreen() {
   const isLoading = loading[activeTab];
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <StatusBar
-        barStyle="dark-content"
+        barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor="transparent"
         translucent
       />
       <ManagementHeader title={t('trash.title')} onBack={() => router.back()} />
 
       {/* ── Tab Bar ── */}
-      <View className="bg-neutral-T95 mx-4 mb-3 mt-4 flex-row rounded-xl p-1">
+      <View className="bg-neutral-T95 dark:bg-neutral-T30 mx-4 mb-3 mt-4 flex-row rounded-xl p-1">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.key;
           const count = items[tab.key].length;
@@ -309,7 +312,13 @@ export default function TrashScreen() {
               onPress={() => handleTabChange(tab.key)}
               activeOpacity={0.8}
               className="flex-1 items-center rounded-lg py-2.5"
-              style={isActive ? styles.tabActive : undefined}
+              style={
+                isActive
+                  ? isDark
+                    ? styles.tabActiveDark
+                    : styles.tabActive
+                  : undefined
+              }
             >
               <View className="flex-row items-center gap-1.5">
                 <Text
@@ -340,7 +349,7 @@ export default function TrashScreen() {
       </View>
 
       {/* ── Info banner ── */}
-      <View className="mx-4 mb-3 flex-row items-start gap-2 rounded-xl bg-amber-50 p-3">
+      <View className="mx-4 mb-3 flex-row items-start gap-2 rounded-xl bg-amber-50 p-3 dark:bg-amber-900/30">
         <MaterialIcons
           name="info-outline"
           size={15}
@@ -356,7 +365,7 @@ export default function TrashScreen() {
       {isLoading ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-neutral-T50 text-sm">
+          <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-sm">
             {t('common.loading')}
           </Text>
         </View>
@@ -428,5 +437,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.06,
     shadowRadius: 4,
     elevation: 2,
+  },
+  tabActiveDark: {
+    backgroundColor: '#2E3131',
+    elevation: 0,
   },
 });

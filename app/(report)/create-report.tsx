@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useColorScheme } from 'nativewind';
 import StackHeader from '@/components/shared/headers/StackHeader';
 import { pickImage } from '@/lib/imagePicker';
 import {
@@ -220,6 +221,9 @@ export default function CreateReportScreen() {
     }
   };
 
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
   const canSubmit =
     !!selectedReason &&
     description.trim().length >= 10 &&
@@ -229,9 +233,9 @@ export default function CreateReportScreen() {
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <StatusBar
-        barStyle="dark-content"
+        barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor="transparent"
         translucent
       />
@@ -251,33 +255,33 @@ export default function CreateReportScreen() {
         >
           {/* ── Target Info ── */}
           <View
-            className="bg-neutral-T100 mx-4 mt-4 gap-2 rounded-2xl p-4"
+            className="bg-neutral-T100 dark:bg-neutral-T20 mx-4 mt-4 gap-2 rounded-2xl p-4"
             style={styles.card}
           >
             <View className="flex-row items-center gap-2">
-              <View className="bg-secondary-T95 h-7 w-7 items-center justify-center rounded-lg">
+              <View className="bg-secondary-T95 dark:bg-secondary-T20 h-7 w-7 items-center justify-center rounded-lg">
                 <MaterialIcons name="flag" size={15} color="#C05621" />
               </View>
-              <Text className="font-label text-neutral-T50 text-sm font-semibold">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-sm font-semibold">
                 {t('report.targetSectionLabel')}
               </Text>
             </View>
             <View className="flex-row items-center gap-2">
-              <View className="bg-neutral-T95 rounded-lg px-2.5 py-1">
-                <Text className="font-label text-neutral-T30 text-xs font-semibold">
+              <View className="bg-neutral-T95 dark:bg-neutral-T30 rounded-lg px-2.5 py-1">
+                <Text className="font-label text-neutral-T30 dark:text-neutral-T80 text-xs font-semibold">
                   {targetLabel}
                 </Text>
               </View>
               {targetTitle ? (
                 <Text
-                  className="font-body text-neutral-T10 flex-1 text-sm"
+                  className="font-body text-neutral-T10 dark:text-neutral-T90 flex-1 text-sm"
                   numberOfLines={1}
                 >
                   {targetTitle}
                 </Text>
               ) : (
                 <Text
-                  className="font-body text-neutral-T50 flex-1 text-xs"
+                  className="font-body text-neutral-T50 dark:text-neutral-T60 flex-1 text-xs"
                   numberOfLines={1}
                 >
                   ID: {targetId}
@@ -289,12 +293,12 @@ export default function CreateReportScreen() {
           {/* ── Reason Selector ── */}
           <View className="mx-4 mt-4 gap-2">
             <Text
-              className="text-neutral-T10 text-base"
+              className="text-neutral-T10 dark:text-neutral-T90 text-base"
               style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
             >
               {t('report.reasonTitle')}
             </Text>
-            <Text className="font-body text-neutral-T50 -mt-1 text-sm">
+            <Text className="font-body text-neutral-T50 dark:text-neutral-T60 -mt-1 text-sm">
               {t('report.reasonHint')}
             </Text>
 
@@ -306,13 +310,17 @@ export default function CreateReportScreen() {
                     key={option.value}
                     activeOpacity={0.8}
                     onPress={() => setSelectedReason(option.value)}
-                    className="bg-neutral-T100 flex-row items-center gap-3 rounded-2xl p-4"
+                    className="bg-neutral-T100 dark:bg-neutral-T20 flex-row items-center gap-3 rounded-2xl p-4"
                     style={[styles.card, isSelected && styles.cardSelected]}
                   >
                     <View
                       className="h-10 w-10 items-center justify-center rounded-xl"
                       style={{
-                        backgroundColor: isSelected ? '#296C24' : '#F0F4F0',
+                        backgroundColor: isSelected
+                          ? '#296C24'
+                          : isDark
+                            ? '#003A03'
+                            : '#F0F4F0',
                       }}
                     >
                       <MaterialIcons
@@ -323,13 +331,13 @@ export default function CreateReportScreen() {
                     </View>
                     <View className="flex-1 gap-0.5">
                       <Text
-                        className="font-label text-neutral-T10 text-sm"
+                        className="font-label text-neutral-T10 dark:text-neutral-T90 text-sm"
                         style={{ fontWeight: isSelected ? '700' : '600' }}
                       >
                         {t(option.labelKey)}
                       </Text>
                       <Text
-                        className="font-body text-neutral-T50 text-xs"
+                        className="font-body text-neutral-T50 dark:text-neutral-T60 text-xs"
                         numberOfLines={1}
                       >
                         {t(option.descKey)}
@@ -355,16 +363,16 @@ export default function CreateReportScreen() {
           {/* ── Description ── */}
           <View className="mx-4 mt-5 gap-2">
             <Text
-              className="text-neutral-T10 text-base"
+              className="text-neutral-T10 dark:text-neutral-T90 text-base"
               style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
             >
               {t('report.descriptionTitle')}
             </Text>
-            <Text className="font-body text-neutral-T50 -mt-1 text-sm">
+            <Text className="font-body text-neutral-T50 dark:text-neutral-T60 -mt-1 text-sm">
               {t('report.descriptionHint')}
             </Text>
             <View
-              className="bg-neutral-T100 rounded-2xl"
+              className="bg-neutral-T100 dark:bg-neutral-T20 rounded-2xl"
               style={[
                 styles.card,
                 description.length > 0 &&
@@ -382,9 +390,12 @@ export default function CreateReportScreen() {
                 textAlignVertical="top"
                 style={[
                   styles.textArea,
-                  { fontFamily: 'BeVietnamPro-Regular' },
+                  {
+                    fontFamily: 'BeVietnamPro-Regular',
+                    color: isDark ? '#E1E3E2' : '#191C1C',
+                  },
                 ]}
-                className="text-neutral-T10 text-sm"
+                className="text-neutral-T10 dark:text-neutral-T90 text-sm"
               />
               <View className="flex-row justify-end px-4 pb-3">
                 <Text
@@ -412,11 +423,11 @@ export default function CreateReportScreen() {
                 >
                   {t('report.evidenceTitle')}
                 </Text>
-                <Text className="font-body text-neutral-T50 text-sm">
+                <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-sm">
                   {t('report.evidenceRequired', { max: MAX_IMAGES })}
                 </Text>
               </View>
-              <Text className="font-label text-neutral-T50 text-xs font-semibold">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-xs font-semibold">
                 {totalImages}/{MAX_IMAGES}
               </Text>
             </View>
@@ -428,7 +439,7 @@ export default function CreateReportScreen() {
             >
               {totalImages < MAX_IMAGES && (
                 <TouchableOpacity
-                  className="border-neutral-T80 bg-neutral-T95 h-28 w-28 items-center justify-center gap-1 rounded-2xl border border-dashed active:opacity-80"
+                  className="border-neutral-T80 dark:border-neutral-T30 bg-neutral-T95 dark:bg-neutral-T30 h-28 w-28 items-center justify-center gap-1 rounded-2xl border border-dashed active:opacity-80"
                   onPress={handleAddImage}
                   disabled={isSubmitting}
                 >
@@ -495,7 +506,7 @@ export default function CreateReportScreen() {
           </View>
 
           {/* ── Policy note ── */}
-          <View className="mx-4 mt-4 flex-row gap-2 rounded-xl bg-red-100 p-3">
+          <View className="mx-4 mt-4 flex-row gap-2 rounded-xl bg-red-100 p-3 dark:bg-red-950/30">
             <MaterialIcons
               name="info-outline"
               size={16}
@@ -511,7 +522,7 @@ export default function CreateReportScreen() {
 
       {/* ── Submit Button ── */}
       <View
-        className="bg-neutral-T100 border-neutral-T90 absolute bottom-0 left-0 right-0 border-t px-4 pt-3"
+        className="bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T90 dark:border-neutral-T30 absolute bottom-0 left-0 right-0 border-t px-4 pt-3"
         style={{ paddingBottom: insets.bottom + 12 }}
       >
         <TouchableOpacity
@@ -572,6 +583,5 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     minHeight: 120,
     fontSize: 14,
-    color: '#191C1C',
   },
 });

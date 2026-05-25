@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, Text, useWindowDimensions } from 'react-native';
 import { LineChart, BarChart } from 'react-native-gifted-charts';
+import { useColorScheme } from 'nativewind';
 import { ITimeseriesPoint } from '@/types/statistics';
 import { formatVND } from '@/utils/statisticsHelpers';
 
@@ -27,6 +28,8 @@ export default function GrowthChart({
   metric,
   chartType,
 }: GrowthChartProps) {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   // Bug 5 fix: subtract extra space for y-axis (gifted-charts adds ~35px to the left)
   const { width: screenWidth } = useWindowDimensions();
   const chartWidth = screenWidth - 130;
@@ -61,7 +64,7 @@ export default function GrowthChart({
     noOfSections: 4,
     yAxisTextStyle: { color: '#9CA3AF', fontSize: 10 },
     xAxisLabelTextStyle: { color: '#9CA3AF', fontSize: 10 },
-    rulesColor: '#F3F4F6',
+    rulesColor: isDark ? '#454747' : '#F3F4F6',
     formatYLabel,
   };
 
@@ -92,17 +95,19 @@ export default function GrowthChart({
         pointerLabelComponent: (items: { label: string; value: number }[]) => (
           <View
             style={{
-              backgroundColor: 'white',
+              backgroundColor: isDark ? '#2E3131' : 'white',
               padding: 8,
               borderRadius: 8,
               elevation: 3,
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
+              shadowOpacity: isDark ? 0 : 0.1,
               shadowRadius: 4,
             }}
           >
-            <Text style={{ fontSize: 11, color: '#6B7280' }}>
+            <Text
+              style={{ fontSize: 11, color: isDark ? '#8F9190' : '#6B7280' }}
+            >
               {items[0]?.label}
             </Text>
             <Text

@@ -1,4 +1,5 @@
 import { Feather } from '@expo/vector-icons';
+import { useColorScheme } from 'nativewind';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -29,10 +30,6 @@ const TABS: Tab[] = [
 ];
 
 // ─── Constants ───────────────────────────────────────────────────────────────
-const PRIMARY_T40 = '#296C24';
-const NEUTRAL_T50 = '#757777';
-const NEUTRAL_T100 = '#FFFFFF';
-
 const FAB_SIZE = 56;
 const FAB_RISE = 18;
 
@@ -43,7 +40,13 @@ export default function CustomTabBar({
 }: CustomTabBarProps) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const { colorScheme } = useColorScheme();
   const [internalIndex, setInternalIndex] = useState(0);
+
+  const isDark = colorScheme === 'dark';
+  const activeColor = isDark ? '#5CA051' : '#296C24';
+  const inactiveColor = isDark ? '#8F9190' : '#757777';
+  const fabBorderColor = isDark ? '#2E3131' : '#FFFFFF';
 
   const activeIndex =
     controlledIndex !== undefined ? controlledIndex : internalIndex;
@@ -68,7 +71,7 @@ export default function CustomTabBar({
     >
       {/* ── Main Bar ── */}
       <View
-        className="bg-neutral-T100 flex-row items-center justify-around rounded-2xl shadow-md"
+        className="bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 flex-row items-center justify-around rounded-2xl shadow-md dark:border dark:shadow-none"
         style={{
           marginHorizontal: 16,
           paddingBottom: bottomPad,
@@ -96,14 +99,14 @@ export default function CustomTabBar({
               <Feather
                 name={tab.iconName}
                 size={22}
-                color={isActive ? PRIMARY_T40 : NEUTRAL_T50}
+                color={isActive ? activeColor : inactiveColor}
               />
               <Text
                 className="font-body"
                 style={{
                   fontSize: 10,
                   fontWeight: isActive ? '600' : '400',
-                  color: isActive ? PRIMARY_T40 : NEUTRAL_T50,
+                  color: isActive ? activeColor : inactiveColor,
                 }}
               >
                 {t(tab.labelKey)}
@@ -135,15 +138,10 @@ export default function CustomTabBar({
             height: FAB_SIZE,
             marginTop: -(FAB_SIZE / 2 - FAB_RISE / 2),
             borderWidth: 4,
-            borderColor: NEUTRAL_T100,
+            borderColor: fabBorderColor,
           }}
         >
-          <Feather
-            name="plus"
-            size={24}
-            color={NEUTRAL_T100}
-            strokeWidth={2.5}
-          />
+          <Feather name="plus" size={24} color="#FFFFFF" strokeWidth={2.5} />
         </TouchableOpacity>
       </View>
     </View>

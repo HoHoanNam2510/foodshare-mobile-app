@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { useColorScheme } from 'nativewind';
 import StackHeader from '@/components/shared/headers/StackHeader';
 import {
   getMyFeedbacksApi,
@@ -123,7 +124,7 @@ function FeedbackCard({
   const typeCfg = TYPE_CONFIG[item.type];
   return (
     <TouchableOpacity
-      className="bg-neutral-T100 mx-4 mb-3 rounded-2xl p-4"
+      className="bg-neutral-T100 dark:bg-neutral-T20 mx-4 mb-3 rounded-2xl p-4"
       style={styles.card}
       activeOpacity={0.85}
       onPress={onPress}
@@ -151,7 +152,7 @@ function FeedbackCard({
 
       {/* Title */}
       <Text
-        className="text-neutral-T10 font-sans text-sm"
+        className="text-neutral-T10 dark:text-neutral-T90 font-sans text-sm"
         style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
         numberOfLines={2}
       >
@@ -162,18 +163,18 @@ function FeedbackCard({
       <View className="mt-2 flex-row items-center justify-between">
         <View className="flex-row items-center gap-1">
           <MaterialIcons name="attach-file" size={13} color="#AAABAB" />
-          <Text className="font-label text-neutral-T70 text-xs">
+          <Text className="font-label text-neutral-T70 dark:text-neutral-T60 text-xs">
             {t('feedback.attachmentCount', { count: item.attachments.length })}
           </Text>
         </View>
-        <Text className="font-body text-neutral-T70 text-xs">
+        <Text className="font-body text-neutral-T70 dark:text-neutral-T60 text-xs">
           {formatDate(item.createdAt)}
         </Text>
       </View>
 
       {/* Tap hint */}
       <View className="mt-1.5 flex-row items-center justify-end gap-1">
-        <Text className="font-body text-neutral-T70 text-xs">
+        <Text className="font-body text-neutral-T70 dark:text-neutral-T60 text-xs">
           {t('feedback.viewDetail')}
         </Text>
         <MaterialIcons name="chevron-right" size={14} color="#AAABAB" />
@@ -186,13 +187,13 @@ function EmptyState() {
   const { t } = useTranslation();
   return (
     <View className="flex-1 items-center justify-center gap-3 px-8 py-24">
-      <View className="bg-primary-T95 h-16 w-16 items-center justify-center rounded-2xl">
+      <View className="bg-primary-T95 dark:bg-primary-T20 h-16 w-16 items-center justify-center rounded-2xl">
         <MaterialIcons name="feedback" size={28} color="#296C24" />
       </View>
-      <Text className="text-neutral-T10 text-center font-sans text-base font-bold">
+      <Text className="text-neutral-T10 dark:text-neutral-T90 text-center font-sans text-base font-bold">
         {t('feedback.emptyTitle')}
       </Text>
-      <Text className="font-body text-neutral-T50 text-center text-sm leading-5">
+      <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-center text-sm leading-5">
         {t('feedback.emptyBody')}
       </Text>
     </View>
@@ -219,17 +220,17 @@ function DetailModal({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <View className="bg-neutral-T100 flex-1">
+      <View className="bg-neutral-T100 dark:bg-neutral-T20 flex-1">
         {/* Header */}
-        <View className="border-neutral-T90 flex-row items-center justify-between border-b px-4 py-4">
+        <View className="border-neutral-T90 dark:border-neutral-T30 flex-row items-center justify-between border-b px-4 py-4">
           <Text
-            className="text-neutral-T10 text-base"
+            className="text-neutral-T10 dark:text-neutral-T90 text-base"
             style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
           >
             {t('feedback.detailTitle')}
           </Text>
           <TouchableOpacity
-            className="bg-neutral-T95 h-9 w-9 items-center justify-center rounded-full"
+            className="bg-neutral-T95 dark:bg-neutral-T30 h-9 w-9 items-center justify-center rounded-full"
             onPress={onClose}
           >
             <MaterialIcons name="close" size={18} color="#191C1C" />
@@ -262,21 +263,21 @@ function DetailModal({
           </View>
 
           {/* Title + Content */}
-          <View className="bg-neutral-T95 gap-2 rounded-2xl p-4">
-            <Text className="font-label text-neutral-T50 text-xs font-semibold uppercase tracking-wider">
+          <View className="bg-neutral-T95 dark:bg-neutral-T30 gap-2 rounded-2xl p-4">
+            <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-xs font-semibold uppercase tracking-wider">
               {t('feedback.titleLabel')}
             </Text>
             <Text
-              className="text-neutral-T10 font-sans text-base"
+              className="text-neutral-T10 dark:text-neutral-T90 font-sans text-base"
               style={{ fontWeight: '700' }}
             >
               {feedback.title}
             </Text>
-            <View className="bg-neutral-T90 h-px" />
-            <Text className="font-label text-neutral-T50 text-xs font-semibold uppercase tracking-wider">
+            <View className="bg-neutral-T90 dark:bg-neutral-T30 h-px" />
+            <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-xs font-semibold uppercase tracking-wider">
               {t('feedback.contentLabel')}
             </Text>
-            <Text className="font-body text-neutral-T30 text-sm leading-5">
+            <Text className="font-body text-neutral-T30 dark:text-neutral-T80 text-sm leading-5">
               {feedback.content}
             </Text>
           </View>
@@ -284,7 +285,7 @@ function DetailModal({
           {/* Attachments */}
           {feedback.attachments.length > 0 && (
             <View className="gap-2">
-              <Text className="font-label text-neutral-T50 text-xs font-semibold uppercase tracking-wider">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-xs font-semibold uppercase tracking-wider">
                 {t('feedback.attachmentSectionTitle', {
                   count: feedback.attachments.length,
                 })}
@@ -308,34 +309,34 @@ function DetailModal({
 
           {/* Metadata */}
           <View className="gap-2">
-            <Text className="font-label text-neutral-T50 text-xs font-semibold uppercase tracking-wider">
+            <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-xs font-semibold uppercase tracking-wider">
               {t('feedback.metaSection')}
             </Text>
-            <View className="bg-neutral-T95 gap-2 rounded-xl p-3">
+            <View className="bg-neutral-T95 dark:bg-neutral-T30 gap-2 rounded-xl p-3">
               <View className="flex-row items-center justify-between">
-                <Text className="font-body text-neutral-T50 text-xs">
+                <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-xs">
                   {t('feedback.sentDate')}
                 </Text>
-                <Text className="font-label text-neutral-T30 text-xs font-semibold">
+                <Text className="font-label text-neutral-T30 dark:text-neutral-T80 text-xs font-semibold">
                   {formatDateTime(feedback.createdAt)}
                 </Text>
               </View>
               {feedback.contextMetadata?.os && (
                 <View className="flex-row items-center justify-between">
-                  <Text className="font-body text-neutral-T50 text-xs">
+                  <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-xs">
                     {t('feedback.os')}
                   </Text>
-                  <Text className="font-label text-neutral-T30 text-xs font-semibold uppercase">
+                  <Text className="font-label text-neutral-T30 dark:text-neutral-T80 text-xs font-semibold uppercase">
                     {feedback.contextMetadata.os}
                   </Text>
                 </View>
               )}
               {feedback.contextMetadata?.appVersion && (
                 <View className="flex-row items-center justify-between">
-                  <Text className="font-body text-neutral-T50 text-xs">
+                  <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-xs">
                     {t('feedback.appVersion')}
                   </Text>
-                  <Text className="font-label text-neutral-T30 text-xs font-semibold">
+                  <Text className="font-label text-neutral-T30 dark:text-neutral-T80 text-xs font-semibold">
                     {feedback.contextMetadata.appVersion}
                   </Text>
                 </View>
@@ -345,7 +346,7 @@ function DetailModal({
 
           {/* Admin reply — only when CLOSED */}
           {feedback.status === 'CLOSED' && feedback.adminReply && (
-            <View className="gap-2 rounded-2xl bg-green-50 p-4">
+            <View className="gap-2 rounded-2xl bg-green-50 p-4 dark:bg-green-900/30">
               <View className="flex-row items-center gap-2">
                 <MaterialIcons name="verified" size={16} color="#15803D" />
                 <Text
@@ -384,6 +385,8 @@ function DetailModal({
 export default function FeedbackHistoryScreen() {
   const router = useRouter();
   const { t } = useTranslation();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const [feedbacks, setFeedbacks] = useState<IFeedback[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -410,9 +413,9 @@ export default function FeedbackHistoryScreen() {
   }, [load]);
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <StatusBar
-        barStyle="dark-content"
+        barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor="transparent"
         translucent
       />
@@ -431,13 +434,13 @@ export default function FeedbackHistoryScreen() {
       {isLoading ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-neutral-T50 text-sm">
+          <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-sm">
             {t('common.loading')}
           </Text>
         </View>
       ) : errorKey ? (
         <View className="flex-1 items-center justify-center gap-4 px-8">
-          <Text className="font-body text-neutral-T50 text-center text-sm">
+          <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-center text-sm">
             {t(errorKey)}
           </Text>
           <TouchableOpacity

@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { useColorScheme } from 'nativewind';
 import React, { useCallback, useEffect, useState } from 'react';
 import { StatusBar, View } from 'react-native';
 
@@ -16,6 +17,8 @@ import { fetchExplorePosts } from '../../lib/exploreApi';
 
 export default function ExploreScreen() {
   const router = useRouter();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [activeFilter, setActiveFilter] = useState<TypeFilter>('All');
   const [sortOption, setSortOption] = useState<SortOption>('newest');
@@ -48,9 +51,9 @@ export default function ExploreScreen() {
   });
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <StatusBar
-        barStyle="dark-content"
+        barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor="transparent"
         translucent
       />
@@ -58,7 +61,7 @@ export default function ExploreScreen() {
       <MainHeader />
 
       {/* ── View Toggle — nằm ngay dưới header, căn giữa ── */}
-      <View className="bg-neutral-T100 border-neutral-T95 items-center border-b px-4 py-2">
+      <View className="bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T95 dark:border-neutral-T30 items-center border-b px-4 py-2">
         <ViewToggle activeView={viewMode} onViewChange={setViewMode} />
       </View>
 

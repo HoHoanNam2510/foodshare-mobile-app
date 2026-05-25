@@ -15,6 +15,7 @@ import {
   View,
 } from 'react-native';
 
+import { useColorScheme } from 'nativewind';
 import {
   ReceivedReviewCard,
   WrittenReviewCard,
@@ -47,10 +48,10 @@ function AverageRatingBadge({
   if (count === 0) return null;
   return (
     <View
-      className="bg-neutral-T100 mx-4 mb-3 flex-row items-center gap-3 rounded-2xl p-4"
+      className="bg-neutral-T100 dark:bg-neutral-T20 mx-4 mb-3 flex-row items-center gap-3 rounded-2xl p-4"
       style={styles.card}
     >
-      <View className="bg-primary-T95 h-14 w-14 items-center justify-center rounded-xl">
+      <View className="bg-primary-T95 dark:bg-primary-T20 h-14 w-14 items-center justify-center rounded-xl">
         <Text
           style={{
             fontFamily: 'Epilogue',
@@ -65,11 +66,11 @@ function AverageRatingBadge({
       <View className="flex-1 gap-0.5">
         <Text
           style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
-          className="text-neutral-T10 text-sm"
+          className="text-neutral-T10 dark:text-neutral-T90 text-sm"
         >
           {t('review.trustScoreTitle')}
         </Text>
-        <Text className="font-body text-neutral-T50 text-xs">
+        <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-xs">
           {t('review.trustScoreFrom', { count })}
         </Text>
       </View>
@@ -104,13 +105,13 @@ function EmptyState({ tab }: { tab: TabKey }) {
 
   return (
     <View className="flex-1 items-center justify-center gap-3 px-8 py-24">
-      <View className="bg-primary-T95 h-16 w-16 items-center justify-center rounded-2xl">
+      <View className="bg-primary-T95 dark:bg-primary-T20 h-16 w-16 items-center justify-center rounded-2xl">
         <MaterialIcons name={cfg.icon} size={28} color="#296C24" />
       </View>
-      <Text className="text-neutral-T10 text-center font-sans text-base font-bold">
+      <Text className="text-neutral-T10 dark:text-neutral-T90 text-center font-sans text-base font-bold">
         {t(cfg.titleKey)}
       </Text>
-      <Text className="font-body text-neutral-T50 text-center text-sm leading-5">
+      <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-center text-sm leading-5">
         {t(cfg.bodyKey)}
       </Text>
     </View>
@@ -124,6 +125,8 @@ export default function MyReviewsScreen() {
   const { t } = useTranslation();
   const user = useAuthStore((s) => s.user);
   const myId = user?._id ?? '';
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   const [activeTab, setActiveTab] = useState<TabKey>('written');
 
@@ -267,9 +270,9 @@ export default function MyReviewsScreen() {
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <StatusBar
-        barStyle="dark-content"
+        barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor="transparent"
         translucent
       />
@@ -279,7 +282,7 @@ export default function MyReviewsScreen() {
       />
 
       {/* ── Tab Bar ── */}
-      <View className="bg-neutral-T95 mx-4 mb-3 mt-4 flex-row rounded-xl p-1">
+      <View className="bg-neutral-T95 dark:bg-neutral-T30 mx-4 mb-3 mt-4 flex-row rounded-xl p-1">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.key;
           return (
@@ -288,7 +291,13 @@ export default function MyReviewsScreen() {
               onPress={() => setActiveTab(tab.key)}
               activeOpacity={0.8}
               className="flex-1 items-center rounded-lg py-2.5"
-              style={isActive ? styles.tabActive : undefined}
+              style={
+                isActive
+                  ? isDark
+                    ? styles.tabActiveDark
+                    : styles.tabActive
+                  : undefined
+              }
             >
               <View className="flex-row items-center gap-1.5">
                 <Text
@@ -323,13 +332,13 @@ export default function MyReviewsScreen() {
         writtenLoading ? (
           <View className="flex-1 items-center justify-center gap-3">
             <ActivityIndicator size="large" color="#296C24" />
-            <Text className="font-body text-neutral-T50 text-sm">
+            <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-sm">
               {t('common.loading')}
             </Text>
           </View>
         ) : writtenError ? (
           <View className="flex-1 items-center justify-center gap-4 px-8">
-            <Text className="font-body text-neutral-T50 text-center text-sm">
+            <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-center text-sm">
               {writtenError}
             </Text>
             <TouchableOpacity
@@ -359,14 +368,14 @@ export default function MyReviewsScreen() {
             )}
             ListEmptyComponent={<EmptyState tab="written" />}
             ListHeaderComponent={
-              <View className="bg-primary-T95 mx-4 mb-3 mt-4 flex-row items-start gap-2 rounded-xl p-3">
+              <View className="bg-primary-T95 dark:bg-primary-T20 mx-4 mb-3 mt-4 flex-row items-start gap-2 rounded-xl p-3">
                 <MaterialIcons
                   name="info-outline"
                   size={15}
                   color="#296C24"
                   style={{ marginTop: 1 }}
                 />
-                <Text className="font-body text-primary-T30 flex-1 text-xs leading-4">
+                <Text className="font-body text-primary-T30 dark:text-primary-T80 flex-1 text-xs leading-4">
                   {t('review.editRecalcInfo')}
                 </Text>
               </View>
@@ -391,7 +400,7 @@ export default function MyReviewsScreen() {
         </View>
       ) : receivedError ? (
         <View className="flex-1 items-center justify-center gap-4 px-8">
-          <Text className="font-body text-neutral-T50 text-center text-sm">
+          <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-center text-sm">
             {receivedError}
           </Text>
           <TouchableOpacity
@@ -466,5 +475,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.06,
     shadowRadius: 4,
     elevation: 2,
+  },
+  tabActiveDark: {
+    backgroundColor: '#2E3131',
+    elevation: 0,
   },
 });

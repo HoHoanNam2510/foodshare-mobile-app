@@ -14,7 +14,7 @@ export default function PostTypeTabs({ value, onChange }: PostTypeTabsProps) {
   ];
 
   return (
-    <View className="border-neutral-T90 flex-row border-b">
+    <View className="border-neutral-T90 dark:border-neutral-T30 flex-row border-b">
       {tabs.map((tab) => {
         const isActive = value === tab.value;
         return (
@@ -27,7 +27,9 @@ export default function PostTypeTabs({ value, onChange }: PostTypeTabsProps) {
           >
             <Text
               className={`font-body-semibold text-base ${
-                isActive ? 'text-primary' : 'text-neutral-T40'
+                isActive
+                  ? 'text-primary dark:text-primary-T60'
+                  : 'text-neutral-T40 dark:text-neutral-T60'
               }`}
             >
               {tab.label}

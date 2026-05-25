@@ -14,13 +14,13 @@ export default function GreenPointsCard({ points }: GreenPointsCardProps) {
     <TouchableOpacity
       onPress={() => router.push('/(voucher)/point-history' as any)}
       activeOpacity={0.8}
-      className="mb-4 flex-row items-center rounded-2xl bg-white p-4 shadow-sm"
+      className="dark:bg-neutral-T20 dark:border-neutral-T30 mb-4 flex-row items-center rounded-2xl bg-white p-4 shadow-sm dark:border dark:shadow-none"
     >
-      <View className="bg-primary-T95 mr-4 rounded-xl p-3">
+      <View className="bg-primary-T95 dark:bg-primary-T20 mr-4 rounded-xl p-3">
         <MaterialCommunityIcons name="leaf" size={24} color="#72B866" />
       </View>
       <View className="flex-1">
-        <Text className="text-neutral-T30 font-body text-sm">
+        <Text className="text-neutral-T30 dark:text-neutral-T80 font-body text-sm">
           Green Points kiếm được
         </Text>
         <Text className="font-body-bold text-primary-T40 mt-1 text-2xl">

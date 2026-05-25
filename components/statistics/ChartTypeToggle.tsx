@@ -15,7 +15,7 @@ export default function ChartTypeToggle({
     <View className="flex-row gap-2">
       <TouchableOpacity
         onPress={() => onChange('line')}
-        className={`rounded-lg p-2 ${value === 'line' ? 'bg-primary' : 'bg-neutral-T95'}`}
+        className={`rounded-lg p-2 ${value === 'line' ? 'bg-primary' : 'bg-neutral-T95 dark:bg-neutral-T30'}`}
       >
         <MaterialIcons
           name="show-chart"

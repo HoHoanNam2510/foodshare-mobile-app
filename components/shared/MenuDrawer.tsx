@@ -18,6 +18,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuthStore } from '@/stores/authStore';
 import { useLanguageStore } from '@/stores/languageStore';
 import { useMenuDrawerStore } from '@/stores/menuDrawerStore';
+import ThemeToggle from '@/components/shared/ThemeToggle';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 const DRAWER_WIDTH = Dimensions.get('window').width * 0.82;
 const ANIM_DURATION_IN = 280;
@@ -34,16 +36,17 @@ interface MenuItemProps {
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
 function MenuItem({ icon, label, onPress }: MenuItemProps) {
+  const colors = useThemeColors();
   return (
     <TouchableOpacity
-      className="border-neutral-T90 flex-row items-center gap-4 border-b py-4 active:opacity-70"
+      className="border-neutral-T90 dark:border-neutral-T30 flex-row items-center gap-4 border-b py-4 active:opacity-70"
       onPress={onPress}
       activeOpacity={0.7}
     >
-      <View className="bg-primary-T95 h-9 w-9 items-center justify-center rounded-xl">
-        <MaterialIcons name={icon} size={18} color="#296C24" />
+      <View className="bg-primary-T95 dark:bg-primary-T20 h-9 w-9 items-center justify-center rounded-xl">
+        <MaterialIcons name={icon} size={18} color={colors.primaryGreen} />
       </View>
-      <Text className="font-body text-neutral-T10 flex-1 text-base font-semibold">
+      <Text className="font-body text-neutral-T10 dark:text-neutral-T90 flex-1 text-base font-semibold">
         {label}
       </Text>
       <Feather name="chevron-right" size={16} color="#AAABAB" />
@@ -57,8 +60,14 @@ const ROLE_BADGE: Record<
   string,
   { containerClass: string; textClass: string }
 > = {
-  USER: { containerClass: 'bg-secondary-T90', textClass: 'text-secondary-T10' },
-  STORE: { containerClass: 'bg-primary-T90', textClass: 'text-primary-T10' },
+  USER: {
+    containerClass: 'bg-secondary-T90 dark:bg-secondary-T20',
+    textClass: 'text-secondary-T10 dark:text-secondary-T90',
+  },
+  STORE: {
+    containerClass: 'bg-primary-T90 dark:bg-primary-T20',
+    textClass: 'text-primary-T10 dark:text-primary-T90',
+  },
   ADMIN: { containerClass: 'bg-neutral-T20', textClass: 'text-neutral-T100' },
 };
 
@@ -71,6 +80,7 @@ export default function MenuDrawer() {
   const logout = useAuthStore((s) => s.logout);
   const language = useLanguageStore((s) => s.language);
   const toggleLanguage = useLanguageStore((s) => s.toggleLanguage);
+  const colors = useThemeColors();
 
   const [modalVisible, setModalVisible] = useState(false);
   const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
@@ -155,7 +165,7 @@ export default function MenuDrawer() {
 
       {/* Drawer Panel */}
       <Animated.View
-        className="bg-neutral-T100 absolute bottom-0 left-0 top-0 shadow-lg"
+        className="bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 absolute bottom-0 left-0 top-0 shadow-lg dark:border-r dark:shadow-none"
         style={{
           width: DRAWER_WIDTH,
           transform: [{ translateX: slideAnim }],
@@ -173,16 +183,16 @@ export default function MenuDrawer() {
           </Text>
           <View className="flex-1" />
           <TouchableOpacity
-            className="bg-neutral-T95 h-9 w-9 items-center justify-center rounded-full active:opacity-70"
+            className="bg-neutral-T95 dark:bg-neutral-T30 h-9 w-9 items-center justify-center rounded-full active:opacity-70"
             onPress={handleClose}
           >
-            <Feather name="x" size={18} color="#191C1C" />
+            <Feather name="x" size={18} color={colors.textPrimary} />
           </TouchableOpacity>
         </View>
 
         {/* ── User Identity ── */}
         <View className="flex-row items-center gap-3 px-5 pb-5">
-          <View className="border-neutral-T80 bg-neutral-T95 h-14 w-14 items-center justify-center overflow-hidden rounded-full border">
+          <View className="border-neutral-T80 dark:border-neutral-T30 bg-neutral-T95 dark:bg-neutral-T30 h-14 w-14 items-center justify-center overflow-hidden rounded-full border">
             {user?.avatar ? (
               <Image
                 source={{ uri: user.avatar }}
@@ -195,7 +205,7 @@ export default function MenuDrawer() {
           </View>
           <View className="flex-1">
             <Text
-              className="text-neutral-T10 font-sans text-base"
+              className="text-neutral-T10 dark:text-neutral-T90 font-sans text-base"
               style={{ fontWeight: '700' }}
               numberOfLines={1}
             >
@@ -213,13 +223,17 @@ export default function MenuDrawer() {
           </View>
           {/* Language toggle (right-aligned, opposite the avatar block) */}
           <TouchableOpacity
-            className="bg-primary-T95 border-primary-T90 h-9 flex-row items-center rounded-full border px-3 active:opacity-70"
+            className="bg-primary-T95 dark:bg-primary-T20 border-primary-T90 dark:border-primary-T30 h-9 flex-row items-center rounded-full border px-3 active:opacity-70"
             onPress={toggleLanguage}
             accessibilityLabel="Toggle language"
           >
-            <MaterialIcons name="language" size={16} color="#296C24" />
+            <MaterialIcons
+              name="language"
+              size={16}
+              color={colors.primaryGreen}
+            />
             <Text
-              className="font-label text-primary-T20 ml-1.5 text-xs font-bold"
+              className="font-label text-primary-T20 dark:text-primary-T80 ml-1.5 text-xs font-bold"
               style={{ letterSpacing: 0.5 }}
             >
               {language === 'vi' ? 'VI' : 'EN'}
@@ -228,7 +242,7 @@ export default function MenuDrawer() {
         </View>
 
         {/* ── Divider ── */}
-        <View className="bg-neutral-T90 mx-5 h-px" />
+        <View className="bg-neutral-T90 dark:bg-neutral-T30 mx-5 h-px" />
 
         {/* ── Menu Items ── */}
         <ScrollView
@@ -237,7 +251,7 @@ export default function MenuDrawer() {
           contentContainerStyle={{ paddingTop: 8 }}
         >
           {/* Section label */}
-          <Text className="font-label text-neutral-T50 mb-1 mt-3 text-xs font-semibold uppercase tracking-wider">
+          <Text className="font-label text-neutral-T50 dark:text-neutral-T60 mb-1 mt-3 text-xs font-semibold uppercase tracking-wider">
             {t('menu.menu')}
           </Text>
 
@@ -295,10 +309,25 @@ export default function MenuDrawer() {
           />
         </ScrollView>
 
+        {/* ── Appearance ── */}
+        <View className="px-5 py-3">
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center gap-3">
+              <View className="bg-primary-T95 dark:bg-primary-T20 h-9 w-9 items-center justify-center rounded-xl">
+                <Feather name="moon" size={16} color={colors.primaryGreen} />
+              </View>
+              <Text className="font-body text-neutral-T10 dark:text-neutral-T90 text-base font-semibold">
+                {t('profile.darkMode')}
+              </Text>
+            </View>
+            <ThemeToggle />
+          </View>
+        </View>
+
         {/* ── Logout (pinned to bottom) ── */}
-        <View className="border-neutral-T90 border-t px-5 pt-3">
+        <View className="border-neutral-T90 dark:border-neutral-T30 border-t px-5 pt-3">
           <TouchableOpacity
-            className="h-14 flex-row items-center justify-center gap-2.5 rounded-xl border border-red-200 bg-red-50 active:scale-[0.98]"
+            className="h-14 flex-row items-center justify-center gap-2.5 rounded-xl border border-red-200 bg-red-50 active:scale-[0.98] dark:border-red-900 dark:bg-red-950"
             onPress={handleLogout}
             activeOpacity={0.8}
           >

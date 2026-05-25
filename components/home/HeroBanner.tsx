@@ -19,7 +19,6 @@ import { useTranslation } from 'react-i18next';
 import SelectPostTypeModal from '@/components/shared/SelectPostTypeModal';
 import { useAuthStore } from '@/stores/authStore';
 
-const SLIDE_WIDTH = Dimensions.get('window').width - 40;
 const AUTO_SLIDE_INTERVAL = 5000;
 
 const BANNER_SLIDES = [
@@ -73,6 +72,9 @@ export default function HeroBanner() {
     | 'ADMIN';
   const [activeIndex, setActiveIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+  const initialWidth = Dimensions.get('window').width - 40;
+  const [slideWidth, setSlideWidth] = useState(initialWidth);
+  const slideWidthRef = useRef(initialWidth);
   const scrollRef = useRef<ScrollView>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -88,7 +90,10 @@ export default function HeroBanner() {
     intervalRef.current = setInterval(() => {
       setActiveIndex((prev) => {
         const next = (prev + 1) % BANNER_SLIDES.length;
-        scrollRef.current?.scrollTo({ x: next * SLIDE_WIDTH, animated: true });
+        scrollRef.current?.scrollTo({
+          x: next * slideWidthRef.current,
+          animated: true,
+        });
         return next;
       });
     }, AUTO_SLIDE_INTERVAL);
@@ -101,7 +106,9 @@ export default function HeroBanner() {
 
   const onMomentumScrollEnd = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const index = Math.round(e.nativeEvent.contentOffset.x / SLIDE_WIDTH);
+      const index = Math.round(
+        e.nativeEvent.contentOffset.x / slideWidthRef.current
+      );
       setActiveIndex(index);
       startAutoSlide();
     },
@@ -110,7 +117,14 @@ export default function HeroBanner() {
 
   return (
     <View className="mx-5">
-      <View className="overflow-hidden rounded-2xl shadow-md">
+      <View
+        className="overflow-hidden rounded-2xl shadow-md dark:shadow-none"
+        onLayout={(e) => {
+          const w = e.nativeEvent.layout.width;
+          slideWidthRef.current = w;
+          setSlideWidth(w);
+        }}
+      >
         <ScrollView
           ref={scrollRef}
           horizontal
@@ -119,13 +133,13 @@ export default function HeroBanner() {
           scrollEventThrottle={16}
           onScrollBeginDrag={clearAutoSlide}
           onMomentumScrollEnd={onMomentumScrollEnd}
-          style={{ width: SLIDE_WIDTH }}
+          style={{ width: slideWidth }}
         >
           {BANNER_SLIDES.map((slide) => (
             <ImageBackground
               key={slide.id}
               source={{ uri: slide.image }}
-              style={{ width: SLIDE_WIDTH, minHeight: 180 }}
+              style={{ width: slideWidth, minHeight: 180 }}
               resizeMode="cover"
             >
               <View

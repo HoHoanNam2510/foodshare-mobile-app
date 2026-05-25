@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useColorScheme } from 'nativewind';
 import StackHeader from '@/components/shared/headers/StackHeader';
 import {
   withdrawReportApi,
@@ -134,7 +135,7 @@ function formatDate(iso: string) {
 
 function SectionLabel({ label }: { label: string }) {
   return (
-    <Text className="font-body-semibold text-neutral-T50 mb-2 text-xs uppercase tracking-wider">
+    <Text className="font-body-semibold text-neutral-T50 dark:text-neutral-T60 mb-2 text-xs uppercase tracking-wider">
       {label}
     </Text>
   );
@@ -151,12 +152,14 @@ function InfoRow({
 }) {
   return (
     <View className="flex-row items-center gap-3">
-      <View className="bg-neutral-T95 h-8 w-8 items-center justify-center rounded-lg">
+      <View className="bg-neutral-T95 dark:bg-neutral-T30 h-8 w-8 items-center justify-center rounded-lg">
         <MaterialIcons name={icon as any} size={16} color="#757777" />
       </View>
       <View className="flex-1">
-        <Text className="font-body text-neutral-T50 text-xs">{label}</Text>
-        <Text className="font-label text-neutral-T10 mt-0.5 text-sm font-semibold">
+        <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-xs">
+          {label}
+        </Text>
+        <Text className="font-label text-neutral-T10 dark:text-neutral-T90 mt-0.5 text-sm font-semibold">
           {value}
         </Text>
       </View>
@@ -180,6 +183,8 @@ export default function ReportDetailScreen() {
     }
   }, [reportJson]);
 
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
 
@@ -233,14 +238,14 @@ export default function ReportDetailScreen() {
 
   if (!report) {
     return (
-      <View className="bg-neutral flex-1 items-center justify-center">
+      <View className="bg-neutral dark:bg-neutral-T10 flex-1 items-center justify-center">
         <StatusBar
-          barStyle="dark-content"
+          barStyle={isDark ? 'light-content' : 'dark-content'}
           backgroundColor="transparent"
           translucent
         />
         <StackHeader title={t('report.detailTitle')} />
-        <Text className="font-body text-neutral-T50 mt-8 text-sm">
+        <Text className="font-body text-neutral-T50 dark:text-neutral-T60 mt-8 text-sm">
           {t('report.notFoundMsg')}
         </Text>
       </View>
@@ -259,9 +264,9 @@ export default function ReportDetailScreen() {
   const isResolved = report.status === 'RESOLVED';
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <StatusBar
-        barStyle="dark-content"
+        barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor="transparent"
         translucent
       />
@@ -375,7 +380,7 @@ export default function ReportDetailScreen() {
 
         {/* ── Report Info Card ── */}
         <View
-          className="bg-neutral-T100 mx-4 mb-4 gap-4 rounded-2xl p-4"
+          className="bg-neutral-T100 dark:bg-neutral-T20 mx-4 mb-4 gap-4 rounded-2xl p-4"
           style={styles.card}
         >
           <SectionLabel label={t('report.infoSectionLabel')} />
@@ -386,7 +391,7 @@ export default function ReportDetailScreen() {
             value={reasonLabel}
           />
 
-          <View className="bg-neutral-T90 h-px" />
+          <View className="bg-neutral-T90 dark:bg-neutral-T30 h-px" />
 
           <InfoRow
             icon="event"
@@ -396,7 +401,7 @@ export default function ReportDetailScreen() {
 
           {report.resolvedAt && (
             <>
-              <View className="bg-neutral-T90 h-px" />
+              <View className="bg-neutral-T90 dark:bg-neutral-T30 h-px" />
               <InfoRow
                 icon="event-available"
                 label={
@@ -412,11 +417,11 @@ export default function ReportDetailScreen() {
 
         {/* ── Description Card ── */}
         <View
-          className="bg-neutral-T100 mx-4 mb-4 gap-3 rounded-2xl p-4"
+          className="bg-neutral-T100 dark:bg-neutral-T20 mx-4 mb-4 gap-3 rounded-2xl p-4"
           style={styles.card}
         >
           <SectionLabel label={t('report.descSectionLabel')} />
-          <Text className="font-body text-neutral-T10 text-sm leading-5">
+          <Text className="font-body text-neutral-T10 dark:text-neutral-T90 text-sm leading-5">
             {report.description}
           </Text>
         </View>
@@ -424,12 +429,12 @@ export default function ReportDetailScreen() {
         {/* ── Evidence Images ── */}
         {report.images.length > 0 && (
           <View
-            className="bg-neutral-T100 mx-4 mb-4 gap-3 rounded-2xl p-4"
+            className="bg-neutral-T100 dark:bg-neutral-T20 mx-4 mb-4 gap-3 rounded-2xl p-4"
             style={styles.card}
           >
             <View className="flex-row items-center justify-between">
               <SectionLabel label={t('report.evidenceSectionLabel')} />
-              <Text className="font-label text-neutral-T50 -mt-2 text-xs">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 -mt-2 text-xs">
                 {t('report.evidenceCountLabel', {
                   count: report.images.length,
                 })}
@@ -469,9 +474,21 @@ export default function ReportDetailScreen() {
             style={[
               styles.card,
               {
-                backgroundColor: isDismissed ? '#FEF2F2' : '#F0FDF4',
+                backgroundColor: isDismissed
+                  ? isDark
+                    ? 'rgba(220,38,38,0.15)'
+                    : '#FEF2F2'
+                  : isDark
+                    ? '#003A03'
+                    : '#F0FDF4',
                 borderWidth: 1,
-                borderColor: isDismissed ? '#FECACA' : '#BBF7D0',
+                borderColor: isDismissed
+                  ? isDark
+                    ? 'rgba(220,38,38,0.3)'
+                    : '#FECACA'
+                  : isDark
+                    ? '#1A5E1A'
+                    : '#BBF7D0',
               },
             ]}
           >
@@ -514,7 +531,15 @@ export default function ReportDetailScreen() {
             {actionLabel && (
               <View
                 className="flex-row items-center gap-2 rounded-xl p-3"
-                style={{ backgroundColor: isDismissed ? '#FEE2E2' : '#DCFCE7' }}
+                style={{
+                  backgroundColor: isDismissed
+                    ? isDark
+                      ? 'rgba(220,38,38,0.2)'
+                      : '#FEE2E2'
+                    : isDark
+                      ? '#003A03'
+                      : '#DCFCE7',
+                }}
               >
                 <MaterialIcons
                   name="gavel"
@@ -536,7 +561,7 @@ export default function ReportDetailScreen() {
         {report.status === 'PENDING' && (
           <>
             <View
-              className="mx-4 mb-4 flex-row gap-3 rounded-2xl border border-yellow-200 bg-yellow-50 p-4"
+              className="mx-4 mb-4 flex-row gap-3 rounded-2xl border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-700/50 dark:bg-yellow-900/30"
               style={styles.card}
             >
               <MaterialIcons
@@ -553,7 +578,7 @@ export default function ReportDetailScreen() {
             {/* Edit / Withdraw buttons — only while PENDING */}
             <View className="mx-4 mb-4 flex-row gap-3">
               <TouchableOpacity
-                className="bg-neutral-T95 border-neutral-T80 h-12 flex-1 flex-row items-center justify-center gap-2 rounded-xl border"
+                className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T80 dark:border-neutral-T30 h-12 flex-1 flex-row items-center justify-center gap-2 rounded-xl border"
                 activeOpacity={0.8}
                 onPress={handleEdit}
               >
@@ -564,7 +589,7 @@ export default function ReportDetailScreen() {
               </TouchableOpacity>
 
               <TouchableOpacity
-                className="h-12 flex-1 flex-row items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50"
+                className="h-12 flex-1 flex-row items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 dark:border-red-800/50 dark:bg-red-950/30"
                 activeOpacity={0.8}
                 onPress={handleWithdraw}
                 disabled={isWithdrawing}
@@ -587,7 +612,7 @@ export default function ReportDetailScreen() {
         {/* ── Resubmit notice (DISMISSED) ── */}
         {isDismissed && (
           <View
-            className="bg-primary-T95 mx-4 mb-4 flex-row gap-3 rounded-2xl p-4"
+            className="bg-primary-T95 dark:bg-primary-T20 mx-4 mb-4 flex-row gap-3 rounded-2xl p-4"
             style={styles.card}
           >
             <MaterialIcons
@@ -596,7 +621,7 @@ export default function ReportDetailScreen() {
               color="#296C24"
               style={{ marginTop: 1 }}
             />
-            <Text className="font-body text-primary-T30 flex-1 text-sm leading-5">
+            <Text className="font-body text-primary-T30 dark:text-primary-T80 flex-1 text-sm leading-5">
               {t('report.dismissedResubmitNotice')}
             </Text>
           </View>

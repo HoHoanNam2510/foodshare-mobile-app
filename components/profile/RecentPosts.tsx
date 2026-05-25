@@ -67,7 +67,7 @@ export default function RecentPosts({ posts }: RecentPostsProps) {
     <View className="mt-2 gap-4">
       {/* Header */}
       <View className="flex-row items-center justify-between px-1">
-        <Text className="text-neutral-T10 font-sans text-xl font-bold">
+        <Text className="text-neutral-T10 dark:text-neutral-T90 font-sans text-xl font-bold">
           {t('profile.recentPosts')}
         </Text>
       </View>
@@ -85,7 +85,7 @@ export default function RecentPosts({ posts }: RecentPostsProps) {
               onPress={() =>
                 router.push(`/(post)/post-detail?id=${post.id}` as any)
               }
-              className="bg-neutral-T100 w-[48%] overflow-hidden rounded-2xl shadow-sm active:scale-[0.98]"
+              className="bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 w-[48%] overflow-hidden rounded-2xl shadow-sm active:scale-[0.98] dark:border dark:shadow-none"
             >
               <View className="relative h-32">
                 <Image
@@ -128,13 +128,13 @@ export default function RecentPosts({ posts }: RecentPostsProps) {
               </View>
               <View className="p-3">
                 <Text
-                  className="font-body text-neutral-T10 text-sm font-semibold"
+                  className="font-body text-neutral-T10 dark:text-neutral-T90 text-sm font-semibold"
                   numberOfLines={1}
                 >
                   {post.title}
                 </Text>
                 {post.price ? (
-                  <Text className="text-primary-T40 mt-1 font-sans text-xs font-bold">
+                  <Text className="text-primary-T40 dark:text-primary-T60 mt-1 font-sans text-xs font-bold">
                     {post.price}
                   </Text>
                 ) : null}
@@ -148,9 +148,9 @@ export default function RecentPosts({ posts }: RecentPostsProps) {
       {hasMore && (
         <TouchableOpacity
           onPress={handleLoadMore}
-          className="bg-neutral-T95 mt-2 items-center justify-center rounded-xl py-3 active:opacity-80"
+          className="bg-neutral-T95 dark:bg-neutral-T30 mt-2 items-center justify-center rounded-xl py-3 active:opacity-80"
         >
-          <Text className="text-primary-T30 font-label text-sm font-bold">
+          <Text className="text-primary-T30 dark:text-primary-T60 font-label text-sm font-bold">
             {t('common.seeMore', 'Xem thêm')}
           </Text>
         </TouchableOpacity>

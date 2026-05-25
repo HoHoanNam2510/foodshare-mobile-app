@@ -1,7 +1,8 @@
-import React, { ReactNode } from 'react';
-import { useRouter } from 'expo-router';
-import { Text, TouchableOpacity, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { ReactNode } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 import BaseHeader from './BaseHeader';
 
 interface StackHeaderProps {
@@ -16,21 +17,22 @@ export default function StackHeader({
   onBack,
 }: StackHeaderProps) {
   const router = useRouter();
+  const colors = useThemeColors();
 
   return (
     <BaseHeader>
       <View className="flex-1 flex-row items-center justify-between">
         {/* Left: Back Button */}
         <TouchableOpacity
-          className="bg-neutral-T95 h-10 w-10 items-center justify-center rounded-full active:opacity-80"
+          className="bg-neutral-T95 dark:bg-neutral-T30 h-10 w-10 items-center justify-center rounded-full active:opacity-80"
           onPress={() => (onBack ? onBack() : router.back())}
         >
-          <Feather name="arrow-left" size={20} color="#191C1C" />
+          <Feather name="arrow-left" size={20} color={colors.textPrimary} />
         </TouchableOpacity>
 
         {/* Center: Title */}
         <Text
-          className="flex-1 text-center text-lg"
+          className="text-neutral-T10 dark:text-neutral-T90 flex-1 text-center text-lg"
           style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
           numberOfLines={1}
         >

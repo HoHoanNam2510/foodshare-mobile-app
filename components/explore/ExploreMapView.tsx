@@ -116,7 +116,7 @@ export default function ExploreMapView({ activeFilter }: ExploreMapViewProps) {
             zIndex: 25,
           }}
         >
-          <View className="bg-neutral-T100 flex-row items-center gap-2 rounded-full px-4 py-2 shadow-sm">
+          <View className="bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 flex-row items-center gap-2 rounded-full px-4 py-2 shadow-sm dark:border dark:shadow-none">
             <ActivityIndicator size="small" color="#296C24" />
             <Text className="font-label text-neutral-T50 text-xs">
               {t('common.loading')}

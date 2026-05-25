@@ -120,7 +120,7 @@ export default function StoreVouchersScreen() {
   };
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <ManagementHeader
         title={t('voucher.storeVouchersTitle')}
         onBack={() => router.back()}
@@ -135,7 +135,7 @@ export default function StoreVouchersScreen() {
       {loading ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-neutral-T50 text-sm">
+          <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-sm">
             {t('common.loading')}
           </Text>
         </View>
@@ -156,7 +156,7 @@ export default function StoreVouchersScreen() {
           ListEmptyComponent={
             <View className="items-center justify-center gap-3 py-20">
               <MaterialIcons name="local-offer" size={48} color="#C5C7C6" />
-              <Text className="font-body text-neutral-T50 text-center text-sm">
+              <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-center text-sm">
                 {t('voucher.emptyStoreVouchersTitle')}
                 {'\n'}
                 {t('voucher.emptyStoreVouchersDesc')}

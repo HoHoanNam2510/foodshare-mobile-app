@@ -26,16 +26,16 @@ function getPostBadgeType(post: HomePost): 'fresh' | 'expiring' | null {
 function SkeletonCard({ anim }: { anim: Animated.Value }) {
   return (
     <Animated.View
-      className="bg-neutral-T100 flex-1 overflow-hidden rounded-2xl shadow-sm"
+      className="bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 flex-1 overflow-hidden rounded-2xl shadow-sm dark:border dark:shadow-none"
       style={{ opacity: anim }}
     >
       <View
-        className="bg-neutral-T90 w-full rounded-t-2xl"
+        className="bg-neutral-T90 dark:bg-neutral-T30 w-full rounded-t-2xl"
         style={{ height: 140 }}
       />
       <View className="gap-2 px-3 pb-3.5 pt-3">
-        <View className="bg-neutral-T90 h-4 w-3/4 rounded-full" />
-        <View className="bg-neutral-T90 h-3 w-1/2 rounded-full" />
+        <View className="bg-neutral-T90 dark:bg-neutral-T30 h-4 w-3/4 rounded-full" />
+        <View className="bg-neutral-T90 dark:bg-neutral-T30 h-3 w-1/2 rounded-full" />
       </View>
     </Animated.View>
   );
@@ -50,7 +50,7 @@ function P2PCard({ post, onPress }: { post: HomePost; onPress: () => void }) {
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={onPress}
-      className="bg-neutral-T100 flex-1 overflow-hidden rounded-2xl shadow-sm active:opacity-90"
+      className="bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 flex-1 overflow-hidden rounded-2xl shadow-sm active:opacity-90 dark:border dark:shadow-none"
     >
       <View className="relative">
         <Image
@@ -85,7 +85,7 @@ function P2PCard({ post, onPress }: { post: HomePost; onPress: () => void }) {
 
       <View className="px-3 pb-3.5 pt-3">
         <Text
-          className="font-body text-neutral-T10 text-[15px] leading-snug"
+          className="font-body text-neutral-T10 dark:text-neutral-T90 text-[15px] leading-snug"
           style={{ fontWeight: '600' }}
           numberOfLines={1}
         >
@@ -98,10 +98,10 @@ function P2PCard({ post, onPress }: { post: HomePost; onPress: () => void }) {
               className="h-5 w-5 rounded-full"
             />
           ) : (
-            <View className="bg-neutral-T90 h-5 w-5 rounded-full" />
+            <View className="bg-neutral-T90 dark:bg-neutral-T30 h-5 w-5 rounded-full" />
           )}
           <Text
-            className="font-body text-neutral-T50 flex-1 text-xs"
+            className="font-body text-neutral-T50 dark:text-neutral-T60 flex-1 text-xs"
             numberOfLines={1}
           >
             {owner.fullName}
@@ -188,7 +188,7 @@ export default function FreshlyShared({
     <View className="mt-8 px-5">
       <View className="mb-4 flex-row items-center justify-between">
         <Text
-          className="text-neutral-T10 font-sans text-xl"
+          className="text-neutral-T10 dark:text-neutral-T90 font-sans text-xl"
           style={{ fontWeight: '700', letterSpacing: -0.3 }}
         >
           {t('home.freshlySharedTitle')}
@@ -229,7 +229,7 @@ export default function FreshlyShared({
       {!loading && posts.length === 0 && (
         <View className="items-center py-10">
           <Ionicons name="leaf-outline" size={40} color="#AAABAB" />
-          <Text className="font-body text-neutral-T50 mt-3 text-center text-sm">
+          <Text className="font-body text-neutral-T50 dark:text-neutral-T60 mt-3 text-center text-sm">
             {t('home.freshlySharedEmpty')}
           </Text>
         </View>

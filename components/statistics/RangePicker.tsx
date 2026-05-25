@@ -90,12 +90,14 @@ export default function RangePicker({
               className={`rounded-lg border px-4 py-2 ${
                 isActive
                   ? 'bg-primary border-primary'
-                  : 'border-neutral-T80 bg-white'
+                  : 'border-neutral-T80 dark:border-neutral-T30 dark:bg-neutral-T30 bg-white'
               }`}
             >
               <Text
                 className={`font-body-semibold text-sm ${
-                  isActive ? 'text-white' : 'text-neutral-T30'
+                  isActive
+                    ? 'text-white'
+                    : 'text-neutral-T30 dark:text-neutral-T80'
                 }`}
               >
                 {option.label}
@@ -118,31 +120,31 @@ export default function RangePicker({
         >
           <Pressable onPress={(e) => e.stopPropagation()}>
             <View
-              className="bg-neutral-T100 rounded-t-3xl px-6 pt-4"
+              className="bg-neutral-T100 dark:bg-neutral-T20 rounded-t-3xl px-6 pt-4"
               style={{ paddingBottom: Math.max(insets.bottom, 24) + 8 }}
             >
               {/* Handle bar */}
-              <View className="bg-neutral-T80 mb-4 h-1 w-10 self-center rounded-full" />
+              <View className="bg-neutral-T80 dark:bg-neutral-T30 mb-4 h-1 w-10 self-center rounded-full" />
 
-              <Text className="font-body-bold text-neutral-T10 mb-5 text-base">
+              <Text className="font-body-bold text-neutral-T10 dark:text-neutral-T90 mb-5 text-base">
                 Chọn khoảng thời gian
               </Text>
 
               {/* From field */}
-              <Text className="font-body-semibold text-neutral-T50 mb-1 text-xs uppercase tracking-wide">
+              <Text className="font-body-semibold text-neutral-T50 dark:text-neutral-T60 mb-1 text-xs uppercase tracking-wide">
                 Từ ngày
               </Text>
               <TouchableOpacity
-                className={`bg-neutral-T95 mb-1 h-14 flex-row items-center justify-between rounded-xl border px-4 ${
+                className={`bg-neutral-T95 dark:bg-neutral-T30 mb-1 h-14 flex-row items-center justify-between rounded-xl border px-4 ${
                   activePicker === 'from'
                     ? 'border-primary'
-                    : 'border-neutral-T90'
+                    : 'border-neutral-T90 dark:border-neutral-T30'
                 }`}
                 onPress={() =>
                   setActivePicker(activePicker === 'from' ? null : 'from')
                 }
               >
-                <Text className="font-body text-neutral-T10 text-base">
+                <Text className="font-body text-neutral-T10 dark:text-neutral-T90 text-base">
                   {formatDate(customFrom)}
                 </Text>
                 <MaterialIcons name="event" size={20} color="#AAABAB" />
@@ -164,20 +166,20 @@ export default function RangePicker({
               )}
 
               {/* To field */}
-              <Text className="font-body-semibold text-neutral-T50 mb-1 mt-3 text-xs uppercase tracking-wide">
+              <Text className="font-body-semibold text-neutral-T50 dark:text-neutral-T60 mb-1 mt-3 text-xs uppercase tracking-wide">
                 Đến ngày
               </Text>
               <TouchableOpacity
-                className={`bg-neutral-T95 mb-1 h-14 flex-row items-center justify-between rounded-xl border px-4 ${
+                className={`bg-neutral-T95 dark:bg-neutral-T30 mb-1 h-14 flex-row items-center justify-between rounded-xl border px-4 ${
                   activePicker === 'to'
                     ? 'border-primary'
-                    : 'border-neutral-T90'
+                    : 'border-neutral-T90 dark:border-neutral-T30'
                 }`}
                 onPress={() =>
                   setActivePicker(activePicker === 'to' ? null : 'to')
                 }
               >
-                <Text className="font-body text-neutral-T10 text-base">
+                <Text className="font-body text-neutral-T10 dark:text-neutral-T90 text-base">
                   {formatDate(customTo)}
                 </Text>
                 <MaterialIcons name="event" size={20} color="#AAABAB" />

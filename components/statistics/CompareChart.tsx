@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, Text, useWindowDimensions } from 'react-native';
 import { LineChart } from 'react-native-gifted-charts';
+import { useColorScheme } from 'nativewind';
 import { ITimeseriesPoint } from '@/types/statistics';
 import { formatVND } from '@/utils/statisticsHelpers';
 
@@ -28,6 +29,8 @@ export default function CompareChart({
   previous,
   metric,
 }: CompareChartProps) {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   // Bug 5 fix: account for gifted-charts y-axis width (~35px)
   const { width: screenWidth } = useWindowDimensions();
   const chartWidth = screenWidth - 130;
@@ -77,7 +80,7 @@ export default function CompareChart({
         noOfSections={4}
         yAxisTextStyle={{ color: '#9CA3AF', fontSize: 10 }}
         xAxisLabelTextStyle={{ color: '#9CA3AF', fontSize: 10 }}
-        rulesColor="#F3F4F6"
+        rulesColor={isDark ? '#454747' : '#F3F4F6'}
         formatYLabel={formatYLabel}
         pointerConfig={{
           pointerStripHeight: CHART_HEIGHT - 20,
@@ -93,13 +96,13 @@ export default function CompareChart({
           ) => (
             <View
               style={{
-                backgroundColor: 'white',
+                backgroundColor: isDark ? '#2E3131' : 'white',
                 padding: 8,
                 borderRadius: 8,
                 elevation: 3,
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
+                shadowOpacity: isDark ? 0 : 0.1,
                 shadowRadius: 4,
               }}
             >
@@ -147,7 +150,9 @@ export default function CompareChart({
               marginRight: 4,
             }}
           />
-          <Text className="text-neutral-T30 text-xs">Hiện tại</Text>
+          <Text className="text-neutral-T30 dark:text-neutral-T80 text-xs">
+            Hiện tại
+          </Text>
         </View>
         <View className="flex-row items-center">
           <View

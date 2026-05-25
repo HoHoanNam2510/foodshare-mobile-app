@@ -15,6 +15,7 @@ import {
   View,
 } from 'react-native';
 import StackHeader from '@/components/shared/headers/StackHeader';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 import LocationPickerSheet, {
   PickedLocation,
 } from '@/components/map/LocationPickerSheet';
@@ -156,7 +157,7 @@ export default function EditProfile() {
   if (!user) return null;
 
   return (
-    <View className="bg-neutral-DEFAULT flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <StackHeader
         title={t('profile.editProfile')}
         rightElement={
@@ -197,7 +198,7 @@ export default function EditProfile() {
                 onPress={handlePickAvatar}
                 className="active:opacity-80"
               >
-                <View className="border-primary-T70 bg-neutral-T95 h-28 w-28 items-center justify-center overflow-hidden rounded-full border-2">
+                <View className="border-primary-T70 bg-neutral-T95 dark:bg-neutral-T30 h-28 w-28 items-center justify-center overflow-hidden rounded-full border-2">
                   {avatar ? (
                     <Image
                       source={{ uri: avatar }}
@@ -212,7 +213,7 @@ export default function EditProfile() {
                   <MaterialIcons name="camera-alt" size={18} color="#FFFFFF" />
                 </View>
               </TouchableOpacity>
-              <Text className="font-label text-neutral-T50 text-xs">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-xs">
                 {t('profile.tapToChangeAvatar')}
               </Text>
             </View>
@@ -261,11 +262,11 @@ export default function EditProfile() {
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => setShowLocationPicker(true)}
-                className="bg-neutral-T100 border-neutral-T80 h-12 flex-row items-center gap-3 rounded-xl border px-4"
+                className="bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T80 dark:border-neutral-T30 h-12 flex-row items-center gap-3 rounded-xl border px-4"
               >
                 <MaterialIcons name="location-on" size={18} color="#296C24" />
                 <Text
-                  className="font-body text-neutral-T10 flex-1 text-sm"
+                  className="font-body text-neutral-T10 dark:text-neutral-T90 flex-1 text-sm"
                   numberOfLines={1}
                 >
                   {pickedLocation?.address ||
@@ -329,7 +330,7 @@ export default function EditProfile() {
               icon="account-balance"
               label={t('profile.bankSection')}
             />
-            <Text className="font-body text-neutral-T50 -mt-2 text-xs">
+            <Text className="font-body text-neutral-T50 dark:text-neutral-T60 -mt-2 text-xs">
               {isStore ? t('profile.bankHintStore') : t('profile.bankHintUser')}
             </Text>
 
@@ -386,10 +387,11 @@ function SectionLabel({
   icon: React.ComponentProps<typeof MaterialIcons>['name'];
   label: string;
 }) {
+  const sectionColors = useThemeColors();
   return (
     <View className="flex-row items-center gap-3 pt-2">
-      <MaterialIcons name={icon} size={20} color="#296C24" />
-      <Text className="text-neutral-T10 font-sans text-base font-bold">
+      <MaterialIcons name={icon} size={20} color={sectionColors.primaryGreen} />
+      <Text className="text-neutral-T10 dark:text-neutral-T90 font-sans text-base font-bold">
         {label}
       </Text>
     </View>
@@ -415,19 +417,20 @@ function FormInput({
   multiline = false,
   keyboardType = 'default',
 }: FormInputProps) {
+  const inputColors = useThemeColors();
   return (
     <View className="gap-1.5">
-      <Text className="font-label text-neutral-T50 text-xs font-semibold uppercase tracking-wider">
+      <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-xs font-semibold uppercase tracking-wider">
         {label}
       </Text>
       <TextInput
-        className={`bg-neutral-T100 border-neutral-T80 font-body text-neutral-T10 rounded-xl border px-4 text-sm ${
+        className={`bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T80 dark:border-neutral-T30 font-body text-neutral-T10 dark:text-neutral-T90 rounded-xl border px-4 text-sm ${
           multiline ? 'h-24 pt-3' : 'h-12'
         } ${!editable ? 'opacity-50' : ''}`}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor="#AAABAB"
+        placeholderTextColor={inputColors.placeholder}
         editable={editable}
         multiline={multiline}
         textAlignVertical={multiline ? 'top' : 'center'}

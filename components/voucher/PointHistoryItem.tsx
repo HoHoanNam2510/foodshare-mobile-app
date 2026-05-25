@@ -23,7 +23,7 @@ export default function PointHistoryItem({ log }: PointHistoryItemProps) {
   const isPositive = log.amount > 0;
 
   return (
-    <View className="bg-neutral-T100 flex-row items-center gap-3 rounded-xl px-4 py-3">
+    <View className="bg-neutral-T100 dark:bg-neutral-T20 flex-row items-center gap-3 rounded-xl px-4 py-3">
       {/* Icon */}
       <View
         className="h-10 w-10 items-center justify-center rounded-full"
@@ -43,12 +43,12 @@ export default function PointHistoryItem({ log }: PointHistoryItemProps) {
       {/* Reason + Date */}
       <View className="flex-1 gap-0.5">
         <Text
-          className="font-label text-neutral-T10 text-sm font-semibold"
+          className="font-label text-neutral-T10 dark:text-neutral-T90 text-sm font-semibold"
           numberOfLines={2}
         >
           {log.reason}
         </Text>
-        <Text className="font-label text-neutral-T50 text-xs">
+        <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-xs">
           {formatDateTime(log.createdAt)}
         </Text>
       </View>

@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 
 import ManagementHeader from '@/components/shared/headers/ManagementHeader';
+import { useColorScheme } from 'nativewind';
 
 import {
   cancelRequestApi,
@@ -129,11 +130,11 @@ function TransactionCard({
         onPress={onPress}
         activeOpacity={0.85}
         style={styles.card}
-        className="bg-neutral-T100 mx-4 mb-3 overflow-hidden rounded-2xl"
+        className="bg-neutral-T100 dark:bg-neutral-T20 mx-4 mb-3 overflow-hidden rounded-2xl"
       >
         <View className="flex-row items-center gap-3 p-4">
           <View
-            className="bg-neutral-T95 items-center justify-center overflow-hidden rounded-xl"
+            className="bg-neutral-T95 dark:bg-neutral-T30 items-center justify-center overflow-hidden rounded-xl"
             style={styles.thumb}
           >
             <MaterialIcons name="delete-outline" size={22} color="#AAABAB" />
@@ -145,7 +146,7 @@ function TransactionCard({
             <Text className="text-neutral-T50 font-sans text-sm italic leading-tight">
               Bài đăng đã bị xóa
             </Text>
-            <Text className="font-body text-neutral-T70 text-xs">
+            <Text className="font-body text-neutral-T70 dark:text-neutral-T60 text-xs">
               {formatDate(tx.createdAt)}
             </Text>
           </View>
@@ -162,11 +163,11 @@ function TransactionCard({
       onPress={onPress}
       activeOpacity={0.85}
       style={styles.card}
-      className="bg-neutral-T100 mx-4 mb-3 overflow-hidden rounded-2xl"
+      className="bg-neutral-T100 dark:bg-neutral-T20 mx-4 mb-3 overflow-hidden rounded-2xl"
     >
       <View className="flex-row gap-3 p-4">
         <View
-          className="bg-neutral-T95 overflow-hidden rounded-xl"
+          className="bg-neutral-T95 dark:bg-neutral-T30 overflow-hidden rounded-xl"
           style={styles.thumb}
         >
           {thumb ? (
@@ -215,7 +216,7 @@ function TransactionCard({
           </View>
 
           <Text
-            className="text-neutral-T10 font-sans text-sm font-bold leading-tight"
+            className="text-neutral-T10 dark:text-neutral-T90 font-sans text-sm font-bold leading-tight"
             numberOfLines={2}
           >
             {post.title}
@@ -229,7 +230,7 @@ function TransactionCard({
               {'  ·  '}
               {t('transaction.qtyLabel')} {tx.quantity}
             </Text>
-            <Text className="font-body text-neutral-T70 text-xs">
+            <Text className="font-body text-neutral-T70 dark:text-neutral-T60 text-xs">
               {formatDate(tx.createdAt)}
             </Text>
           </View>
@@ -293,12 +294,12 @@ function IncomingCard({
       onPress={onPress}
       activeOpacity={isPending ? 1 : 0.85}
       style={styles.card}
-      className="bg-neutral-T100 mx-4 mb-3 overflow-hidden rounded-2xl"
+      className="bg-neutral-T100 dark:bg-neutral-T20 mx-4 mb-3 overflow-hidden rounded-2xl"
     >
       <View className="flex-row gap-3 p-4">
         {/* Thumbnail */}
         <View
-          className="bg-neutral-T95 overflow-hidden rounded-xl"
+          className="bg-neutral-T95 dark:bg-neutral-T30 overflow-hidden rounded-xl"
           style={styles.thumb}
         >
           {thumb ? (
@@ -317,7 +318,7 @@ function IncomingCard({
         {/* Info */}
         <View className="flex-1 gap-1">
           <Text
-            className="text-neutral-T10 font-sans text-sm font-bold leading-tight"
+            className="text-neutral-T10 dark:text-neutral-T90 font-sans text-sm font-bold leading-tight"
             numberOfLines={2}
           >
             {post?.title ?? 'Bài đăng đã bị xóa'}
@@ -331,12 +332,12 @@ function IncomingCard({
                 className="h-4 w-4 rounded-full"
               />
             ) : (
-              <View className="bg-primary-T95 h-4 w-4 items-center justify-center rounded-full">
+              <View className="bg-primary-T95 dark:bg-primary-T20 h-4 w-4 items-center justify-center rounded-full">
                 <MaterialIcons name="person" size={10} color="#296C24" />
               </View>
             )}
             <Text
-              className="font-body text-neutral-T50 text-xs"
+              className="font-body text-neutral-T50 dark:text-neutral-T60 text-xs"
               numberOfLines={1}
             >
               {requester.fullName}
@@ -345,7 +346,7 @@ function IncomingCard({
 
           <View className="mt-0.5 flex-row items-center justify-between">
             <StatusBadge status={tx.status} />
-            <Text className="font-body text-neutral-T70 text-xs">
+            <Text className="font-body text-neutral-T70 dark:text-neutral-T60 text-xs">
               {formatDate(tx.createdAt)}
             </Text>
           </View>
@@ -417,13 +418,13 @@ function EmptyState({ tab }: { tab: TabKey }) {
   const cfg = configs[tab];
   return (
     <View className="flex-1 items-center justify-center gap-3 px-8 py-24">
-      <View className="bg-primary-T95 h-16 w-16 items-center justify-center rounded-2xl">
+      <View className="bg-primary-T95 dark:bg-primary-T20 h-16 w-16 items-center justify-center rounded-2xl">
         <MaterialIcons name={cfg.icon} size={28} color="#296C24" />
       </View>
-      <Text className="text-neutral-T10 text-center font-sans text-base font-bold">
+      <Text className="text-neutral-T10 dark:text-neutral-T90 text-center font-sans text-base font-bold">
         {t(cfg.titleKey)}
       </Text>
-      <Text className="font-body text-neutral-T50 text-center text-sm leading-5">
+      <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-center text-sm leading-5">
         {t(cfg.bodyKey)}
       </Text>
     </View>
@@ -435,6 +436,8 @@ function EmptyState({ tab }: { tab: TabKey }) {
 export default function TransactionListScreen() {
   const router = useRouter();
   const { t } = useTranslation();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   // Receiver state
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
@@ -581,9 +584,9 @@ export default function TransactionListScreen() {
   ];
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <StatusBar
-        barStyle="dark-content"
+        barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor="transparent"
         translucent
       />
@@ -593,18 +596,34 @@ export default function TransactionListScreen() {
       />
 
       {/* ── Tab Bar ── */}
-      <View className="bg-neutral-T95 mx-4 mb-3 mt-4 flex-row rounded-xl p-1">
+      <View className="bg-neutral-T95 dark:bg-neutral-T30 mx-4 mb-3 mt-4 flex-row rounded-xl p-1">
         {tabs.map((tab) => (
           <TouchableOpacity
             key={tab.key}
             onPress={() => setActiveTab(tab.key)}
             activeOpacity={0.8}
             className="flex-1 items-center rounded-lg py-2.5"
-            style={activeTab === tab.key ? styles.tabActive : undefined}
+            style={
+              activeTab === tab.key
+                ? {
+                    ...styles.tabActive,
+                    backgroundColor: isDark ? '#2E3131' : '#FFFFFF',
+                  }
+                : undefined
+            }
           >
             <Text
               className="font-label text-xs font-semibold"
-              style={{ color: activeTab === tab.key ? '#296C24' : '#757777' }}
+              style={{
+                color:
+                  activeTab === tab.key
+                    ? isDark
+                      ? '#5CA051'
+                      : '#296C24'
+                    : isDark
+                      ? '#8F9190'
+                      : '#757777',
+              }}
             >
               {tab.label}
             </Text>
@@ -617,7 +636,7 @@ export default function TransactionListScreen() {
         ownerLoading && !ownerLoaded ? (
           <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" color="#296C24" />
-            <Text className="font-body text-neutral-T50 mt-3 text-sm">
+            <Text className="font-body text-neutral-T50 dark:text-neutral-T60 mt-3 text-sm">
               {t('common.loading')}
             </Text>
           </View>
@@ -667,7 +686,7 @@ export default function TransactionListScreen() {
       ) : isLoading ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-neutral-T50 mt-3 text-sm">
+          <Text className="font-body text-neutral-T50 dark:text-neutral-T60 mt-3 text-sm">
             {t('common.loading')}
           </Text>
         </View>
@@ -792,7 +811,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   tabActive: {
-    backgroundColor: '#FFFFFF',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.06,

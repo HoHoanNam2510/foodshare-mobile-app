@@ -1,6 +1,7 @@
 // components/shared/FormInput.tsx
 import React from 'react';
 import { Text, TextInput, View } from 'react-native';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 export interface FormInputProps {
   label: string;
@@ -23,21 +24,23 @@ export default function FormInput({
   editable = true,
   keyboardType = 'default',
 }: FormInputProps) {
+  const colors = useThemeColors();
+
   return (
     <View className="gap-1.5">
-      <Text className="font-label text-neutral-T50 text-xs font-semibold uppercase tracking-wider">
+      <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-xs font-semibold uppercase tracking-wider">
         {label}
       </Text>
       <TextInput
-        className={`bg-neutral-T100 font-body text-neutral-T10 rounded-xl border px-4 text-sm ${
+        className={`bg-neutral-T100 dark:bg-neutral-T30 font-body text-neutral-T10 dark:text-neutral-T90 rounded-xl border px-4 text-sm ${
           multiline ? 'h-24 pt-3' : 'h-12'
-        } ${errorMessage ? 'border-error' : 'border-neutral-T80'} ${
+        } ${errorMessage ? 'border-error' : 'border-neutral-T80 dark:border-neutral-T30'} ${
           !editable ? 'opacity-50' : ''
         }`}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor="#AAABAB"
+        placeholderTextColor={colors.placeholder}
         multiline={multiline}
         textAlignVertical={multiline ? 'top' : 'center'}
         editable={editable}

@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 import ManagementHeader from '@/components/shared/headers/ManagementHeader';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 import RedeemConfirmModal from '@/components/voucher/RedeemConfirmModal';
 import VoucherCard from '@/components/voucher/VoucherCard';
@@ -45,6 +46,7 @@ export default function VoucherMarketScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const colors = useThemeColors();
   const user = useAuthStore((s) => s.user);
   const deductGreenPoints = useAuthStore((s) => s.deductGreenPoints);
   const restoreGreenPoints = useAuthStore((s) => s.restoreGreenPoints);
@@ -115,7 +117,7 @@ export default function VoucherMarketScreen() {
     'voucher.sortNewest';
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <ManagementHeader
         title={t('voucher.marketTitle')}
         onBack={() => router.back()}
@@ -123,11 +125,11 @@ export default function VoucherMarketScreen() {
 
       {/* ── Points Widget ── */}
       {user && (
-        <View className="bg-primary-T95 m-4 flex-row items-center gap-2 rounded-xl p-4">
+        <View className="bg-primary-T95 dark:bg-primary-T20 m-4 flex-row items-center gap-2 rounded-xl p-4">
           <Text className="text-lg">🍃</Text>
-          <Text className="font-label text-primary-T30 text-sm font-semibold">
+          <Text className="font-label text-primary-T30 dark:text-primary-T60 text-sm font-semibold">
             {t('voucher.pointsLabel')}{' '}
-            <Text className="text-primary-T10 font-bold">
+            <Text className="text-primary-T10 dark:text-primary-T80 font-bold">
               {user.greenPoints.toLocaleString()} {t('voucher.pointsUnit')}
             </Text>
           </Text>
@@ -145,7 +147,7 @@ export default function VoucherMarketScreen() {
               className={`rounded-full border px-3 py-1.5 ${
                 activeFilter === opt.value
                   ? 'bg-primary-T40 border-primary-T40'
-                  : 'bg-neutral-T100 border-neutral-T80'
+                  : 'bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T80 dark:border-neutral-T30'
               }`}
               activeOpacity={0.8}
             >
@@ -153,7 +155,7 @@ export default function VoucherMarketScreen() {
                 className={`font-label text-xs font-semibold ${
                   activeFilter === opt.value
                     ? 'text-neutral-T100'
-                    : 'text-neutral-T50'
+                    : 'text-neutral-T50 dark:text-neutral-T60'
                 }`}
               >
                 {t(opt.label)}
@@ -164,11 +166,11 @@ export default function VoucherMarketScreen() {
           {/* Sort Button */}
           <TouchableOpacity
             onPress={() => setShowSortMenu((v) => !v)}
-            className="border-neutral-T80 bg-neutral-T100 ml-auto flex-row items-center gap-1 rounded-full border px-3 py-1.5"
+            className="border-neutral-T80 dark:border-neutral-T30 bg-neutral-T100 dark:bg-neutral-T20 ml-auto flex-row items-center gap-1 rounded-full border px-3 py-1.5"
             activeOpacity={0.8}
           >
-            <MaterialIcons name="sort" size={14} color="#5C5F5E" />
-            <Text className="font-label text-neutral-T50 text-xs">
+            <MaterialIcons name="sort" size={14} color={colors.textMuted} />
+            <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-xs">
               {t(currentSortLabel)}
             </Text>
           </TouchableOpacity>
@@ -176,7 +178,7 @@ export default function VoucherMarketScreen() {
 
         {/* Sort Dropdown */}
         {showSortMenu && (
-          <View className="bg-neutral-T100 border-neutral-T90 absolute right-4 top-10 z-10 overflow-hidden rounded-xl border shadow-md">
+          <View className="bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T90 dark:border-neutral-T30 absolute right-4 top-10 z-10 overflow-hidden rounded-xl border shadow-md dark:shadow-none">
             {SORT_OPTIONS.map((opt) => (
               <TouchableOpacity
                 key={opt.value}
@@ -185,15 +187,17 @@ export default function VoucherMarketScreen() {
                   setShowSortMenu(false);
                 }}
                 className={`px-4 py-3 ${
-                  activeSort === opt.value ? 'bg-primary-T95' : ''
+                  activeSort === opt.value
+                    ? 'bg-primary-T95 dark:bg-primary-T20'
+                    : ''
                 }`}
                 activeOpacity={0.8}
               >
                 <Text
                   className={`font-label text-sm ${
                     activeSort === opt.value
-                      ? 'text-primary-T30 font-semibold'
-                      : 'text-neutral-T30'
+                      ? 'text-primary-T30 dark:text-primary-T60 font-semibold'
+                      : 'text-neutral-T30 dark:text-neutral-T80'
                   }`}
                 >
                   {t(opt.label)}
@@ -208,7 +212,7 @@ export default function VoucherMarketScreen() {
       {isLoading ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-neutral-T50 text-sm">
+          <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-sm">
             {t('voucher.loadingVouchers')}
           </Text>
         </View>
@@ -224,7 +228,7 @@ export default function VoucherMarketScreen() {
           ListEmptyComponent={
             <View className="items-center justify-center gap-3 py-20">
               <MaterialIcons name="local-offer" size={48} color="#C5C7C6" />
-              <Text className="font-body text-neutral-T50 text-center text-sm">
+              <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-center text-sm">
                 {t('voucher.emptyMarketTitle')}
                 {'\n'}
                 {t('voucher.emptyMarketDesc')}

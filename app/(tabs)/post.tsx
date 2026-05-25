@@ -1,4 +1,5 @@
 import { Feather, MaterialIcons } from '@expo/vector-icons';
+import { useColorScheme } from 'nativewind';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -171,10 +172,10 @@ function PostCard({ post, onPress, onLongPress }: PostCardProps) {
       onPress={onPress}
       onLongPress={onLongPress}
       delayLongPress={400}
-      className="bg-neutral-T100 overflow-hidden rounded-2xl shadow-sm active:scale-[0.98]"
+      className="bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 overflow-hidden rounded-2xl shadow-sm active:scale-[0.98] dark:border dark:shadow-none"
     >
       {/* Image */}
-      <View className="bg-neutral-T90 relative h-44 w-full">
+      <View className="bg-neutral-T90 dark:bg-neutral-T30 relative h-44 w-full">
         {imageUrl ? (
           <Image
             source={{ uri: imageUrl }}
@@ -182,7 +183,7 @@ function PostCard({ post, onPress, onLongPress }: PostCardProps) {
             resizeMode="cover"
           />
         ) : (
-          <View className="bg-neutral-T95 h-full w-full items-center justify-center">
+          <View className="bg-neutral-T95 dark:bg-neutral-T30 h-full w-full items-center justify-center">
             <Feather name="image" size={32} color="#AAABAB" />
           </View>
         )}
@@ -204,7 +205,9 @@ function PostCard({ post, onPress, onLongPress }: PostCardProps) {
       <View className="gap-2 px-4 pb-4 pt-3">
         <Text
           className={`font-sans text-base font-extrabold tracking-tight ${
-            isDimmed ? 'text-neutral-T50' : 'text-neutral-T10'
+            isDimmed
+              ? 'text-neutral-T50 dark:text-neutral-T60'
+              : 'text-neutral-T10 dark:text-neutral-T90'
           }`}
           numberOfLines={2}
         >
@@ -215,7 +218,7 @@ function PostCard({ post, onPress, onLongPress }: PostCardProps) {
         <View className="flex-row items-center gap-4">
           <View className="flex-row items-center gap-1.5">
             <Feather name="tag" size={13} color="#AAABAB" />
-            <Text className="font-body text-neutral-T50 text-xs">
+            <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-xs">
               {post.type === 'P2P_FREE'
                 ? t('common.free')
                 : `${post.price.toLocaleString('vi-VN')}đ`}
@@ -224,7 +227,7 @@ function PostCard({ post, onPress, onLongPress }: PostCardProps) {
           {post.expiryDate && (
             <View className="flex-row items-center gap-1.5">
               <Feather name="clock" size={13} color="#AAABAB" />
-              <Text className="font-body text-neutral-T50 text-xs">
+              <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-xs">
                 {t('post.expiryPrefix')}{' '}
                 {new Date(post.expiryDate).toLocaleDateString('vi-VN')}
               </Text>
@@ -249,6 +252,8 @@ function PostCard({ post, onPress, onLongPress }: PostCardProps) {
 export default function PostList() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -326,24 +331,24 @@ export default function PostList() {
   }, [posts, searchQuery, activeFilter, sortAsc]);
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <StatusBar
-        barStyle="dark-content"
+        barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor="transparent"
         translucent
       />
       <MainHeader />
 
       {/* ── Search bar ── */}
-      <View className="bg-neutral-T100 flex-row items-center gap-3 p-3">
-        <View className="bg-neutral-T95 border-neutral-T90 h-11 flex-1 flex-row items-center gap-2 rounded-xl border px-3">
+      <View className="bg-neutral-T100 dark:bg-neutral-T20 flex-row items-center gap-3 p-3">
+        <View className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 h-11 flex-1 flex-row items-center gap-2 rounded-xl border px-3">
           <Feather name="search" size={16} color="#AAABAB" />
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder={t('post.searchByTitle')}
             placeholderTextColor="#AAABAB"
-            className="font-body text-neutral-T10 h-full flex-1 text-sm"
+            className="font-body text-neutral-T10 dark:text-neutral-T90 h-full flex-1 text-sm"
             returnKeyType="search"
           />
           {searchQuery.length > 0 && (
@@ -358,25 +363,29 @@ export default function PostList() {
         <TouchableOpacity
           onPress={() => router.push('/(post)/my-templates' as any)}
           activeOpacity={0.8}
-          className="bg-neutral-T95 border-neutral-T90 h-11 w-11 items-center justify-center rounded-full border active:opacity-70"
+          className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 h-11 w-11 items-center justify-center rounded-full border active:opacity-70"
         >
-          <MaterialIcons name="bookmark" size={18} color="#191C1C" />
+          <MaterialIcons
+            name="bookmark"
+            size={18}
+            color={isDark ? '#E1E3E2' : '#191C1C'}
+          />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => setSortAsc((prev) => !prev)}
           activeOpacity={0.8}
-          className="bg-neutral-T95 border-neutral-T90 h-11 w-11 items-center justify-center rounded-full border active:opacity-70"
+          className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 h-11 w-11 items-center justify-center rounded-full border active:opacity-70"
         >
           <Feather
             name={sortAsc ? 'arrow-up' : 'arrow-down'}
             size={18}
-            color="#191C1C"
+            color={isDark ? '#E1E3E2' : '#191C1C'}
           />
         </TouchableOpacity>
       </View>
 
       {/* ── Filter Bar ── */}
-      <View className="bg-neutral-T100 border-neutral-T90 overflow-hidden border-b px-3">
+      <View className="bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T90 dark:border-neutral-T30 overflow-hidden border-b px-3">
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -395,12 +404,14 @@ export default function PostList() {
                 className={`rounded-full px-4 py-2 active:scale-95 ${
                   isActive
                     ? 'bg-primary-T40'
-                    : 'bg-neutral-T95 border-neutral-T90 border'
+                    : 'bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 border'
                 }`}
               >
                 <Text
                   className={`font-label text-xs font-semibold ${
-                    isActive ? 'text-neutral-T100' : 'text-neutral-T50'
+                    isActive
+                      ? 'text-neutral-T100'
+                      : 'text-neutral-T50 dark:text-neutral-T60'
                   }`}
                 >
                   {t(STATUS_LABEL_KEYS[id])}
@@ -461,10 +472,10 @@ export default function PostList() {
           >
             {displayedPosts.length === 0 ? (
               <View className="items-center justify-center gap-3 py-20">
-                <View className="bg-neutral-T95 h-16 w-16 items-center justify-center rounded-full">
+                <View className="bg-neutral-T95 dark:bg-neutral-T30 h-16 w-16 items-center justify-center rounded-full">
                   <Feather name="inbox" size={28} color="#AAABAB" />
                 </View>
-                <Text className="font-body text-neutral-T50 text-center text-sm">
+                <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-center text-sm">
                   {t('post.noPostsFound')}
                 </Text>
               </View>

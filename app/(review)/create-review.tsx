@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useColorScheme } from 'nativewind';
 import StarRating from '@/components/review/StarRating';
 import StackHeader from '@/components/shared/headers/StackHeader';
 import { createReviewApi, updateMyReviewApi } from '@/lib/reviewApi';
@@ -63,6 +64,9 @@ export default function CreateReviewScreen() {
   );
   const [feedback, setFeedback] = useState(existingFeedback ?? '');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   const ratingMeta = rating > 0 ? RATING_LABELS[rating] : null;
   const canSubmit = rating > 0 && !isSubmitting;
@@ -120,9 +124,9 @@ export default function CreateReviewScreen() {
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <StatusBar
-        barStyle="dark-content"
+        barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor="transparent"
         translucent
       />
@@ -143,14 +147,14 @@ export default function CreateReviewScreen() {
           {/* ── Context info ── */}
           {(revieweeName || reviewerName) && (
             <View
-              className="bg-neutral-T100 mx-4 mt-4 gap-2 rounded-2xl p-4"
+              className="bg-neutral-T100 dark:bg-neutral-T20 mx-4 mt-4 gap-2 rounded-2xl p-4"
               style={styles.card}
             >
               <View className="flex-row items-center gap-2">
-                <View className="bg-primary-T95 h-7 w-7 items-center justify-center rounded-lg">
+                <View className="bg-primary-T95 dark:bg-primary-T20 h-7 w-7 items-center justify-center rounded-lg">
                   <MaterialIcons name="rate-review" size={15} color="#296C24" />
                 </View>
-                <Text className="font-label text-neutral-T50 text-sm font-semibold">
+                <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-sm font-semibold">
                   {isEditMode
                     ? t('review.editingContext')
                     : t('review.reviewingContext')}
@@ -158,7 +162,7 @@ export default function CreateReviewScreen() {
               </View>
               <Text
                 style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
-                className="text-neutral-T10 text-base"
+                className="text-neutral-T10 dark:text-neutral-T90 text-base"
               >
                 {revieweeName ?? reviewerName ?? '—'}
               </Text>
@@ -167,12 +171,12 @@ export default function CreateReviewScreen() {
 
           {/* ── Star Picker ── */}
           <View
-            className="bg-neutral-T100 mx-4 mt-4 items-center gap-4 rounded-2xl p-5"
+            className="bg-neutral-T100 dark:bg-neutral-T20 mx-4 mt-4 items-center gap-4 rounded-2xl p-5"
             style={styles.card}
           >
             <Text
               style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
-              className="text-neutral-T10 text-base"
+              className="text-neutral-T10 dark:text-neutral-T90 text-base"
             >
               {t('review.selectSatisfaction')}
             </Text>
@@ -192,7 +196,7 @@ export default function CreateReviewScreen() {
                 </Text>
               </View>
             ) : (
-              <Text className="font-body text-neutral-T70 text-sm">
+              <Text className="font-body text-neutral-T70 dark:text-neutral-T60 text-sm">
                 {t('review.tapStarHint')}
               </Text>
             )}
@@ -202,16 +206,16 @@ export default function CreateReviewScreen() {
           <View className="mx-4 mt-4 gap-2">
             <Text
               style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
-              className="text-neutral-T10 text-base"
+              className="text-neutral-T10 dark:text-neutral-T90 text-base"
             >
               {t('review.feedbackOptionalTitle')}
             </Text>
-            <Text className="font-body text-neutral-T50 -mt-1 text-sm">
+            <Text className="font-body text-neutral-T50 dark:text-neutral-T60 -mt-1 text-sm">
               {t('review.feedbackHint')}
             </Text>
 
             <View
-              className="bg-neutral-T100 overflow-hidden rounded-2xl"
+              className="bg-neutral-T100 dark:bg-neutral-T20 overflow-hidden rounded-2xl"
               style={styles.card}
             >
               <TextInput
@@ -224,12 +228,15 @@ export default function CreateReviewScreen() {
                 textAlignVertical="top"
                 style={[
                   styles.textArea,
-                  { fontFamily: 'BeVietnamPro-Regular' },
+                  {
+                    fontFamily: 'BeVietnamPro-Regular',
+                    color: isDark ? '#E1E3E2' : '#191C1C',
+                  },
                 ]}
-                className="text-neutral-T10 text-sm"
+                className="text-neutral-T10 dark:text-neutral-T90 text-sm"
               />
               <View className="flex-row justify-end px-4 pb-3">
-                <Text className="font-label text-neutral-T70 text-xs">
+                <Text className="font-label text-neutral-T70 dark:text-neutral-T60 text-xs">
                   {t('review.charCount', { count: feedback.trim().length })}
                 </Text>
               </View>
@@ -238,14 +245,14 @@ export default function CreateReviewScreen() {
 
           {/* ── GreenPoints incentive (create-mode only) ── */}
           {!isEditMode && (
-            <View className="bg-primary-T95 mx-4 mt-4 flex-row items-start gap-2 rounded-xl p-3">
+            <View className="bg-primary-T95 dark:bg-primary-T20 mx-4 mt-4 flex-row items-start gap-2 rounded-xl p-3">
               <MaterialIcons
                 name="eco"
                 size={16}
                 color="#296C24"
                 style={{ marginTop: 1 }}
               />
-              <Text className="font-body text-primary-T30 flex-1 text-xs leading-4">
+              <Text className="font-body text-primary-T30 dark:text-primary-T80 flex-1 text-xs leading-4">
                 {t('review.greenPointsIncentive')}
               </Text>
             </View>
@@ -253,7 +260,7 @@ export default function CreateReviewScreen() {
 
           {/* ── Edit warning ── */}
           {isEditMode && (
-            <View className="mx-4 mt-4 flex-row items-start gap-2 rounded-xl bg-amber-50 p-3">
+            <View className="mx-4 mt-4 flex-row items-start gap-2 rounded-xl bg-amber-50 p-3 dark:bg-amber-900/30">
               <MaterialIcons
                 name="info-outline"
                 size={16}
@@ -270,7 +277,7 @@ export default function CreateReviewScreen() {
           )}
 
           {/* ── Integrity policy ── */}
-          <View className="mx-4 mt-4 flex-row items-start gap-2 rounded-xl bg-red-50 p-3">
+          <View className="mx-4 mt-4 flex-row items-start gap-2 rounded-xl bg-red-50 p-3 dark:bg-red-950/30">
             <MaterialIcons
               name="gpp-good"
               size={16}
@@ -286,7 +293,7 @@ export default function CreateReviewScreen() {
 
       {/* ── Submit Button ── */}
       <View
-        className="bg-neutral-T100 border-neutral-T90 absolute bottom-0 left-0 right-0 border-t px-4 pt-3"
+        className="bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T90 dark:border-neutral-T30 absolute bottom-0 left-0 right-0 border-t px-4 pt-3"
         style={{ paddingBottom: insets.bottom + 12 }}
       >
         <TouchableOpacity
@@ -335,6 +342,5 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     minHeight: 120,
     fontSize: 14,
-    color: '#191C1C',
   },
 });

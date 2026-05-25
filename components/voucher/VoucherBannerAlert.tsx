@@ -1,5 +1,6 @@
 // components/voucher/VoucherBannerAlert.tsx
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { useColorScheme } from 'nativewind';
 import React, { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +20,8 @@ export default function VoucherBannerAlert({
   baseAmount,
 }: VoucherBannerAlertProps) {
   const { t } = useTranslation();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const [expanded, setExpanded] = useState(false);
 
   // Normalize discount to absolute VNĐ value before comparing so that
@@ -60,9 +63,21 @@ export default function VoucherBannerAlert({
     <View
       className="overflow-hidden rounded-2xl"
       style={{
-        backgroundColor: isSelected ? '#E8F5E2' : '#F0FAF0',
+        backgroundColor: isSelected
+          ? isDark
+            ? '#003A03'
+            : '#E8F5E2'
+          : isDark
+            ? '#001A01'
+            : '#F0FAF0',
         borderWidth: 1.5,
-        borderColor: isSelected ? '#296C24' : '#90D882',
+        borderColor: isSelected
+          ? isDark
+            ? '#5CA051'
+            : '#296C24'
+          : isDark
+            ? '#42863A'
+            : '#90D882',
       }}
     >
       {/* ── Compact header row ── */}
@@ -72,12 +87,12 @@ export default function VoucherBannerAlert({
         </View>
 
         <View className="flex-1">
-          <Text className="text-primary-T20 font-sans text-sm font-bold">
+          <Text className="text-primary-T20 dark:text-primary-T80 font-sans text-sm font-bold">
             {isSelected
               ? t('voucher.bannerApplied')
               : t('voucher.bannerAvailable', { count: vouchers.length })}
           </Text>
-          <Text className="text-primary-T30 mt-0.5 text-xs">
+          <Text className="text-primary-T30 dark:text-primary-T60 mt-0.5 text-xs">
             {isSelected && selectedVoucher
               ? `${selectedVoucher.code} · -${formatDiscount(selectedVoucher)}`
               : t('voucher.bannerBestDiscount', {
@@ -94,23 +109,23 @@ export default function VoucherBannerAlert({
                 onSelect(null);
                 setExpanded(false);
               }}
-              className="bg-primary-T95 border-primary-T80 rounded-xl border px-3 py-2"
+              className="bg-primary-T95 dark:bg-primary-T20 border-primary-T80 dark:border-primary-T40 rounded-xl border px-3 py-2"
               activeOpacity={0.7}
             >
-              <Text className="text-primary-T30 font-label text-xs font-semibold">
+              <Text className="text-primary-T30 dark:text-primary-T80 font-label text-xs font-semibold">
                 {t('voucher.bannerDeselect')}
               </Text>
             </TouchableOpacity>
             {hasMultiple && (
               <TouchableOpacity
                 onPress={() => setExpanded((v) => !v)}
-                className="bg-primary-T95 border-primary-T80 h-8 w-8 items-center justify-center rounded-xl border"
+                className="bg-primary-T95 dark:bg-primary-T20 border-primary-T80 dark:border-primary-T40 h-8 w-8 items-center justify-center rounded-xl border"
                 activeOpacity={0.7}
               >
                 <Ionicons
                   name={expanded ? 'chevron-up' : 'chevron-down'}
                   size={16}
-                  color="#296C24"
+                  color={isDark ? '#5CA051' : '#296C24'}
                 />
               </TouchableOpacity>
             )}
@@ -152,7 +167,10 @@ export default function VoucherBannerAlert({
       {expanded && (
         <View
           className="gap-2 px-3 pb-3 pt-2"
-          style={{ borderTopWidth: 1, borderTopColor: '#C8EFC0' }}
+          style={{
+            borderTopWidth: 1,
+            borderTopColor: isDark ? '#0A530C' : '#C8EFC0',
+          }}
         >
           {sorted.map((uv) => {
             const v = uv.voucherId as IVoucher | null;
@@ -164,8 +182,8 @@ export default function VoucherBannerAlert({
                 key={uv._id}
                 className={`flex-row items-center rounded-xl border p-3 ${
                   isCurrent
-                    ? 'border-primary-T40 bg-primary-T95'
-                    : 'border-gray-200 bg-white'
+                    ? 'border-primary-T40 bg-primary-T95 dark:bg-primary-T20 dark:border-primary-T50'
+                    : 'dark:border-neutral-T30 dark:bg-neutral-T20 border-gray-200 bg-white'
                 }`}
                 onPress={() => {
                   onSelect(isCurrent ? null : uv._id);
@@ -183,20 +201,26 @@ export default function VoucherBannerAlert({
                 {/* Info */}
                 <View className="flex-1">
                   <Text
-                    className="text-neutral-T10 text-sm font-semibold"
+                    className="text-neutral-T10 dark:text-neutral-T90 text-sm font-semibold"
                     numberOfLines={1}
                   >
                     {v.title}
                   </Text>
-                  <Text className="text-neutral-T50 text-[11px]">{v.code}</Text>
+                  <Text className="text-neutral-T50 dark:text-neutral-T60 text-[11px]">
+                    {v.code}
+                  </Text>
                 </View>
 
                 {/* Status */}
                 {isCurrent ? (
-                  <Ionicons name="checkmark-circle" size={20} color="#296C24" />
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={20}
+                    color={isDark ? '#5CA051' : '#296C24'}
+                  />
                 ) : (
-                  <View className="bg-primary-T95 border-primary-T80 rounded-lg border px-2.5 py-1">
-                    <Text className="text-primary-T30 font-label text-xs font-semibold">
+                  <View className="bg-primary-T95 dark:bg-primary-T20 border-primary-T80 dark:border-primary-T40 rounded-lg border px-2.5 py-1">
+                    <Text className="text-primary-T30 dark:text-primary-T80 font-label text-xs font-semibold">
                       {t('voucher.bannerApplyNow')}
                     </Text>
                   </View>

@@ -1,3 +1,4 @@
+import { useColorScheme } from 'nativewind';
 import React, { useState } from 'react';
 import { ScrollView, StatusBar, View } from 'react-native';
 
@@ -11,11 +12,13 @@ import MainHeader from '../../components/shared/headers/MainHeader';
 
 export default function HomeScreen() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <StatusBar
-        barStyle="dark-content"
+        barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor="transparent"
         translucent
       />

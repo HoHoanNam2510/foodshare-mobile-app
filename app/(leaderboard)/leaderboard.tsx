@@ -48,12 +48,12 @@ function SummaryCard({
 }) {
   const { t } = useTranslation();
   return (
-    <View className="border-primary-T80 flex-1 rounded-2xl border bg-white p-3">
+    <View className="border-primary-T80 dark:border-primary-T30 dark:bg-neutral-T20 flex-1 rounded-2xl border bg-white p-3">
       <Text className="font-label text-primary-T40 mb-1 text-xs">{title}</Text>
       {item ? (
         <>
           <Text
-            className="text-primary-T20 font-sans text-base"
+            className="text-primary-T20 dark:text-primary-T80 font-sans text-base"
             style={{ fontWeight: '700' }}
           >
             #{item.rank}
@@ -254,7 +254,7 @@ export default function LeaderboardScreen() {
   );
 
   return (
-    <View className="bg-neutral-T100 flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <StackHeader title={t('leaderboard.greenPointsLeaderboard')} />
 
       <View className="gap-3 px-4 pt-3">
@@ -267,13 +267,13 @@ export default function LeaderboardScreen() {
                 key={opt.value}
                 className={`rounded-full border px-3 py-2 ${
                   active
-                    ? 'bg-primary-T95 border-primary-T80'
-                    : 'bg-neutral-T100 border-neutral-T90'
+                    ? 'bg-primary-T95 dark:bg-primary-T20 border-primary-T80'
+                    : 'bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T90 dark:border-neutral-T30'
                 }`}
                 onPress={() => setPeriod(opt.value)}
               >
                 <Text
-                  className={`font-label text-xs ${active ? 'text-primary-T30' : 'text-neutral-T40'}`}
+                  className={`font-label text-xs ${active ? 'text-primary-T30 dark:text-primary-T80' : 'text-neutral-T40 dark:text-neutral-T60'}`}
                 >
                   {opt.label}
                 </Text>
@@ -291,13 +291,13 @@ export default function LeaderboardScreen() {
                 key={opt.value}
                 className={`rounded-full border px-3 py-2 ${
                   active
-                    ? 'bg-secondary-T95 border-secondary-T80'
-                    : 'bg-neutral-T100 border-neutral-T90'
+                    ? 'bg-secondary-T95 dark:bg-secondary-T20 border-secondary-T80'
+                    : 'bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T90 dark:border-neutral-T30'
                 }`}
                 onPress={() => setRole(opt.value)}
               >
                 <Text
-                  className={`font-label text-xs ${active ? 'text-secondary-T20' : 'text-neutral-T40'}`}
+                  className={`font-label text-xs ${active ? 'text-secondary-T20 dark:text-secondary-T80' : 'text-neutral-T40 dark:text-neutral-T60'}`}
                 >
                   {opt.label}
                 </Text>
@@ -307,9 +307,9 @@ export default function LeaderboardScreen() {
         </View>
 
         {/* My ranking summary */}
-        <View className="bg-primary-T95 border-primary-T80 rounded-2xl border p-3">
+        <View className="bg-primary-T95 dark:bg-primary-T20 border-primary-T80 dark:border-primary-T30 rounded-2xl border p-3">
           <Text
-            className="text-primary-T20 mb-2 font-sans text-sm"
+            className="text-primary-T20 dark:text-primary-T80 mb-2 font-sans text-sm"
             style={{ fontWeight: '700' }}
           >
             {t('leaderboard.yourRank')}
@@ -361,21 +361,21 @@ export default function LeaderboardScreen() {
           }
           ListHeaderComponent={
             entries.length > 0 ? (
-              <Text className="font-label text-neutral-T50 mb-3 text-xs">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 mb-3 text-xs">
                 {t('leaderboard.topNUsers', { count: entries.length })}
               </Text>
             ) : null
           }
           ListEmptyComponent={
             <View className="mt-10 items-center">
-              <Text className="font-body text-neutral-T50">
+              <Text className="font-body text-neutral-T50 dark:text-neutral-T60">
                 {t('leaderboard.noRankingData')}
               </Text>
             </View>
           }
           ListFooterComponent={
             entries.length > 0 ? (
-              <Text className="font-body text-neutral-T60 mt-2 text-center text-xs">
+              <Text className="font-body text-neutral-T60 dark:text-neutral-T50 mt-2 text-center text-xs">
                 {t('leaderboard.showingTop', { count: entries.length })}
               </Text>
             ) : null

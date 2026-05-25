@@ -2,7 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 import SectionIncompleteBadge from '@/components/profile/SectionIncompleteBadge';
 import { reverseGeocode } from '@/lib/mapApi';
 
@@ -14,16 +14,20 @@ interface PrivacyFieldProps {
 }
 
 const PrivacyField = ({ icon, label, value, isHidden }: PrivacyFieldProps) => {
+  const colors = useThemeColors();
   const maskedValue =
     '*'.repeat(Math.min(value.length, 12)) + (value.length > 12 ? '...' : '');
   return (
     <View className="flex-row items-center gap-4">
-      <MaterialIcons name={icon} size={22} color="#944A00" />
+      <MaterialIcons name={icon} size={22} color={colors.secondaryOrange} />
       <View className="flex-1">
-        <Text className="font-label text-neutral-T50 text-[10px] font-semibold uppercase">
+        <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-[10px] font-semibold uppercase">
           {label}
         </Text>
-        <Text className="font-body text-neutral-T10 text-sm" numberOfLines={1}>
+        <Text
+          className="font-body text-neutral-T10 dark:text-neutral-T90 text-sm"
+          numberOfLines={1}
+        >
           {isHidden ? maskedValue : value}
         </Text>
       </View>
@@ -47,6 +51,7 @@ export default function ContactCard({
   isIncomplete,
 }: ContactCardProps) {
   const { t } = useTranslation();
+  const colors = useThemeColors();
   const [hideAll, setHideAll] = useState(true);
   const [resolvedAddress, setResolvedAddress] = useState<string | null>(null);
 
@@ -65,17 +70,21 @@ export default function ContactCard({
       : undefined);
 
   return (
-    <View className="bg-neutral-T100 gap-5 rounded-2xl p-6 shadow-sm">
+    <View className="bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 gap-5 rounded-2xl p-6 shadow-sm dark:border dark:shadow-none">
       {isIncomplete && (
         <SectionIncompleteBadge message={t('profile.contactIncompleteMsg')} />
       )}
       {/* Section header */}
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-3">
-          <View className="bg-secondary-T95 h-10 w-10 items-center justify-center rounded-xl">
-            <MaterialIcons name="contact-mail" size={20} color="#944A00" />
+          <View className="bg-secondary-T95 dark:bg-secondary-T20 h-10 w-10 items-center justify-center rounded-xl">
+            <MaterialIcons
+              name="contact-mail"
+              size={20}
+              color={colors.secondaryOrange}
+            />
           </View>
-          <Text className="text-neutral-T10 font-sans text-lg font-bold">
+          <Text className="text-neutral-T10 dark:text-neutral-T90 font-sans text-lg font-bold">
             {t('profile.contactTitle')}
           </Text>
         </View>

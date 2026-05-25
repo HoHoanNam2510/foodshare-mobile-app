@@ -43,9 +43,9 @@ export default function StatsSummaryCards({
           key={card.key}
           className={`${index === 2 ? 'w-full' : 'w-1/2'} p-2`}
         >
-          <View className="rounded-2xl bg-white p-4 shadow-sm">
+          <View className="dark:bg-neutral-T20 dark:border-neutral-T30 rounded-2xl bg-white p-4 shadow-sm dark:border dark:shadow-none">
             <View className="flex-row items-center justify-between">
-              <View className="bg-primary-T95 rounded-xl p-2">
+              <View className="bg-primary-T95 dark:bg-primary-T20 rounded-xl p-2">
                 <MaterialIcons name={card.icon} size={20} color="#72B866" />
               </View>
               {typeof card.deltaPct === 'number' && (
@@ -71,10 +71,10 @@ export default function StatsSummaryCards({
                 </View>
               )}
             </View>
-            <Text className="font-body-bold text-neutral-T10 mt-2 text-2xl">
+            <Text className="font-body-bold text-neutral-T10 dark:text-neutral-T90 mt-2 text-2xl">
               {card.value}
             </Text>
-            <Text className="text-neutral-T30 font-body text-sm">
+            <Text className="text-neutral-T30 dark:text-neutral-T80 font-body text-sm">
               {card.label}
             </Text>
           </View>

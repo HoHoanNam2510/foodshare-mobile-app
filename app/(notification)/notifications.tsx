@@ -54,20 +54,20 @@ function NotificationCard({ item, onPress }: CardProps) {
     <TouchableOpacity
       onPress={() => onPress(item)}
       activeOpacity={0.75}
-      className="flex-row items-start gap-3 bg-white px-4 py-3"
+      className="bg-neutral-T100 dark:bg-neutral-T20 flex-row items-start gap-3 px-4 py-3"
       style={
         !item.isRead
           ? { borderLeftWidth: 3, borderLeftColor: '#2A7C6E' }
           : undefined
       }
     >
-      <View className="bg-neutral-T95 mt-0.5 h-10 w-10 shrink-0 items-center justify-center rounded-full">
+      <View className="bg-neutral-T95 dark:bg-neutral-T30 mt-0.5 h-10 w-10 shrink-0 items-center justify-center rounded-full">
         {getNotificationIcon(item.type)}
       </View>
 
       <View className="flex-1">
         <Text
-          className="text-neutral-T10 text-base"
+          className="text-neutral-T10 dark:text-neutral-T90 text-base"
           style={{
             fontFamily: item.isRead
               ? 'Be Vietnam Pro'
@@ -77,10 +77,13 @@ function NotificationCard({ item, onPress }: CardProps) {
         >
           {item.title}
         </Text>
-        <Text className="text-neutral-T30 mt-0.5 text-sm" numberOfLines={2}>
+        <Text
+          className="text-neutral-T30 dark:text-neutral-T80 mt-0.5 text-sm"
+          numberOfLines={2}
+        >
           {item.body}
         </Text>
-        <Text className="text-neutral-T50 mt-1 text-xs">
+        <Text className="text-neutral-T50 dark:text-neutral-T60 mt-1 text-xs">
           {formatRelativeTime(item.createdAt)}
         </Text>
       </View>
@@ -137,7 +140,7 @@ export default function NotificationsScreen() {
   );
 
   const renderSeparator = useCallback(
-    () => <View className="bg-neutral-T95 mx-4 h-px" />,
+    () => <View className="bg-neutral-T95 dark:bg-neutral-T30 mx-4 h-px" />,
     []
   );
 
@@ -174,7 +177,10 @@ export default function NotificationsScreen() {
     );
 
   return (
-    <SafeAreaView edges={['bottom']} className="bg-neutral-T98 flex-1">
+    <SafeAreaView
+      edges={['bottom']}
+      className="bg-neutral dark:bg-neutral-T10 flex-1"
+    >
       <StackHeader title="Thông báo" rightElement={markAllButton} />
 
       <FlatList

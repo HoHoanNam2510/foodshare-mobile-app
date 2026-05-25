@@ -76,20 +76,22 @@ export default function MyVouchersScreen() {
   };
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <ManagementHeader
         title={t('voucher.myVouchersTitle')}
         onBack={() => router.back()}
       />
 
       {/* ── Tab Bar ── */}
-      <View className="bg-neutral-T95 m-4 flex-row rounded-xl p-1">
+      <View className="bg-neutral-T95 dark:bg-neutral-T30 m-4 flex-row rounded-xl p-1">
         {TABS(t).map((tab) => (
           <TouchableOpacity
             key={tab.value}
             onPress={() => handleTabChange(tab.value)}
             className={`flex-1 items-center rounded-lg py-2.5 ${
-              activeTab === tab.value ? 'bg-neutral-T100' : ''
+              activeTab === tab.value
+                ? 'bg-neutral-T100 dark:bg-neutral-T20'
+                : ''
             }`}
             activeOpacity={0.8}
             style={
@@ -107,8 +109,8 @@ export default function MyVouchersScreen() {
             <Text
               className={`font-label text-sm font-semibold ${
                 activeTab === tab.value
-                  ? 'text-neutral-T10'
-                  : 'text-neutral-T50'
+                  ? 'text-neutral-T10 dark:text-neutral-T90'
+                  : 'text-neutral-T50 dark:text-neutral-T60'
               }`}
             >
               {tab.label}
@@ -121,7 +123,7 @@ export default function MyVouchersScreen() {
       {isLoading ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-neutral-T50 text-sm">
+          <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-sm">
             {t('common.loading')}
           </Text>
         </View>
@@ -139,7 +141,7 @@ export default function MyVouchersScreen() {
           ListEmptyComponent={
             <View className="items-center justify-center gap-3 py-20">
               <MaterialIcons name="wallet" size={48} color="#C5C7C6" />
-              <Text className="font-body text-neutral-T50 text-center text-sm">
+              <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-center text-sm">
                 {t('voucher.emptyWalletTitle')}
                 {'\n'}
                 {t('voucher.emptyWalletDesc')}

@@ -11,6 +11,8 @@ import {
 import { TYPE_FILTER_OPTIONS } from './mockData';
 import { SortOption, TypeFilter } from './types';
 import { useTranslation } from 'react-i18next';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
+import { useColorScheme } from 'nativewind';
 
 const SORT_OPTION_CONFIGS: {
   value: SortOption;
@@ -44,6 +46,9 @@ export default function SearchFilterBar({
   onSortChange,
 }: SearchFilterBarProps) {
   const { t } = useTranslation();
+  const colors = useThemeColors();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const [sortOpen, setSortOpen] = useState(false);
 
   const FILTER_DISPLAY: Record<TypeFilter, string> = {
@@ -60,20 +65,20 @@ export default function SearchFilterBar({
     <View className="gap-3">
       {/* ── Search input ── */}
       <View
-        className="bg-neutral-T100 flex-row items-center gap-2 rounded-xl px-3 py-5"
+        className="bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 flex-row items-center gap-2 rounded-xl px-3 py-5 dark:border"
         style={{
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 1 },
-          shadowOpacity: 0.06,
+          shadowOpacity: isDark ? 0 : 0.06,
           shadowRadius: 4,
-          elevation: 2,
+          elevation: isDark ? 0 : 2,
         }}
       >
         <Feather name="search" size={20} color="#757777" />
         <TextInput
-          className="font-label text-neutral-T10 flex-1"
+          className="font-label text-neutral-T10 dark:text-neutral-T90 flex-1"
           placeholder={t('explore.searchPlaceholder')}
-          placeholderTextColor="#AAABAB"
+          placeholderTextColor={colors.placeholder}
           value={searchText}
           onChangeText={onSearchChange}
         />
@@ -96,7 +101,7 @@ export default function SearchFilterBar({
               className={`rounded-full px-4 py-2 ${
                 isActive
                   ? 'bg-primary-T40'
-                  : 'bg-neutral-T100 border-neutral-T90 border'
+                  : 'bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T90 dark:border-neutral-T30 border'
               }`}
               style={
                 isActive
@@ -112,7 +117,9 @@ export default function SearchFilterBar({
             >
               <Text
                 className={`font-label ${
-                  isActive ? 'text-neutral-T100' : 'text-neutral-T30'
+                  isActive
+                    ? 'text-neutral-T100'
+                    : 'text-neutral-T30 dark:text-neutral-T80'
                 }`}
                 style={{ fontWeight: isActive ? '600' : '400' }}
               >
@@ -125,7 +132,7 @@ export default function SearchFilterBar({
 
       {/* ── Sort row ── */}
       <View className="flex-row items-center gap-2">
-        <Text className="text-neutral-T50 font-label text-sm">
+        <Text className="text-neutral-T50 dark:text-neutral-T60 font-label text-sm">
           {t('explore.sort')}:
         </Text>
 
@@ -151,13 +158,13 @@ export default function SearchFilterBar({
       {/* ── Sort dropdown panel ── */}
       {sortOpen && (
         <View
-          className="bg-neutral-T100 border-neutral-T90 overflow-hidden rounded-2xl border"
+          className="bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T90 dark:border-neutral-T30 overflow-hidden rounded-2xl border"
           style={{
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.1,
+            shadowOpacity: isDark ? 0 : 0.1,
             shadowRadius: 12,
-            elevation: 6,
+            elevation: isDark ? 0 : 6,
           }}
         >
           {SORT_OPTION_CONFIGS.map((option, index) => {
@@ -172,9 +179,9 @@ export default function SearchFilterBar({
                 activeOpacity={0.7}
                 className={`flex-row items-center justify-between px-4 py-3 ${
                   index < SORT_OPTION_CONFIGS.length - 1
-                    ? 'border-neutral-T95 border-b'
+                    ? 'border-neutral-T95 dark:border-neutral-T30 border-b'
                     : ''
-                } ${isSelected ? 'bg-secondary-T95' : ''}`}
+                } ${isSelected ? 'bg-secondary-T95 dark:bg-secondary-T20' : ''}`}
               >
                 <View className="flex-row items-center gap-2">
                   <Feather
@@ -185,7 +192,11 @@ export default function SearchFilterBar({
                   <Text
                     className="font-label text-sm"
                     style={{
-                      color: isSelected ? '#983F6A' : '#191C1C',
+                      color: isSelected
+                        ? '#983F6A'
+                        : isDark
+                          ? '#C5C7C6'
+                          : '#191C1C',
                       fontWeight: isSelected ? '600' : '400',
                     }}
                   >

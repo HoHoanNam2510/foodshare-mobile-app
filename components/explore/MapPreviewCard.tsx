@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useColorScheme } from 'nativewind';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +16,8 @@ export default function MapPreviewCard({
   onViewDetails,
 }: MapPreviewCardProps) {
   const { t } = useTranslation();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const isFree = post.type === 'P2P_FREE';
   const imageUrl = post.images?.[0];
   const priceLabel = isFree
@@ -23,14 +26,18 @@ export default function MapPreviewCard({
 
   return (
     <View
-      className="bg-neutral-T100 flex-row gap-3 rounded-3xl p-3"
-      style={{
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.12,
-        shadowRadius: 20,
-        elevation: 8,
-      }}
+      className="bg-neutral-T100 dark:bg-neutral-T20 flex-row gap-3 rounded-3xl p-3"
+      style={
+        isDark
+          ? { borderWidth: 1, borderColor: '#454747' }
+          : {
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: 0.12,
+              shadowRadius: 20,
+              elevation: 8,
+            }
+      }
     >
       {/* Thumbnail */}
       <View className="w-22 h-22 flex-shrink-0 overflow-hidden rounded-2xl">
@@ -42,7 +49,11 @@ export default function MapPreviewCard({
           />
         ) : (
           <View
-            style={{ width: 88, height: 88, backgroundColor: '#F3F4F4' }}
+            style={{
+              width: 88,
+              height: 88,
+              backgroundColor: isDark ? '#454747' : '#F3F4F4',
+            }}
             className="items-center justify-center"
           />
         )}
@@ -61,7 +72,7 @@ export default function MapPreviewCard({
             <Ionicons name="heart" size={16} color="#983F6A" />
           </View>
           <Text
-            className="text-neutral-T10 mt-0.5 font-sans"
+            className="text-neutral-T10 dark:text-neutral-T90 mt-0.5 font-sans"
             style={{ fontSize: 15, fontWeight: '700', lineHeight: 20 }}
             numberOfLines={2}
           >
@@ -69,8 +80,12 @@ export default function MapPreviewCard({
           </Text>
           {post.distance && (
             <View className="mt-1 flex-row items-center gap-1">
-              <Ionicons name="location-outline" size={12} color="#757777" />
-              <Text className="text-neutral-T50 font-label text-xs">
+              <Ionicons
+                name="location-outline"
+                size={12}
+                color={isDark ? '#8F9190' : '#757777'}
+              />
+              <Text className="text-neutral-T50 dark:text-neutral-T60 font-label text-xs">
                 {t('explore.distanceAway', { dist: post.distance })}
               </Text>
             </View>
@@ -87,10 +102,10 @@ export default function MapPreviewCard({
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={onViewDetails}
-            className="bg-primary-T90 rounded-xl px-3 py-1.5"
+            className="bg-primary-T90 dark:bg-primary-T30 rounded-xl px-3 py-1.5"
           >
             <Text
-              className="text-primary-T30 font-label text-xs"
+              className="text-primary-T30 dark:text-primary-T80 font-label text-xs"
               style={{ fontWeight: '700' }}
             >
               {t('explore.viewDetails')}

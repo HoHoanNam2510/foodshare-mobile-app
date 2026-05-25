@@ -21,8 +21,8 @@ export default function UserStatsView({
   return (
     <View>
       <StatsSummaryCards summary={data.summary} comparison={data.compare} />
-      <View className="my-4 rounded-2xl bg-white p-4 shadow-sm">
-        <Text className="font-body-bold text-neutral-T10 mb-2 text-lg">
+      <View className="dark:bg-neutral-T20 dark:border-neutral-T30 my-4 rounded-2xl bg-white p-4 shadow-sm dark:border dark:shadow-none">
+        <Text className="font-body-bold text-neutral-T10 dark:text-neutral-T90 mb-2 text-lg">
           Biểu đồ tăng trưởng
         </Text>
         {data.compare ? (

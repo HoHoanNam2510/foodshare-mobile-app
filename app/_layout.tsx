@@ -23,6 +23,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useAuthStore } from '@/stores/authStore';
 import { useLanguageStore } from '@/stores/languageStore';
 import { useNotificationStore } from '@/stores/notificationStore';
+import { useThemeStore } from '@/stores/themeStore';
 import MenuDrawer from '@/components/shared/MenuDrawer';
 import BadgeUnlockToast from '@/components/shared/BadgeUnlockToast';
 import { getBadgeCatalogApi, type IBadge } from '@/lib/badgeApi';
@@ -71,6 +72,8 @@ export default function RootLayout() {
   const token = useAuthStore((s) => s.token);
   const hydrateLanguage = useLanguageStore((s) => s.hydrate);
   const isLanguageHydrated = useLanguageStore((s) => s.isHydrated);
+  const hydrateTheme = useThemeStore((s) => s.hydrate);
+  const isThemeHydrated = useThemeStore((s) => s.isHydrated);
   const addNotification = useNotificationStore((s) => s.addNotification);
   const fetchUnreadCount = useNotificationStore((s) => s.fetchUnreadCount);
   const resetNotifications = useNotificationStore((s) => s.reset);
@@ -93,13 +96,19 @@ export default function RootLayout() {
   useEffect(() => {
     hydrate();
     hydrateLanguage();
-  }, [hydrate, hydrateLanguage]);
+    hydrateTheme();
+  }, [hydrate, hydrateLanguage, hydrateTheme]);
 
   useEffect(() => {
-    if ((fontsLoaded || error) && isHydrated && isLanguageHydrated) {
+    if (
+      (fontsLoaded || error) &&
+      isHydrated &&
+      isLanguageHydrated &&
+      isThemeHydrated
+    ) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, error, isHydrated, isLanguageHydrated]);
+  }, [fontsLoaded, error, isHydrated, isLanguageHydrated, isThemeHydrated]);
 
   useProtectedRoute();
 
@@ -204,13 +213,13 @@ export default function RootLayout() {
     };
   }, [token, addNotification, fetchUnreadCount, resetNotifications]);
 
-  if (!fontsLoaded || !isHydrated || !isLanguageHydrated) {
+  if (!fontsLoaded || !isHydrated || !isLanguageHydrated || !isThemeHydrated) {
     return null;
   }
 
   return (
     <SafeAreaProvider>
-      <View className="bg-neutral flex-1">
+      <View className="bg-neutral dark:bg-neutral-T10 flex-1">
         <Slot />
         <BadgeUnlockToast
           badge={toastBadge}

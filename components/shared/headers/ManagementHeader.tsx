@@ -1,6 +1,7 @@
+import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 import BaseHeader from './BaseHeader';
 
 interface ActionItem {
@@ -19,6 +20,8 @@ export default function ManagementHeader({
   actions = [],
   onBack,
 }: ManagementHeaderProps) {
+  const colors = useThemeColors();
+
   return (
     <BaseHeader>
       <View className="flex-1 flex-row items-center justify-between">
@@ -26,14 +29,14 @@ export default function ManagementHeader({
         <View className="flex-1 flex-row items-center gap-3">
           {onBack && (
             <TouchableOpacity
-              className="bg-neutral-T95 h-10 w-10 items-center justify-center rounded-full active:opacity-80"
+              className="bg-neutral-T95 dark:bg-neutral-T30 h-10 w-10 items-center justify-center rounded-full active:opacity-80"
               onPress={onBack}
             >
-              <Feather name="arrow-left" size={20} color="#191C1C" />
+              <Feather name="arrow-left" size={20} color={colors.textPrimary} />
             </TouchableOpacity>
           )}
           <Text
-            className="flex-1 text-xl"
+            className="text-neutral-T10 dark:text-neutral-T90 flex-1 text-xl"
             style={{ fontFamily: 'Epilogue', fontWeight: '800' }}
             numberOfLines={1}
           >
@@ -46,10 +49,14 @@ export default function ManagementHeader({
           {actions.map((action, index) => (
             <TouchableOpacity
               key={index}
-              className="bg-neutral-T95 h-10 w-10 items-center justify-center rounded-full active:opacity-80"
+              className="bg-neutral-T95 dark:bg-neutral-T30 h-10 w-10 items-center justify-center rounded-full active:opacity-80"
               onPress={action.onPress}
             >
-              <Feather name={action.icon as any} size={20} color="#191C1C" />
+              <Feather
+                name={action.icon as any}
+                size={20}
+                color={colors.textPrimary}
+              />
             </TouchableOpacity>
           ))}
         </View>

@@ -14,6 +14,8 @@ import {
 } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
+import { useColorScheme } from 'nativewind';
+
 import { Conversation, getMyConversationsApi } from '@/lib/chatApi';
 import { useAuthStore } from '@/stores/authStore';
 import MainHeader from '@/components/shared/headers/MainHeader';
@@ -74,7 +76,7 @@ function ChatCard({
     <TouchableOpacity
       activeOpacity={0.8}
       onPress={onPress}
-      className="bg-neutral-T100 mx-5 mb-3 flex-row items-center rounded-2xl px-4 py-3.5 shadow-sm active:opacity-80"
+      className="bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 mx-5 mb-3 flex-row items-center rounded-2xl px-4 py-3.5 shadow-sm active:opacity-80 dark:border dark:shadow-none"
     >
       {/* Avatar */}
       <View className="relative mr-3.5">
@@ -88,13 +90,13 @@ function ChatCard({
       <View className="flex-1 justify-center">
         <View className="mb-1 flex-row items-baseline justify-between">
           <Text
-            className={`font-body text-neutral-T10 mr-2 flex-1 text-[15px] ${hasUnread ? 'font-bold' : 'font-normal'}`}
+            className={`font-body mr-2 flex-1 text-[15px] ${hasUnread ? 'text-neutral-T10 dark:text-neutral-T90 font-bold' : 'text-neutral-T10 dark:text-neutral-T90 font-normal'}`}
             numberOfLines={1}
           >
             {other?.fullName ?? t('chat.unknownUser')}
           </Text>
           <Text
-            className={`font-label text-[11px] ${hasUnread ? 'text-primary-T40 font-semibold' : 'text-neutral-T50 font-normal'}`}
+            className={`font-label text-[11px] ${hasUnread ? 'text-primary-T40 dark:text-primary-T60 font-semibold' : 'text-neutral-T50 dark:text-neutral-T60 font-normal'}`}
           >
             {time}
           </Text>
@@ -102,7 +104,7 @@ function ChatCard({
 
         <View className="flex-row items-center justify-between">
           <Text
-            className={`font-body mr-2 flex-1 text-[13px] ${hasUnread ? 'text-neutral-T30 font-medium' : 'text-neutral-T50 font-normal'}`}
+            className={`font-body mr-2 flex-1 text-[13px] ${hasUnread ? 'text-neutral-T30 dark:text-neutral-T80 font-medium' : 'text-neutral-T50 dark:text-neutral-T60 font-normal'}`}
             numberOfLines={1}
           >
             {lastMsg}
@@ -128,6 +130,8 @@ function ChatCard({
 export default function ChatListScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const { user } = useAuthStore();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -162,9 +166,9 @@ export default function ChatListScreen() {
     : conversations;
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <StatusBar
-        barStyle="dark-content"
+        barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor="transparent"
         translucent
       />
@@ -172,14 +176,14 @@ export default function ChatListScreen() {
 
       {/* ── Search Bar ── */}
       <View className="px-5 py-3">
-        <View className="bg-neutral-T100 border-neutral-T90 flex-row items-center rounded-xl border px-4 py-5 shadow-sm">
+        <View className="bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T90 dark:border-neutral-T30 flex-row items-center rounded-xl border px-4 py-5 shadow-sm dark:shadow-none">
           <Feather name="search" size={18} color="#AAABAB" />
           <TextInput
             placeholder={t('chat.searchPlaceholder')}
             placeholderTextColor="#AAABAB"
             value={query}
             onChangeText={setQuery}
-            className="font-body text-neutral-T10 ml-2.5 flex-1 text-[14px]"
+            className="font-body text-neutral-T10 dark:text-neutral-T90 ml-2.5 flex-1 text-[14px]"
           />
           {query.length > 0 && (
             <TouchableOpacity onPress={() => setQuery('')} activeOpacity={0.7}>
@@ -211,7 +215,7 @@ export default function ChatListScreen() {
         >
           {/* ── Section label ── */}
           <View className="mb-3 flex-row items-center justify-between px-5">
-            <Text className="font-body-semibold text-neutral-T50 text-[13px]">
+            <Text className="font-body-semibold text-neutral-T50 dark:text-neutral-T60 text-[13px]">
               {query
                 ? t('chat.searchResultsFor', { query })
                 : t('chat.recentLabel')}
@@ -242,13 +246,13 @@ export default function ChatListScreen() {
             })
           ) : (
             <View className="mt-16 items-center px-8">
-              <View className="bg-neutral-T95 mb-4 h-16 w-16 items-center justify-center rounded-full">
+              <View className="bg-neutral-T95 dark:bg-neutral-T30 mb-4 h-16 w-16 items-center justify-center rounded-full">
                 <Feather name="message-circle" size={28} color="#AAABAB" />
               </View>
-              <Text className="font-body text-neutral-T10 mb-1 text-[15px] font-bold">
+              <Text className="font-body text-neutral-T10 dark:text-neutral-T90 mb-1 text-[15px] font-bold">
                 {query ? t('chat.noResultsTitle') : t('chat.noChats')}
               </Text>
-              <Text className="font-body text-neutral-T50 text-center text-[13px]">
+              <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-center text-[13px]">
                 {query ? t('chat.noResultsHint') : t('chat.startFromPost')}
               </Text>
             </View>

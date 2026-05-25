@@ -145,7 +145,7 @@ export default function RegisterStore() {
   };
 
   return (
-    <View className="bg-neutral-DEFAULT flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <StackHeader title={t('profile.registerStore')} />
 
       <KeyboardAvoidingView
@@ -164,10 +164,10 @@ export default function RegisterStore() {
         >
           <View className="gap-5">
             {/* Info banner */}
-            <View className="bg-secondary-T95 border-secondary-T70 flex-row gap-3 rounded-2xl border p-4">
+            <View className="bg-secondary-T95 dark:bg-secondary-T20 border-secondary-T70 dark:border-secondary-T40 flex-row gap-3 rounded-2xl border p-4">
               <MaterialIcons name="info-outline" size={22} color="#6B5E00" />
               <View className="flex-1">
-                <Text className="font-body text-secondary-T30 text-sm leading-5">
+                <Text className="font-body text-secondary-T30 dark:text-secondary-T80 text-sm leading-5">
                   {t('profile.registerStoreBanner')}
                 </Text>
               </View>
@@ -226,7 +226,7 @@ export default function RegisterStore() {
               label={t('profile.kycSection')}
             />
 
-            <Text className="font-body text-neutral-T50 -mt-2 text-xs">
+            <Text className="font-body text-neutral-T50 dark:text-neutral-T60 -mt-2 text-xs">
               {t('profile.kycHint')}
             </Text>
 
@@ -242,7 +242,7 @@ export default function RegisterStore() {
               label={t('profile.paymentSection')}
             />
 
-            <Text className="font-body text-neutral-T50 -mt-2 text-xs">
+            <Text className="font-body text-neutral-T50 dark:text-neutral-T60 -mt-2 text-xs">
               {t('profile.paymentHint')}
             </Text>
 
@@ -277,7 +277,7 @@ export default function RegisterStore() {
 
             {/* Submit button */}
             <TouchableOpacity
-              className="bg-primary-T40 mt-2 h-14 items-center justify-center rounded-xl active:opacity-80"
+              className="bg-primary-T40 dark:bg-primary-T50 mt-2 h-14 items-center justify-center rounded-xl active:opacity-80"
               onPress={handleSubmit}
               disabled={isSubmitting}
             >

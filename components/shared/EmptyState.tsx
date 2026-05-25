@@ -1,6 +1,7 @@
+import { MaterialIcons } from '@expo/vector-icons';
+import { useColorScheme } from 'nativewind';
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
 
 type EmptyVariant = 'no-data' | 'empty-range' | 'error';
 
@@ -39,18 +40,23 @@ export default function EmptyState({
   onRetry,
 }: EmptyStateProps) {
   const config = variantConfig[variant];
+  const { colorScheme } = useColorScheme();
   return (
     <View className="flex-1 items-center justify-center p-8">
-      <MaterialIcons name={config.icon as any} size={48} color="#C5C7C6" />
-      <Text className="font-body-bold text-neutral-T30 mt-4 text-lg">
+      <MaterialIcons
+        name={config.icon as any}
+        size={48}
+        color={colorScheme === 'dark' ? '#8F9190' : '#C5C7C6'}
+      />
+      <Text className="font-body-bold text-neutral-T30 dark:text-neutral-T80 mt-4 text-lg">
         {title || config.defaultTitle}
       </Text>
-      <Text className="text-neutral-T50 mt-2 text-center text-sm">
+      <Text className="text-neutral-T50 dark:text-neutral-T60 mt-2 text-center text-sm">
         {description || config.defaultDescription}
       </Text>
       {variant === 'error' && onRetry && (
         <TouchableOpacity
-          className="bg-primary mt-6 rounded-xl px-6 py-3"
+          className="bg-primary dark:bg-primary-T50 mt-6 rounded-xl px-6 py-3"
           onPress={onRetry}
         >
           <Text className="font-body-semibold text-white">Thử lại</Text>

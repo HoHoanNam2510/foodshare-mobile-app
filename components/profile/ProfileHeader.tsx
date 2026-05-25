@@ -13,7 +13,7 @@ export default function ProfileHeader({ onSettingsPress }: ProfileHeaderProps) {
   const router = useRouter();
 
   return (
-    <View className="bg-neutral-T100 h-16 flex-row items-center gap-4 px-6 shadow-sm">
+    <View className="bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 h-16 flex-row items-center gap-4 px-6 shadow-sm dark:border-b dark:shadow-none">
       <TouchableOpacity
         className="p-1 active:opacity-70"
         onPress={() => router.back()}

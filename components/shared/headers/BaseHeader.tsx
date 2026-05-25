@@ -15,7 +15,7 @@ export default function BaseHeader({
 
   return (
     <View
-      className={`bg-neutral-T100 shadow-sm ${className}`}
+      className={`bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 shadow-sm dark:border-b dark:shadow-none ${className}`}
       style={{ paddingTop: insets.top }}
     >
       <View className="flex-row items-center px-4 py-3">{children}</View>

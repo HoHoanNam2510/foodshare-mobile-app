@@ -65,7 +65,7 @@ export default function PointHistoryScreen() {
   };
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <ManagementHeader
         title={t('voucher.pointHistoryTitle')}
         onBack={() => router.back()}
@@ -74,7 +74,7 @@ export default function PointHistoryScreen() {
       {/* ── Points Widget ── */}
       <View className="m-4">
         <View
-          className="bg-primary-T95 items-center gap-2 rounded-2xl p-5"
+          className="bg-primary-T95 dark:bg-primary-T20 items-center gap-2 rounded-2xl p-5"
           style={{
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 2 },
@@ -90,7 +90,7 @@ export default function PointHistoryScreen() {
           {isLoading ? (
             <ActivityIndicator color="#296C24" />
           ) : (
-            <Text className="text-primary-T20 font-sans text-4xl font-bold">
+            <Text className="text-primary-T20 dark:text-primary-T80 font-sans text-4xl font-bold">
               {currentPoints.toLocaleString()}
             </Text>
           )}
@@ -104,7 +104,7 @@ export default function PointHistoryScreen() {
       {isLoading ? (
         <View className="flex-1 items-center justify-center gap-3">
           <ActivityIndicator size="large" color="#296C24" />
-          <Text className="font-body text-neutral-T50 text-sm">
+          <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-sm">
             {t('voucher.loadingHistory')}
           </Text>
         </View>
@@ -123,7 +123,7 @@ export default function PointHistoryScreen() {
           ListEmptyComponent={
             <View className="items-center justify-center gap-3 py-20">
               <MaterialIcons name="history" size={48} color="#C5C7C6" />
-              <Text className="font-body text-neutral-T50 text-center text-sm">
+              <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-center text-sm">
                 {t('voucher.emptyHistoryTitle')}
                 {'\n'}
                 {t('voucher.emptyHistoryDesc')}
@@ -136,7 +136,7 @@ export default function PointHistoryScreen() {
                 <ActivityIndicator color="#296C24" />
               </View>
             ) : !hasMore && logs.length > 0 ? (
-              <Text className="font-label text-neutral-T50 py-4 text-center text-xs">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 py-4 text-center text-xs">
                 {t('voucher.endOfHistory')}
               </Text>
             ) : null

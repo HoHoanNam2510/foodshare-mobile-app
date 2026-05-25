@@ -29,7 +29,6 @@ const EditVoucherScreen = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-
   const [voucher, setVoucher] = useState<IVoucher | null>(null);
   const [fetching, setFetching] = useState(true);
 
@@ -110,7 +109,7 @@ const EditVoucherScreen = () => {
 
   if (fetching) {
     return (
-      <View className="bg-neutral flex-1">
+      <View className="bg-neutral dark:bg-neutral-T10 flex-1">
         <StackHeader title={t('voucher.editVoucherTitle')} />
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#10b981" />
@@ -122,7 +121,7 @@ const EditVoucherScreen = () => {
   if (!voucher) return null;
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <StackHeader title={t('voucher.editVoucherTitle')} />
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
         <View className="p-6">
@@ -138,11 +137,11 @@ const EditVoucherScreen = () => {
 
           {/* Title */}
           <View className="mb-4">
-            <Text className="text-foreground mb-2 text-sm font-medium">
+            <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
               {t('voucher.titleLabel')} <Text className="text-error">*</Text>
             </Text>
             <TextInput
-              className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
+              className="dark:border-neutral-T30 dark:bg-neutral-T30 dark:text-neutral-T90 rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
               placeholder={t('voucher.titlePlaceholder')}
               value={title}
               onChangeText={setTitle}
@@ -151,11 +150,11 @@ const EditVoucherScreen = () => {
 
           {/* Description */}
           <View className="mb-4">
-            <Text className="text-foreground mb-2 text-sm font-medium">
+            <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
               {t('voucher.descriptionLabel')}
             </Text>
             <TextInput
-              className="h-24 rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
+              className="dark:border-neutral-T30 dark:bg-neutral-T30 dark:text-neutral-T90 h-24 rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
               placeholder={t('voucher.descriptionPlaceholder')}
               multiline
               numberOfLines={4}
@@ -166,16 +165,16 @@ const EditVoucherScreen = () => {
 
           {/* Valid Until */}
           <View className="mb-6">
-            <Text className="text-foreground mb-2 text-sm font-medium">
+            <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
               {t('voucher.validUntilLabel')}{' '}
               <Text className="text-error">*</Text>
             </Text>
             <TouchableOpacity
-              className="rounded-lg border border-gray-300 bg-white px-4 py-3"
+              className="dark:border-neutral-T30 dark:bg-neutral-T30 rounded-lg border border-gray-300 bg-white px-4 py-3"
               onPress={() => setShowDatePicker(true)}
             >
               <View className="flex-row items-center justify-between">
-                <Text className="text-foreground text-base">
+                <Text className="text-foreground dark:text-neutral-T90 text-base">
                   {validUntil.toLocaleDateString('vi-VN')}
                 </Text>
                 <Ionicons name="calendar-outline" size={20} color="#6b7280" />
@@ -194,10 +193,10 @@ const EditVoucherScreen = () => {
               >
                 <Pressable onPress={(e) => e.stopPropagation()}>
                   <View
-                    className="rounded-t-3xl bg-white px-6 pt-4"
+                    className="dark:bg-neutral-T20 rounded-t-3xl bg-white px-6 pt-4"
                     style={{ paddingBottom: Math.max(insets.bottom, 24) + 8 }}
                   >
-                    <View className="mb-2 h-1 w-10 self-center rounded-full bg-gray-200" />
+                    <View className="dark:bg-neutral-T30 mb-2 h-1 w-10 self-center rounded-full bg-gray-200" />
                     <View style={{ overflow: 'hidden', alignSelf: 'center' }}>
                       <DateTimePicker
                         value={validUntil}
@@ -231,25 +230,25 @@ const EditVoucherScreen = () => {
 
           {/* Read-only fields when redeemed */}
           {hasRedeemed && (
-            <View className="mb-6 gap-3 rounded-xl border border-gray-200 bg-neutral-50 p-4">
+            <View className="dark:border-neutral-T30 dark:bg-neutral-T30 mb-6 gap-3 rounded-xl border border-gray-200 bg-neutral-50 p-4">
               <Text className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">
                 {t('voucher.readOnlyFields')}
               </Text>
 
               <View>
-                <Text className="mb-1 text-xs text-gray-400">
+                <Text className="dark:text-neutral-T60 mb-1 text-xs text-gray-400">
                   {t('voucher.codeLabel')}
                 </Text>
-                <Text className="text-foreground text-base font-semibold">
+                <Text className="text-foreground dark:text-neutral-T80 text-base font-semibold">
                   {voucher.code}
                 </Text>
               </View>
 
               <View>
-                <Text className="mb-1 text-xs text-gray-400">
+                <Text className="dark:text-neutral-T60 mb-1 text-xs text-gray-400">
                   {t('voucher.discountTypeLabel')}
                 </Text>
-                <Text className="text-foreground text-base">
+                <Text className="text-foreground dark:text-neutral-T80 text-base">
                   {voucher.discountType === 'PERCENTAGE'
                     ? t('voucher.percentageLabel')
                     : t('voucher.fixedAmountLabel')}
@@ -258,20 +257,20 @@ const EditVoucherScreen = () => {
 
               <View className="flex-row gap-6">
                 <View>
-                  <Text className="mb-1 text-xs text-gray-400">
+                  <Text className="dark:text-neutral-T60 mb-1 text-xs text-gray-400">
                     {t('voucher.discountValueLabel')}
                   </Text>
-                  <Text className="text-foreground text-base">
+                  <Text className="text-foreground dark:text-neutral-T80 text-base">
                     {voucher.discountType === 'PERCENTAGE'
                       ? `${voucher.discountValue}%`
                       : `${voucher.discountValue.toLocaleString('vi-VN')}đ`}
                   </Text>
                 </View>
                 <View>
-                  <Text className="mb-1 text-xs text-gray-400">
+                  <Text className="dark:text-neutral-T60 mb-1 text-xs text-gray-400">
                     {t('voucher.pointCostLabel')}
                   </Text>
-                  <Text className="text-foreground text-base">
+                  <Text className="text-foreground dark:text-neutral-T80 text-base">
                     {voucher.pointCost} {t('voucher.pointsUnit')}
                   </Text>
                 </View>

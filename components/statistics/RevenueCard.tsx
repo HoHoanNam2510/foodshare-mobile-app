@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import { useColorScheme } from 'nativewind';
 import { IStatsSummary, IComparison } from '@/types/statistics';
 import { formatVND } from '@/utils/statisticsHelpers';
 
@@ -9,13 +10,15 @@ interface RevenueCardProps {
 }
 
 export default function RevenueCard({ summary, comparison }: RevenueCardProps) {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   return (
     <View
       className="mb-4 rounded-2xl p-4"
-      style={{ backgroundColor: '#CAFFBB' }}
+      style={{ backgroundColor: isDark ? '#003A03' : '#CAFFBB' }}
     >
       <View className="flex-row items-center justify-between">
-        <Text className="font-body-semibold text-neutral-T30 text-base">
+        <Text className="font-body-semibold text-neutral-T30 dark:text-neutral-T80 text-base">
           Tổng doanh số
         </Text>
         {typeof comparison?.revenuePct === 'number' && (
@@ -31,7 +34,7 @@ export default function RevenueCard({ summary, comparison }: RevenueCardProps) {
           </View>
         )}
       </View>
-      <Text className="font-body-bold text-neutral-T10 mt-2 text-3xl">
+      <Text className="font-body-bold text-neutral-T10 dark:text-neutral-T90 mt-2 text-3xl">
         {formatVND(summary.totalRevenue)}
       </Text>
     </View>

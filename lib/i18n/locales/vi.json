@@ -411,6 +411,8 @@
     "storeInfo": "Thông tin cửa hàng",
     "paymentInfo": "Thông tin thanh toán",
     "settings": "Cài đặt",
+    "darkMode": "Giao diện tối",
+    "darkModeDesc": "Chuyển sang chế độ nền tối",
     "language": "Ngôn ngữ",
     "about": "Về ứng dụng",
     "version": "Phiên bản",

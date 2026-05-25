@@ -2,6 +2,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 import GuideSectionModal from './GuideSectionModal';
 
@@ -16,16 +17,17 @@ const GUIDE_CARD_CONFIGS: { id: string; icon: IconName; labelKey: string }[] = [
 
 export default function GuideSection() {
   const { t } = useTranslation();
+  const colors = useThemeColors();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   return (
     <View className="mt-8">
       <View className="mb-1 px-5">
-        <Text className="font-body text-neutral-T50 text-sm">
+        <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-sm">
           {t('home.guideSubtitle')}
         </Text>
         <Text
-          className="text-neutral-T10 mt-1 font-sans text-xl"
+          className="text-neutral-T10 dark:text-neutral-T90 mt-1 font-sans text-xl"
           style={{ fontWeight: '700', letterSpacing: -0.3 }}
         >
           {t('home.guideTitle')}
@@ -45,20 +47,20 @@ export default function GuideSection() {
             <TouchableOpacity
               key={card.id}
               onPress={() => setSelectedIndex(index)}
-              className={`bg-neutral-T100 justify-between rounded-2xl p-4 shadow-sm active:opacity-80 ${
+              className={`bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 justify-between rounded-2xl p-4 shadow-sm active:opacity-80 dark:border dark:shadow-none ${
                 index < GUIDE_CARD_CONFIGS.length - 1 ? 'mr-2.5' : ''
               }`}
               style={{ width: 140, height: 120 }}
             >
-              <View className="bg-primary-T95 h-10 w-10 items-center justify-center rounded-xl">
+              <View className="bg-primary-T95 dark:bg-primary-T20 h-10 w-10 items-center justify-center rounded-xl">
                 <MaterialCommunityIcons
                   name={card.icon}
                   size={22}
-                  color="#296C24"
+                  color={colors.primaryGreen}
                 />
               </View>
               <Text
-                className="font-body text-neutral-T10 mt-2 text-sm leading-snug"
+                className="font-body text-neutral-T10 dark:text-neutral-T90 mt-2 text-sm leading-snug"
                 style={{ fontWeight: '600' }}
               >
                 {t(card.labelKey)}

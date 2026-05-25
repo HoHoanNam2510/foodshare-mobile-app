@@ -411,6 +411,8 @@
     "storeInfo": "Store information",
     "paymentInfo": "Payment information",
     "settings": "Settings",
+    "darkMode": "Dark mode",
+    "darkModeDesc": "Switch to dark theme",
     "language": "Language",
     "about": "About",
     "version": "Version",

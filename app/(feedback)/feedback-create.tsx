@@ -17,6 +17,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
+import { useColorScheme } from 'nativewind';
 import ImagePickerSection from '@/components/post/ImagePickerSection';
 import FormInput from '@/components/shared/FormInput';
 import StackHeader from '@/components/shared/headers/StackHeader';
@@ -149,6 +150,9 @@ export default function FeedbackCreateScreen() {
     }
   };
 
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
   const canSubmit =
     !!selectedType &&
     title.trim().length >= 5 &&
@@ -156,9 +160,9 @@ export default function FeedbackCreateScreen() {
     !isSubmitting;
 
   return (
-    <View className="bg-neutral flex-1">
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <StatusBar
-        barStyle="dark-content"
+        barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor="transparent"
         translucent
       />
@@ -177,7 +181,7 @@ export default function FeedbackCreateScreen() {
           {/* ── Type Selector ── */}
           <View className="mx-4 mt-4 gap-2">
             <Text
-              className="text-neutral-T10 text-base"
+              className="text-neutral-T10 dark:text-neutral-T90 text-base"
               style={{ fontFamily: 'Epilogue', fontWeight: '700' }}
             >
               {t('feedback.typeLabel')}
@@ -191,13 +195,17 @@ export default function FeedbackCreateScreen() {
                     key={option.value}
                     activeOpacity={0.8}
                     onPress={() => setSelectedType(option.value)}
-                    className="bg-neutral-T100 flex-row items-center gap-3 rounded-2xl p-4"
+                    className="bg-neutral-T100 dark:bg-neutral-T20 flex-row items-center gap-3 rounded-2xl p-4"
                     style={[styles.card, isSelected && styles.cardSelected]}
                   >
                     <View
                       className="h-10 w-10 items-center justify-center rounded-xl"
                       style={{
-                        backgroundColor: isSelected ? '#296C24' : '#F0F4F0',
+                        backgroundColor: isSelected
+                          ? '#296C24'
+                          : isDark
+                            ? '#003A03'
+                            : '#F0F4F0',
                       }}
                     >
                       <MaterialIcons
@@ -208,13 +216,13 @@ export default function FeedbackCreateScreen() {
                     </View>
                     <View className="flex-1 gap-0.5">
                       <Text
-                        className="font-label text-neutral-T10 text-sm"
+                        className="font-label text-neutral-T10 dark:text-neutral-T90 text-sm"
                         style={{ fontWeight: isSelected ? '700' : '600' }}
                       >
                         {t(option.labelKey)}
                       </Text>
                       <Text
-                        className="font-body text-neutral-T50 text-xs"
+                        className="font-body text-neutral-T50 dark:text-neutral-T60 text-xs"
                         numberOfLines={1}
                       >
                         {t(option.descKey)}
@@ -249,7 +257,7 @@ export default function FeedbackCreateScreen() {
               placeholder={t('feedback.titlePlaceholder')}
               errorMessage={titleError}
             />
-            <Text className="font-body text-neutral-T70 mt-1 text-right text-xs">
+            <Text className="font-body text-neutral-T70 dark:text-neutral-T60 mt-1 text-right text-xs">
               {title.trim().length}/100
             </Text>
           </View>
@@ -267,7 +275,7 @@ export default function FeedbackCreateScreen() {
               multiline
               errorMessage={contentError}
             />
-            <Text className="font-body text-neutral-T70 mt-1 text-right text-xs">
+            <Text className="font-body text-neutral-T70 dark:text-neutral-T60 mt-1 text-right text-xs">
               {content.trim().length}/500
             </Text>
           </View>
@@ -282,7 +290,7 @@ export default function FeedbackCreateScreen() {
           </View>
 
           {/* ── Rate limit note ── */}
-          <View className="mx-4 mt-4 flex-row gap-2 rounded-xl bg-blue-50 p-3">
+          <View className="mx-4 mt-4 flex-row gap-2 rounded-xl bg-blue-50 p-3 dark:bg-blue-950/30">
             <MaterialIcons
               name="info-outline"
               size={16}
@@ -301,7 +309,7 @@ export default function FeedbackCreateScreen() {
 
       {/* ── Submit Button ── */}
       <View
-        className="bg-neutral-T100 border-neutral-T90 absolute bottom-0 left-0 right-0 border-t px-4 pt-3"
+        className="bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T90 dark:border-neutral-T30 absolute bottom-0 left-0 right-0 border-t px-4 pt-3"
         style={{ paddingBottom: insets.bottom + 12 }}
       >
         <TouchableOpacity

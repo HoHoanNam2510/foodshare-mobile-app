@@ -25,6 +25,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
@@ -139,6 +140,7 @@ export default function GuideSectionModal({
   onClose,
 }: GuideSectionModalProps) {
   const { t } = useTranslation();
+  const colors = useThemeColors();
   const { width: screenWidth } = useWindowDimensions();
   const insets = useSafeAreaInsets();
 
@@ -254,22 +256,22 @@ export default function GuideSectionModal({
 
         <Pressable onPress={(e) => e.stopPropagation()}>
           <Animated.View
-            className="bg-neutral-T100 rounded-t-3xl px-6 pt-4"
+            className="bg-neutral-T100 dark:bg-neutral-T20 rounded-t-3xl px-6 pt-4"
             style={[
               cardStyle,
               { paddingBottom: Math.max(insets.bottom, 16) + 8 },
             ]}
           >
             {/* Drag handle */}
-            <View className="bg-neutral-T80 mb-5 h-1.5 w-12 self-center rounded-full" />
+            <View className="bg-neutral-T80 dark:bg-neutral-T40 mb-5 h-1.5 w-12 self-center rounded-full" />
 
             {/* Close button */}
             <TouchableOpacity
               onPress={handleClose}
-              className="bg-neutral-T90 absolute h-8 w-8 items-center justify-center rounded-full"
+              className="bg-neutral-T90 dark:bg-neutral-T30 absolute h-8 w-8 items-center justify-center rounded-full"
               style={{ top: 20, right: 24 }}
             >
-              <Feather name="x" size={16} color="#4A4F4F" />
+              <Feather name="x" size={16} color={colors.textMuted} />
             </TouchableOpacity>
 
             {/* Animated icon + guide label */}
@@ -292,7 +294,7 @@ export default function GuideSectionModal({
                 />
               </Animated.View>
               <Text
-                className="text-neutral-T10 font-sans text-xl"
+                className="text-neutral-T10 dark:text-neutral-T90 font-sans text-xl"
                 style={{ fontWeight: '700' }}
               >
                 {t(guide.labelKey)}
@@ -300,7 +302,7 @@ export default function GuideSectionModal({
             </View>
 
             {/* Step counter */}
-            <Text className="font-body text-neutral-T50 mb-2 text-center text-xs">
+            <Text className="font-body text-neutral-T50 dark:text-neutral-T60 mb-2 text-center text-xs">
               {t('home.guideStepCounter', {
                 current: currentStep + 1,
                 total: guide.stepsKeys.length,
@@ -309,7 +311,7 @@ export default function GuideSectionModal({
 
             {/* Animated progress bar */}
             <View
-              className="bg-neutral-T90 mb-5 rounded-full"
+              className="bg-neutral-T90 dark:bg-neutral-T30 mb-5 rounded-full"
               style={{ height: 6 }}
               onLayout={(e) => {
                 containerWidth.value = e.nativeEvent.layout.width;
@@ -333,13 +335,13 @@ export default function GuideSectionModal({
               {guide.stepsKeys.map((stepKeys, index) => (
                 <View key={index} style={{ width: stepContentWidth }}>
                   <Text
-                    className="text-neutral-T10 font-sans text-lg leading-tight"
+                    className="text-neutral-T10 dark:text-neutral-T90 font-sans text-lg leading-tight"
                     style={{ fontWeight: '700', marginBottom: 8 }}
                   >
                     {t(stepKeys.titleKey)}
                   </Text>
                   <Text
-                    className="font-body text-neutral-T50 text-sm"
+                    className="font-body text-neutral-T50 dark:text-neutral-T60 text-sm"
                     style={{ lineHeight: 21 }}
                   >
                     {t(stepKeys.descKey)}
@@ -354,12 +356,18 @@ export default function GuideSectionModal({
                 onPress={() => goToStep(currentStep - 1)}
                 disabled={currentStep === 0}
                 className={`flex-row items-center gap-1.5 rounded-xl px-4 py-2.5 ${
-                  currentStep === 0 ? 'opacity-30' : 'bg-neutral-T90'
+                  currentStep === 0
+                    ? 'opacity-30'
+                    : 'bg-neutral-T90 dark:bg-neutral-T30'
                 }`}
               >
-                <Feather name="arrow-left" size={15} color="#191C1C" />
+                <Feather
+                  name="arrow-left"
+                  size={15}
+                  color={colors.textPrimary}
+                />
                 <Text
-                  className="font-body text-neutral-T10 text-sm"
+                  className="font-body text-neutral-T10 dark:text-neutral-T90 text-sm"
                   style={{ fontWeight: '600' }}
                 >
                   {t('home.guidePrev')}
