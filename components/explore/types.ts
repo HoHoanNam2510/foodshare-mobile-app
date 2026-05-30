@@ -25,6 +25,7 @@ export interface ExplorePost {
   _id: string;
   title: string;
   type: PostType;
+  category?: string;
   price: number;
   expiryDate: string;
   pickupTime: PickupTime;
@@ -34,8 +35,9 @@ export interface ExplorePost {
   status: string;
   createdAt: string;
   ownerId?: PostOwner;
+  // GPS distance (set from distanceMeters by exploreApi)
+  distance?: string;
   // Static map mock only
   mapX?: number;
   mapY?: number;
-  distance?: string;
 }

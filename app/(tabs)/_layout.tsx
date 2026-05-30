@@ -1,15 +1,34 @@
 // app/(tabs)/_layout.tsx
 import { Slot, useRouter, useSegments } from 'expo-router';
-import React, { useState } from 'react';
+import * as Location from 'expo-location';
+import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import CustomTabBar from '../../components/shared/CustomTabBar';
 import SelectPostTypeModal from '../../components/shared/SelectPostTypeModal';
 import { useAuthStore } from '../../stores/authStore';
+import { updateUserLocation } from '@/lib/mapApi';
 
 export default function TabLayout() {
   const router = useRouter();
   const segments = useSegments();
   const userRole = useAuthStore((s) => s.user?.role) ?? 'USER';
+  const userId = useAuthStore((s) => s.user?._id);
+
+  useEffect(() => {
+    if (!userId) return;
+    (async () => {
+      try {
+        const { status } = await Location.getForegroundPermissionsAsync();
+        if (status !== 'granted') return;
+        const pos = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Balanced,
+        });
+        await updateUserLocation(pos.coords.longitude, pos.coords.latitude);
+      } catch {
+        // silent — location update is best-effort
+      }
+    })();
+  }, [userId]);
 
   const [isModalVisible, setModalVisible] = useState(false);
 

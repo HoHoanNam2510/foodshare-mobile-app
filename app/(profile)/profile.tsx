@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Image,
   Modal,
   Pressable,
   ScrollView,
@@ -30,6 +31,8 @@ import type { IBadge } from '@/lib/badgeApi';
 import { getMyPostsApi } from '@/lib/postApi';
 import { deleteAccountApi } from '@/lib/profileApi';
 import { getBadgeCatalogApi } from '@/lib/badgeApi';
+import { fetchBookmarksApi } from '@/lib/bookmarkApi';
+import type { ExplorePost } from '@/components/explore/types';
 
 // ─── MAIN COMPONENT ───
 export default function ProfileScreen() {
@@ -55,6 +58,8 @@ export default function ProfileScreen() {
 
   // ── Posts state ──
   const [myPosts, setMyPosts] = useState<Post[]>([]);
+  const [savedPosts, setSavedPosts] = useState<ExplorePost[]>([]);
+  const [loadingSaved, setLoadingSaved] = useState(false);
 
   // Fetch fresh profile data khi tab được focus
   useFocusEffect(
@@ -91,6 +96,13 @@ export default function ProfileScreen() {
           }
         })
         .catch(() => {});
+
+      // Fetch saved posts
+      setLoadingSaved(true);
+      fetchBookmarksApi(1, 10)
+        .then((res) => setSavedPosts(res.posts))
+        .catch(() => {})
+        .finally(() => setLoadingSaved(false));
     }, [fetchProfile, t])
   );
 
@@ -422,6 +434,91 @@ export default function ProfileScreen() {
           <StatisticsCard />
 
           <RecentPosts posts={myPosts} />
+
+          {/* ── Saved Posts ── */}
+          <View
+            className="bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 overflow-hidden rounded-2xl dark:border"
+            style={{
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.06,
+              shadowRadius: 8,
+              elevation: 2,
+            }}
+          >
+            <View className="border-neutral-T95 dark:border-neutral-T30 flex-row items-center justify-between border-b px-4 py-3">
+              <Text className="font-label text-neutral-T10 dark:text-neutral-T90 text-sm font-semibold">
+                {t('profile.savedPosts')}
+              </Text>
+              {savedPosts.length > 0 && (
+                <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-xs">
+                  {t('profile.savedPostsCount', { count: savedPosts.length })}
+                </Text>
+              )}
+            </View>
+
+            {loadingSaved ? (
+              <View className="items-center py-6">
+                <ActivityIndicator size="small" color="#72B866" />
+              </View>
+            ) : savedPosts.length === 0 ? (
+              <View className="items-center py-6">
+                <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-sm">
+                  {t('profile.noSavedPosts')}
+                </Text>
+              </View>
+            ) : (
+              <View>
+                {savedPosts.map((post, idx) => (
+                  <TouchableOpacity
+                    key={post._id}
+                    onPress={() =>
+                      router.push({
+                        pathname: '/(post)/post-detail' as any,
+                        params: { id: post._id },
+                      })
+                    }
+                    activeOpacity={0.75}
+                    className={`flex-row items-center gap-3 px-4 py-3 ${idx < savedPosts.length - 1 ? 'border-neutral-T95 dark:border-neutral-T30 border-b' : ''}`}
+                  >
+                    {post.images?.[0] ? (
+                      <Image
+                        source={{ uri: post.images[0] }}
+                        className="h-12 w-12 rounded-xl"
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View className="bg-neutral-T95 dark:bg-neutral-T30 h-12 w-12 items-center justify-center rounded-xl">
+                        <MaterialIcons
+                          name="fastfood"
+                          size={20}
+                          color="#AAABAB"
+                        />
+                      </View>
+                    )}
+                    <View className="flex-1 gap-0.5">
+                      <Text
+                        className="font-label text-neutral-T10 dark:text-neutral-T90 text-sm font-semibold"
+                        numberOfLines={1}
+                      >
+                        {post.title}
+                      </Text>
+                      <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-xs">
+                        {post.type === 'P2P_FREE'
+                          ? t('common.free')
+                          : `${post.price.toLocaleString('vi-VN')}đ`}
+                      </Text>
+                    </View>
+                    <MaterialIcons
+                      name="chevron-right"
+                      size={18}
+                      color="#AAABAB"
+                    />
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+          </View>
 
           {/* ── Appearance ── */}
           <View className="bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 rounded-2xl p-4 shadow-sm dark:border dark:shadow-none">

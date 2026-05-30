@@ -2,7 +2,7 @@ import React from 'react';
 import { ScrollView, Text, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-const CATEGORIES = [
+export const CATEGORIES = [
   'Home cooked',
   'Bakery',
   'Fruits & Vegs',
@@ -10,7 +10,7 @@ const CATEGORIES = [
   'Beverages',
   'Packaged food',
   'Other',
-];
+] as const;
 
 interface CategoryPickerProps {
   selected: string;

@@ -9,6 +9,7 @@ import {
   Image,
   Linking,
   ScrollView,
+  Share,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -23,6 +24,11 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import { getPostByIdApi, deletePostApi, type IPostDetail } from '@/lib/postApi';
+import {
+  addBookmarkApi,
+  removeBookmarkApi,
+  checkBookmarkApi,
+} from '@/lib/bookmarkApi';
 import { createRequestApi, createOrderApi } from '@/lib/transactionApi';
 import {
   getApplicableVouchersForPostApi,
@@ -63,7 +69,7 @@ function formatDate(iso: string): string {
 export default function PostDetailScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -78,6 +84,7 @@ export default function PostDetailScreen() {
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [isSavingTemplate, setIsSavingTemplate] = useState(false);
   const [selectedQuantity, setSelectedQuantity] = useState(1);
+  const [isBookmarked, setIsBookmarked] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const { width: screenWidth } = useWindowDimensions();
 
@@ -108,6 +115,28 @@ export default function PostDetailScreen() {
   useEffect(() => {
     load();
   }, [load]);
+
+  // Check initial bookmark state when post is loaded and user is authenticated
+  useEffect(() => {
+    if (!id || !currentUser) return;
+    checkBookmarkApi(id)
+      .then(setIsBookmarked)
+      .catch(() => {});
+  }, [id, currentUser]);
+
+  const handleBookmarkToggle = async () => {
+    const next = !isBookmarked;
+    setIsBookmarked(next);
+    try {
+      if (next) {
+        await addBookmarkApi(id as string);
+      } else {
+        await removeBookmarkApi(id as string);
+      }
+    } catch {
+      setIsBookmarked(!next);
+    }
+  };
 
   // Fetch vouchers applicable for this B2C post (non-owner view only)
   useEffect(() => {
@@ -266,6 +295,47 @@ export default function PostDetailScreen() {
     Linking.openURL(url);
   };
 
+  const handleShare = async () => {
+    if (!post) return;
+
+    const priceLabel =
+      post.type === 'P2P_FREE' || post.price === 0
+        ? t('common.free')
+        : `${post.price.toLocaleString()}đ`;
+
+    const fmt = (s: string) =>
+      new Date(s).toLocaleTimeString(
+        i18n.language === 'vi' ? 'vi-VN' : 'en-US',
+        {
+          hour: '2-digit',
+          minute: '2-digit',
+        }
+      );
+
+    const lines: string[] = [`🍱 ${post.title}`, `💰 ${priceLabel}`];
+
+    if (post.description) {
+      const short = post.description.slice(0, 80);
+      lines.push(short + (post.description.length > 80 ? '...' : ''));
+    }
+
+    if (post.pickupTime?.start && post.pickupTime?.end) {
+      lines.push(
+        `⏰ ${fmt(post.pickupTime.start)} – ${fmt(post.pickupTime.end)}`
+      );
+    }
+
+    if (post.remainingQuantity > 0) {
+      lines.push(
+        `📦 ${t('post.remainingQuantity')}: ${post.remainingQuantity}`
+      );
+    }
+
+    lines.push(t('post.shareFooter'));
+
+    await Share.share({ title: post.title, message: lines.join('\n') });
+  };
+
   // ── Loading ──
   if (isLoading) {
     return (
@@ -336,15 +406,37 @@ export default function PostDetailScreen() {
       <StackHeader
         title={t('post.postDetail')}
         rightElement={
-          !isOwnPost ? (
+          <View className="flex-row items-center gap-2">
             <TouchableOpacity
-              onPress={handleReport}
+              onPress={handleShare}
               activeOpacity={0.7}
               className="bg-neutral-T95 dark:bg-neutral-T30 h-10 w-10 items-center justify-center rounded-full"
             >
-              <MaterialIcons name="flag" size={20} color="#757777" />
+              <MaterialIcons name="share" size={20} color="#757777" />
             </TouchableOpacity>
-          ) : undefined
+            {!isOwnPost && currentUser && (
+              <>
+                <TouchableOpacity
+                  onPress={handleBookmarkToggle}
+                  activeOpacity={0.7}
+                  className="bg-neutral-T95 dark:bg-neutral-T30 h-10 w-10 items-center justify-center rounded-full"
+                >
+                  <MaterialIcons
+                    name={isBookmarked ? 'bookmark' : 'bookmark-border'}
+                    size={22}
+                    color={isBookmarked ? '#296C24' : '#757777'}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleReport}
+                  activeOpacity={0.7}
+                  className="bg-neutral-T95 dark:bg-neutral-T30 h-10 w-10 items-center justify-center rounded-full"
+                >
+                  <MaterialIcons name="flag" size={20} color="#757777" />
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
         }
       />
 
@@ -464,7 +556,16 @@ export default function PostDetailScreen() {
 
           {/* Owner Row */}
           <View className="flex-row items-center justify-between px-5 py-4">
-            <View className="flex-1 flex-row items-center gap-3">
+            <TouchableOpacity
+              className="flex-1 flex-row items-center gap-3"
+              activeOpacity={0.75}
+              onPress={() =>
+                router.push({
+                  pathname: '/(profile)/public-profile',
+                  params: { id: owner._id },
+                } as any)
+              }
+            >
               {owner.avatar ? (
                 <Image
                   source={{ uri: owner.avatar }}
@@ -487,7 +588,7 @@ export default function PostDetailScreen() {
                   {owner.fullName}
                 </Text>
               </View>
-            </View>
+            </TouchableOpacity>
             {owner.averageRating != null && (
               <View className="flex-row items-center gap-1">
                 <MaterialIcons name="star" size={14} color="#F59E0B" />

@@ -2,7 +2,14 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ManagementHeader from '@/components/shared/headers/ManagementHeader';
@@ -14,6 +21,8 @@ import { useTranslation } from 'react-i18next';
 
 const PAGE_SIZE = 20;
 
+type PointTab = 'all' | 'earned' | 'spent';
+
 export default function PointHistoryScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -24,6 +33,7 @@ export default function PointHistoryScreen() {
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [activeTab, setActiveTab] = useState<PointTab>('all');
   const { t } = useTranslation();
 
   const loadHistory = useCallback(
@@ -64,6 +74,18 @@ export default function PointHistoryScreen() {
     loadHistory(nextPage, true);
   };
 
+  const filteredLogs = logs.filter((log) => {
+    if (activeTab === 'earned') return log.amount > 0;
+    if (activeTab === 'spent') return log.amount < 0;
+    return true;
+  });
+
+  const TAB_OPTIONS: { key: PointTab; labelKey: string }[] = [
+    { key: 'all', labelKey: 'voucher.tabAll' },
+    { key: 'earned', labelKey: 'voucher.tabEarned' },
+    { key: 'spent', labelKey: 'voucher.tabSpent' },
+  ];
+
   return (
     <View className="bg-neutral dark:bg-neutral-T10 flex-1">
       <ManagementHeader
@@ -100,6 +122,30 @@ export default function PointHistoryScreen() {
         </View>
       </View>
 
+      {/* ── Filter Tabs ── */}
+      <View className="bg-neutral-T95 dark:bg-neutral-T20 mx-4 mb-2 flex-row rounded-xl p-1">
+        {TAB_OPTIONS.map((tab) => (
+          <TouchableOpacity
+            key={tab.key}
+            onPress={() => setActiveTab(tab.key)}
+            activeOpacity={0.8}
+            className={`flex-1 items-center rounded-lg py-2 ${
+              activeTab === tab.key ? 'bg-primary-T40' : ''
+            }`}
+          >
+            <Text
+              className={`font-label text-xs font-semibold ${
+                activeTab === tab.key
+                  ? 'text-neutral-T100'
+                  : 'text-neutral-T50 dark:text-neutral-T60'
+              }`}
+            >
+              {t(tab.labelKey)}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
       {/* ── History List ── */}
       {isLoading ? (
         <View className="flex-1 items-center justify-center gap-3">
@@ -110,7 +156,7 @@ export default function PointHistoryScreen() {
         </View>
       ) : (
         <FlatList
-          data={logs}
+          data={filteredLogs}
           keyExtractor={(item) => item._id}
           contentContainerStyle={{
             paddingHorizontal: 16,

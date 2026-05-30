@@ -48,6 +48,7 @@
     "processing": "Processing...",
     "today": "Today",
     "yesterday": "Yesterday",
+    "offlineBanner": "No internet connection — Check your network",
     "minutesAgo": "{{count}}m ago",
     "hoursAgo": "{{count}}h ago",
     "daysAgo": "{{count}}d ago",
@@ -249,8 +250,12 @@
     "expired": "Expired",
     "expiringToday": "Expiring Today",
     "expiringTomorrow": "Expiring Tomorrow",
+    "expiresInHours": "{{hours}}h left",
+    "expiresInMinutes": "{{minutes}}m left",
     "distanceAway": "{{dist}} away",
-    "viewDetails": "View Details"
+    "viewDetails": "View Details",
+    "recentSearches": "Recent searches",
+    "clearHistory": "Clear all"
   },
   "post": {
     "photos": "Photos",
@@ -272,6 +277,7 @@
     "createPost": "Create post",
     "editPost": "Edit post",
     "postDetail": "Post detail",
+    "shareFooter": "Check it out on the FoodShare app 🌱",
     "postList": "Post list",
     "title": "Title",
     "description": "Description",
@@ -394,7 +400,9 @@
     "noResultsTitle": "No conversations found",
     "noResultsHint": "Try searching with another name.",
     "startConversation": "Start a conversation",
-    "startFromPost": "Start chatting from a post's detail page."
+    "startFromPost": "Start chatting from a post's detail page.",
+    "startChat": "Message",
+    "startChatError": "Unable to open conversation."
   },
   "profile": {
     "title": "Profile",
@@ -526,7 +534,10 @@
     "deleteAccountEmailPlaceholder": "Your email address",
     "deleteAccountEmailMismatch": "Email does not match. Please try again.",
     "deleteAccountFailed": "Could not delete account. Please try again.",
-    "deleteAccountContactAdmin": "Account deleted — contact admin to restore if needed."
+    "deleteAccountContactAdmin": "Account deleted — contact admin to restore if needed.",
+    "savedPosts": "Saved posts",
+    "noSavedPosts": "No saved posts yet",
+    "savedPostsCount": "{{count}} posts"
   },
   "transaction": {
     "title": "Transaction",
@@ -945,6 +956,16 @@
     "emptyHistoryTitle": "No points history yet.",
     "emptyHistoryDesc": "Share food to earn points!",
     "endOfHistory": "All history displayed",
+    "tabAll": "All",
+    "tabEarned": "Earned",
+    "tabSpent": "Spent",
+    "reasonP2PReceiver": "Completed P2P transaction — Receiver",
+    "reasonP2PSharer": "Completed P2P transaction — Sharer",
+    "reasonB2CReceiver": "Completed B2C transaction — Receiver",
+    "reasonB2CSharer": "Completed B2C transaction — Sharer",
+    "reasonVoucherRedeem": "Redeemed points for voucher",
+    "reasonReviewBonus": "Bonus for leaving a review",
+    "reasonBadgeUnlock": "Unlocked badge",
     "storeOnlyAccess": "Store owner access required.",
     "toggleVoucherError": "Could not update voucher status.",
     "storeVouchersTitle": "My Store Vouchers",

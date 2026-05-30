@@ -48,6 +48,7 @@
     "processing": "Đang xử lý...",
     "today": "Hôm nay",
     "yesterday": "Hôm qua",
+    "offlineBanner": "Mất kết nối — Kiểm tra lại đường truyền của bạn",
     "minutesAgo": "{{count}} phút trước",
     "hoursAgo": "{{count}} giờ trước",
     "daysAgo": "{{count}} ngày trước",
@@ -249,8 +250,12 @@
     "expired": "Đã hết hạn",
     "expiringToday": "Hết hạn hôm nay",
     "expiringTomorrow": "Hết hạn ngày mai",
+    "expiresInHours": "Còn {{hours}} giờ",
+    "expiresInMinutes": "Còn {{minutes}} phút",
     "distanceAway": "Cách {{dist}}",
-    "viewDetails": "Xem chi tiết"
+    "viewDetails": "Xem chi tiết",
+    "recentSearches": "Tìm kiếm gần đây",
+    "clearHistory": "Xóa tất cả"
   },
   "post": {
     "photos": "Hình ảnh",
@@ -272,6 +277,7 @@
     "createPost": "Tạo bài đăng",
     "editPost": "Chỉnh sửa bài đăng",
     "postDetail": "Chi tiết bài đăng",
+    "shareFooter": "Xem thêm trên ứng dụng FoodShare 🌱",
     "postList": "Danh sách bài đăng",
     "title": "Tiêu đề",
     "description": "Mô tả",
@@ -394,7 +400,9 @@
     "noResultsTitle": "Không tìm thấy cuộc trò chuyện",
     "noResultsHint": "Thử tìm kiếm với tên khác.",
     "startConversation": "Bắt đầu cuộc trò chuyện",
-    "startFromPost": "Bắt đầu trò chuyện từ trang chi tiết bài đăng."
+    "startFromPost": "Bắt đầu trò chuyện từ trang chi tiết bài đăng.",
+    "startChat": "Nhắn tin",
+    "startChatError": "Không thể mở cuộc trò chuyện."
   },
   "profile": {
     "title": "Cá nhân",
@@ -526,7 +534,10 @@
     "deleteAccountEmailPlaceholder": "Địa chỉ email của bạn",
     "deleteAccountEmailMismatch": "Email không đúng. Vui lòng thử lại.",
     "deleteAccountFailed": "Không thể xóa tài khoản. Vui lòng thử lại.",
-    "deleteAccountContactAdmin": "Tài khoản đã xóa — liên hệ admin để khôi phục nếu cần."
+    "deleteAccountContactAdmin": "Tài khoản đã xóa — liên hệ admin để khôi phục nếu cần.",
+    "savedPosts": "Bài đã lưu",
+    "noSavedPosts": "Chưa có bài đăng nào được lưu",
+    "savedPostsCount": "{{count}} bài"
   },
   "transaction": {
     "title": "Giao dịch",
@@ -945,6 +956,16 @@
     "emptyHistoryTitle": "Chưa có lịch sử điểm nào.",
     "emptyHistoryDesc": "Hãy tham gia chia sẻ thực phẩm để tích điểm!",
     "endOfHistory": "Đã hiển thị toàn bộ lịch sử",
+    "tabAll": "Tất cả",
+    "tabEarned": "Nhận điểm",
+    "tabSpent": "Dùng điểm",
+    "reasonP2PReceiver": "Hoàn tất giao dịch P2P — Người nhận",
+    "reasonP2PSharer": "Hoàn tất giao dịch P2P — Người chia sẻ",
+    "reasonB2CReceiver": "Hoàn tất giao dịch B2C — Người nhận",
+    "reasonB2CSharer": "Hoàn tất giao dịch B2C — Người chia sẻ",
+    "reasonVoucherRedeem": "Đổi điểm lấy Voucher",
+    "reasonReviewBonus": "Thưởng điểm vì đã để lại đánh giá giao dịch",
+    "reasonBadgeUnlock": "Mở khóa huy hiệu",
     "storeOnlyAccess": "Bạn cần là chủ cửa hàng để truy cập.",
     "toggleVoucherError": "Không thể cập nhật trạng thái voucher.",
     "storeVouchersTitle": "Voucher của tôi",

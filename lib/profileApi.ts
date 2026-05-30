@@ -117,3 +117,33 @@ export async function deleteAccountApi(): Promise<{
     extractErrorMessage(error, 'Xóa tài khoản thất bại');
   }
 }
+
+export interface IPublicUser {
+  _id: string;
+  fullName: string;
+  avatar?: string;
+  role: 'USER' | 'STORE';
+  averageRating?: number;
+  totalReviews?: number;
+  greenPoints?: number;
+  createdAt: string;
+  storeInfo?: {
+    businessName?: string;
+    description?: string;
+    businessAddress?: string;
+  };
+}
+
+export async function getUserByIdApi(userId: string): Promise<{
+  success: boolean;
+  data: IPublicUser;
+}> {
+  try {
+    const { data } = await api.get<{ success: boolean; data: IPublicUser }>(
+      `/users/${userId}/profile`
+    );
+    return data;
+  } catch (error) {
+    extractErrorMessage(error, 'Không tìm thấy người dùng');
+  }
+}

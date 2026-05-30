@@ -122,6 +122,12 @@ export default function NotificationsScreen() {
         router.push(
           `/(transaction)/transaction-detail?id=${item.referenceId}` as never
         );
+      } else if (item.type === 'RADAR' && item.referenceId) {
+        router.push(`/(post)/post-detail?id=${item.referenceId}` as never);
+      } else if (item.type === 'VOUCHER' && item.referenceId) {
+        router.push(
+          `/(voucher)/voucher-detail?id=${item.referenceId}` as never
+        );
       } else if (
         item.type === 'SYSTEM' &&
         item.title === 'Bạn có đánh giá mới!'

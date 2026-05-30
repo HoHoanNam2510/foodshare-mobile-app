@@ -9,6 +9,7 @@ export default function ProfileLayout() {
       <Stack.Screen name="register-store" />
       <Stack.Screen name="kyc-resubmit" />
       <Stack.Screen name="badges" />
+      <Stack.Screen name="public-profile" />
     </Stack>
   );
 }

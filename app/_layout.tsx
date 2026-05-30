@@ -26,6 +26,7 @@ import { useNotificationStore } from '@/stores/notificationStore';
 import { useThemeStore } from '@/stores/themeStore';
 import MenuDrawer from '@/components/shared/MenuDrawer';
 import BadgeUnlockToast from '@/components/shared/BadgeUnlockToast';
+import OfflineBanner from '@/components/shared/OfflineBanner';
 import { getBadgeCatalogApi, type IBadge } from '@/lib/badgeApi';
 import { connectSocket, subscribeToNotifications } from '@/lib/socket';
 import type { INotification } from '@/lib/notificationApi';
@@ -220,6 +221,7 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <View className="bg-neutral dark:bg-neutral-T10 flex-1">
+        <OfflineBanner />
         <Slot />
         <BadgeUnlockToast
           badge={toastBadge}
