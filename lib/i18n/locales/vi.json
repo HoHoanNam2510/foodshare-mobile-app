@@ -1158,6 +1158,109 @@
     "rateLimitTitle": "Gửi quá nhiều",
     "submitError": "Gửi phản hồi thất bại. Vui lòng thử lại."
   },
+  "notifContent": {
+    "tx": {
+      "p2pRejected": {
+        "title": "Yêu cầu bị từ chối",
+        "body": "Yêu cầu xin đồ của bạn đã bị từ chối bởi người đăng."
+      },
+      "p2pAccepted": {
+        "title": "Yêu cầu được chấp nhận!",
+        "body": "Yêu cầu xin đồ của bạn đã được chấp nhận. Hãy đến nhận đồ và quét mã QR."
+      },
+      "b2cAccepted": {
+        "title": "Đơn hàng được chấp nhận!"
+      },
+      "b2cAcceptedFree": {
+        "body": "Đơn hàng đã được chấp nhận! Đây là đơn hàng 0đ nhờ voucher — bạn không cần chuyển khoản. Hãy đến nhận đồ trực tiếp."
+      },
+      "b2cAcceptedPaid": {
+        "body": "Cửa hàng đã chấp nhận đơn hàng. Hãy đến thanh toán trực tiếp qua chuyển khoản."
+      },
+      "b2cFreeOrderNew": {
+        "title": "Đơn hàng miễn phí mới!",
+        "body": "Khách vừa đặt đơn dùng voucher giảm 100% (0đ). Không cần kiểm tra chuyển khoản — xác nhận trực tiếp khi khách đến nhận hàng."
+      },
+      "completedRequester": {
+        "title": "Giao dịch hoàn tất!",
+        "body": "Giao dịch của bạn đã hoàn tất thành công. Cảm ơn bạn đã sử dụng FoodShare!"
+      },
+      "completedOwner": {
+        "title": "Giao dịch hoàn tất!",
+        "body": "Đồ của bạn đã được nhận thành công. Cảm ơn bạn đã chia sẻ!"
+      },
+      "cancelled": {
+        "title": "Đơn hàng bị hủy",
+        "body": "Cửa hàng đã hủy đơn hàng của bạn."
+      }
+    },
+    "radar": {
+      "newNearby": {
+        "title": "Có đồ ăn gần bạn!",
+        "body": "\"{{postTitle}}\" vừa được đăng gần bạn. Xem ngay!"
+      }
+    },
+    "post": {
+      "rejected": {
+        "title": "Bài đăng bị từ chối",
+        "body": "Bài đăng \"{{postTitle}}\" đã bị từ chối. Lý do: {{reason}}"
+      },
+      "approved": {
+        "title": "Bài đăng đã được duyệt",
+        "body": "Bài đăng \"{{postTitle}}\" đã được duyệt và xuất hiện trên bản đồ."
+      },
+      "pendingManual": {
+        "title": "Bài đăng cần duyệt thủ công",
+        "body": "Bài đăng \"{{postTitle}}\" cần được admin xem xét thêm trước khi xuất hiện."
+      }
+    },
+    "review": {
+      "newReview": {
+        "title": "Bạn có đánh giá mới!",
+        "body": "Bạn vừa nhận được đánh giá {{rating}} sao từ một giao dịch vừa hoàn tất."
+      }
+    },
+    "badge": {
+      "unlocked": {
+        "title": "Huy hiệu mới!",
+        "body": "Chúc mừng! Bạn vừa mở khóa huy hiệu \"{{badgeName}}\"! +{{points}} điểm"
+      }
+    },
+    "report": {
+      "dismissed": {
+        "title": "Báo cáo bị bác bỏ",
+        "body": "Báo cáo của bạn đã bị bác bỏ. Nếu có thêm bằng chứng, hãy gửi báo cáo mới."
+      },
+      "dismissedWithReason": {
+        "body": "Báo cáo của bạn đã bị bác bỏ. Lý do: {{reason}}. Nếu có thêm bằng chứng, hãy gửi báo cáo mới."
+      },
+      "resolved": {
+        "title": "Báo cáo đã được xử lý",
+        "body": "Báo cáo của bạn đã được xem xét và xử lý."
+      }
+    },
+    "feedback": {
+      "closed": {
+        "title": "Phản hồi của bạn đã được xử lý",
+        "body": "Yêu cầu \"{{feedbackTitle}}\" đã được đóng. Nhấn để xem phản hồi từ admin."
+      }
+    }
+  },
+  "notification": {
+    "title": "Thông báo",
+    "selectedCount": "Đã chọn: {{count}}",
+    "empty": "Chưa có thông báo nào",
+    "justNow": "Vừa xong",
+    "deleteTitle": "Xóa thông báo",
+    "deleteOneConfirm": "Bạn có chắc muốn xóa thông báo này?",
+    "deleteManyConfirm": "Bạn có chắc muốn xóa {{count}} thông báo đã chọn?",
+    "deleteAllReadTitle": "Xóa tất cả đã đọc",
+    "deleteAllReadConfirm": "Toàn bộ thông báo đã đọc sẽ bị xóa vĩnh viễn. Tiếp tục?",
+    "deleteOptionsTitle": "Tùy chọn xóa",
+    "selectToDelete": "Chọn để xóa",
+    "deleteCount": "Xóa {{count}} thông báo",
+    "deleteAction": "Xóa"
+  },
   "errors": {
     "networkError": "Lỗi kết nối mạng",
     "serverError": "Lỗi máy chủ",

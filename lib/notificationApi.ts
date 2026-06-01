@@ -1,6 +1,11 @@
 import api from '@/lib/axios';
 
-export type NotificationType = 'TRANSACTION' | 'RADAR' | 'SYSTEM' | 'VOUCHER';
+export type NotificationType =
+  | 'TRANSACTION'
+  | 'RADAR'
+  | 'SYSTEM'
+  | 'VOUCHER'
+  | 'FEEDBACK';
 
 export interface INotification {
   _id: string;
@@ -8,6 +13,9 @@ export interface INotification {
   type: NotificationType;
   title: string;
   body: string;
+  titleKey?: string;
+  bodyKey?: string;
+  bodyParams?: Record<string, string | number>;
   referenceId?: string;
   isRead: boolean;
   createdAt: string;
@@ -55,4 +63,22 @@ export async function markAllAsReadApi(): Promise<void> {
 
 export async function deleteNotificationApi(id: string): Promise<void> {
   await api.delete(`/notifications/${id}`);
+}
+
+export async function deleteAllReadApi(): Promise<number> {
+  const res = await api.delete<{
+    success: boolean;
+    data: { deletedCount: number };
+  }>('/notifications/read-all');
+  return res.data.data.deletedCount;
+}
+
+export async function deleteManyNotificationsApi(
+  ids: string[]
+): Promise<number> {
+  const res = await api.delete<{
+    success: boolean;
+    data: { deletedCount: number };
+  }>('/notifications/batch', { data: { ids } });
+  return res.data.data.deletedCount;
 }

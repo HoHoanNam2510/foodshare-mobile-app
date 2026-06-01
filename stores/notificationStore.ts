@@ -5,6 +5,9 @@ import {
   getUnreadCountApi,
   markAsReadApi,
   markAllAsReadApi,
+  deleteNotificationApi,
+  deleteAllReadApi,
+  deleteManyNotificationsApi,
   type INotification,
 } from '@/lib/notificationApi';
 
@@ -14,6 +17,8 @@ interface NotificationState {
   page: number;
   totalPages: number;
   isLoading: boolean;
+  isSelectMode: boolean;
+  selectedIds: string[];
 
   fetchNotifications: () => Promise<void>;
   fetchNextPage: () => Promise<void>;
@@ -21,6 +26,12 @@ interface NotificationState {
   markAsRead: (id: string) => Promise<void>;
   markAllAsRead: () => Promise<void>;
   addNotification: (notification: INotification) => void;
+  deleteNotification: (id: string) => Promise<void>;
+  deleteMany: (ids: string[]) => Promise<void>;
+  deleteAllRead: () => Promise<void>;
+  enterSelectMode: () => void;
+  exitSelectMode: () => void;
+  toggleSelect: (id: string) => void;
   reset: () => void;
 }
 
@@ -30,15 +41,21 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   page: 1,
   totalPages: 1,
   isLoading: false,
+  isSelectMode: false,
+  selectedIds: [],
 
   fetchNotifications: async () => {
     set({ isLoading: true });
     try {
-      const res = await getMyNotificationsApi(1, 20);
+      const [res, count] = await Promise.all([
+        getMyNotificationsApi(1, 20),
+        getUnreadCountApi(),
+      ]);
       set({
         notifications: res.data,
         page: 1,
         totalPages: res.pagination.totalPages,
+        unreadCount: count,
       });
     } catch {
       // ignore
@@ -109,6 +126,71 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     }));
   },
 
+  deleteNotification: async (id: string) => {
+    const notification = get().notifications.find((n) => n._id === id);
+    if (!notification?.isRead) return;
+    try {
+      await deleteNotificationApi(id);
+      set((state) => ({
+        notifications: state.notifications.filter((n) => n._id !== id),
+      }));
+    } catch {
+      // ignore
+    }
+  },
+
+  deleteMany: async (ids: string[]) => {
+    const { notifications } = get();
+    const readIds = ids.filter((id) => {
+      const n = notifications.find((n) => n._id === id);
+      return n?.isRead === true;
+    });
+    if (readIds.length === 0) return;
+    try {
+      await deleteManyNotificationsApi(readIds);
+      set((state) => ({
+        notifications: state.notifications.filter(
+          (n) => !readIds.includes(n._id)
+        ),
+        selectedIds: [],
+        isSelectMode: false,
+      }));
+    } catch {
+      // ignore
+    }
+  },
+
+  deleteAllRead: async () => {
+    try {
+      await deleteAllReadApi();
+      set((state) => ({
+        notifications: state.notifications.filter((n) => !n.isRead),
+        selectedIds: [],
+        isSelectMode: false,
+      }));
+    } catch {
+      // ignore
+    }
+  },
+
+  enterSelectMode: () => {
+    set({ isSelectMode: true, selectedIds: [] });
+  },
+
+  exitSelectMode: () => {
+    set({ isSelectMode: false, selectedIds: [] });
+  },
+
+  toggleSelect: (id: string) => {
+    const notification = get().notifications.find((n) => n._id === id);
+    if (!notification?.isRead) return;
+    set((state) => ({
+      selectedIds: state.selectedIds.includes(id)
+        ? state.selectedIds.filter((sid) => sid !== id)
+        : [...state.selectedIds, id],
+    }));
+  },
+
   reset: () => {
     set({
       notifications: [],
@@ -116,6 +198,8 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       page: 1,
       totalPages: 1,
       isLoading: false,
+      isSelectMode: false,
+      selectedIds: [],
     });
   },
 }));

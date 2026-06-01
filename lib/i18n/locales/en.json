@@ -317,8 +317,8 @@
     "autoSaving": "Auto-saving",
     "foodName": "Food name",
     "foodNamePlaceholder": "E.g. home cooked rice, sandwich...",
-    "priceLabel": "Unit price per serving (VND)",
-    "unitPriceHint": "This is the price for 1 serving. Total = unit price × quantity.",
+    "priceLabel": "Unit price (VND)",
+    "unitPriceHint": "Total = unit price × quantity.",
     "servings": "Servings",
     "pickupWindow": "Pickup window",
     "from": "FROM",
@@ -1157,6 +1157,109 @@
     "submitSuccessMsg": "Your feedback has been recorded. We will review and respond as soon as possible.",
     "rateLimitTitle": "Too many submissions",
     "submitError": "Failed to send feedback. Please try again."
+  },
+  "notifContent": {
+    "tx": {
+      "p2pRejected": {
+        "title": "Request declined",
+        "body": "Your request has been declined by the poster."
+      },
+      "p2pAccepted": {
+        "title": "Request accepted!",
+        "body": "Your request has been accepted. Please pick up the item and scan the QR code."
+      },
+      "b2cAccepted": {
+        "title": "Order accepted!"
+      },
+      "b2cAcceptedFree": {
+        "body": "Your order has been accepted. This is a 0₫ order thanks to your voucher — no transfer needed. Just come to pick up."
+      },
+      "b2cAcceptedPaid": {
+        "body": "The store has accepted your order. Please come and pay via bank transfer."
+      },
+      "b2cFreeOrderNew": {
+        "title": "New free order!",
+        "body": "A customer just placed a 0₫ order using a 100% voucher. No transfer needed — confirm directly when they arrive."
+      },
+      "completedRequester": {
+        "title": "Transaction completed!",
+        "body": "Your transaction has been completed successfully. Thank you for using FoodShare!"
+      },
+      "completedOwner": {
+        "title": "Transaction completed!",
+        "body": "Your item has been received successfully. Thank you for sharing!"
+      },
+      "cancelled": {
+        "title": "Order cancelled",
+        "body": "The store has cancelled your order."
+      }
+    },
+    "radar": {
+      "newNearby": {
+        "title": "Food near you!",
+        "body": "\"{{postTitle}}\" was just posted near you. Check it out!"
+      }
+    },
+    "post": {
+      "rejected": {
+        "title": "Post rejected",
+        "body": "\"{{postTitle}}\" has been rejected. Reason: {{reason}}"
+      },
+      "approved": {
+        "title": "Post approved",
+        "body": "\"{{postTitle}}\" has been approved and is now visible on the map."
+      },
+      "pendingManual": {
+        "title": "Post under review",
+        "body": "\"{{postTitle}}\" needs additional Admin review before appearing."
+      }
+    },
+    "review": {
+      "newReview": {
+        "title": "You have a new review!",
+        "body": "You received a {{rating}}-star rating from a completed transaction."
+      }
+    },
+    "badge": {
+      "unlocked": {
+        "title": "New badge!",
+        "body": "Congratulations! You just unlocked \"{{badgeName}}\"! +{{points}} points"
+      }
+    },
+    "report": {
+      "dismissed": {
+        "title": "Report dismissed",
+        "body": "Your report has been dismissed. If you have more evidence, you can submit a new report."
+      },
+      "dismissedWithReason": {
+        "body": "Your report has been dismissed. Reason: {{reason}}. If you have more evidence, you can submit a new report."
+      },
+      "resolved": {
+        "title": "Report resolved",
+        "body": "Your report has been reviewed and resolved."
+      }
+    },
+    "feedback": {
+      "closed": {
+        "title": "Your feedback has been handled",
+        "body": "\"{{feedbackTitle}}\" has been closed. Tap to see admin's response."
+      }
+    }
+  },
+  "notification": {
+    "title": "Notifications",
+    "selectedCount": "Selected: {{count}}",
+    "empty": "No notifications yet",
+    "justNow": "Just now",
+    "deleteTitle": "Delete notification",
+    "deleteOneConfirm": "Are you sure you want to delete this notification?",
+    "deleteManyConfirm": "Are you sure you want to delete {{count}} selected notifications?",
+    "deleteAllReadTitle": "Delete all read",
+    "deleteAllReadConfirm": "All read notifications will be permanently deleted. Continue?",
+    "deleteOptionsTitle": "Delete options",
+    "selectToDelete": "Select to delete",
+    "deleteCount": "Delete {{count}} notifications",
+    "deleteAction": "Delete"
   },
   "errors": {
     "networkError": "Network error",

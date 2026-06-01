@@ -6,7 +6,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useThemeColors } from '@/lib/hooks/useThemeColors';
@@ -51,6 +51,7 @@ export default function StatisticsScreen() {
     [range, from, to, compareFrom, compareTo, postType, user?.role]
   );
 
+  const insets = useSafeAreaInsets();
   const { data, loading, error, refetch } = useStatistics(query);
 
   const handleRangeChange = useCallback(
@@ -86,10 +87,13 @@ export default function StatisticsScreen() {
   }, []);
 
   return (
-    <SafeAreaView className="dark:bg-neutral-T10 flex-1 bg-white">
-      {/* Header area — white background with shadow separator (Bug 1 fix) */}
-      <View className="dark:bg-neutral-T20 dark:border-neutral-T30 bg-white shadow-sm dark:border-b dark:shadow-none">
-        {/* Title row — back + title on left, controls on right (Bug 4 fix) */}
+    <View className="dark:bg-neutral-T10 flex-1 bg-white">
+      {/* Header area — paddingTop fills status bar so bg is consistent with other headers */}
+      <View
+        className="dark:bg-neutral-T20 dark:border-neutral-T30 bg-white shadow-sm dark:border-b dark:shadow-none"
+        style={{ paddingTop: insets.top }}
+      >
+        {/* Title row — back + title on left, controls on right */}
         <View className="flex-row items-center justify-between px-6 pb-2 pt-4">
           <View className="flex-row items-center gap-3">
             <TouchableOpacity onPress={() => router.back()}>
@@ -127,7 +131,11 @@ export default function StatisticsScreen() {
 
       <ScrollView
         className="bg-neutral dark:bg-neutral-T10 flex-1 px-6"
-        contentContainerStyle={{ paddingBottom: 40, gap: 16, paddingTop: 16 }}
+        contentContainerStyle={{
+          paddingBottom: Math.max(insets.bottom, 40),
+          gap: 16,
+          paddingTop: 16,
+        }}
         showsVerticalScrollIndicator={false}
       >
         {/* Bug 2 fix: replace broken shimmer with ActivityIndicator */}
@@ -163,6 +171,6 @@ export default function StatisticsScreen() {
         initialCompareFrom={compareFrom}
         initialCompareTo={compareTo}
       />
-    </SafeAreaView>
+    </View>
   );
 }

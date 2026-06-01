@@ -19,6 +19,7 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import { AppState, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { useAuthStore } from '@/stores/authStore';
 import { useLanguageStore } from '@/stores/languageStore';
@@ -219,20 +220,22 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaProvider>
-      <View className="bg-neutral dark:bg-neutral-T10 flex-1">
-        <OfflineBanner />
-        <Slot />
-        <BadgeUnlockToast
-          badge={toastBadge}
-          onDismiss={() => {
-            if (toastHideTimerRef.current)
-              clearTimeout(toastHideTimerRef.current);
-            setToastBadge(null);
-          }}
-        />
-      </View>
-      <MenuDrawer />
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <View className="bg-neutral dark:bg-neutral-T10 flex-1">
+          <OfflineBanner />
+          <Slot />
+          <BadgeUnlockToast
+            badge={toastBadge}
+            onDismiss={() => {
+              if (toastHideTimerRef.current)
+                clearTimeout(toastHideTimerRef.current);
+              setToastBadge(null);
+            }}
+          />
+        </View>
+        <MenuDrawer />
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
