@@ -222,6 +222,7 @@ export default function PostDetailScreen() {
         pathname: '/(chat)/chat-detail',
         params: {
           conversationId: conv._id,
+          otherUserId: other?._id ?? owner._id,
           name: other?.fullName ?? owner.fullName,
           avatarUri: other?.avatar ?? owner.avatar ?? '',
         },

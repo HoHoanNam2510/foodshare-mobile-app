@@ -6,6 +6,7 @@ import i18n, {
   setStoredLanguage,
   SupportedLanguage,
 } from '@/lib/i18n';
+import { updateProfileApi } from '@/lib/profileApi';
 
 interface LanguageState {
   language: SupportedLanguage;
@@ -30,6 +31,8 @@ export const useLanguageStore = create<LanguageState>((set, get) => ({
     await i18n.changeLanguage(lang);
     await setStoredLanguage(lang);
     set({ language: lang });
+    // Sync to server for push notification i18n — silent, no user-facing error
+    updateProfileApi({ language: lang }).catch(() => {});
   },
 
   toggleLanguage: async () => {

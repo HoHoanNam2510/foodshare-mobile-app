@@ -65,8 +65,8 @@ export default function PublicProfileScreen() {
         params: {
           conversationId: conv._id,
           otherUserId: other?._id ?? user._id,
-          otherUserName: other?.fullName ?? user.fullName,
-          otherUserAvatar: other?.avatar ?? user.avatar ?? '',
+          name: other?.fullName ?? user.fullName,
+          avatarUri: other?.avatar ?? user.avatar ?? '',
         },
       } as never);
     } catch {

@@ -10,17 +10,37 @@ interface ChatHeaderProps {
   name: string;
   avatarUri: string;
   isOnline?: boolean;
+  lastSeen?: string;
+}
+
+function relativeTime(
+  iso: string,
+  t: (key: string, opts?: Record<string, unknown>) => string
+): string {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const mins = Math.max(1, Math.floor(diffMs / 60000));
+  if (mins < 60) return t('common.minutesAgo', { count: mins });
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return t('common.hoursAgo', { count: hours });
+  return t('common.daysAgo', { count: Math.floor(hours / 24) });
 }
 
 export default function ChatHeader({
   name,
   avatarUri,
   isOnline = true,
+  lastSeen,
 }: ChatHeaderProps) {
   const router = useRouter();
   const { t } = useTranslation();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+
+  const statusText = isOnline
+    ? t('chat.online')
+    : lastSeen
+    ? t('chat.lastSeen', { time: relativeTime(lastSeen, t) })
+    : t('chat.offline');
 
   return (
     <SafeAreaView
@@ -63,7 +83,7 @@ export default function ChatHeader({
             {name}
           </Text>
           <Text className="font-label text-primary-T40 dark:text-primary-T60 text-xs">
-            {isOnline ? t('chat.online') : t('chat.offline')}
+            {statusText}
           </Text>
         </View>
 

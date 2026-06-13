@@ -30,6 +30,7 @@ interface UpdateProfilePayload {
   };
   paymentInfo?: PaymentInfoPayload;
   kycDocuments?: string[];
+  language?: 'vi' | 'en';
 }
 
 function extractErrorMessage(error: unknown, fallback: string): never {

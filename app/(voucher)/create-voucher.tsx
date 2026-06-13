@@ -9,10 +9,9 @@ import {
   ActivityIndicator,
   Platform,
   KeyboardAvoidingView,
-  Keyboard,
   Image,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import DateTimePickerModal from '@/components/shared/DateTimePickerModal';
 import { useRouter } from 'expo-router';
 import StackHeader from '@/components/shared/headers/StackHeader';
@@ -20,30 +19,15 @@ import { useAuthStore } from '@/stores/authStore';
 import { storeCreateVoucherApi, CreateVoucherBody } from '@/lib/voucherApi';
 import { getMyStorePostsApi, IPostDetail } from '@/lib/postApi';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 const CreateVoucherScreen = () => {
   const router = useRouter();
   const { user } = useAuthStore();
   const { t } = useTranslation();
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      (e) => {
-        setKeyboardHeight(e.endCoordinates.height);
-      }
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
-      () => {
-        setKeyboardHeight(0);
-      }
-    );
-
-    return () => {
-      keyboardDidHideListener?.remove();
-      keyboardDidShowListener?.remove();
-    };
-  }, []);
+  const insets = useSafeAreaInsets();
+  const colors = useThemeColors();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -59,8 +43,6 @@ const CreateVoucherScreen = () => {
   );
   const [activeValidUntilPicker, setActiveValidUntilPicker] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
-  const scrollViewRef = useRef(null);
 
   const [applicableType, setApplicableType] = useState<'ALL' | 'SPECIFIC'>(
     'ALL'
@@ -111,7 +93,6 @@ const CreateVoucherScreen = () => {
       Alert.alert(t('voucher.errorAlert'), t('voucher.storeOnlyError'));
       return;
     }
-
     if (!title.trim()) {
       Alert.alert(t('voucher.errorAlert'), t('voucher.titleRequired'));
       return;
@@ -185,240 +166,253 @@ const CreateVoucherScreen = () => {
   ]);
 
   return (
-    <KeyboardAvoidingView
-      className="flex-1"
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <View className="bg-neutral dark:bg-neutral-T10 flex-1">
-        <StackHeader title={t('voucher.createVoucherTitle')} />
+    <View className="bg-neutral dark:bg-neutral-T10 flex-1">
+      <StackHeader title={t('voucher.createVoucherTitle')} />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        className="flex-1"
+      >
         <ScrollView
-          ref={scrollViewRef}
           className="flex-1"
           contentContainerStyle={{
-            paddingBottom: Math.max(100, keyboardHeight + 20),
             paddingHorizontal: 24,
             paddingTop: 24,
+            paddingBottom: Math.max(insets.bottom, 16) + 88,
           }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* Title */}
-          <View className="mb-4">
-            <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
-              {t('voucher.titleLabel')} <Text className="text-error">*</Text>
-            </Text>
-            <TextInput
-              className="dark:border-neutral-T30 dark:bg-neutral-T30 dark:text-neutral-T90 rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
-              placeholder={t('voucher.titlePlaceholder')}
-              value={title}
-              onChangeText={setTitle}
-            />
+          {/* ── Basic Info ── */}
+          <View className="mb-8 gap-6">
+            <View className="gap-2">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
+                {t('voucher.titleLabel')} <Text className="text-error">*</Text>
+              </Text>
+              <TextInput
+                className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 font-body text-neutral-T10 dark:text-neutral-T90 h-14 w-full rounded-xl border px-4 text-base"
+                placeholder={t('voucher.titlePlaceholder')}
+                placeholderTextColor={colors.placeholder}
+                value={title}
+                onChangeText={setTitle}
+              />
+            </View>
+
+            <View className="gap-2">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
+                {t('voucher.descriptionLabel')}
+              </Text>
+              <TextInput
+                className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 font-body text-neutral-T10 dark:text-neutral-T90 w-full rounded-xl border p-4 text-base"
+                placeholder={t('voucher.descriptionPlaceholder')}
+                placeholderTextColor={colors.placeholder}
+                multiline
+                numberOfLines={4}
+                textAlignVertical="top"
+                style={{ minHeight: 108 }}
+                value={description}
+                onChangeText={setDescription}
+              />
+            </View>
           </View>
 
-          {/* Description */}
-          <View className="mb-4">
-            <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
-              {t('voucher.descriptionLabel')}
-            </Text>
-            <TextInput
-              className="dark:border-neutral-T30 dark:bg-neutral-T30 dark:text-neutral-T90 h-24 rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
-              placeholder={t('voucher.descriptionPlaceholder')}
-              multiline
-              numberOfLines={4}
-              value={description}
-              onChangeText={setDescription}
-            />
-          </View>
-
-          {/* Discount Type */}
-          <View className="mb-4">
-            <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
-              {t('voucher.discountTypeLabel')}{' '}
-              <Text className="text-error">*</Text>
-            </Text>
-            <View className="flex-row gap-3">
-              <TouchableOpacity
-                className={`flex-1 items-center rounded-lg border py-3 ${
-                  discountType === 'PERCENTAGE'
-                    ? 'bg-primary border-primary'
-                    : 'dark:border-neutral-T30 dark:bg-neutral-T30 border-gray-300 bg-white'
-                }`}
-                onPress={() => setDiscountType('PERCENTAGE')}
-              >
-                <Text
-                  className={
+          {/* ── Discount Config ── */}
+          <View className="mb-8 gap-6">
+            <View className="gap-2">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
+                {t('voucher.discountTypeLabel')}{' '}
+                <Text className="text-error">*</Text>
+              </Text>
+              <View className="flex-row gap-3">
+                <TouchableOpacity
+                  className={`flex-1 items-center rounded-xl border py-3 active:opacity-80 ${
                     discountType === 'PERCENTAGE'
-                      ? 'font-semibold text-white'
-                      : 'text-foreground dark:text-neutral-T80'
-                  }
+                      ? 'bg-primary-T40 border-primary-T40'
+                      : 'bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30'
+                  }`}
+                  onPress={() => setDiscountType('PERCENTAGE')}
                 >
-                  {t('voucher.percentageLabel')}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                className={`flex-1 items-center rounded-lg border py-3 ${
-                  discountType === 'FIXED_AMOUNT'
-                    ? 'bg-primary border-primary'
-                    : 'dark:border-neutral-T30 dark:bg-neutral-T30 border-gray-300 bg-white'
-                }`}
-                onPress={() => setDiscountType('FIXED_AMOUNT')}
-              >
-                <Text
-                  className={
+                  <Text
+                    className={`font-label text-sm font-semibold ${
+                      discountType === 'PERCENTAGE'
+                        ? 'text-neutral-T100'
+                        : 'text-neutral-T50 dark:text-neutral-T60'
+                    }`}
+                  >
+                    {t('voucher.percentageLabel')}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className={`flex-1 items-center rounded-xl border py-3 active:opacity-80 ${
                     discountType === 'FIXED_AMOUNT'
-                      ? 'font-semibold text-white'
-                      : 'text-foreground'
-                  }
+                      ? 'bg-primary-T40 border-primary-T40'
+                      : 'bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30'
+                  }`}
+                  onPress={() => setDiscountType('FIXED_AMOUNT')}
                 >
-                  {t('voucher.fixedAmountLabel')}
+                  <Text
+                    className={`font-label text-sm font-semibold ${
+                      discountType === 'FIXED_AMOUNT'
+                        ? 'text-neutral-T100'
+                        : 'text-neutral-T50 dark:text-neutral-T60'
+                    }`}
+                  >
+                    {t('voucher.fixedAmountLabel')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View className="gap-2">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
+                {t('voucher.discountValueLabel')}{' '}
+                {discountType === 'PERCENTAGE'
+                  ? t('voucher.percentageSuffix')
+                  : t('voucher.fixedAmountSuffix')}{' '}
+                <Text className="text-error">*</Text>
+              </Text>
+              <TextInput
+                className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 font-body text-neutral-T10 dark:text-neutral-T90 h-14 w-full rounded-xl border px-4 text-base"
+                placeholder={
+                  discountType === 'PERCENTAGE'
+                    ? t('voucher.percentagePlaceholder')
+                    : t('voucher.fixedAmountPlaceholder')
+                }
+                placeholderTextColor={colors.placeholder}
+                keyboardType="numeric"
+                value={discountValue}
+                onChangeText={setDiscountValue}
+              />
+            </View>
+
+            <View className="flex-row gap-4">
+              <View className="flex-1 gap-2">
+                <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
+                  {t('voucher.pointCostLabel')}{' '}
+                  <Text className="text-error">*</Text>
                 </Text>
-              </TouchableOpacity>
+                <TextInput
+                  className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 font-body text-neutral-T10 dark:text-neutral-T90 h-14 w-full rounded-xl border px-4 text-base"
+                  placeholder={t('voucher.pointCostPlaceholder')}
+                  placeholderTextColor={colors.placeholder}
+                  keyboardType="numeric"
+                  value={pointCost}
+                  onChangeText={setPointCost}
+                />
+              </View>
+              <View className="flex-1 gap-2">
+                <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
+                  {t('voucher.quantityLabel')}{' '}
+                  <Text className="text-error">*</Text>
+                </Text>
+                <TextInput
+                  className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 font-body text-neutral-T10 dark:text-neutral-T90 h-14 w-full rounded-xl border px-4 text-base"
+                  placeholder={t('voucher.quantityPlaceholder')}
+                  placeholderTextColor={colors.placeholder}
+                  keyboardType="numeric"
+                  value={totalQuantity}
+                  onChangeText={setTotalQuantity}
+                />
+              </View>
             </View>
           </View>
 
-          {/* Discount Value */}
-          <View className="mb-4">
-            <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
-              {t('voucher.discountValueLabel')}{' '}
-              {discountType === 'PERCENTAGE'
-                ? t('voucher.percentageSuffix')
-                : t('voucher.fixedAmountSuffix')}{' '}
-              <Text className="text-error">*</Text>
-            </Text>
-            <TextInput
-              className="dark:border-neutral-T30 dark:bg-neutral-T30 dark:text-neutral-T90 rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
-              placeholder={
-                discountType === 'PERCENTAGE'
-                  ? t('voucher.percentagePlaceholder')
-                  : t('voucher.fixedAmountPlaceholder')
-              }
-              keyboardType="numeric"
-              value={discountValue}
-              onChangeText={setDiscountValue}
-            />
-          </View>
-
-          {/* Point Cost & Quantity */}
-          <View className="mb-4 flex-row gap-4">
-            <View className="flex-1">
-              <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
-                {t('voucher.pointCostLabel')}{' '}
+          {/* ── Validity & Code ── */}
+          <View className="mb-8 gap-6">
+            <View className="gap-2">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
+                {t('voucher.validUntilLabel')}{' '}
                 <Text className="text-error">*</Text>
               </Text>
-              <TextInput
-                className="dark:border-neutral-T30 dark:bg-neutral-T30 dark:text-neutral-T90 rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
-                placeholder={t('voucher.pointCostPlaceholder')}
-                keyboardType="numeric"
-                value={pointCost}
-                onChangeText={setPointCost}
-              />
-            </View>
-            <View className="flex-1">
-              <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
-                {t('voucher.quantityLabel')}{' '}
-                <Text className="text-error">*</Text>
-              </Text>
-              <TextInput
-                className="dark:border-neutral-T30 dark:bg-neutral-T30 dark:text-neutral-T90 rounded-lg border border-gray-300 bg-white px-4 py-3 text-base"
-                placeholder={t('voucher.quantityPlaceholder')}
-                keyboardType="numeric"
-                value={totalQuantity}
-                onChangeText={setTotalQuantity}
-              />
-            </View>
-          </View>
-
-          {/* Valid Until */}
-          <View className="mb-4">
-            <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
-              {t('voucher.validUntilLabel')}{' '}
-              <Text className="text-error">*</Text>
-            </Text>
-            <TouchableOpacity
-              className="dark:border-neutral-T30 dark:bg-neutral-T30 rounded-lg border border-gray-300 bg-white px-4 py-3"
-              onPress={() => setActiveValidUntilPicker(true)}
-            >
-              <View className="flex-row items-center justify-between">
-                <Text className="text-foreground dark:text-neutral-T90 text-base">
+              <TouchableOpacity
+                className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 h-14 flex-row items-center justify-between rounded-xl border px-4 active:opacity-80"
+                onPress={() => setActiveValidUntilPicker(true)}
+              >
+                <Text className="font-body text-neutral-T10 dark:text-neutral-T90 text-base">
                   {validUntil.toLocaleDateString('vi-VN')}
                 </Text>
-                <Ionicons name="calendar-outline" size={20} color="#6b7280" />
-              </View>
-            </TouchableOpacity>
+                <MaterialIcons
+                  name="event"
+                  size={20}
+                  color={colors.textMuted}
+                />
+              </TouchableOpacity>
+            </View>
+
+            <View className="gap-2">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
+                {t('voucher.codeLabel')} <Text className="text-error">*</Text>
+              </Text>
+              <TextInput
+                className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 font-body text-neutral-T10 dark:text-neutral-T90 h-14 w-full rounded-xl border px-4 text-base uppercase"
+                placeholder={t('voucher.codePlaceholder')}
+                placeholderTextColor={colors.placeholder}
+                value={code}
+                autoCapitalize="characters"
+                onChangeText={(value) => setCode(value.toUpperCase())}
+              />
+            </View>
           </View>
 
-          {/* Code */}
-          <View className="mb-4">
-            <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
-              {t('voucher.codeLabel')} <Text className="text-error">*</Text>
-            </Text>
-            <TextInput
-              className="dark:border-neutral-T30 dark:bg-neutral-T30 dark:text-neutral-T90 rounded-lg border border-gray-300 bg-white px-4 py-3 text-base uppercase"
-              placeholder={t('voucher.codePlaceholder')}
-              value={code}
-              autoCapitalize="characters"
-              onChangeText={(value) => setCode(value.toUpperCase())}
-            />
-          </View>
-
-          {/* Applicable Scope */}
-          <View className="mb-8">
-            <Text className="text-foreground dark:text-neutral-T80 mb-2 text-sm font-medium">
+          {/* ── Applicable Scope ── */}
+          <View className="mb-8 gap-3">
+            <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
               {t('voucher.applicableScopeLabel')}
             </Text>
             <View className="flex-row gap-3">
               <TouchableOpacity
-                className={`flex-1 items-center rounded-lg border py-3 ${
+                className={`flex-1 items-center rounded-xl border py-3 active:opacity-80 ${
                   applicableType === 'ALL'
-                    ? 'bg-primary border-primary'
-                    : 'dark:border-neutral-T30 dark:bg-neutral-T30 border-gray-300 bg-white'
+                    ? 'bg-primary-T40 border-primary-T40'
+                    : 'bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30'
                 }`}
                 onPress={() => setApplicableType('ALL')}
               >
                 <Text
-                  className={
+                  className={`font-label text-sm font-semibold ${
                     applicableType === 'ALL'
-                      ? 'font-semibold text-white'
-                      : 'text-foreground dark:text-neutral-T80'
-                  }
+                      ? 'text-neutral-T100'
+                      : 'text-neutral-T50 dark:text-neutral-T60'
+                  }`}
                 >
                   {t('voucher.applicableScopeAll')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                className={`flex-1 items-center rounded-lg border py-3 ${
+                className={`flex-1 items-center rounded-xl border py-3 active:opacity-80 ${
                   applicableType === 'SPECIFIC'
-                    ? 'bg-primary border-primary'
-                    : 'dark:border-neutral-T30 dark:bg-neutral-T30 border-gray-300 bg-white'
+                    ? 'bg-primary-T40 border-primary-T40'
+                    : 'bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30'
                 }`}
                 onPress={() => setApplicableType('SPECIFIC')}
               >
                 <Text
-                  className={
+                  className={`font-label text-sm font-semibold ${
                     applicableType === 'SPECIFIC'
-                      ? 'font-semibold text-white'
-                      : 'text-foreground'
-                  }
+                      ? 'text-neutral-T100'
+                      : 'text-neutral-T50 dark:text-neutral-T60'
+                  }`}
                 >
                   {t('voucher.applicableScopeSpecific')}
                 </Text>
               </TouchableOpacity>
             </View>
 
-            {/* Post multi-select (SPECIFIC mode only) */}
             {applicableType === 'SPECIFIC' && (
-              <View className="mt-3">
+              <View className="mt-1 gap-2">
                 {selectedPostIds.length > 0 && (
-                  <Text className="text-primary mb-2 text-xs font-medium">
+                  <Text className="font-label text-primary-T40 dark:text-primary-T60 ml-1 text-xs font-semibold">
                     {t('voucher.applicableSelectedCount', {
                       count: selectedPostIds.length,
                     })}
                   </Text>
                 )}
                 {loadingPosts ? (
-                  <ActivityIndicator className="mt-2" />
+                  <ActivityIndicator
+                    className="mt-2"
+                    color={colors.primaryGreen}
+                  />
                 ) : availablePosts.length === 0 ? (
-                  <Text className="text-neutral-T50 mt-2 text-sm">
+                  <Text className="font-body text-neutral-T50 dark:text-neutral-T60 mt-2 text-sm">
                     {t('voucher.applicableNoPostsFound')}
                   </Text>
                 ) : (
@@ -427,10 +421,10 @@ const CreateVoucherScreen = () => {
                     return (
                       <TouchableOpacity
                         key={post._id}
-                        className={`mb-2 flex-row items-center rounded-xl border p-3 ${
+                        className={`flex-row items-center rounded-xl border p-3 active:opacity-80 ${
                           selected
                             ? 'border-primary-T40 bg-primary-T95 dark:bg-primary-T20'
-                            : 'dark:border-neutral-T30 dark:bg-neutral-T30 border-gray-200 bg-white'
+                            : 'bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30'
                         }`}
                         onPress={() => togglePostSelection(post._id)}
                         activeOpacity={0.7}
@@ -449,7 +443,7 @@ const CreateVoucherScreen = () => {
                         ) : null}
                         <View className="flex-1">
                           <Text
-                            className="text-neutral-T10 text-sm font-medium"
+                            className="font-label text-neutral-T10 dark:text-neutral-T90 text-sm font-medium"
                             numberOfLines={1}
                           >
                             {post.title}
@@ -466,13 +460,13 @@ const CreateVoucherScreen = () => {
                                 B2C
                               </Text>
                             </View>
-                            <Text className="text-neutral-T50 text-[11px]">
+                            <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-[11px]">
                               {t('post.remainingCount', {
                                 remaining: post.remainingQuantity,
                                 total: post.totalQuantity,
                               })}
                             </Text>
-                            <Text className="text-neutral-T50 text-[11px]">
+                            <Text className="font-label text-neutral-T50 dark:text-neutral-T60 text-[11px]">
                               {t('post.expiryPrefix')}{' '}
                               {new Date(post.expiryDate).toLocaleDateString(
                                 'vi-VN'
@@ -480,12 +474,14 @@ const CreateVoucherScreen = () => {
                             </Text>
                           </View>
                         </View>
-                        <Ionicons
+                        <MaterialIcons
                           name={
-                            selected ? 'checkmark-circle' : 'ellipse-outline'
+                            selected ? 'check-circle' : 'radio-button-unchecked'
                           }
                           size={22}
-                          color={selected ? '#296C24' : '#9CA3AF'}
+                          color={
+                            selected ? colors.primaryGreen : colors.textMuted
+                          }
                         />
                       </TouchableOpacity>
                     );
@@ -495,39 +491,46 @@ const CreateVoucherScreen = () => {
             )}
           </View>
         </ScrollView>
+      </KeyboardAvoidingView>
 
-        {/* Fixed Bottom Submit Button */}
-        <View className="px-6 pb-6">
-          <TouchableOpacity
-            className="bg-primary items-center rounded-xl py-4"
-            onPress={handleCreate}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Text className="text-lg font-bold text-white">
+      {/* ── Fixed Footer ── */}
+      <View
+        className="bg-neutral-T100 dark:bg-neutral-T20 border-neutral-T90 dark:border-neutral-T30 absolute bottom-0 left-0 right-0 border-t"
+        style={{
+          paddingBottom: Math.max(insets.bottom, 16),
+          paddingTop: 16,
+          paddingHorizontal: 24,
+        }}
+      >
+        <TouchableOpacity
+          className="bg-primary-T40 h-14 flex-row items-center justify-center gap-2 rounded-xl shadow-sm active:opacity-80"
+          onPress={handleCreate}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <>
+              <MaterialIcons name="check-circle" size={18} color="#FFFFFF" />
+              <Text className="font-label text-neutral-T100 text-sm font-medium">
                 {t('voucher.createVoucherBtn')}
               </Text>
-            )}
-          </TouchableOpacity>
-        </View>
-
-        {/* DateTimePicker Modal */}
-        <DateTimePickerModal
-          visible={activeValidUntilPicker}
-          value={validUntil}
-          mode="date"
-          minimumDate={new Date()}
-          onChange={(_, date) => {
-            if (date) {
-              setValidUntil(date);
-            }
-          }}
-          onClose={() => setActiveValidUntilPicker(false)}
-        />
+            </>
+          )}
+        </TouchableOpacity>
       </View>
-    </KeyboardAvoidingView>
+
+      <DateTimePickerModal
+        visible={activeValidUntilPicker}
+        value={validUntil}
+        mode="date"
+        minimumDate={new Date()}
+        onChange={(_, date) => {
+          if (date) setValidUntil(date);
+        }}
+        onClose={() => setActiveValidUntilPicker(false)}
+      />
+    </View>
   );
 };
 

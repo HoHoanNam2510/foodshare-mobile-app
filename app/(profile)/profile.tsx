@@ -330,8 +330,12 @@ export default function ProfileScreen() {
 
       <MainHeader />
 
-      <TouchableOpacity className="px-6 pt-3" onPress={() => router.back()}>
-        <Text className="font-bold text-slate-500 underline">
+      <TouchableOpacity
+        className="mx-6 mt-3 flex-row items-center gap-1 self-start active:opacity-70"
+        onPress={() => router.back()}
+      >
+        <MaterialIcons name="arrow-back-ios" size={16} color="#5CA051" />
+        <Text className="font-label text-primary-T40 dark:text-primary-T60 text-sm font-semibold">
           {t('common.back')}
         </Text>
       </TouchableOpacity>

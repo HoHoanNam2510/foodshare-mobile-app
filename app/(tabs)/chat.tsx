@@ -236,6 +236,7 @@ export default function ChatListScreen() {
                       pathname: '/(chat)/chat-detail' as any,
                       params: {
                         conversationId: conv._id,
+                        otherUserId: other?._id ?? '',
                         name: other?.fullName ?? t('chat.unknownUser'),
                         avatarUri: other?.avatar ?? '',
                       },

@@ -718,6 +718,7 @@ export default function TransactionDetailScreen() {
         pathname: '/(chat)/chat-detail',
         params: {
           conversationId: conv._id,
+          otherUserId: other?._id ?? otherId,
           name: other?.fullName ?? 'Người dùng',
           avatarUri: other?.avatar ?? '',
         },
