@@ -26,6 +26,7 @@ import { useLanguageStore } from '@/stores/languageStore';
 import { useNotificationStore } from '@/stores/notificationStore';
 import { useThemeStore } from '@/stores/themeStore';
 import MenuDrawer from '@/components/shared/MenuDrawer';
+import { ErrorBoundary } from '@/components/shared/ErrorBoundary';
 import BadgeUnlockToast from '@/components/shared/BadgeUnlockToast';
 import OfflineBanner from '@/components/shared/OfflineBanner';
 import { getBadgeCatalogApi, type IBadge } from '@/lib/badgeApi';
@@ -220,22 +221,24 @@ export default function RootLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <View className="bg-neutral dark:bg-neutral-T10 flex-1">
-          <OfflineBanner />
-          <Slot />
-          <BadgeUnlockToast
-            badge={toastBadge}
-            onDismiss={() => {
-              if (toastHideTimerRef.current)
-                clearTimeout(toastHideTimerRef.current);
-              setToastBadge(null);
-            }}
-          />
-        </View>
-        <MenuDrawer />
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+    <ErrorBoundary>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaProvider>
+          <View className="bg-neutral dark:bg-neutral-T10 flex-1">
+            <OfflineBanner />
+            <Slot />
+            <BadgeUnlockToast
+              badge={toastBadge}
+              onDismiss={() => {
+                if (toastHideTimerRef.current)
+                  clearTimeout(toastHideTimerRef.current);
+                setToastBadge(null);
+              }}
+            />
+          </View>
+          <MenuDrawer />
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    </ErrorBoundary>
   );
 }

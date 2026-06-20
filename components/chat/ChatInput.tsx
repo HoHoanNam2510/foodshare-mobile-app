@@ -139,8 +139,7 @@ export default function ChatInput({
     // Kiểm tra tọa độ mặc định (chưa thiết lập) hoặc nằm ngoài lãnh thổ Việt Nam
     const [lng, lat] = storeCoords;
     const isDefault =
-      Math.abs(lng - 106.660172) < 0.0001 &&
-      Math.abs(lat - 10.762622) < 0.0001;
+      Math.abs(lng - 106.660172) < 0.0001 && Math.abs(lat - 10.762622) < 0.0001;
     const outsideVietnam =
       lat < 8.0 || lat > 24.0 || lng < 102.0 || lng > 110.0;
     if (isDefault || outsideVietnam) {

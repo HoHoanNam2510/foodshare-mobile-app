@@ -4,6 +4,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
 type EmptyVariant = 'no-data' | 'empty-range' | 'error';
+type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
 interface EmptyStateProps {
   variant: EmptyVariant;
@@ -14,7 +15,7 @@ interface EmptyStateProps {
 
 const variantConfig: Record<
   EmptyVariant,
-  { icon: string; defaultTitle: string; defaultDescription: string }
+  { icon: IconName; defaultTitle: string; defaultDescription: string }
 > = {
   'no-data': {
     icon: 'assessment',
@@ -44,7 +45,7 @@ export default function EmptyState({
   return (
     <View className="flex-1 items-center justify-center p-8">
       <MaterialIcons
-        name={config.icon as any}
+        name={config.icon}
         size={48}
         color={colorScheme === 'dark' ? '#8F9190' : '#C5C7C6'}
       />

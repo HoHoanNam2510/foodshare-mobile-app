@@ -200,7 +200,7 @@ export default function ChatDetailScreen() {
       const res = await sendMessageApi(conversationId, { text });
       await emitMessage(res.data.data);
     } catch {
-      // silent
+      Alert.alert('Lỗi', 'Không thể gửi tin nhắn. Kiểm tra kết nối mạng.');
     } finally {
       setSending(false);
     }
@@ -215,7 +215,7 @@ export default function ChatDetailScreen() {
       const res = await sendMessageApi(conversationId, { location });
       await emitMessage(res.data.data);
     } catch {
-      // silent
+      Alert.alert('Lỗi', 'Không thể gửi vị trí. Kiểm tra kết nối mạng.');
     }
   };
 

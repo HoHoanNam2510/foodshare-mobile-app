@@ -12,7 +12,11 @@ export default function GreenPointsCard({ points }: GreenPointsCardProps) {
 
   return (
     <TouchableOpacity
-      onPress={() => router.push('/(voucher)/point-history' as any)}
+      onPress={() =>
+        router.push(
+          '/(voucher)/point-history' as Parameters<typeof router.push>[0]
+        )
+      }
       activeOpacity={0.8}
       className="dark:bg-neutral-T20 dark:border-neutral-T30 mb-4 flex-row items-center rounded-2xl bg-white p-4 shadow-sm dark:border dark:shadow-none"
     >

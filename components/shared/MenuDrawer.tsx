@@ -131,7 +131,10 @@ export default function MenuDrawer() {
   const navigate = (href: string) => {
     handleClose();
     // Small delay so the close animation starts before navigating
-    setTimeout(() => router.push(href as any), 80);
+    setTimeout(
+      () => router.push(href as Parameters<typeof router.push>[0]),
+      80
+    );
   };
 
   const handleLogout = async () => {

@@ -52,7 +52,11 @@ export default function StatisticsCard() {
       {/* Detail button */}
       <TouchableOpacity
         className="border-primary-T40 rounded-xl border py-3"
-        onPress={() => router.push('/(statistics)/statistics' as any)}
+        onPress={() =>
+          router.push(
+            '/(statistics)/statistics' as Parameters<typeof router.push>[0]
+          )
+        }
         activeOpacity={0.7}
       >
         <Text className="text-primary-T40 font-label text-center font-semibold">

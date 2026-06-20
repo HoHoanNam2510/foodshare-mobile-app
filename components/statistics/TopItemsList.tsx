@@ -15,11 +15,13 @@ export default function TopItemsList({
   const router = useRouter();
 
   const handlePostPress = (postId: string) => {
-    router.push(`/(post)/${postId}` as any);
+    router.push(`/(post)/${postId}` as Parameters<typeof router.push>[0]);
   };
 
   const handleUserPress = (userId: string) => {
-    router.push(`/(profile)/user/${userId}` as any);
+    router.push(
+      `/(profile)/user/${userId}` as Parameters<typeof router.push>[0]
+    );
   };
 
   return (

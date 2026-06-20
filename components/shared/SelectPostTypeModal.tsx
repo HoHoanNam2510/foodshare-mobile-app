@@ -44,9 +44,9 @@ export default function SelectPostTypeModal({
     onClose();
     setTimeout(() => {
       router.push({
-        pathname: '/(post)/create-post' as any,
+        pathname: '/(post)/create-post',
         params: { type: postType },
-      });
+      } as Parameters<typeof router.push>[0]);
     }, 150);
   };
 
@@ -58,7 +58,9 @@ export default function SelectPostTypeModal({
   const handleGoRegisterStore = () => {
     handleClose();
     setTimeout(() => {
-      router.push('/(profile)/register-store' as any);
+      router.push(
+        '/(profile)/register-store' as Parameters<typeof router.push>[0]
+      );
     }, 150);
   };
 

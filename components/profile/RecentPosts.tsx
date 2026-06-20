@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
+import { optimizeCloudinaryUrl } from '@/lib/cloudinary';
 
 type PostStatus =
   | 'PENDING_REVIEW'
@@ -83,14 +84,20 @@ export default function RecentPosts({ posts }: RecentPostsProps) {
               key={post.id}
               activeOpacity={0.9}
               onPress={() =>
-                router.push(`/(post)/post-detail?id=${post.id}` as any)
+                router.push(
+                  `/(post)/post-detail?id=${post.id}` as Parameters<
+                    typeof router.push
+                  >[0]
+                )
               }
               className="bg-neutral-T100 dark:bg-neutral-T20 dark:border-neutral-T30 w-[48%] overflow-hidden rounded-2xl shadow-sm active:scale-[0.98] dark:border dark:shadow-none"
             >
               <View className="relative h-32">
                 <Image
                   source={{
-                    uri: post.image || 'https://via.placeholder.com/150',
+                    uri:
+                      optimizeCloudinaryUrl(post.image, 400) ||
+                      'https://via.placeholder.com/150',
                   }}
                   className="h-full w-full"
                   resizeMode="cover"

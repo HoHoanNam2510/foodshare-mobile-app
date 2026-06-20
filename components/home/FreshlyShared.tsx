@@ -10,6 +10,7 @@ import {
   type HomePostsParams,
 } from '@/lib/homeApi';
 import { useAuthStore } from '@/stores/authStore';
+import { optimizeCloudinaryUrl } from '@/lib/cloudinary';
 
 const INITIAL_LIMIT = 4;
 
@@ -54,7 +55,7 @@ function P2PCard({ post, onPress }: { post: HomePost; onPress: () => void }) {
     >
       <View className="relative">
         <Image
-          source={{ uri: post.images[0] }}
+          source={{ uri: optimizeCloudinaryUrl(post.images[0], 400) }}
           className="w-full rounded-t-2xl"
           style={{ height: 140 }}
           resizeMode="cover"
@@ -94,7 +95,7 @@ function P2PCard({ post, onPress }: { post: HomePost; onPress: () => void }) {
         <View className="mt-2 flex-row items-center gap-2">
           {owner.avatar ? (
             <Image
-              source={{ uri: owner.avatar }}
+              source={{ uri: optimizeCloudinaryUrl(owner.avatar, 80) }}
               className="h-5 w-5 rounded-full"
             />
           ) : (

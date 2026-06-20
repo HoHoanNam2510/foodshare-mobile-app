@@ -1,5 +1,6 @@
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
+import * as FileSystem from 'expo-file-system/legacy';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -14,6 +15,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ImageViewerModal from '@/components/chat/ImageViewerModal';
 import { useThemeColors } from '@/lib/hooks/useThemeColors';
 import { useColorScheme } from 'nativewind';
 
@@ -56,6 +58,7 @@ export default function MessageBubble({
   const insets = useSafeAreaInsets();
 
   const [menuVisible, setMenuVisible] = React.useState(false);
+  const [viewerVisible, setViewerVisible] = React.useState(false);
 
   const handleOpenMap = () => {
     if (!message.location) return;
@@ -72,6 +75,29 @@ export default function MessageBubble({
 
   const handleCopy = async () => {
     setMenuVisible(false);
+    if (message.messageType === 'IMAGE' && message.imageUrl) {
+      try {
+        const target = `${FileSystem.cacheDirectory}chat-copy-${Date.now()}.jpg`;
+        const { uri } = await FileSystem.downloadAsync(
+          message.imageUrl,
+          target
+        );
+        const base64 = await FileSystem.readAsStringAsync(uri, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+        await Clipboard.setImageAsync(base64);
+        FileSystem.deleteAsync(uri, { idempotent: true }).catch(() => {});
+      } catch {
+        Alert.alert(t('common.error'), t('chat.copyImageFailed'));
+      }
+      return;
+    }
+    if (message.messageType === 'LOCATION' && message.location) {
+      await Clipboard.setStringAsync(
+        `${message.location.latitude.toFixed(5)}, ${message.location.longitude.toFixed(5)}`
+      );
+      return;
+    }
     if (message.text) {
       await Clipboard.setStringAsync(message.text);
     }
@@ -153,7 +179,12 @@ export default function MessageBubble({
 
     if (message.messageType === 'IMAGE' && message.imageUrl) {
       return (
-        <TouchableOpacity activeOpacity={0.9}>
+        <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={() => setViewerVisible(true)}
+          onLongPress={() => setMenuVisible(true)}
+          delayLongPress={500}
+        >
           <Image
             source={{ uri: message.imageUrl }}
             className={`${isMe ? 'rounded-3xl rounded-tr-sm' : 'rounded-3xl rounded-tl-sm'}`}
@@ -168,6 +199,8 @@ export default function MessageBubble({
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={handleOpenMap}
+          onLongPress={() => setMenuVisible(true)}
+          delayLongPress={500}
           className={`px-4 py-3.5 ${
             isMe
               ? 'bg-primary-T40 dark:bg-primary-T50 rounded-3xl rounded-tr-sm'
@@ -262,13 +295,11 @@ export default function MessageBubble({
         destructive: true,
       });
     }
-    if (message.messageType === 'TEXT') {
-      menuItems.push({
-        label: t('chat.copy'),
-        icon: 'copy',
-        action: handleCopy,
-      });
-    }
+    menuItems.push({
+      label: t('chat.copy'),
+      icon: 'copy',
+      action: handleCopy,
+    });
   }
   menuItems.push({
     label: t('chat.deleteForMe'),
@@ -375,6 +406,13 @@ export default function MessageBubble({
           </Pressable>
         </Pressable>
       </Modal>
+
+      {/* ── Full-screen image viewer (pinch-zoom + pan) ─────────────────────── */}
+      <ImageViewerModal
+        visible={viewerVisible}
+        imageUrl={message.imageUrl}
+        onClose={() => setViewerVisible(false)}
+      />
     </>
   );
 }

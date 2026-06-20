@@ -361,7 +361,11 @@ export default function PostList() {
           )}
         </View>
         <TouchableOpacity
-          onPress={() => router.push('/(post)/my-templates' as any)}
+          onPress={() =>
+            router.push(
+              '/(post)/my-templates' as Parameters<typeof router.push>[0]
+            )
+          }
           activeOpacity={0.8}
           className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 h-11 w-11 items-center justify-center rounded-full border active:opacity-70"
         >
@@ -486,9 +490,9 @@ export default function PostList() {
                   post={post}
                   onPress={() =>
                     router.push({
-                      pathname: '/(post)/post-detail' as any,
+                      pathname: '/(post)/post-detail',
                       params: { id: post._id },
-                    })
+                    } as Parameters<typeof router.push>[0])
                   }
                   onLongPress={() => handleDeletePost(post)}
                 />

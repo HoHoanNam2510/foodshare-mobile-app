@@ -15,7 +15,6 @@ import {
   View,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-
 import { useColorScheme } from 'nativewind';
 import StackHeader from '@/components/shared/headers/StackHeader';
 import {
@@ -25,11 +24,13 @@ import {
   type FeedbackType,
 } from '@/lib/feedbackApi';
 
+type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
+
 // ── Config ────────────────────────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<
   FeedbackStatus,
-  { bg: string; text: string; icon: string }
+  { bg: string; text: string; icon: IconName }
 > = {
   PENDING: {
     bg: '#FEF9C3',
@@ -50,7 +51,7 @@ const STATUS_CONFIG: Record<
 
 const TYPE_CONFIG: Record<
   FeedbackType,
-  { icon: string; bg: string; text: string }
+  { icon: IconName; bg: string; text: string }
 > = {
   BUG_REPORT: {
     icon: 'bug-report',
@@ -105,7 +106,7 @@ function StatusBadge({ status }: { status: FeedbackStatus }) {
       style={[styles.badge, { backgroundColor: cfg.bg }]}
       className="flex-row items-center gap-1"
     >
-      <MaterialIcons name={cfg.icon as any} size={11} color={cfg.text} />
+      <MaterialIcons name={cfg.icon} size={11} color={cfg.text} />
       <Text style={[styles.badgeText, { color: cfg.text }]}>
         {t(STATUS_I18N_KEY[status]).toUpperCase()}
       </Text>
@@ -135,11 +136,7 @@ function FeedbackCard({
           className="flex-row items-center gap-1.5 rounded-lg px-2.5 py-1"
           style={{ backgroundColor: typeCfg.bg }}
         >
-          <MaterialIcons
-            name={typeCfg.icon as any}
-            size={13}
-            color={typeCfg.text}
-          />
+          <MaterialIcons name={typeCfg.icon} size={13} color={typeCfg.text} />
           <Text
             className="font-label text-xs font-semibold"
             style={{ color: typeCfg.text }}
@@ -248,7 +245,7 @@ function DetailModal({
               style={{ backgroundColor: typeCfg.bg }}
             >
               <MaterialIcons
-                name={typeCfg.icon as any}
+                name={typeCfg.icon}
                 size={13}
                 color={typeCfg.text}
               />
@@ -424,7 +421,13 @@ export default function FeedbackHistoryScreen() {
         rightElement={
           <TouchableOpacity
             className="bg-primary-T40 h-9 w-9 items-center justify-center rounded-full active:opacity-80"
-            onPress={() => router.push('/(feedback)/feedback-create' as any)}
+            onPress={() =>
+              router.push(
+                '/(feedback)/feedback-create' as Parameters<
+                  typeof router.push
+                >[0]
+              )
+            }
           >
             <MaterialIcons name="add" size={20} color="#FFFFFF" />
           </TouchableOpacity>

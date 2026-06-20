@@ -439,6 +439,7 @@
     "recallMessage": "Recall",
     "deleteForMe": "Delete for me",
     "copy": "Copy",
+    "copyImageFailed": "Could not copy image",
     "sessionStarted": "New session",
     "lastSeen": "Last seen {{time}}"
   },

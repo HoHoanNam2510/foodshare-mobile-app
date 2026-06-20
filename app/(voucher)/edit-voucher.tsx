@@ -64,8 +64,7 @@ const EditVoucherScreen = () => {
           setDescription(found.description ?? '');
           setValidUntil(new Date(found.validUntil));
         }
-      } catch (error) {
-        console.error('Edit voucher fetch error:', error);
+      } catch {
         Alert.alert(t('voucher.errorAlert'), t('voucher.loadVoucherError'));
         router.back();
       } finally {
@@ -97,8 +96,7 @@ const EditVoucherScreen = () => {
       } else {
         Alert.alert(t('voucher.errorAlert'), t('voucher.updateVoucherFailed'));
       }
-    } catch (error) {
-      console.error('Edit voucher save error:', error);
+    } catch {
       Alert.alert(t('voucher.errorAlert'), t('voucher.updateVoucherError'));
     } finally {
       setLoading(false);

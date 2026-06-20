@@ -17,6 +17,7 @@ import {
   type HomePostsParams,
 } from '@/lib/homeApi';
 import { useAuthStore } from '@/stores/authStore';
+import { optimizeCloudinaryUrl } from '@/lib/cloudinary';
 
 const INITIAL_LIMIT = 4;
 
@@ -63,7 +64,7 @@ function MarketCard({
     >
       <View className="relative">
         <Image
-          source={{ uri: post.images[0] }}
+          source={{ uri: optimizeCloudinaryUrl(post.images[0], 400) }}
           style={{ width: 190, height: 150 }}
           className="rounded-t-2xl"
           resizeMode="cover"

@@ -4,8 +4,10 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { useThemeColors } from '@/lib/hooks/useThemeColors';
 import BaseHeader from './BaseHeader';
 
+type FeatherIconName = React.ComponentProps<typeof Feather>['name'];
+
 interface ActionItem {
-  icon: string;
+  icon: FeatherIconName;
   onPress: () => void;
 }
 
@@ -53,7 +55,7 @@ export default function ManagementHeader({
               onPress={action.onPress}
             >
               <Feather
-                name={action.icon as any}
+                name={action.icon}
                 size={20}
                 color={colors.textPrimary}
               />

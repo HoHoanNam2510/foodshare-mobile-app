@@ -439,6 +439,7 @@
     "recallMessage": "Thu hồi",
     "deleteForMe": "Xóa (chỉ ở phía tôi)",
     "copy": "Sao chép",
+    "copyImageFailed": "Không thể sao chép ảnh",
     "sessionStarted": "Phiên mới",
     "lastSeen": "Lần cuối {{time}}"
   },

@@ -143,8 +143,7 @@ const CreateVoucherScreen = () => {
       } else {
         Alert.alert(t('voucher.errorAlert'), t('voucher.createVoucherFailed'));
       }
-    } catch (error) {
-      console.error('Create voucher error:', error);
+    } catch {
       Alert.alert(t('voucher.errorAlert'), t('voucher.createVoucherError'));
     } finally {
       setLoading(false);

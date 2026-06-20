@@ -39,8 +39,8 @@ export default function ChatHeader({
   const statusText = isOnline
     ? t('chat.online')
     : lastSeen
-    ? t('chat.lastSeen', { time: relativeTime(lastSeen, t) })
-    : t('chat.offline');
+      ? t('chat.lastSeen', { time: relativeTime(lastSeen, t) })
+      : t('chat.offline');
 
   return (
     <SafeAreaView

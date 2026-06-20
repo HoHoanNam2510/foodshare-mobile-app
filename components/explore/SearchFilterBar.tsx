@@ -8,13 +8,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-
 import { TYPE_FILTER_OPTIONS } from './mockData';
 import { SortOption, TypeFilter } from './types';
 import { useTranslation } from 'react-i18next';
 import { useThemeColors } from '@/lib/hooks/useThemeColors';
 import { useColorScheme } from 'nativewind';
 import { CATEGORIES } from '@/components/post/CategoryPicker';
+
+type FeatherIconName = React.ComponentProps<typeof Feather>['name'];
 
 const RECENT_SEARCHES_KEY = 'recent_searches_explore';
 const MAX_RECENT = 5;
@@ -44,7 +45,7 @@ async function saveRecentSearch(term: string): Promise<void> {
 const SORT_OPTION_CONFIGS: {
   value: SortOption;
   labelKey: string;
-  icon: string;
+  icon: FeatherIconName;
 }[] = [
   { value: 'newest', labelKey: 'explore.sortNewest', icon: 'clock' },
   { value: 'closest', labelKey: 'explore.sortClosest', icon: 'navigation' },
@@ -370,7 +371,7 @@ export default function SearchFilterBar({
               >
                 <View className="flex-row items-center gap-2">
                   <Feather
-                    name={option.icon as any}
+                    name={option.icon}
                     size={15}
                     color={isSelected ? '#983F6A' : '#757777'}
                   />
