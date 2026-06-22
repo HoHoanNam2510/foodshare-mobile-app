@@ -714,6 +714,7 @@ export default function TransactionDetailScreen() {
       const res = await getOrCreateConversationApi(otherId);
       const conv = res.data.data;
       const other = conv.participants.find((p) => p._id !== currentUser._id);
+      const txPost = tx.postId as { title?: string; images?: string[] } | null;
       router.push({
         pathname: '/(chat)/chat-detail',
         params: {
@@ -721,6 +722,10 @@ export default function TransactionDetailScreen() {
           otherUserId: other?._id ?? otherId,
           name: other?.fullName ?? 'Người dùng',
           avatarUri: other?.avatar ?? '',
+          shareTransactionId: tx._id,
+          shareTitle: txPost?.title ?? t('transaction.orderFallback'),
+          shareImage: txPost?.images?.[0] ?? '',
+          shareSubtitle: tx.status,
         },
       } as any);
     } catch {

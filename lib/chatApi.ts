@@ -9,7 +9,7 @@ export interface Participant {
 export interface LastMessage {
   _id: string;
   content: string;
-  messageType: 'TEXT' | 'IMAGE' | 'LOCATION';
+  messageType: 'TEXT' | 'IMAGE' | 'LOCATION' | 'POST' | 'TRANSACTION';
   createdAt: string;
   senderId: string;
 }
@@ -24,14 +24,33 @@ export interface Conversation {
   updatedAt: string;
 }
 
+export interface RelatedPost {
+  _id: string;
+  title: string;
+  images?: string[];
+  price?: number;
+  type?: 'P2P_FREE' | 'B2C_MYSTERY_BAG';
+}
+
+export interface RelatedTransaction {
+  _id: string;
+  type: 'REQUEST' | 'ORDER';
+  status: string;
+  totalAmount?: number;
+  quantity?: number;
+  postId?: { _id: string; title: string; images?: string[] };
+}
+
 export interface ChatMessage {
   _id: string;
   conversationId: string;
   senderId: string;
-  messageType: 'TEXT' | 'IMAGE' | 'LOCATION';
+  messageType: 'TEXT' | 'IMAGE' | 'LOCATION' | 'POST' | 'TRANSACTION';
   content: string;
   imageUrl?: string;
   location?: { latitude: number; longitude: number };
+  relatedPost?: RelatedPost;
+  relatedTransaction?: RelatedTransaction;
   isRead: boolean;
   isEdited?: boolean;
   editedAt?: string;
@@ -68,6 +87,8 @@ export const sendMessageApi = (
     text?: string;
     imageUrl?: string;
     location?: { latitude: number; longitude: number };
+    relatedPostId?: string;
+    relatedTransactionId?: string;
   }
 ) =>
   api.post<{ success: boolean; data: ChatMessage }>('/chat/messages', {

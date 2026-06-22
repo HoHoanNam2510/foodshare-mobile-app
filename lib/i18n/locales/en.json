@@ -441,7 +441,12 @@
     "copy": "Copy",
     "copyImageFailed": "Could not copy image",
     "sessionStarted": "New session",
-    "lastSeen": "Last seen {{time}}"
+    "lastSeen": "Last seen {{time}}",
+    "sharedPost": "Post",
+    "sharedTransaction": "Transaction",
+    "pendingSharePost": "Attached post",
+    "pendingShareTransaction": "Attached transaction",
+    "postFree": "Free"
   },
   "profile": {
     "title": "Profile",

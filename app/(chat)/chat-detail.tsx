@@ -1,3 +1,4 @@
+import { Feather } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +8,7 @@ import {
   Platform,
   ScrollView,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,6 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ChatHeader from '@/components/chat/ChatHeader';
 import ChatInput from '@/components/chat/ChatInput';
 import MessageBubble, { Message } from '@/components/chat/MessageBubble';
+import SharedEntityCard from '@/components/chat/SharedEntityCard';
 import {
   ChatMessage,
   deleteMessageApi,
@@ -23,6 +26,7 @@ import {
   recallMessageApi,
   sendMessageApi,
 } from '@/lib/chatApi';
+import { useThemeColors } from '@/lib/hooks/useThemeColors';
 import { pickImage } from '@/lib/imagePicker';
 import {
   connectSocket,
@@ -38,7 +42,15 @@ import { useAuthStore } from '@/stores/authStore';
 
 // ─── HELPERS ────────────────────────────────────────────────────────────────
 
-const SESSION_GAP_MS = 24 * 60 * 60 * 1000;
+function isSameDay(a: string, b: string): boolean {
+  const da = new Date(a);
+  const db = new Date(b);
+  return (
+    da.getFullYear() === db.getFullYear() &&
+    da.getMonth() === db.getMonth() &&
+    da.getDate() === db.getDate()
+  );
+}
 
 function formatTime(iso: string): string {
   const date = new Date(iso);
@@ -69,9 +81,19 @@ function toDisplayMessage(msg: ChatMessage, currentUserId: string): Message {
     messageType: msg.messageType,
     imageUrl: msg.imageUrl,
     location: msg.location,
+    relatedPost: msg.relatedPost,
+    relatedTransaction: msg.relatedTransaction,
     isEdited: msg.isEdited,
     isRecalled: msg.isRecalled,
   };
+}
+
+interface PendingShare {
+  kind: 'POST' | 'TRANSACTION';
+  id: string;
+  title: string;
+  imageUrl?: string;
+  subtitle?: string;
 }
 
 // ─── SCREEN ─────────────────────────────────────────────────────────────────
@@ -79,11 +101,17 @@ function toDisplayMessage(msg: ChatMessage, currentUserId: string): Message {
 export default function ChatDetailScreen() {
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
+  const colors = useThemeColors();
   const params = useLocalSearchParams<{
     conversationId: string;
     name: string;
     avatarUri: string;
     otherUserId: string;
+    sharePostId?: string;
+    shareTransactionId?: string;
+    shareTitle?: string;
+    shareImage?: string;
+    shareSubtitle?: string;
   }>();
   const { user } = useAuthStore();
   const scrollRef = useRef<ScrollView>(null);
@@ -96,6 +124,38 @@ export default function ChatDetailScreen() {
 
   // Edit mode state
   const [editingMessage, setEditingMessage] = useState<Message | null>(null);
+
+  // Pending share card (từ post-detail / transaction-detail)
+  const [pendingShare, setPendingShare] = useState<PendingShare | null>(() => {
+    if (params.sharePostId) {
+      return {
+        kind: 'POST',
+        id: params.sharePostId,
+        title: params.shareTitle ?? '',
+        imageUrl: params.shareImage || undefined,
+        subtitle:
+          params.shareSubtitle === 'FREE'
+            ? t('chat.postFree')
+            : params.shareSubtitle
+              ? `${Number(params.shareSubtitle).toLocaleString('vi-VN')}đ`
+              : undefined,
+      };
+    }
+    if (params.shareTransactionId) {
+      const statusKey =
+        `transaction.status${params.shareSubtitle?.charAt(0).toUpperCase()}${params.shareSubtitle?.slice(1).toLowerCase()}` as const;
+      return {
+        kind: 'TRANSACTION',
+        id: params.shareTransactionId,
+        title: params.shareTitle ?? '',
+        imageUrl: params.shareImage || undefined,
+        subtitle: params.shareSubtitle
+          ? t(statusKey as Parameters<typeof t>[0])
+          : undefined,
+      };
+    }
+    return null;
+  });
 
   const otherUserId = params.otherUserId;
   const conversationId = params.conversationId;
@@ -193,14 +253,42 @@ export default function ChatDetailScreen() {
     getSocket()?.emit('client-message', { conversationId, message: saved });
   };
 
+  /**
+   * Gửi thẻ chia sẻ đang chờ (không kèm ghi chú) thành một message riêng.
+   * Dùng khi người dùng gửi ảnh / vị trí lúc đang đính kèm thẻ — một message
+   * chỉ mang được một loại nội dung nên thẻ phải tách thành message riêng.
+   */
+  const flushPendingShare = async () => {
+    if (!conversationId || !pendingShare) return;
+    const payload: Parameters<typeof sendMessageApi>[1] =
+      pendingShare.kind === 'POST'
+        ? { relatedPostId: pendingShare.id }
+        : { relatedTransactionId: pendingShare.id };
+    const res = await sendMessageApi(conversationId, payload);
+    await emitMessage(res.data.data);
+    setPendingShare(null);
+  };
+
   const handleSend = async (text: string) => {
     if (!conversationId || sending) return;
     setSending(true);
     try {
-      const res = await sendMessageApi(conversationId, { text });
-      await emitMessage(res.data.data);
+      if (pendingShare) {
+        const payload: Parameters<typeof sendMessageApi>[1] = {
+          ...(text ? { text } : {}),
+          ...(pendingShare.kind === 'POST'
+            ? { relatedPostId: pendingShare.id }
+            : { relatedTransactionId: pendingShare.id }),
+        };
+        const res = await sendMessageApi(conversationId, payload);
+        await emitMessage(res.data.data);
+        setPendingShare(null);
+      } else {
+        const res = await sendMessageApi(conversationId, { text });
+        await emitMessage(res.data.data);
+      }
     } catch {
-      Alert.alert('Lỗi', 'Không thể gửi tin nhắn. Kiểm tra kết nối mạng.');
+      Alert.alert(t('common.error'), t('chat.startChatError'));
     } finally {
       setSending(false);
     }
@@ -212,6 +300,7 @@ export default function ChatDetailScreen() {
   }) => {
     if (!conversationId) return;
     try {
+      await flushPendingShare();
       const res = await sendMessageApi(conversationId, { location });
       await emitMessage(res.data.data);
     } catch {
@@ -230,6 +319,7 @@ export default function ChatDetailScreen() {
     if (!uri) return;
     setUploading(true);
     try {
+      await flushPendingShare();
       const { url } = await uploadImage(uri, 'chat');
       const res = await sendMessageApi(conversationId, { imageUrl: url });
       await emitMessage(res.data.data);
@@ -321,10 +411,7 @@ export default function ChatDetailScreen() {
           {messages.map((msg, index) => {
             const prev = messages[index - 1];
             const showSeparator =
-              !prev ||
-              new Date(msg.createdAt).getTime() -
-                new Date(prev.createdAt).getTime() >
-                SESSION_GAP_MS;
+              !prev || !isSameDay(msg.createdAt, prev.createdAt);
 
             return (
               <React.Fragment key={msg.id}>
@@ -352,6 +439,34 @@ export default function ChatDetailScreen() {
         </ScrollView>
 
         <View style={{ paddingBottom: Math.max(insets.bottom, 8) }}>
+          {/* Pending share card banner */}
+          {pendingShare && (
+            <View className="mx-4 mb-2 flex-row items-center justify-between">
+              <View className="min-w-0 flex-1">
+                <Text
+                  className="font-label text-primary-T40 mb-1 text-xs"
+                  numberOfLines={1}
+                >
+                  {pendingShare.kind === 'POST'
+                    ? t('chat.pendingSharePost')
+                    : t('chat.pendingShareTransaction')}
+                </Text>
+                <SharedEntityCard
+                  kind={pendingShare.kind}
+                  title={pendingShare.title}
+                  imageUrl={pendingShare.imageUrl}
+                  subtitle={pendingShare.subtitle}
+                  compact
+                />
+              </View>
+              <TouchableOpacity
+                onPress={() => setPendingShare(null)}
+                className="ml-2 p-1"
+              >
+                <Feather name="x" size={16} color={colors.placeholder} />
+              </TouchableOpacity>
+            </View>
+          )}
           <ChatInput
             onSend={handleSend}
             onSendImage={handleSendImage}
@@ -362,6 +477,7 @@ export default function ChatDetailScreen() {
             editInitialText={editingMessage?.text}
             disabled={sending}
             uploading={uploading}
+            pendingShare={!!pendingShare}
           />
         </View>
       </KeyboardAvoidingView>

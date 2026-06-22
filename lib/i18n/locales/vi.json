@@ -441,7 +441,12 @@
     "copy": "Sao chép",
     "copyImageFailed": "Không thể sao chép ảnh",
     "sessionStarted": "Phiên mới",
-    "lastSeen": "Lần cuối {{time}}"
+    "lastSeen": "Lần cuối {{time}}",
+    "sharedPost": "Bài đăng",
+    "sharedTransaction": "Giao dịch",
+    "pendingSharePost": "Đính kèm bài đăng",
+    "pendingShareTransaction": "Đính kèm giao dịch",
+    "postFree": "Miễn phí"
   },
   "profile": {
     "title": "Cá nhân",

@@ -32,6 +32,8 @@ interface ChatInputProps {
   editInitialText?: string;
   disabled?: boolean;
   uploading?: boolean;
+  /** Khi có thẻ bài đăng/giao dịch đang chờ — hiển thị nút gửi dù text rỗng */
+  pendingShare?: boolean;
 }
 
 export default function ChatInput({
@@ -44,6 +46,7 @@ export default function ChatInput({
   editInitialText,
   disabled,
   uploading,
+  pendingShare,
 }: ChatInputProps) {
   const { t } = useTranslation();
   const { colorScheme } = useColorScheme();
@@ -218,7 +221,7 @@ export default function ChatInput({
         />
 
         {/* Emoji or Send */}
-        {message.trim().length > 0 ? (
+        {message.trim().length > 0 || pendingShare ? (
           <TouchableOpacity
             onPress={handleSend}
             disabled={disabled}

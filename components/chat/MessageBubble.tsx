@@ -1,6 +1,7 @@
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import * as FileSystem from 'expo-file-system/legacy';
+import { useRouter } from 'expo-router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -16,6 +17,8 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ImageViewerModal from '@/components/chat/ImageViewerModal';
+import SharedEntityCard from '@/components/chat/SharedEntityCard';
+import { RelatedPost, RelatedTransaction } from '@/lib/chatApi';
 import { useThemeColors } from '@/lib/hooks/useThemeColors';
 import { useColorScheme } from 'nativewind';
 
@@ -27,9 +30,11 @@ export interface Message {
   isRead?: boolean;
   /** ISO timestamp gốc — dùng để tính separator phiên hội thoại */
   createdAt: string;
-  messageType?: 'TEXT' | 'IMAGE' | 'LOCATION';
+  messageType?: 'TEXT' | 'IMAGE' | 'LOCATION' | 'POST' | 'TRANSACTION';
   imageUrl?: string;
   location?: { latitude: number; longitude: number };
+  relatedPost?: RelatedPost;
+  relatedTransaction?: RelatedTransaction;
   isEdited?: boolean;
   isRecalled?: boolean;
   isDeleted?: boolean;
@@ -56,6 +61,7 @@ export default function MessageBubble({
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   const [menuVisible, setMenuVisible] = React.useState(false);
   const [viewerVisible, setViewerVisible] = React.useState(false);
@@ -237,6 +243,71 @@ export default function MessageBubble({
       );
     }
 
+    if (
+      message.messageType === 'POST' ||
+      message.messageType === 'TRANSACTION'
+    ) {
+      const isPost = message.messageType === 'POST';
+      const post = message.relatedPost;
+      const txn = message.relatedTransaction;
+
+      const cardTitle = isPost
+        ? (post?.title ?? message.text)
+        : (txn?.postId?.title ?? message.text);
+      const cardImage = isPost ? post?.images?.[0] : txn?.postId?.images?.[0];
+      const cardSubtitle = isPost
+        ? post
+          ? post.type === 'P2P_FREE'
+            ? t('chat.postFree')
+            : post.price
+              ? `${post.price.toLocaleString('vi-VN')}đ`
+              : undefined
+          : undefined
+        : txn?.status
+          ? t(
+              `transaction.status${txn.status.charAt(0).toUpperCase()}${txn.status.slice(1).toLowerCase()}` as Parameters<
+                typeof t
+              >[0]
+            )
+          : undefined;
+
+      const handleCardPress = () => {
+        if (isPost && post?._id) {
+          router.push({
+            pathname: '/(post)/post-detail',
+            params: { id: post._id },
+          } as any);
+        } else if (!isPost && txn?._id) {
+          router.push({
+            pathname: '/(transaction)/transaction-detail',
+            params: { id: txn._id },
+          } as any);
+        }
+      };
+
+      const hasNote =
+        message.text &&
+        message.text !== 'Bài đăng' &&
+        message.text !== 'Giao dịch';
+
+      return (
+        <View className={`gap-1.5 ${isMe ? 'items-end' : 'items-start'}`}>
+          <SharedEntityCard
+            kind={message.messageType}
+            title={cardTitle}
+            imageUrl={cardImage}
+            subtitle={cardSubtitle}
+            onPress={handleCardPress}
+          />
+          {hasNote && (
+            <Text className="font-body text-neutral-T10 dark:text-neutral-T90 px-1 text-sm">
+              {message.text}
+            </Text>
+          )}
+        </View>
+      );
+    }
+
     // Default: TEXT
     return (
       <View
@@ -280,6 +351,8 @@ export default function MessageBubble({
   }[] = [];
 
   if (!message.isRecalled && !message.isDeleted) {
+    const isCardType =
+      message.messageType === 'POST' || message.messageType === 'TRANSACTION';
     if (isMe && message.messageType === 'TEXT') {
       menuItems.push({
         label: t('chat.editMessage'),
@@ -295,11 +368,13 @@ export default function MessageBubble({
         destructive: true,
       });
     }
-    menuItems.push({
-      label: t('chat.copy'),
-      icon: 'copy',
-      action: handleCopy,
-    });
+    if (!isCardType) {
+      menuItems.push({
+        label: t('chat.copy'),
+        icon: 'copy',
+        action: handleCopy,
+      });
+    }
   }
   menuItems.push({
     label: t('chat.deleteForMe'),

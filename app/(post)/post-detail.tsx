@@ -225,6 +225,11 @@ export default function PostDetailScreen() {
           otherUserId: other?._id ?? owner._id,
           name: other?.fullName ?? owner.fullName,
           avatarUri: other?.avatar ?? owner.avatar ?? '',
+          sharePostId: post._id,
+          shareTitle: post.title,
+          shareImage: post.images?.[0] ?? '',
+          shareSubtitle:
+            post.type === 'P2P_FREE' ? 'FREE' : String(post.price ?? 0),
         },
       } as any);
     } catch {

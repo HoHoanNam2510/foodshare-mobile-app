@@ -62,8 +62,18 @@ function ChatCard({
   const other = conversation.participants.find((p) => p._id !== currentUserId);
   const unread = conversation.unreadCount?.[currentUserId] ?? 0;
   const hasUnread = unread > 0;
-  const lastMsg =
-    conversation.lastMessage?.content ?? t('chat.startConversation');
+  const lm = conversation.lastMessage;
+  const lastMsg = !lm
+    ? t('chat.startConversation')
+    : lm.messageType === 'IMAGE'
+      ? t('chat.sharedImage')
+      : lm.messageType === 'LOCATION'
+        ? t('chat.sharedLocation')
+        : lm.messageType === 'POST'
+          ? t('chat.sharedPost')
+          : lm.messageType === 'TRANSACTION'
+            ? t('chat.sharedTransaction')
+            : lm.content;
   const time = formatTime(
     conversation.lastMessage?.createdAt ?? conversation.updatedAt,
     t('common.yesterday'),
