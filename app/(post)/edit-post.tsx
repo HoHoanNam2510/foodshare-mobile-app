@@ -25,6 +25,9 @@ import CategoryPicker from '@/components/post/CategoryPicker';
 import ImagePickerSection from '@/components/post/ImagePickerSection';
 import QuantityStepper from '@/components/post/QuantityStepper';
 import StackHeader from '@/components/shared/headers/StackHeader';
+import LocationPickerSheet, {
+  PickedLocation,
+} from '@/components/map/LocationPickerSheet';
 import {
   ApiValidationError,
   getPostByIdApi,
@@ -32,6 +35,7 @@ import {
   type UpdatePostPayload,
 } from '@/lib/postApi';
 import { uploadMultipleImages } from '@/lib/uploadApi';
+import { reverseGeocode } from '@/lib/mapApi';
 import { useThemeColors } from '@/lib/hooks/useThemeColors';
 
 type ActivePicker = 'pickupStart' | 'pickupEnd' | 'expiryDate' | null;
@@ -67,6 +71,16 @@ export default function EditPost() {
   const [activePicker, setActivePicker] = useState<ActivePicker>(null);
   const [pickerMode, setPickerMode] = useState<PickerMode>('time');
 
+  // ── Location state ──
+  const [pickedLocation, setPickedLocation] = useState<PickedLocation | null>(
+    null
+  );
+  const [showLocationPicker, setShowLocationPicker] = useState(false);
+  const [locationLabel, setLocationLabel] = useState('');
+  const [originalCoords, setOriginalCoords] = useState<
+    [number, number] | undefined
+  >(undefined);
+
   // ── Submit state ──
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -91,6 +105,13 @@ export default function EditPost() {
       setPickupStart(new Date(p.pickupTime.start));
       setPickupEnd(new Date(p.pickupTime.end));
       setExpiryDate(new Date(p.expiryDate));
+      if (p.location?.coordinates) {
+        const [lng, lat] = p.location.coordinates;
+        setOriginalCoords([lng, lat]);
+        reverseGeocode(lat, lng).then((addr) => {
+          if (addr) setLocationLabel(addr);
+        });
+      }
     } catch (e) {
       Alert.alert(
         t('common.error'),
@@ -196,6 +217,12 @@ export default function EditPost() {
           start: pickupStart.toISOString(),
           end: pickupEnd.toISOString(),
         },
+        ...(pickedLocation && {
+          location: {
+            type: 'Point',
+            coordinates: pickedLocation.coordinates,
+          },
+        }),
       };
 
       if (isB2C) {
@@ -515,6 +542,39 @@ export default function EditPost() {
               </Text>
             )}
           </View>
+
+          {/* ── Location ── */}
+          <View className="mb-6 gap-2">
+            <Text className="font-label text-neutral-T50 dark:text-neutral-T60 ml-1 text-sm font-semibold">
+              {t('profile.locationMap')}
+            </Text>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => setShowLocationPicker(true)}
+              className="bg-neutral-T95 dark:bg-neutral-T30 border-neutral-T90 dark:border-neutral-T30 h-14 flex-row items-center justify-between rounded-xl border px-4 active:opacity-80"
+            >
+              <View className="flex-1 flex-row items-center gap-2">
+                <MaterialIcons
+                  name="location-on"
+                  size={18}
+                  color={colors.primaryGreen}
+                />
+                <Text
+                  className="font-body text-neutral-T10 dark:text-neutral-T90 flex-1 text-sm"
+                  numberOfLines={1}
+                >
+                  {pickedLocation?.address ||
+                    locationLabel ||
+                    t('profile.locationNotSet')}
+                </Text>
+              </View>
+              <MaterialIcons
+                name="chevron-right"
+                size={20}
+                color={colors.textMuted}
+              />
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
 
@@ -558,6 +618,13 @@ export default function EditPost() {
 
       {/* ── Date/time picker modal ── */}
       {renderPickerModal()}
+
+      <LocationPickerSheet
+        visible={showLocationPicker}
+        onClose={() => setShowLocationPicker(false)}
+        onConfirm={setPickedLocation}
+        initialCoords={pickedLocation?.coordinates ?? originalCoords}
+      />
     </View>
   );
 }

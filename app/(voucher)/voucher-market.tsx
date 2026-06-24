@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
+  RefreshControl,
   Text,
   TouchableOpacity,
   View,
@@ -54,32 +55,38 @@ export default function VoucherMarketScreen() {
 
   const [vouchers, setVouchers] = useState<IVoucher[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isRedeeming, setIsRedeeming] = useState(false);
   const [selectedVoucher, setSelectedVoucher] = useState<IVoucher | null>(null);
   const [activeFilter, setActiveFilter] = useState<DiscountTypeFilter>('ALL');
   const [activeSort, setActiveSort] = useState<VoucherSortOption>('newest');
   const [showSortMenu, setShowSortMenu] = useState(false);
 
-  const loadVouchers = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const params: {
-        sort?: VoucherSortOption;
-        discountType?: 'PERCENTAGE' | 'FIXED_AMOUNT';
-      } = {
-        sort: activeSort,
-      };
-      if (activeFilter !== 'ALL') {
-        params.discountType = activeFilter;
+  const loadVouchers = useCallback(
+    async (isRefresh = false) => {
+      if (isRefresh) setIsRefreshing(true);
+      else setIsLoading(true);
+      try {
+        const params: {
+          sort?: VoucherSortOption;
+          discountType?: 'PERCENTAGE' | 'FIXED_AMOUNT';
+        } = {
+          sort: activeSort,
+        };
+        if (activeFilter !== 'ALL') {
+          params.discountType = activeFilter;
+        }
+        const res = await getVoucherMarketApi(params);
+        setVouchers(res.data);
+      } catch {
+        Alert.alert(t('voucher.errorAlert'), t('voucher.loadMarketError'));
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
       }
-      const res = await getVoucherMarketApi(params);
-      setVouchers(res.data);
-    } catch {
-      Alert.alert(t('voucher.errorAlert'), t('voucher.loadMarketError'));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [activeSort, activeFilter, t]);
+    },
+    [activeSort, activeFilter, t]
+  );
 
   useEffect(() => {
     loadVouchers();
@@ -225,6 +232,13 @@ export default function VoucherMarketScreen() {
             paddingBottom: insets.bottom + 20,
           }}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={() => loadVouchers(true)}
+              tintColor="#296C24"
+            />
+          }
           ListEmptyComponent={
             <View className="items-center justify-center gap-3 py-20">
               <MaterialIcons name="local-offer" size={48} color="#C5C7C6" />

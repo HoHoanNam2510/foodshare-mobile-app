@@ -144,7 +144,7 @@ function TransactionCard({
               <StatusBadge status={tx.status} />
             </View>
             <Text className="text-neutral-T50 font-sans text-sm italic leading-tight">
-              Bài đăng đã bị xóa
+              {t('transaction.deletedPost')}
             </Text>
             <Text className="font-body text-neutral-T70 dark:text-neutral-T60 text-xs">
               {formatDate(tx.createdAt)}
@@ -321,7 +321,7 @@ function IncomingCard({
             className="text-neutral-T10 dark:text-neutral-T90 font-sans text-sm font-bold leading-tight"
             numberOfLines={2}
           >
-            {post?.title ?? 'Bài đăng đã bị xóa'}
+            {post?.title ?? t('transaction.deletedPost')}
           </Text>
 
           {/* Requester row */}
@@ -701,7 +701,7 @@ export default function TransactionListScreen() {
             activeOpacity={0.85}
           >
             <Text className="font-label text-neutral-T100 font-semibold">
-              Thử lại
+              {t('common.retry')}
             </Text>
           </TouchableOpacity>
         </View>

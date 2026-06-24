@@ -21,7 +21,7 @@ import LocationPickerSheet, {
 } from '@/components/map/LocationPickerSheet';
 import { pickImage } from '@/lib/imagePicker';
 import { reverseGeocode, updateUserLocation } from '@/lib/mapApi';
-import { updateProfileApi } from '@/lib/profileApi';
+import { updateProfileApi, changePasswordApi } from '@/lib/profileApi';
 import { uploadImage } from '@/lib/uploadApi';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -71,6 +71,12 @@ export default function EditProfile() {
   const [locationLabel, setLocationLabel] = useState('');
 
   const [isSaving, setIsSaving] = useState(false);
+
+  // ── Change password state ───
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   const isStore = user?.role === 'STORE';
 
@@ -151,6 +157,38 @@ export default function EditProfile() {
       Alert.alert(t('common.error'), msg);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleChangePassword = async (): Promise<void> => {
+    if (!currentPassword.trim()) {
+      Alert.alert(
+        t('common.warning'),
+        t('profile.currentPasswordLabel') + ' là bắt buộc'
+      );
+      return;
+    }
+    if (newPassword.length < 6) {
+      Alert.alert(t('common.warning'), t('profile.changePasswordMinLength'));
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      Alert.alert(t('common.warning'), t('profile.changePasswordMismatch'));
+      return;
+    }
+    setIsChangingPassword(true);
+    try {
+      await changePasswordApi(currentPassword, newPassword);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmNewPassword('');
+      Alert.alert(t('common.success'), t('profile.changePasswordSuccess'));
+    } catch (error: unknown) {
+      const msg =
+        error instanceof Error ? error.message : t('profile.updateFailed');
+      Alert.alert(t('common.error'), msg);
+    } finally {
+      setIsChangingPassword(false);
     }
   };
 
@@ -359,6 +397,48 @@ export default function EditProfile() {
               onChangeText={setBankAccountName}
               placeholder={t('profile.bankAccountNamePlaceholder')}
             />
+
+            {/* ─── Change Password Section ─── */}
+            <SectionLabel icon="lock" label={t('profile.securitySection')} />
+            <Text className="font-body text-neutral-T50 dark:text-neutral-T60 -mt-2 text-xs">
+              {t('profile.changePasswordHint')}
+            </Text>
+
+            <FormInput
+              label={t('profile.currentPasswordLabel')}
+              value={currentPassword}
+              onChangeText={setCurrentPassword}
+              placeholder={t('profile.currentPasswordPlaceholder')}
+              secureTextEntry
+            />
+            <FormInput
+              label={t('auth.newPassword')}
+              value={newPassword}
+              onChangeText={setNewPassword}
+              placeholder={t('auth.newPasswordPlaceholder')}
+              secureTextEntry
+            />
+            <FormInput
+              label={t('auth.confirmNewPassword')}
+              value={confirmNewPassword}
+              onChangeText={setConfirmNewPassword}
+              placeholder={t('auth.confirmNewPasswordPlaceholder')}
+              secureTextEntry
+            />
+
+            <TouchableOpacity
+              className="bg-primary-T40 h-14 items-center justify-center rounded-xl active:opacity-80"
+              onPress={handleChangePassword}
+              disabled={isChangingPassword}
+            >
+              {isChangingPassword ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text className="font-label text-neutral-T100 text-sm font-bold">
+                  {t('profile.changePassword')}
+                </Text>
+              )}
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -406,6 +486,7 @@ interface FormInputProps {
   editable?: boolean;
   multiline?: boolean;
   keyboardType?: 'default' | 'phone-pad' | 'email-address' | 'numeric';
+  secureTextEntry?: boolean;
 }
 
 function FormInput({
@@ -416,6 +497,7 @@ function FormInput({
   editable = true,
   multiline = false,
   keyboardType = 'default',
+  secureTextEntry = false,
 }: FormInputProps) {
   const inputColors = useThemeColors();
   return (
@@ -435,6 +517,7 @@ function FormInput({
         multiline={multiline}
         textAlignVertical={multiline ? 'top' : 'center'}
         keyboardType={keyboardType}
+        secureTextEntry={secureTextEntry}
       />
     </View>
   );

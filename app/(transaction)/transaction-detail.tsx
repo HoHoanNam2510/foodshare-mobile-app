@@ -835,7 +835,7 @@ export default function TransactionDetailScreen() {
               {t('transaction.postSectionLabel')}
             </Text>
             <Text className="text-neutral-T10 dark:text-neutral-T90 font-sans text-lg font-bold leading-tight">
-              {post?.title ?? 'Bài đăng đã bị xóa'}
+              {post?.title ?? t('transaction.deletedPost')}
             </Text>
 
             <View className="flex-row flex-wrap gap-2">

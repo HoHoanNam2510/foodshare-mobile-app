@@ -45,7 +45,7 @@ import PostDetailMap from '@/components/map/PostDetailMap';
 import SaveTemplateModal from '@/components/post/SaveTemplateModal';
 import VoucherBannerAlert from '@/components/voucher/VoucherBannerAlert';
 import OrderConfirmModal from '@/components/order/OrderConfirmModal';
-import { createTemplateApi } from '@/lib/postTemplateApi';
+import { createTemplateApi, getMyTemplatesApi } from '@/lib/postTemplateApi';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -268,10 +268,19 @@ export default function PostDetailScreen() {
     }
   };
 
-  const handleSaveAsTemplate = async (templateName: string) => {
+  const handleSaveAsTemplate = async (templateName: string): Promise<void> => {
     if (!post) return;
     setIsSavingTemplate(true);
     try {
+      const existingTemplates = await getMyTemplatesApi();
+      const isDuplicate = existingTemplates.some(
+        (tmpl) =>
+          tmpl.templateName.trim().toLowerCase() ===
+          templateName.trim().toLowerCase()
+      );
+      if (isDuplicate) {
+        throw new Error(t('template.duplicateName'));
+      }
       await createTemplateApi({
         templateName,
         type: post.type,
@@ -285,10 +294,7 @@ export default function PostDetailScreen() {
       setShowSaveModal(false);
       Alert.alert(t('common.success'), t('template.saveSuccess'));
     } catch (e) {
-      Alert.alert(
-        t('common.error'),
-        e instanceof Error ? e.message : t('template.saveFailed')
-      );
+      throw e;
     } finally {
       setIsSavingTemplate(false);
     }
@@ -338,6 +344,15 @@ export default function PostDetailScreen() {
     }
 
     lines.push(t('post.shareFooter'));
+
+    const deepLink = `foodsharemobileapp://post-detail?id=${post._id}`;
+    const canOpen = await Linking.canOpenURL(deepLink);
+    if (!canOpen) {
+      Alert.alert(t('common.info'), t('post.shareAppNotInstalled'));
+    }
+
+    lines.push(deepLink);
+    lines.push(t('post.shareAppNote'));
 
     await Share.share({ title: post.title, message: lines.join('\n') });
   };

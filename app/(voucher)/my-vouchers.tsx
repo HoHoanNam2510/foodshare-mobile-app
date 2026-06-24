@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
+  RefreshControl,
   Text,
   TouchableOpacity,
   View,
@@ -42,10 +43,12 @@ export default function MyVouchersScreen() {
     (IUserVoucher & { voucherId: IVoucher })[]
   >([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const loadVouchers = useCallback(
-    async (status: VoucherStatusFilter) => {
-      setIsLoading(true);
+    async (status: VoucherStatusFilter, isRefresh = false) => {
+      if (isRefresh) setIsRefreshing(true);
+      else setIsLoading(true);
       try {
         const res = await getMyVouchersApi({ status });
         setUserVouchers(
@@ -58,6 +61,7 @@ export default function MyVouchersScreen() {
         Alert.alert(t('voucher.errorAlert'), t('voucher.loadWalletError'));
       } finally {
         setIsLoading(false);
+        setIsRefreshing(false);
       }
     },
     [t]
@@ -138,6 +142,13 @@ export default function MyVouchersScreen() {
             paddingBottom: insets.bottom + 20,
           }}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={() => loadVouchers(activeTab, true)}
+              tintColor="#296C24"
+            />
+          }
           ListEmptyComponent={
             <View className="items-center justify-center gap-3 py-20">
               <MaterialIcons name="wallet" size={48} color="#C5C7C6" />

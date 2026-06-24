@@ -130,9 +130,20 @@ export default function CreatePost() {
   };
 
   // ── Save current form as template ──
-  const handleSaveFormAsTemplate = async (templateName: string) => {
+  const handleSaveFormAsTemplate = async (
+    templateName: string
+  ): Promise<void> => {
     setIsSavingTemplate(true);
     try {
+      const existingTemplates = await getMyTemplatesApi();
+      const isDuplicate = existingTemplates.some(
+        (tmpl) =>
+          tmpl.templateName.trim().toLowerCase() ===
+          templateName.trim().toLowerCase()
+      );
+      if (isDuplicate) {
+        throw new Error(t('template.duplicateName'));
+      }
       let resolvedImages: string[] = [];
       if (images.length > 0) {
         const results = await uploadMultipleImages(images, 'posts');
@@ -152,10 +163,7 @@ export default function CreatePost() {
       setHasTemplates(true);
       Alert.alert(t('template.saveAsTemplate'), t('template.saveFormSuccess'));
     } catch (e) {
-      Alert.alert(
-        t('common.error'),
-        e instanceof Error ? e.message : t('template.saveFailed')
-      );
+      throw e;
     } finally {
       setIsSavingTemplate(false);
     }

@@ -111,11 +111,26 @@ export async function deleteAccountApi(): Promise<{
 }> {
   try {
     const { data } = await api.delete<{ success: boolean; message: string }>(
-      '/users/me'
+      '/auth/me/account'
     );
     return data;
   } catch (error) {
     extractErrorMessage(error, 'Xóa tài khoản thất bại');
+  }
+}
+
+export async function changePasswordApi(
+  currentPassword: string,
+  newPassword: string
+): Promise<{ success: boolean; message: string }> {
+  try {
+    const { data } = await api.put<{ success: boolean; message: string }>(
+      '/auth/change-password',
+      { currentPassword, newPassword }
+    );
+    return data;
+  } catch (error) {
+    extractErrorMessage(error, 'Đổi mật khẩu thất bại');
   }
 }
 

@@ -14,12 +14,13 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { useColorScheme } from 'nativewind';
 
 interface SaveTemplateModalProps {
   visible: boolean;
   initialName?: string;
   isSaving?: boolean;
-  onSave: (name: string) => void;
+  onSave: (name: string) => Promise<void>;
   onCancel: () => void;
 }
 
@@ -32,11 +33,18 @@ export default function SaveTemplateModal({
 }: SaveTemplateModalProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
   const [name, setName] = useState(initialName);
+  const [nameError, setNameError] = useState('');
   const [androidKeyboardHeight, setAndroidKeyboardHeight] = useState(0);
 
   useEffect(() => {
-    if (visible) setName(initialName);
+    if (visible) {
+      setName(initialName);
+      setNameError('');
+    }
   }, [visible, initialName]);
 
   useEffect(() => {
@@ -57,10 +65,18 @@ export default function SaveTemplateModal({
     if (!visible) setAndroidKeyboardHeight(0);
   }, [visible]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const trimmed = name.trim();
-    if (!trimmed) return;
-    onSave(trimmed);
+    if (!trimmed) {
+      setNameError(t('template.missingName'));
+      return;
+    }
+    setNameError('');
+    try {
+      await onSave(trimmed);
+    } catch (e) {
+      setNameError(e instanceof Error ? e.message : t('template.saveFailed'));
+    }
   };
 
   return (
@@ -81,58 +97,72 @@ export default function SaveTemplateModal({
         />
 
         <View
-          className="bg-neutral-T100 gap-6 rounded-t-3xl px-6 pt-6"
+          className="bg-neutral-T100 dark:bg-neutral-T20 gap-6 rounded-t-3xl px-6 pt-6"
           style={{
             paddingBottom: Math.max(insets.bottom, 24) + 8,
             marginBottom: androidKeyboardHeight,
           }}
         >
           {/* Handle bar */}
-          <View className="bg-neutral-T80 h-1 w-10 self-center rounded-full" />
+          <View className="bg-neutral-T80 dark:bg-neutral-T30 h-1 w-10 self-center rounded-full" />
 
           {/* Header */}
           <View className="flex-row items-center gap-3">
-            <View className="bg-primary-T95 h-10 w-10 items-center justify-center rounded-xl">
-              <MaterialIcons name="bookmark-add" size={20} color="#296C24" />
+            <View className="bg-primary-T95 dark:bg-primary-T20 h-10 w-10 items-center justify-center rounded-xl">
+              <MaterialIcons
+                name="bookmark-add"
+                size={20}
+                color={isDark ? '#72B866' : '#296C24'}
+              />
             </View>
             <View className="flex-1">
-              <Text className="text-neutral-T10 font-sans text-base font-bold">
+              <Text className="text-neutral-T10 dark:text-neutral-T90 font-sans text-base font-bold">
                 {t('template.saveModalTitle')}
               </Text>
-              <Text className="font-body text-neutral-T50 text-xs">
+              <Text className="font-body text-neutral-T50 dark:text-neutral-T60 text-xs">
                 {t('template.saveModalSubtitle')}
               </Text>
             </View>
           </View>
 
           {/* Input */}
-          <TextInput
-            className="bg-neutral-T95 border-neutral-T90 font-body text-neutral-T10 h-14 rounded-xl border px-4 text-base"
-            placeholder={t('template.saveModalPlaceholder')}
-            placeholderTextColor="#AAABAB"
-            value={name}
-            onChangeText={setName}
-            autoFocus
-            returnKeyType="done"
-            onSubmitEditing={handleSave}
-            maxLength={60}
-          />
+          <View className="gap-1">
+            <TextInput
+              className={`bg-neutral-T95 dark:bg-neutral-T30 font-body text-neutral-T10 dark:text-neutral-T90 h-14 rounded-xl border px-4 text-base ${nameError ? 'border-red-500' : 'border-neutral-T90 dark:border-neutral-T30'}`}
+              placeholder={t('template.saveModalPlaceholder')}
+              placeholderTextColor={isDark ? '#757777' : '#AAABAB'}
+              value={name}
+              onChangeText={(text) => {
+                setName(text);
+                if (nameError) setNameError('');
+              }}
+              autoFocus
+              returnKeyType="done"
+              onSubmitEditing={handleSave}
+              maxLength={60}
+            />
+            {!!nameError && (
+              <Text className="font-label ml-1 text-xs text-red-500">
+                {nameError}
+              </Text>
+            )}
+          </View>
 
           {/* Actions */}
           <View className="flex-row gap-3">
             <TouchableOpacity
-              className="bg-neutral-T95 h-14 flex-1 items-center justify-center rounded-xl active:opacity-80"
+              className="bg-neutral-T95 dark:bg-neutral-T30 h-14 flex-1 items-center justify-center rounded-xl active:opacity-80"
               onPress={onCancel}
               disabled={isSaving}
             >
-              <Text className="font-label text-neutral-T50 font-semibold">
+              <Text className="font-label text-neutral-T50 dark:text-neutral-T60 font-semibold">
                 {t('common.cancel')}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
               className="bg-primary-T40 h-14 flex-1 items-center justify-center rounded-xl shadow-sm active:opacity-80"
               onPress={handleSave}
-              disabled={isSaving || !name.trim()}
+              disabled={isSaving}
             >
               {isSaving ? (
                 <ActivityIndicator color="#fff" />

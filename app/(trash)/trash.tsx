@@ -43,10 +43,16 @@ function formatDate(iso?: string): string {
   });
 }
 
-function getItemLabel(collection: TabKey, item: ITrashItem): string {
+function getItemLabel(
+  collection: TabKey,
+  item: ITrashItem,
+  t: (key: string, opts?: Record<string, unknown>) => string
+): string {
   if (collection === 'posts') return (item as ITrashPost).title || '—';
   if (collection === 'reviews')
-    return `Đánh giá ${(item as ITrashReview).rating ?? '?'}/5`;
+    return t('trash.reviewLabel', {
+      rating: (item as ITrashReview).rating ?? '?',
+    });
   return `${(item as ITrashVoucher).code ?? ''} — ${(item as ITrashVoucher).title ?? ''}`.replace(
     /^( — | —|— )$/,
     '—'
@@ -116,7 +122,7 @@ function TrashItemCard({
             className="text-neutral-T10 dark:text-neutral-T90 font-sans text-sm font-semibold"
             numberOfLines={2}
           >
-            {getItemLabel(collection, item)}
+            {getItemLabel(collection, item, t)}
           </Text>
           <Text className="font-body text-neutral-T50 dark:text-neutral-T60 mt-0.5 text-xs">
             {t('trash.deletedOn', {

@@ -1,10 +1,11 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActionSheetIOS,
   ActivityIndicator,
   Alert,
   FlatList,
   Platform,
+  RefreshControl,
   Text,
   TouchableOpacity,
   View,
@@ -216,8 +217,16 @@ export default function NotificationsScreen() {
     toggleSelect,
   } = useNotificationStore();
 
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
   useEffect(() => {
     fetchNotifications();
+  }, [fetchNotifications]);
+
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    await fetchNotifications();
+    setIsRefreshing(false);
   }, [fetchNotifications]);
 
   // Reset select mode khi rời khỏi màn hình
@@ -428,6 +437,13 @@ export default function NotificationsScreen() {
         ListFooterComponent={renderFooter}
         onEndReached={fetchNextPage}
         onEndReachedThreshold={0.3}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            tintColor="#2A7C6E"
+          />
+        }
         contentContainerStyle={
           notifications.length === 0 ? { flex: 1 } : undefined
         }
