@@ -640,6 +640,7 @@
     "acceptedAlertTitle": "Accepted",
     "rejectedAlertTitle": "Rejected",
     "requestAcceptedMsg": "Request accepted. A QR code has been generated for the receiver.",
+    "orderAcceptedMsg": "Order accepted. Please confirm once you have received the payment to complete the transaction.",
     "requestRejectedMsg": "Request has been rejected.",
     "cancelledRequestMsg": "The request has been cancelled.",
     "progressTitle": "Transaction progress",

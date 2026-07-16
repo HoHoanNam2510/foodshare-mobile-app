@@ -640,6 +640,7 @@
     "acceptedAlertTitle": "Đã chấp nhận",
     "rejectedAlertTitle": "Đã từ chối",
     "requestAcceptedMsg": "Yêu cầu đã được chấp nhận. Mã QR đã được tạo cho người nhận.",
+    "orderAcceptedMsg": "Đơn hàng đã được chấp nhận. Vui lòng xác nhận khi đã nhận được tiền để hoàn tất giao dịch.",
     "requestRejectedMsg": "Yêu cầu đã bị từ chối.",
     "cancelledRequestMsg": "Yêu cầu xin đồ đã được hủy.",
     "progressTitle": "Tiến trình giao dịch",

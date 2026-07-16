@@ -498,6 +498,9 @@ export default function TransactionListScreen() {
   const handleRespond = useCallback(
     async (transactionId: string, response: 'ACCEPT' | 'REJECT') => {
       setRespondingId(transactionId);
+      const isOrder =
+        ownerTransactions.find((o) => o._id === transactionId)?.type ===
+        'ORDER';
       try {
         await respondToRequestApi(transactionId, response);
         // Reload both: donor sees updated incoming, receiver sees new ACCEPTED in active
@@ -507,7 +510,9 @@ export default function TransactionListScreen() {
             ? t('transaction.acceptedAlertTitle')
             : t('transaction.rejectedAlertTitle'),
           response === 'ACCEPT'
-            ? t('transaction.requestAcceptedMsg')
+            ? isOrder
+              ? t('transaction.orderAcceptedMsg')
+              : t('transaction.requestAcceptedMsg')
             : t('transaction.requestRejectedMsg')
         );
       } catch (e: any) {
@@ -519,7 +524,7 @@ export default function TransactionListScreen() {
         setRespondingId(null);
       }
     },
-    [loadOwner, loadReceiver, t]
+    [loadOwner, loadReceiver, ownerTransactions, t]
   );
 
   const handleCancel = useCallback(
